@@ -48,11 +48,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private void WebClient_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            Debug.WriteLine("New string download completed.");
-            _downloadBotRequestsSemaphore.Release();
+            //Debug.WriteLine("New string download completed.");
+            DownloadBotRequestsSemaphore.Release();
             if (e.Error != null)
             {
-                LogMaker.Log(e.Error);
+                LogMaker.Log(Logger, e.Error);
                 return;
             }
             if (e.Result.Length <= EmptyUpdateSymbolCount)
@@ -71,10 +71,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private void RequestMonitorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             //если образовалась очередь, выдать ошибку задержки ответа сервера
-            if (!_downloadBotRequestsSemaphore.WaitOne(0))
+            if (!DownloadBotRequestsSemaphore.WaitOne(0))
             {
                 var message = "Telegram server response timeout. Can't download content.";
-                LogMaker.Log(message, true);
+                LogMaker.Log(Logger, message, true);
                 RequestMonitorTimer.Stop();
                 RequestTracingStoppedEvent?.Invoke(this, new BotRequestErrorEventArgs(message));
                 return;
@@ -83,24 +83,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             DownloadBotRequests();
         }
 
-        public delegate void GmnbRequestErrorEventHandler(object sender, BotRequestErrorEventArgs e);
-        public delegate void GmnbRequestsEventHandler(IRequests requests);
+        public delegate void BotRequestErrorEventHandler(object sender, BotRequestErrorEventArgs e);
+        public delegate void BotRequestsEventHandler(IRequests requests);
 
         /// <summary>
         /// Triggers when a class stops tracing request from telegram server.
         /// </summary>
-        public static event GmnbRequestErrorEventHandler RequestTracingStoppedEvent;
+        public static event BotRequestErrorEventHandler RequestTracingStoppedEvent;
 
         /// <summary>
         /// Triggers when new request has been traced on the telegram server.
         /// </summary>
-        public static event GmnbRequestsEventHandler RequestsArrivedEvent;
+        public static event BotRequestsEventHandler RequestsArrivedEvent;
 
         private const string TelegramBotUrl = "https://api.telegram.org/bot";
         private const int MaxDelayServerResponce = 2000;
         private const int EmptyUpdateSymbolCount = 23;
 
-        private static readonly Semaphore _downloadBotRequestsSemaphore = new Semaphore(1, 1);
+        private static readonly Semaphore DownloadBotRequestsSemaphore = new Semaphore(1, 1);
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static System.Timers.Timer RequestMonitorTimer { get; } = new System.Timers.Timer
         {
@@ -126,27 +127,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         /// </summary>
         public List<JToken> Requests { get; private set; }
 
-        public static class LogMaker
-        {
-            public static void Log(string message, bool isError)
-            {
-                DateTime currentDate = DateTime.Now;
-                Logger.Info(message);
-                NewMessage?.Invoke(message, currentDate, isError);
-            }
-
-            public static void Log(Exception ex)
-            {
-                DateTime currentDate = DateTime.Now;
-                Logger.Error(ex);
-                NewMessage?.Invoke(ex.Message, currentDate, true);
-            }
-
-            public delegate void MessageDelegate(string message, DateTime time, bool isError);
-            public static event MessageDelegate NewMessage;
-            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        }
-        
     }
 
     public class BotRequestErrorEventArgs : EventArgs

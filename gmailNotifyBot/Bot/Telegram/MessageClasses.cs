@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 {
     /// <summary>
-    /// A class which represents the general telegram message.
+    /// A class which represents the general Telegram message.
     /// </summary>
-    public class TelegramMessage : ITelegramMessage
+    public abstract class TelegramMessage : ITelegramMessage
     {
         /// <summary>
         /// Unique message identifier inside this chat.
@@ -25,9 +25,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram text user's message.
+    /// A class which represents the Telegram text user's message.
     /// </summary>
-    public class TelegramTextUserMessage : TelegramMessage, ISenderMessage, ITelegramTextMessage
+    public class TelegramTextMessage : TelegramMessage, ISenderMessage, ITelegramTextMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -46,7 +46,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram audio message.
+    /// A class which represents the Telegram audio message.
     /// </summary>
     public class TelegramAudioMessage : TelegramMessage, ISenderMessage, ITelegramAudioMessage
     {
@@ -62,7 +62,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram document message.
+    /// A class which represents the Telegram document message.
     /// </summary>
     public class TelegramDocumentMessage : TelegramMessage, ISenderMessage, ITelegramDocumentMessage
     {
@@ -83,7 +83,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram photo message.
+    /// A class which represents the Telegram sticker message.
+    /// </summary>
+    public class TelegramStickerMessage : TelegramMessage, ISenderMessage, ITelegramStickerMessage
+    {
+        /// <summary>
+        /// Sender, can be empty for messages sent to channels.
+        /// </summary>
+        public User From { get; set; }
+
+        /// <summary>
+        /// Information about the sticker.
+        /// </summary>
+        public Sticker Sticker { get; set; }
+    }
+
+    /// <summary>
+    /// A class which represents the Telegram photo message.
     /// </summary>
     public class TelegramPhotoMessage : TelegramMessage, ISenderMessage, ITelegramPhotoMessage
     {
@@ -104,7 +120,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram game message.
+    /// A class which represents the Telegram game message.
     /// </summary>
     public class TelegramGameMessage : TelegramMessage, ISenderMessage, ITelegramGameMessage
     {
@@ -120,7 +136,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram video message.
+    /// A class which represents the Telegram video message.
     /// </summary>
     public class TelegramVideoMessage : TelegramMessage, ISenderMessage, ITelegramVideoMessage
     {
@@ -141,7 +157,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram voice message.
+    /// A class which represents the Telegram voice message.
     /// </summary>
     public class TelegramVoiceMessage : TelegramMessage, ISenderMessage, ITelegramVoiceMessage
     {
@@ -157,7 +173,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram shared contact message.
+    /// A class which represents the Telegram shared contact message.
     /// </summary>
     public class TelegramContactMessage : TelegramMessage, ISenderMessage, ITelegramContactMessage
     {
@@ -173,7 +189,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram shared location message.
+    /// A class which represents the Telegram shared location message.
     /// </summary>
     public class TelegramLocationMessage : TelegramMessage, ISenderMessage, ITelegramLocationMessage
     {
@@ -189,7 +205,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram venue message.
+    /// A class which represents the Telegram venue message.
     /// </summary>
     public class TelegramVenueMessage : TelegramMessage, ISenderMessage, ITelegramVenueMessage
     {
@@ -205,7 +221,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram message about new chat member.
+    /// A class which represents the Telegram message about new chat member.
     /// </summary>
     public class TelegramNewChatMemberMessage : TelegramMessage
     {
@@ -216,7 +232,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram message about left chat member.
+    /// A class which represents the Telegram message about left chat member.
     /// </summary>
     public class TelegramLeftChatMemberMessage : TelegramMessage
     {
@@ -227,7 +243,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram message about new chat title.
+    /// A class which represents the Telegram message about new chat title.
     /// </summary>
     public class TelegramNewChatTitleMessage : TelegramMessage
     {
@@ -238,7 +254,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents the telegram message about new chat photo.
+    /// A class which represents the Telegram message about new chat photo.
     /// </summary>
     public class TelegramNewChatPhotoMessage : TelegramMessage
     {
@@ -248,19 +264,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         public List<PhotoSize> NewChatPhoto { get; set; }
     }
 
-    /// <summary>
-    /// A class which represents the telegram service message.
-    /// </summary>
-    public class TelegramServiceMessage : TelegramMessage
-    {
-        /// <summary>
-        /// Service chat message.
-        /// </summary>
-        public string Message { get; set; }
-    }
+    ///// <summary>
+    ///// A class which represents the Telegram service message.
+    ///// </summary>
+    //public class TelegramServiceMessage : TelegramMessage
+    //{
+    //    /// <summary>
+    //    /// Service chat message.
+    //    /// </summary>
+    //    public string Message { get; set; }
+    //}
 
     /// <summary>
-    /// A class which represents that the group has been migrated to a supergroup with the specified identifier.
+    /// A class which represents the Telegram message indicated 
+    /// that the group has been migrated to a supergroup with the specified identifier.
     /// </summary>
     public class TelegramMigrateToChatIdMessage : TelegramMessage
     {
@@ -271,29 +288,30 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     }
 
     /// <summary>
-    /// A class which represents that the supergroup has been migrated from a group with the specified identifier.
+    /// A class which represents the Telegram message indicated 
+    /// that the supergroup has been migrated from a group with the specified identifier.
     /// </summary>
     public class TelegramMigrateFromChatIdMessage : TelegramMessage
     {
         /// <summary>
         /// Supergroup identifier.
         /// </summary>
-        public long MigrateGromChatId { get; set; }
+        public long MigrateFromChatId { get; set; }
     }
 
     /// <summary>
-    /// A class which represents the pinned specified message.
+    /// A class which represents the Telegram pinned specified message.
     /// </summary>
     public class TelegramPinnedMessage : TelegramMessage
     {
         /// <summary>
         /// Pinned message.
         /// </summary>
-        public long PinnedMessage { get; set; }
+        public TelegramMessage PinnedMessage { get; set; }
     }
 
     /// <summary>
-    /// Temprory class for unknown telegram message.
+    /// Temprory class for unknown Telegram message.
     /// </summary>
     public class TelegramUnknownMessage : TelegramMessage
     {

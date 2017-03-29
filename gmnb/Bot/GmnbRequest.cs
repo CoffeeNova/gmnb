@@ -11,11 +11,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 
-namespace CoffeeJelly.gmnb.Bot
+namespace CoffeeJelly.Bot.Bot
 {
-    public class GmnbRequests : IGmnbRequests
+    public class BotRequests : IBotRequests
     {
-        public GmnbRequests(string token, int lastUpdateId = 0)
+        public BotRequests(string token, int lastUpdateId = 0)
         {
             Token = token;
             LastUpdateId = lastUpdateId;
@@ -25,7 +25,7 @@ namespace CoffeeJelly.gmnb.Bot
             RequestMonitorTimer.Start();
         }
 
-        private GmnbRequests()
+        private BotRequests()
         {
             
         }
@@ -70,25 +70,25 @@ namespace CoffeeJelly.gmnb.Bot
                 var message = "Google mail notify bot response timeout. Can't download content.";
                 LogMaker.Log(message, true);
                 RequestMonitorTimer.Stop();
-                RequestTracingStoppedEvent?.Invoke(this, new GmnbRequestErrorEventArgs(message));
+                RequestTracingStoppedEvent?.Invoke(this, new BotRequestErrorEventArgs(message));
                 return;
             }
             
             DownloadBotRequests();
         }
 
-        public delegate void GmnbRequestErrorEventHandler(object sender, GmnbRequestErrorEventArgs e);
-        public delegate void GmnbRequestsEventHandler(IGmnbRequests requests);
+        public delegate void BotRequestErrorEventHandler(object sender, BotRequestErrorEventArgs e);
+        public delegate void BotRequestsEventHandler(IBotRequests requests);
 
         /// <summary>
         /// Triggers when a class stops tracing request from telegram server.
         /// </summary>
-        public static event GmnbRequestErrorEventHandler RequestTracingStoppedEvent;
+        public static event BotRequestErrorEventHandler RequestTracingStoppedEvent;
 
         /// <summary>
         /// Triggers when new request has been traced on the telegram server.
         /// </summary>
-        public static event GmnbRequestsEventHandler RequestsArrivedEvent;
+        public static event BotRequestsEventHandler RequestsArrivedEvent;
 
         private const string TelegramBotUrl = "https://api.telegram.org/bot";
         private const int MaxDelayServerResponce = 2000;
@@ -132,9 +132,9 @@ namespace CoffeeJelly.gmnb.Bot
         
     }
 
-    public class GmnbRequestErrorEventArgs : EventArgs
+    public class BotRequestErrorEventArgs : EventArgs
     {
-        public GmnbRequestErrorEventArgs(string errorMessage)
+        public BotRequestErrorEventArgs(string errorMessage)
         {
             ErrorMessage = errorMessage;
         }

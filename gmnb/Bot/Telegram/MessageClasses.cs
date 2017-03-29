@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoffeeJelly.gmnb.Bot.Telegram
+namespace CoffeeJelly.Bot.Bot.Telegram
 {
     /// <summary>
     /// A class which represents the telegram text user's message.
