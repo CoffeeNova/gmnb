@@ -241,3 +241,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/gmailNotifyBot/Tokens.resx
+/gmailNotifyBot/App_LocalResources/Tokens.resx
+/gmailNotifyBot/App_LocalResources/Tokens.Designer.cs

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoffeeJelly.gmnb.Bot.Telegram
+namespace CoffeeJelly.Bot.Bot.Telegram
 {
     /// <summary>
     /// Represents a Telegram user or bot.

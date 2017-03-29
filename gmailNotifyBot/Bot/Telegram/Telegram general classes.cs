@@ -336,7 +336,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Contact's user identifier in Telegram.
         /// </summary>
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
     }
 
     /// <summary>

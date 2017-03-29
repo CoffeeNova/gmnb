@@ -8,9 +8,9 @@ using System.Linq;
 using System.Net;
 using System.Security;
 using System.Threading;
-using CoffeeJelly.gmnb.Bot;
+using CoffeeJelly.Bot.Bot;
 
-namespace CoffeeJelly.gmnb
+namespace CoffeeJelly.Bot
 {
     class Program
     {
@@ -19,15 +19,15 @@ namespace CoffeeJelly.gmnb
             //FOR TEST ONLY! NOT SECURE!
             string token = "252886092:AAHxtq8ZINX6WJXcT-MuQFoarH9-8Ppntl8";
 
-            GmnbRequests.RequestsArrivedEvent += GmnbRequests_RequestsArrivedEvent;
-            GmnbRequests testreq = new GmnbRequests(token);
+            BotRequests.RequestsArrivedEvent += BotRequests_RequestsArrivedEvent;
+            BotRequests testreq = new BotRequests(token);
             while (true)
             {
                 Thread.Sleep(100);
             }
         }
 
-        private static void GmnbRequests_RequestsArrivedEvent(IGmnbRequests requests)
+        private static void BotRequests_RequestsArrivedEvent(IBotRequests requests)
         {
             //Console.WriteLine(requests.LastUpdateId);
             foreach (var r in requests.Requests)
