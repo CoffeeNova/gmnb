@@ -17,7 +17,7 @@
     },
     "date": 1490868721,
     "reply_to_message": {
-      "message_id": 157,
+      "message_id": 100,
       "from": {
         "id": 170181775,
         "first_name": "Coffee",
@@ -31,7 +31,7 @@
         "username": "CoffeeJelly",
         "type": "private"
       },
-      "date": 1490870237,
+      "date": 1490868721,
       "voice": {
         "duration": 3,
         "mime_type": "audio/ogg",
