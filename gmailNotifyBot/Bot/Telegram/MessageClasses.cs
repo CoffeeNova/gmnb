@@ -22,6 +22,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// Conversation the message belongs to.
         /// </summary>
         public Chat Chat { get; set; }
+
+        /// <summary>
+        /// Optional. For forwarded messages, sender of the original message.
+        /// </summary>
+        public User ForwardFrom { get; set; }
+
+        /// <summary>
+        /// Optional. For messages forwarded from a channel, information about the original channel.
+        /// </summary>
+        public Chat ForwardFromChat { get; set; }
+
+        /// <summary>
+        /// Optional. For forwarded channel posts, identifier of the original message in the channel.
+        /// </summary>
+        public int? ForwardFromMessageId { get; set; }
+
+        /// <summary>
+        /// Optional. For forwarded messages, date the original message was sent.
+        /// </summary>
+        public DateTime? ForwardDate { get; set; }
+
+        /// <summary>
+        /// Optional. Date the message was last edited.
+        /// </summary>
+        public DateTime? EditDate { get; set; }
     }
 
     /// <summary>
@@ -43,6 +68,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// Special entities like usernames, URLs, bot commands, etc. that appear in the text.
         /// </summary>
         public List<MessageEntity> Entities { get; set; }
+
+        /// <summary>
+        /// Optional. For replies, the original message. 
+        /// </summary>
+        /// <remark>Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.</remark>
+        public TelegramMessage ReplyToMessage { get; set; }
+
     }
 
     /// <summary>
@@ -59,6 +91,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// Information about the audio file.
         /// </summary>
         public Audio Audio { get; set; }
+
+        /// <summary>
+        /// Caption for the document, 0-200 characters.
+        /// </summary>
+        public string Caption { get; set; }
     }
 
     /// <summary>
@@ -226,9 +263,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     public class TelegramNewChatMemberMessage : TelegramMessage
     {
         /// <summary>
-        /// Information about member, which been added to the group.
+        /// Sender, can be empty for messages sent to channels.
+        /// </summary>
+        public User From { get; set; }
+
+        /// <summary>
+        /// Information about first member, which been added to the group.
         /// </summary>
         public User NewChatMember { get; set; }
+
+        /// <summary>
+        /// Information about first member, which been added to the group.
+        /// (<see cref="NewChatMember"/>  copy?)
+        /// </summary>
+        public User NewChatParticipant { get; set; }
+
+        /// <summary>
+        /// Information about members, which been added to the group.
+        /// </summary>
+        public List<User> NewChatMembers { get; set; }
     }
 
     /// <summary>
@@ -237,9 +290,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     public class TelegramLeftChatMemberMessage : TelegramMessage
     {
         /// <summary>
+        /// Sender, can be empty for messages sent to channels.
+        /// </summary>
+        public User From { get; set; }
+
+        /// <summary>
         /// Information about member, which been removed from the group.
         /// </summary>
         public User LeftChatMember { get; set; }
+
+        /// <summary>
+        /// Information about member, which been removed from the group.
+        /// (<see cref="LeftChatMember"/>  copy?)
+        /// </summary>
+        public User LeftChatParticipant { get; set; }
     }
 
     /// <summary>
@@ -247,6 +311,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// </summary>
     public class TelegramNewChatTitleMessage : TelegramMessage
     {
+        /// <summary>
+        /// Sender, can be empty for messages sent to channels.
+        /// </summary>
+        public User From { get; set; }
+
         /// <summary>
         /// A Title. :>
         /// </summary>
@@ -258,6 +327,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// </summary>
     public class TelegramNewChatPhotoMessage : TelegramMessage
     {
+        /// <summary>
+        /// Sender, can be empty for messages sent to channels.
+        /// </summary>
+        public User From { get; set; }
+
         /// <summary>
         /// Available sizes of the new chat photo.
         /// </summary>
@@ -282,6 +356,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     public class TelegramMigrateToChatIdMessage : TelegramMessage
     {
         /// <summary>
+        /// Sender, can be empty for messages sent to channels.
+        /// </summary>
+        public User From { get; set; }
+
+        /// <summary>
         /// Supergroup identifier.
         /// </summary>
         public long MigrateToChatId { get; set; }
@@ -294,6 +373,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     public class TelegramMigrateFromChatIdMessage : TelegramMessage
     {
         /// <summary>
+        /// Sender, can be empty for messages sent to channels.
+        /// </summary>
+        public User From { get; set; }
+
+        /// <summary>
         /// Supergroup identifier.
         /// </summary>
         public long MigrateFromChatId { get; set; }
@@ -304,6 +388,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// </summary>
     public class TelegramPinnedMessage : TelegramMessage
     {
+        /// <summary>
+        /// Sender, can be empty for messages sent to channels.
+        /// </summary>
+        public User From { get; set; }
+
         /// <summary>
         /// Pinned message.
         /// </summary>
