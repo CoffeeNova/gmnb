@@ -186,7 +186,6 @@
     <Compile Include="Bot\RequestsHandler.cs" />
     <Compile Include="Bot\IRequests.cs" />
     <Compile Include="Bot\Telegram\Interfaces.cs" />
-    <Compile Include="Bot\Telegram\MessageBuilder.cs" />
     <Compile Include="Bot\Telegram\MessageClasses.cs" />
     <Compile Include="Bot\Telegram\Telegram general classes.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -194,6 +193,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OAuthController.cs" />
     <Compile Include="Extensions\BoolExtension.cs" />
+    <Compile Include="Extensions\ObjectExtension.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

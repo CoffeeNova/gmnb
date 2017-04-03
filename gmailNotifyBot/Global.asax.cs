@@ -24,13 +24,10 @@ namespace CoffeeJelly.gmailNotifyBot
             //};
             string token = App_LocalResources.Tokens.GmailControlBotToken;
             BotRequests br = new BotRequests(token);
-            RequestsHandler rh = new RequestsHandler();
-            rh.TelegramTextMessageEvent += Rh_TelegramTextMessageEvent;
-        }
-
-        private void Rh_TelegramTextMessageEvent(TelegramTextMessage message)
-        {
-            Debug.WriteLine(message.Text);
+            //RequestsHandler rh = new RequestsHandler();
+            //rh.TelegramTextMessageEvent += Rh_TelegramTextMessageEvent;
+            BotRequests.RequestsArrivedEvent += BotRequests_RequestsArrivedEvent;
+            
         }
 
         private static void BotRequests_RequestsArrivedEvent(IRequests requests)
@@ -38,9 +35,8 @@ namespace CoffeeJelly.gmailNotifyBot
             //Console.WriteLine(requests.LastUpdateId);
             foreach (var r in requests.Requests)
             {
-                Console.WriteLine(r);
+                Debug.WriteLine(r);
             }
-            var dr = new DateTime();
         }
 
         private const string TelegramBotThreadName = "Telegram Bot Thread";
