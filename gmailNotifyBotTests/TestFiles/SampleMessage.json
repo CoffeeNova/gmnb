@@ -1,0 +1,203 @@
+{
+  "update_id": 982333363,
+  "message": {
+    "message_id": 149,
+    "from": {
+      "id": 170181775,
+      "first_name": "Coffee",
+      "last_name": "Jelly",
+      "username": "CoffeeJelly"
+    },
+    "chat": {
+      "id": 170181775,
+      "first_name": "Coffee",
+      "last_name": "Jelly",
+      "username": "CoffeeJelly",
+      "type": "private"
+    },
+    "date": 1490868721,
+    "text": "http://www.translate.ru/",
+	"audio": {
+      "duration": 195,
+      "mime_type": "audio/mpeg",
+      "title": "TITLE",
+      "performer": "PERFORMER",
+      "file_id": "CQADAgADEgADmHfoSvnwZ3irGpuOAg",
+      "file_size": 3125626
+    },
+	"document": {
+      "file_name": "Договор.PDF",
+      "mime_type": "application/pdf",
+      "file_id": "BQADAgADEwADmHfoSqJcnJwfHNTDAg",
+      "file_size": 2972868
+    },
+	"sticker": {
+      "width": 512,
+      "height": 512,
+      "emoji": "👍",
+      "thumb": {
+        "file_id": "AAQCABOLx4ENAAT8_8aMR6FJKZeyAAIC",
+        "file_size": 5056,
+        "width": 128,
+        "height": 128
+      },
+      "file_id": "CAADAgADdQEAAsxUSQlymelYJqPjNwI",
+      "file_size": 31896
+    },
+	"photo": [
+      {
+        "file_id": "AgADAgADvqcxG5h36EqtRLHi7G4IpthVtw0ABHZHxxRGwQQWJp4BAAEC",
+        "file_size": 1104,
+        "width": 90,
+        "height": 66
+      },
+      {
+        "file_id": "AgADAgADvqcxG5h36EqtRLHi7G4IpthVtw0ABJcP22BBjoQSJ54BAAEC",
+        "file_size": 8848,
+        "width": 270,
+        "height": 199
+      }
+    ],
+	"video": {
+      "duration": 7,
+      "width": 1280,
+      "height": 720,
+      "thumb": {
+        "file_id": "AAQCABPDHLcNAARYAQABl4vVbgS9hwACAg",
+        "file_size": 2140,
+        "width": 90,
+        "height": 50
+      },
+      "file_id": "BAADAgADFwADmHfoSinMsvYz1GJpAg",
+      "file_size": 827579
+    },
+	"voice": {
+      "duration": 3,
+      "mime_type": "audio/ogg",
+      "file_id": "AwADAgADFQADmHfoSt8RIvvK5Z47Ag",
+      "file_size": 18020
+    },
+	"contact": {
+      "phone_number": "375336726603",
+      "first_name": "tiny",
+      "last_name": "beast",
+      "user_id": 220793091
+    },
+	"location": {
+      "latitude": 53.901112,
+      "longitude": 27.562325
+    },
+	"new_chat_participant": {
+      "id": 208070915,
+      "first_name": "onlythere",
+      "username": "onlythere_bot"
+    },
+    "new_chat_member": {
+      "id": 208070915,
+      "first_name": "onlythere",
+      "username": "onlythere_bot"
+    },
+    "new_chat_members": [
+      {
+        "id": 208070915,
+        "first_name": "onlythere",
+        "username": "onlythere_bot"
+      },
+      {
+        "id": 39811313,
+        "first_name": "RubBot",
+        "username": "RubBot"
+      }
+    ],
+	"left_chat_participant": {
+      "id": 220793091,
+      "first_name": "Tatyana",
+      "last_name": "Saljenitsina",
+      "username": "tinybeast"
+    },
+    "left_chat_member": {
+      "id": 220793091,
+      "first_name": "Tatyana",
+      "last_name": "Saljenitsina",
+      "username": "tinybeast"
+    },
+	"new_chat_title": "testgrp_new_title",
+	"new_chat_photo": [
+      {
+        "file_id": "AgADAgADeKgxG4_EJAqofB1cykfvRrNJtw0ABEFCG6XEKVnEVKABAAEC",
+        "file_size": 7948,
+        "width": 160,
+        "height": 160
+      },
+      {
+        "file_id": "AgADAgADeKgxG4_EJAqofB1cykfvRrNJtw0ABCdcOa5StlMiVaABAAEC",
+        "file_size": 24994,
+        "width": 320,
+        "height": 320
+      },
+      {
+        "file_id": "AgADAgADeKgxG4_EJAqofB1cykfvRrNJtw0ABAObNR5xowTDVqABAAEC",
+        "file_size": 99685,
+        "width": 640,
+        "height": 640
+      }
+    ],
+	"migrate_to_chat_id": -1001076966401,
+	"migrate_from_chat_id": -200694086,
+	"forward_from": {
+      "id": 220793091,
+      "first_name": "Tatyana",
+      "last_name": "Saljenitsina",
+      "username": "tinybeast"
+    },
+    "forward_date": 1490871343,
+	"reply_to_message": {
+      "message_id": 157,
+      "from": {
+        "id": 170181775,
+        "first_name": "Coffee",
+        "last_name": "Jelly",
+        "username": "CoffeeJelly"
+      },
+      "chat": {
+        "id": 170181775,
+        "first_name": "Coffee",
+        "last_name": "Jelly",
+        "username": "CoffeeJelly",
+        "type": "private"
+      },
+      "date": 1490870237,
+      "voice": {
+        "duration": 3,
+        "mime_type": "audio/ogg",
+        "file_id": "AwADAgADFQADmHfoSt8RIvvK5Z47Ag",
+        "file_size": 18020
+      }
+    },
+	"pinned_message": {
+      "message_id": 5,
+      "from": {
+        "id": 170181775,
+        "first_name": "Coffee",
+        "last_name": "Jelly",
+        "username": "CoffeeJelly"
+      },
+      "chat": {
+        "id": -1001076966401,
+        "title": "testgrp_new_title",
+        "type": "supergroup"
+      },
+      "date": 1490876885,
+      "text": "testpinned"
+    },
+	
+    "caption": "CAPTION",
+    "entities": [
+      {
+        "type": "url",
+        "offset": 0,
+        "length": 24
+      }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "update_id": 982333366,
+  "message": {
+    "message_id": 100,
+    "from": {
+      "id": 170181775,
+      "first_name": "Coffee",
+      "last_name": "Jelly",
+      "username": "CoffeeJelly"
+    },
+    "chat": {
+      "id": 170181775,
+      "first_name": "Coffee",
+      "last_name": "Jelly",
+      "username": "CoffeeJelly",
+      "type": "private"
+    },
+    "date": 1490868721,
+    "sticker": {
+      "width": 512,
+      "height": 512,
+      "emoji": "TestEmoji",
+      "thumb": {
+        "file_id": "AAQCABOLx4ENAAT8_8aMR6FJKZeyAAIC",
+        "file_size": 5056,
+        "width": 128,
+        "height": 128
+      },
+      "file_id": "CAADAgADdQEAAsxUSQlymelYJqPjNwI",
+      "file_size": 31896
+    }
+  }
+}

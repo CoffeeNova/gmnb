@@ -1,0 +1,25 @@
+{
+  "update_id": 982333387,
+  "message": {
+    "message_id": 100,
+    "from": {
+      "id": 170181775,
+      "first_name": "Coffee",
+      "last_name": "Jelly",
+      "username": "CoffeeJelly"
+    },
+    "chat": {
+      "id": -1001076966401,
+      "title": "testgrp",
+      "type": "supergroup"
+    },
+    "date": 1490868721,
+    "forward_from": {
+      "id": 208070915,
+      "first_name": "testuser1",
+      "username": "testusername1"
+    },
+    "forward_date": 1490868721,
+    "text": ":D"
+  }
+}
