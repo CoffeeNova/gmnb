@@ -347,7 +347,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Longitude as defined by sender.
         /// </summary>
-        public float Longtitude { get; set; }
+        public float Longitude { get; set; }
 
         /// <summary>
         /// Latitude as defined by sender.

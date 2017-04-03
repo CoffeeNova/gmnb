@@ -510,7 +510,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 var telegramMessage = new TelegramVideoMessage
                 {
                     From = BuildUser(messageToken["from"]),
-                    Video = BuildVideo(messageToken["video"])
+                    Video = BuildVideo(messageToken["video"]),
+                    Caption = messageToken["caption"]?.ToString()
                 };
                 AttachGeneralProperties(telegramMessage, messageToken);
                 return telegramMessage;
@@ -682,11 +683,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             {
                 return users?.Select(user => new User
                 {
-                    Id = Convert.ToInt32(users["id"]),
-                    FirstName = users["first_name"].ToString(),
+                    Id = Convert.ToInt32(user["id"]),
+                    FirstName = user["first_name"].ToString(),
                     //next are optional properties, should be verified by null value
-                    LastName = users["last_name"]?.ToString(),
-                    Username = users["username"]?.ToString()
+                    LastName = user["last_name"]?.ToString(),
+                    Username = user["username"]?.ToString()
                 }).ToList();
             }
 
@@ -860,7 +861,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
                 return new Location
                 {
-                    Longtitude = (float)location["longtitude"],
+                    Longitude = (float)location["longitude"],
                     Latitude = (float)location["latitude"]
                 };
             }

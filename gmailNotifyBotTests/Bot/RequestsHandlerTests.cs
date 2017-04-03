@@ -297,7 +297,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             _location = new Location
             {
                Latitude = 53.901112F,
-               Longtitude = 27.562325F
+               Longitude = 27.562325F
             };
             #endregion
             #region _newChatPhoto
@@ -335,6 +335,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         [TestInitialize]
         public void TestInitialize()
         {
+            #region big switch
             switch (TestContext.TestName)
             {
                 case nameof(BuildMessage_TextJSON_TelegramTextMessage):
@@ -400,7 +401,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 case nameof(BuildMessage_ForwardedVideoJSON_TelegramForwardedVideoMessage):
                     _messageToken = ReadJsonMessageFromFile(_forwardedVideoMessageFileName);
                     break;
-
+                    #endregion
             }
 
         }
@@ -625,7 +626,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             var expected = new TelegramNewChatTitleMessage
             {
                 From = _user,
-                NewChatTitle = "testgrp_new_title"
+                NewChatTitle = "testgrp"
             };
             AttachGeneralProperties2(expected);
             var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramNewChatTitleMessage>(_messageToken);
@@ -710,7 +711,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 ReplyToMessage = _replyTo,
                 Text = "testreply"
             };
-            AttachGeneralProperties3(expected);
+            AttachGeneralProperties(expected);
             var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramTextMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);

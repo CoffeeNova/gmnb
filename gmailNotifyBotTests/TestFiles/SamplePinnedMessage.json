@@ -10,12 +10,12 @@
     },
     "chat": {
       "id": -1001076966401,
-      "title": "testgrp_new_title",
+      "title": "testgrp",
       "type": "supergroup"
     },
     "date": 1490868721,
     "pinned_message": {
-      "message_id": 5,
+      "message_id": 100,
       "from": {
         "id": 170181775,
         "first_name": "Coffee",
