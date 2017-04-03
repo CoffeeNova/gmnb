@@ -1,0 +1,34 @@
+{
+  "update_id": 982333396,
+  "message": {
+    "message_id": 100,
+    "from": {
+      "id": 170181775,
+      "first_name": "Coffee",
+      "last_name": "Jelly",
+      "username": "CoffeeJelly"
+    },
+    "chat": {
+      "id": -1001076966401,
+      "title": "testgrp_new_title",
+      "type": "supergroup"
+    },
+    "date": 1490868721,
+    "pinned_message": {
+      "message_id": 5,
+      "from": {
+        "id": 170181775,
+        "first_name": "Coffee",
+        "last_name": "Jelly",
+        "username": "CoffeeJelly"
+      },
+      "chat": {
+        "id": -1001076966401,
+        "title": "testgrp",
+        "type": "supergroup"
+      },
+      "date": 1490868721,
+      "text": "testpinned"
+    }
+  }
+}

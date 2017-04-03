@@ -1,0 +1,43 @@
+{
+  "update_id": 982333393,
+  "message": {
+    "message_id": 100,
+    "from": {
+      "id": 170181775,
+      "first_name": "Coffee",
+      "last_name": "Jelly",
+      "username": "CoffeeJelly"
+    },
+    "chat": {
+      "id": 170181775,
+      "first_name": "Coffee",
+      "last_name": "Jelly",
+      "username": "CoffeeJelly",
+      "type": "private"
+    },
+    "date": 1490868721,
+    "reply_to_message": {
+      "message_id": 157,
+      "from": {
+        "id": 170181775,
+        "first_name": "Coffee",
+        "last_name": "Jelly",
+        "username": "CoffeeJelly"
+      },
+      "chat": {
+        "id": 170181775,
+        "first_name": "Coffee",
+        "last_name": "Jelly",
+        "username": "CoffeeJelly",
+        "type": "private"
+      },
+      "date": 1490870237,
+      "voice": {
+        "duration": 3,
+        "mime_type": "audio/ogg",
+        "file_id": "AwADAgADFQADmHfoSt8RIvvK5Z47Ag",
+        "file_size": 18020
+      }
+    },
+    "text": "testreply"
+  }
