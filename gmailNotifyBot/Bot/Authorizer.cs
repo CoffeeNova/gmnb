@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBaseModels;
@@ -29,10 +30,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var userModel = await DbWorker.FindUserAsync(message.From)
                          ?? await DbWorker.AddNewUserAsync(message.From);
 
+            if (CheckUserAuthorization(userModel)) return;
+
 
         }
 
-
+        private bool CheckUserAuthorization(UserModel userModel)
+        {
+            Debug.Assert(false, $"{nameof(CheckUserAuthorization)} is not impemented yet.");
+            return false;
+        }
 
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
