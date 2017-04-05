@@ -181,6 +181,9 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Bot\Authorizer.cs" />
+    <Compile Include="Bot\DataBaseModels\UserTableModel.cs" />
+    <Compile Include="Bot\DbWorker.cs" />
     <Compile Include="Bot\Exceptions.cs" />
     <Compile Include="Bot\Request.cs" />
     <Compile Include="Bot\RequestsHandler.cs" />
