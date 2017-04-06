@@ -122,6 +122,10 @@
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="xNet, Version=3.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xNet.3.3.4\lib\xNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
@@ -185,6 +189,7 @@
     <Compile Include="Bot\DataBaseModels\UserTableModel.cs" />
     <Compile Include="Bot\DbWorker.cs" />
     <Compile Include="Bot\Exceptions.cs" />
+    <Compile Include="Bot\GoogleAuth.cs" />
     <Compile Include="Bot\Request.cs" />
     <Compile Include="Bot\RequestsHandler.cs" />
     <Compile Include="Bot\IRequests.cs" />
@@ -197,6 +202,7 @@
     <Compile Include="Controllers\OAuthController.cs" />
     <Compile Include="Extensions\BoolExtension.cs" />
     <Compile Include="Extensions\ObjectExtension.cs" />
+    <Compile Include="Extensions\StringExtension.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -230,6 +236,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <None Include="Properties\PublishProfiles\publish.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
