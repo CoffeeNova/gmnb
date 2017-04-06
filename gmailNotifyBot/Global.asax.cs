@@ -1,10 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using CoffeeJelly.gmailNotifyBot.Bot;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
+using CoffeeJelly.tempadll.Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CoffeeJelly.gmailNotifyBot
 {
@@ -30,12 +38,27 @@ namespace CoffeeJelly.gmailNotifyBot
             
         }
 
-        private static void BotRequests_RequestsArrivedEvent(IRequests requests)
+        private static async void BotRequests_RequestsArrivedEvent(IRequests requests)
         {
             //Console.WriteLine(requests.LastUpdateId);
             foreach (var r in requests.Requests)
             {
-                Debug.WriteLine(r);
+               await WriteParamsToTestFileAsync(r);
+            }
+        }
+
+        private static async Task WriteParamsToTestFileAsync(JToken request)
+        {
+
+            //var path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\"));
+            var path = HttpRuntime.AppDomainAppPath;
+            var fileName = "testRequests.txt";
+
+
+            using (var fs = new FileStream(path.PathFormatter() + fileName, FileMode.Append, FileAccess.Write))
+            {
+                    byte[] info = new UTF8Encoding(true).GetBytes(request + "\r\n");
+                    await fs.WriteAsync(info, 0, info.Length);
             }
         }
 
