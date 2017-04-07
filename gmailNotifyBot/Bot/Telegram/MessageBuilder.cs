@@ -14,88 +14,88 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             if (messageToken == null)
                 throw new ArgumentNullException(nameof(messageToken));
 
-            Message telegramMessage;
+            Message message;
 
-            #region 1. as TelegramTextUserMessage
+            #region 1. as TextUserMessage
             if (typeof(T) == typeof(TextMessage))
-                telegramMessage = BuildTelegramTextMessage(messageToken);
+                message = BuildTextMessage(messageToken);
             #endregion
-            #region 2. as TelegramAudioMessage
-            else if (typeof(T) == typeof(TelegramAudioMessage))
-                telegramMessage = BuildTelegramAudioMessage(messageToken);
+            #region 2. as AudioMessage
+            else if (typeof(T) == typeof(AudioMessage))
+                message = BuildAudioMessage(messageToken);
             #endregion
-            #region 3. as TelegramDocumentMessage
-            else if (typeof(T) == typeof(TelegramDocumentMessage))
-                telegramMessage = BuildTelegramDocumentMessage(messageToken);
+            #region 3. as DocumentMessage
+            else if (typeof(T) == typeof(DocumentMessage))
+                message = BuildDocumentMessage(messageToken);
             #endregion
-            #region 4 as TelegramStickerMessage
-            else if (typeof(T) == typeof(TelegramStickerMessage))
-                telegramMessage = BuildTelegramStickerMessage(messageToken);
+            #region 4 as StickerMessage
+            else if (typeof(T) == typeof(StickerMessage))
+                message = BuildStickerMessage(messageToken);
             #endregion
-            #region 5. as TelegramPhotoMessage
-            else if (typeof(T) == typeof(TelegramPhotoMessage))
-                telegramMessage = BuildTelegramPhotoMessage(messageToken);
+            #region 5. as PhotoMessage
+            else if (typeof(T) == typeof(PhotoMessage))
+                message = BuildPhotoMessage(messageToken);
 
             #endregion
-            #region 6. as TelegramGameMessage
-            else if (typeof(T) == typeof(TelegramGameMessage))
-                telegramMessage = BuildTelegramGameMessage(messageToken);
+            #region 6. as GameMessage
+            else if (typeof(T) == typeof(GameMessage))
+                message = BuildGameMessage(messageToken);
             #endregion
-            #region 7. as TelegramVideoMessage
-            else if (typeof(T) == typeof(TelegramVideoMessage))
-                telegramMessage = BuildTelegramVideoMessage(messageToken);
+            #region 7. as VideoMessage
+            else if (typeof(T) == typeof(VideoMessage))
+                message = BuildVideoMessage(messageToken);
             #endregion
-            #region 8. as TelegramVoiceMessage
-            else if (typeof(T) == typeof(TelegramVoiceMessage))
-                telegramMessage = BuildTelegramVoiceMessage(messageToken);
+            #region 8. as VoiceMessage
+            else if (typeof(T) == typeof(VoiceMessage))
+                message = BuildVoiceMessage(messageToken);
             #endregion
-            #region 9. as TelegramContactMessage
-            else if (typeof(T) == typeof(TelegramContactMessage))
-                telegramMessage = BuildTelegramContactMessage(messageToken);
+            #region 9. as ContactMessage
+            else if (typeof(T) == typeof(ContactMessage))
+                message = BuildContactMessage(messageToken);
             #endregion
-            #region 10. as TelegramLocationMessage
-            else if (typeof(T) == typeof(TelegramLocationMessage))
-                telegramMessage = BuildTelegramLocationMessage(messageToken);
+            #region 10. as LocationMessage
+            else if (typeof(T) == typeof(LocationMessage))
+                message = BuildLocationMessage(messageToken);
             #endregion
-            #region 11. as TelegramVenueMessage
-            else if (typeof(T) == typeof(TelegramVenueMessage))
-                telegramMessage = BuildTelegramVenueMessage(messageToken);
+            #region 11. as VenueMessage
+            else if (typeof(T) == typeof(VenueMessage))
+                message = BuildVenueMessage(messageToken);
             #endregion
-            #region 12. as TelegramNewChatMemberMessage
-            else if (typeof(T) == typeof(TelegramNewChatMemberMessage))
-                telegramMessage = BuildTelegramNewChatMemberMessage(messageToken);
+            #region 12. as NewChatMemberMessage
+            else if (typeof(T) == typeof(NewChatMemberMessage))
+                message = BuildNewChatMemberMessage(messageToken);
             #endregion
-            #region 13. as TelegramLeftChatMemberMessage
-            else if (typeof(T) == typeof(TelegramLeftChatMemberMessage))
-                telegramMessage = BuildTelegramLeftChatMemberMessage(messageToken);
+            #region 13. as LeftChatMemberMessage
+            else if (typeof(T) == typeof(LeftChatMemberMessage))
+                message = BuildLeftChatMemberMessage(messageToken);
             #endregion
-            #region 14. as TelegramNewChatTitleMessage
-            else if (typeof(T) == typeof(TelegramNewChatTitleMessage))
-                telegramMessage = BuildTelegramNewChatTitleMessage(messageToken);
+            #region 14. as NewChatTitleMessage
+            else if (typeof(T) == typeof(NewChatTitleMessage))
+                message = BuildNewChatTitleMessage(messageToken);
             #endregion
-            #region 15. as TelegramNewChatPhotoMessage
-            else if (typeof(T) == typeof(TelegramNewChatPhotoMessage))
-                telegramMessage = BuildTelegramNewChatPhotoMessage(messageToken);
+            #region 15. as NewChatPhotoMessage
+            else if (typeof(T) == typeof(NewChatPhotoMessage))
+                message = BuildNewChatPhotoMessage(messageToken);
             #endregion
-            #region 16. as TelegramMigrateToChatIdMessage
-            else if (typeof(T) == typeof(TelegramMigrateToChatIdMessage))
-                telegramMessage = BuildTelegramMigrateToChatIdMessage(messageToken);
+            #region 16. as MigrateToChatIdMessage
+            else if (typeof(T) == typeof(MigrateToChatIdMessage))
+                message = BuildMigrateToChatIdMessage(messageToken);
             #endregion
-            #region 17. as TelegramMigrateFromChatIdMessage
-            else if (typeof(T) == typeof(TelegramMigrateFromChatIdMessage))
-                telegramMessage = BuildTelegramMigrateFromChatIdMessage(messageToken);
+            #region 17. as MigrateFromChatIdMessage
+            else if (typeof(T) == typeof(MigrateFromChatIdMessage))
+                message = BuildMigrateFromChatIdMessage(messageToken);
             #endregion
-            #region 18. as TelegramPinnedMessage
-            else if (typeof(T) == typeof(TelegramPinnedMessage))
-                telegramMessage = BuildTelegramPinnedMessage(messageToken);
+            #region 18. as PinnedMessage
+            else if (typeof(T) == typeof(PinnedMessage))
+                message = BuildPinnedMessage(messageToken);
             #endregion
-            #region 19. as TelegramUnknownMessage
+            #region 19. as UnknownMessage
 
             else
-                telegramMessage = BuildTelegramUnknownMessage(messageToken);
+                message = BuildUnknownMessage(messageToken);
             #endregion
 
-            return (T)telegramMessage;
+            return (T)message;
         }
 
         private static void AttachGeneralProperties<T>(T message, JToken messageToken) where T : Message
@@ -186,77 +186,77 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             if (messageBody == null || (messageBody as JProperty).Name == null)
                 throw new Exceptions.TelegramMessageIsUnidentifiedException();
 
-            Message telegramMessage;
+            Message message;
             switch ((messageBody as JProperty).Name)
             {
                 #region cases
                 case "text":
-                    telegramMessage = BuildMessage<TextMessage>(messageToken);
+                    message = BuildMessage<TextMessage>(messageToken);
                     break;
                 case "audio":
-                    telegramMessage = BuildMessage<TelegramAudioMessage>(messageToken);
+                    message = BuildMessage<AudioMessage>(messageToken);
                     break;
                 case "document":
-                    telegramMessage = BuildMessage<TelegramDocumentMessage>(messageToken);
+                    message = BuildMessage<DocumentMessage>(messageToken);
                     break;
                 case "sticker":
-                    telegramMessage = BuildMessage<TelegramStickerMessage>(messageToken);
+                    message = BuildMessage<StickerMessage>(messageToken);
                     break;
                 case "photo":
-                    telegramMessage = BuildMessage<TelegramPhotoMessage>(messageToken);
+                    message = BuildMessage<PhotoMessage>(messageToken);
                     break;
                 case "game":
-                    telegramMessage = BuildMessage<TelegramGameMessage>(messageToken);
+                    message = BuildMessage<GameMessage>(messageToken);
                     break;
                 case "video":
-                    telegramMessage = BuildMessage<TelegramVideoMessage>(messageToken);
+                    message = BuildMessage<VideoMessage>(messageToken);
                     break;
                 case "voice":
-                    telegramMessage = BuildMessage<TelegramVoiceMessage>(messageToken);
+                    message = BuildMessage<VoiceMessage>(messageToken);
                     break;
                 case "contact":
-                    telegramMessage = BuildMessage<TelegramContactMessage>(messageToken);
+                    message = BuildMessage<ContactMessage>(messageToken);
                     break;
                 case "location":
-                    telegramMessage = BuildMessage<TelegramLocationMessage>(messageToken);
+                    message = BuildMessage<LocationMessage>(messageToken);
                     break;
                 case "venue":
-                    telegramMessage = BuildMessage<TelegramVenueMessage>(messageToken);
+                    message = BuildMessage<VenueMessage>(messageToken);
                     break;
                 case "new_chat_member":
-                    telegramMessage = BuildMessage<TelegramNewChatMemberMessage>(messageToken);
+                    message = BuildMessage<NewChatMemberMessage>(messageToken);
                     break;
                 case "left_chat_member":
-                    telegramMessage = BuildMessage<TelegramLeftChatMemberMessage>(messageToken);
+                    message = BuildMessage<LeftChatMemberMessage>(messageToken);
                     break;
                 case "new_chat_title":
-                    telegramMessage = BuildMessage<TelegramNewChatTitleMessage>(messageToken);
+                    message = BuildMessage<NewChatTitleMessage>(messageToken);
                     break;
                 case "new_chat_photo":
-                    telegramMessage = BuildMessage<TelegramNewChatPhotoMessage>(messageToken);
+                    message = BuildMessage<NewChatPhotoMessage>(messageToken);
                     break;
                 case "migrate_to_chat_id":
-                    telegramMessage = BuildMessage<TelegramMigrateToChatIdMessage>(messageToken);
+                    message = BuildMessage<MigrateToChatIdMessage>(messageToken);
                     break;
                 case "migrate_from_chat_id":
-                    telegramMessage = BuildMessage<TelegramMigrateFromChatIdMessage>(messageToken);
+                    message = BuildMessage<MigrateFromChatIdMessage>(messageToken);
                     break;
                 case "pinned_message":
-                    telegramMessage = BuildMessage<TelegramPinnedMessage>(messageToken);
+                    message = BuildMessage<PinnedMessage>(messageToken);
                     break;
                 default:
-                    telegramMessage = BuildMessage<TelegramUnknownMessage>(messageToken);
+                    message = BuildMessage<UnknownMessage>(messageToken);
                     break;
                     #endregion
             }
 
-            return telegramMessage;
+            return message;
         }
 
-        private static TextMessage BuildTelegramTextMessage(JToken messageToken)
+        private static TextMessage BuildTextMessage(JToken messageToken)
         {
 
-            var telegramMessage = new TextMessage
+            var message = new TextMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Text = messageToken["text"]?.ToString(),
@@ -265,210 +265,210 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                 ? null
                 : BuildUnspecifiedMessage(messageToken["reply_to_message"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramAudioMessage BuildTelegramAudioMessage(JToken messageToken)
+        private static AudioMessage BuildAudioMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramAudioMessage
+            var message = new AudioMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Audio = BuildAudio(messageToken["audio"]),
                 Caption = messageToken["caption"]?.ToString()
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramDocumentMessage BuildTelegramDocumentMessage(JToken messageToken)
+        private static DocumentMessage BuildDocumentMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramDocumentMessage
+            var message = new DocumentMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Document = BuildDocument(messageToken["document"]),
                 Caption = messageToken["caption"]?.ToString()
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramStickerMessage BuildTelegramStickerMessage(JToken messageToken)
+        private static StickerMessage BuildStickerMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramStickerMessage
+            var message = new StickerMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Sticker = BuildSticker(messageToken["sticker"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramPhotoMessage BuildTelegramPhotoMessage(JToken messageToken)
+        private static PhotoMessage BuildPhotoMessage(JToken messageToken)
         {
 
-            var telegramMessage = new TelegramPhotoMessage
+            var message = new PhotoMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Photo = BuildPhoto(messageToken["photo"]),
                 Caption = messageToken["caption"]?.ToString()
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramGameMessage BuildTelegramGameMessage(JToken messageToken)
+        private static GameMessage BuildGameMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramGameMessage
+            var message = new GameMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Game = BuildGame(messageToken["game"]),
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramVideoMessage BuildTelegramVideoMessage(JToken messageToken)
+        private static VideoMessage BuildVideoMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramVideoMessage
+            var message = new VideoMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Video = BuildVideo(messageToken["video"]),
                 Caption = messageToken["caption"]?.ToString()
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramVoiceMessage BuildTelegramVoiceMessage(JToken messageToken)
+        private static VoiceMessage BuildVoiceMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramVoiceMessage
+            var message = new VoiceMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Voice = BuildVoice(messageToken["voice"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramContactMessage BuildTelegramContactMessage(JToken messageToken)
+        private static ContactMessage BuildContactMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramContactMessage
+            var message = new ContactMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Contact = BuildContact(messageToken["contact"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramLocationMessage BuildTelegramLocationMessage(JToken messageToken)
+        private static LocationMessage BuildLocationMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramLocationMessage
+            var message = new LocationMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Location = BuildLocation(messageToken["location"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramVenueMessage BuildTelegramVenueMessage(JToken messageToken)
+        private static VenueMessage BuildVenueMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramVenueMessage
+            var message = new VenueMessage
             {
                 From = BuildUser(messageToken["from"]),
                 Venue = BuildVenue(messageToken["venue"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramNewChatMemberMessage BuildTelegramNewChatMemberMessage(JToken messageToken)
+        private static NewChatMemberMessage BuildNewChatMemberMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramNewChatMemberMessage
+            var message = new NewChatMemberMessage
             {
                 From = BuildUser(messageToken["from"]),
                 NewChatMember = BuildUser(messageToken["new_chat_member"]),
                 NewChatParticipant = BuildUser(messageToken["new_chat_participant"]),
                 NewChatMembers = BuildUsers(messageToken["new_chat_members"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramLeftChatMemberMessage BuildTelegramLeftChatMemberMessage(JToken messageToken)
+        private static LeftChatMemberMessage BuildLeftChatMemberMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramLeftChatMemberMessage
+            var message = new LeftChatMemberMessage
             {
                 From = BuildUser(messageToken["from"]),
                 LeftChatMember = BuildUser(messageToken["left_chat_member"]),
                 LeftChatParticipant = BuildUser(messageToken["left_chat_participant"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramNewChatTitleMessage BuildTelegramNewChatTitleMessage(JToken messageToken)
+        private static NewChatTitleMessage BuildNewChatTitleMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramNewChatTitleMessage
+            var message = new NewChatTitleMessage
             {
                 From = BuildUser(messageToken["from"]),
                 NewChatTitle = messageToken["new_chat_title"].ToString()
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramNewChatPhotoMessage BuildTelegramNewChatPhotoMessage(JToken messageToken)
+        private static NewChatPhotoMessage BuildNewChatPhotoMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramNewChatPhotoMessage
+            var message = new NewChatPhotoMessage
             {
                 From = BuildUser(messageToken["from"]),
                 NewChatPhoto = BuildPhoto(messageToken["new_chat_photo"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramMigrateToChatIdMessage BuildTelegramMigrateToChatIdMessage(JToken messageToken)
+        private static MigrateToChatIdMessage BuildMigrateToChatIdMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramMigrateToChatIdMessage
+            var message = new MigrateToChatIdMessage
             {
                 From = BuildUser(messageToken["from"]),
                 MigrateToChatId = Convert.ToInt64(messageToken["migrate_to_chat_id"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramMigrateFromChatIdMessage BuildTelegramMigrateFromChatIdMessage(JToken messageToken)
+        private static MigrateFromChatIdMessage BuildMigrateFromChatIdMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramMigrateFromChatIdMessage
+            var message = new MigrateFromChatIdMessage
             {
                 From = BuildUser(messageToken["from"]),
                 MigrateFromChatId = Convert.ToInt64(messageToken["migrate_from_chat_id"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramPinnedMessage BuildTelegramPinnedMessage(JToken messageToken)
+        private static PinnedMessage BuildPinnedMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramPinnedMessage
+            var message = new PinnedMessage
             {
                 From = BuildUser(messageToken["from"]),
-                PinnedMessage = BuildUnspecifiedMessage(messageToken["pinned_message"])
+                Message = BuildUnspecifiedMessage(messageToken["pinned_message"])
             };
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
-        private static TelegramUnknownMessage BuildTelegramUnknownMessage(JToken messageToken)
+        private static UnknownMessage BuildUnknownMessage(JToken messageToken)
         {
-            var telegramMessage = new TelegramUnknownMessage();
-            AttachGeneralProperties(telegramMessage, messageToken);
-            return telegramMessage;
+            var message = new UnknownMessage();
+            AttachGeneralProperties(message, messageToken);
+            return message;
         }
 
         public static User BuildUser(JToken user)
