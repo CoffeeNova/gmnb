@@ -115,7 +115,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents one size of a photo or a file / sticker thumbnail.
     /// </summary>
-    public class PhotoSize : ITelegramMessageFileId, ITelegramMessageFileImageSize, ITelegramMessageFileSize
+    public class PhotoSize : IFileId, IFileImageSize, IFileSize
     {
         /// <summary>
         /// Unique identifier for this file.
@@ -141,8 +141,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     ///  Represents an audio file to be treated as music by the Telegram clients.
     /// </summary>
-    public class Audio : ITelegramMessageFileId, ITelegramMessageFileDuration, ITelegramMessageFileMimeType, 
-                        ITelegramMessageFileSize
+    public class Audio : IFileId, IFileDuration, IFileMimeType, 
+                        IFileSize
     {
         /// <summary>
         /// Unique identifier for this file.
@@ -178,8 +178,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents a general file (as opposed to photos, voice messages and audio files).
     /// </summary>
-    public class Document : ITelegramMessageFileId, ITelegramMessageFileThumb, ITelegramFileName, 
-                            ITelegramMessageFileMimeType, ITelegramMessageFileSize
+    public class Document : IFileId, IFileThumb, IFileName, 
+                            IFileMimeType, IFileSize
     {
         /// <summary>
         /// Unique file identifier.
@@ -210,8 +210,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents a sticker.
     /// </summary>
-    public class Sticker : ITelegramMessageFileId, ITelegramMessageFileImageSize, ITelegramMessageFileThumb, 
-                            ITelegramMessageFileSize
+    public class Sticker : IFileId, IFileImageSize, IFileThumb, 
+                            IFileSize
     {
         /// <summary>
         /// Unique file identifier.
@@ -247,8 +247,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents a video file.
     /// </summary>
-    public class Video : ITelegramMessageFileId, ITelegramMessageFileImageSize, ITelegramMessageFileDuration, 
-                            ITelegramMessageFileThumb, ITelegramMessageFileMimeType, ITelegramMessageFileSize
+    public class Video : IFileId, IFileImageSize, IFileDuration, 
+                            IFileThumb, IFileMimeType, IFileSize
     {
         /// <summary>
         /// Unique identifier for this file.
@@ -289,8 +289,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents a voice note.
     /// </summary>
-    public class Voice : ITelegramMessageFileId, ITelegramMessageFileDuration, ITelegramMessageFileMimeType,
-        ITelegramMessageFileSize
+    public class Voice : IFileId, IFileDuration, IFileMimeType,
+        IFileSize
     {
         /// <summary>
         /// Unique identifier for this file
@@ -465,4 +465,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// </summary>
         public int? FileSize { get; set; }
     }
+
+
 }

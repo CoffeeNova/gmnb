@@ -6,7 +6,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the general Telegram message.
     /// </summary>
-    public abstract class TelegramMessage : ITelegramMessage
+    public abstract class Message : IMessage
     {
         /// <summary>
         /// Unique message identifier inside this chat.
@@ -52,7 +52,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram text user's message.
     /// </summary>
-    public class TelegramTextMessage : TelegramMessage, ISenderMessage, ITelegramTextMessage
+    public class TextMessage : Message, ISenderMessage, ITextMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -73,14 +73,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// Optional. For replies, the original message. 
         /// </summary>
         /// <remark>Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.</remark>
-        public TelegramMessage ReplyToMessage { get; set; }
+        public Message ReplyToMessage { get; set; }
 
     }
 
     /// <summary>
     /// A class which represents the Telegram audio message.
     /// </summary>
-    public class TelegramAudioMessage : TelegramMessage, ISenderMessage, ITelegramAudioMessage
+    public class TelegramAudioMessage : Message, ISenderMessage, IAudioMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -101,7 +101,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram document message.
     /// </summary>
-    public class TelegramDocumentMessage : TelegramMessage, ISenderMessage, ITelegramDocumentMessage
+    public class TelegramDocumentMessage : Message, ISenderMessage, IDocumentMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -122,7 +122,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram sticker message.
     /// </summary>
-    public class TelegramStickerMessage : TelegramMessage, ISenderMessage, ITelegramStickerMessage
+    public class TelegramStickerMessage : Message, ISenderMessage, IStickerMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -138,7 +138,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram photo message.
     /// </summary>
-    public class TelegramPhotoMessage : TelegramMessage, ISenderMessage, ITelegramPhotoMessage
+    public class TelegramPhotoMessage : Message, ISenderMessage, IPhotoMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -159,7 +159,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram game message.
     /// </summary>
-    public class TelegramGameMessage : TelegramMessage, ISenderMessage, ITelegramGameMessage
+    public class TelegramGameMessage : Message, ISenderMessage, IGameMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -175,7 +175,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram video message.
     /// </summary>
-    public class TelegramVideoMessage : TelegramMessage, ISenderMessage, ITelegramVideoMessage
+    public class TelegramVideoMessage : Message, ISenderMessage, IVideoMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -196,7 +196,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram voice message.
     /// </summary>
-    public class TelegramVoiceMessage : TelegramMessage, ISenderMessage, ITelegramVoiceMessage
+    public class TelegramVoiceMessage : Message, ISenderMessage, IVoiceMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -212,7 +212,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram shared contact message.
     /// </summary>
-    public class TelegramContactMessage : TelegramMessage, ISenderMessage, ITelegramContactMessage
+    public class TelegramContactMessage : Message, ISenderMessage, ITelegramContactMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -228,7 +228,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram shared location message.
     /// </summary>
-    public class TelegramLocationMessage : TelegramMessage, ISenderMessage, ITelegramLocationMessage
+    public class TelegramLocationMessage : Message, ISenderMessage, ILocationMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -244,7 +244,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram venue message.
     /// </summary>
-    public class TelegramVenueMessage : TelegramMessage, ISenderMessage, ITelegramVenueMessage
+    public class TelegramVenueMessage : Message, ISenderMessage, IVenueMessage
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -260,7 +260,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram message about new chat member.
     /// </summary>
-    public class TelegramNewChatMemberMessage : TelegramMessage
+    public class TelegramNewChatMemberMessage : Message
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -287,7 +287,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram message about left chat member.
     /// </summary>
-    public class TelegramLeftChatMemberMessage : TelegramMessage
+    public class TelegramLeftChatMemberMessage : Message
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -309,7 +309,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram message about new chat title.
     /// </summary>
-    public class TelegramNewChatTitleMessage : TelegramMessage
+    public class TelegramNewChatTitleMessage : Message
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -325,7 +325,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram message about new chat photo.
     /// </summary>
-    public class TelegramNewChatPhotoMessage : TelegramMessage
+    public class TelegramNewChatPhotoMessage : Message
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -353,7 +353,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// A class which represents the Telegram message indicated 
     /// that the group has been migrated to a supergroup with the specified identifier.
     /// </summary>
-    public class TelegramMigrateToChatIdMessage : TelegramMessage
+    public class TelegramMigrateToChatIdMessage : Message
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -370,7 +370,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// A class which represents the Telegram message indicated 
     /// that the supergroup has been migrated from a group with the specified identifier.
     /// </summary>
-    public class TelegramMigrateFromChatIdMessage : TelegramMessage
+    public class TelegramMigrateFromChatIdMessage : Message
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -386,7 +386,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram pinned specified message.
     /// </summary>
-    public class TelegramPinnedMessage : TelegramMessage
+    public class TelegramPinnedMessage : Message
     {
         /// <summary>
         /// Sender, can be empty for messages sent to channels.
@@ -396,13 +396,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Pinned message.
         /// </summary>
-        public TelegramMessage PinnedMessage { get; set; }
+        public Message PinnedMessage { get; set; }
     }
 
     /// <summary>
     /// Temprory class for unknown Telegram message.
     /// </summary>
-    public class TelegramUnknownMessage : TelegramMessage
+    public class TelegramUnknownMessage : Message
     {
 
     }

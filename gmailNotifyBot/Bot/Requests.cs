@@ -14,14 +14,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
     /// A class which permanently observes updates from Telegram's bot server and
     /// notifies subscribers about new request as list of JSON objects.
     /// </summary>
-    public class BotRequests : IRequests
+    public class Requests : IRequests
     {
         /// <summary>
         /// Primiry constructor of a class, automatically triggers observation of new requests from Telegram server.
         /// </summary>
         /// <param name="token">Telegram bot token.</param>
         /// <param name="lastUpdateId">Last update ID used as offset in Telegram's api getUpdates function. Default value is 0.</param>
-        public BotRequests(string token, int lastUpdateId = 0)
+        public Requests(string token, int lastUpdateId = 0)
         {
             Token = token;
             LastUpdateId = lastUpdateId;
@@ -31,7 +31,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             RequestMonitorTimer.Start();
         }
 
-        private BotRequests()
+        private Requests()
         {
             
         }
@@ -60,9 +60,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 
             var newRequests = JsonConvert.DeserializeObject<JObject>(e.Result);
 
-            Requests = newRequests["result"].ToList();
-            FirstUpdateId = (long)(Requests.First()["update_id"] as JValue).Value;
-            LastUpdateId = (long)(Requests.Last()["update_id"] as JValue).Value;
+            RequestList = newRequests["result"].ToList();
+            FirstUpdateId = (long)(RequestList.First()["update_id"] as JValue).Value;
+            LastUpdateId = (long)(RequestList.Last()["update_id"] as JValue).Value;
 
             RequestsArrivedEvent?.Invoke(this);
 
@@ -113,19 +113,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private string Token { get; }
 
         /// <summary>
-        /// First update ID in a <see cref="Requests"/> container. 
+        /// First update ID in a <see cref="RequestList"/> container. 
         /// </summary>
         public long FirstUpdateId { get; private set; }
 
         /// <summary>
-        /// Last update ID in a <see cref="Requests"/> container. 
+        /// Last update ID in a <see cref="RequestList"/> container. 
         /// </summary>
         public long LastUpdateId { get; private set; }
 
         /// <summary>
         /// List of requests, presented as JSON objects.
         /// </summary>
-        public List<JToken> Requests { get; private set; }
+        public List<JToken> RequestList { get; private set; }
 
     }
 

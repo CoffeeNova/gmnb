@@ -11,15 +11,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         /// <summary>
         /// A container which comprises telegram request presented as JSON objects.
         /// </summary>
-        List<JToken> Requests { get;}
+        List<JToken> RequestList { get;}
 
         /// <summary>
-        /// First update ID in a <see cref="Requests"/> container. 
+        /// First update ID in a <see cref="RequestList"/> container. 
         /// </summary>
         long FirstUpdateId { get; }
 
         /// <summary>
-        /// Last update ID in a <see cref="Requests"/> container. 
+        /// Last update ID in a <see cref="RequestList"/> container. 
         /// </summary>
         long LastUpdateId { get; }
     }

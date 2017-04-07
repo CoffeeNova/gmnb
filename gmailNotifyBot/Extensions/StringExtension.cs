@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CoffeeJelly.tempadll.Extensions
+namespace CoffeeJelly.gmailNotifyBot.Extensions
 {
     public static class StringExtension
     {
@@ -77,13 +76,6 @@ namespace CoffeeJelly.tempadll.Extensions
             return false;
         }
 
-        public static bool EqualsAny<T>(this T subj, params T[] patterns)
-        {
-            foreach (var pattern in patterns)
-                if (subj.Equals(pattern))
-                    return true;
-            return false;
-        }
         /// <summary>
         /// 
         /// </summary>
@@ -125,15 +117,6 @@ namespace CoffeeJelly.tempadll.Extensions
         {
             return Regex.Matches(str, @"-?\d+").OfType<Match‌>().Select(m => m.Value).ToArray();
         }
-
-        //public static string ParseGrainbarError(this string str)
-        //{
-        //    var regex = new Regex(@"-?\Ed+");
-        //    var match = regex.Match(str);
-        //    if(match.Success)
-        //        return regex.Replace(str, 
-
-        //}
 
         public static string[] ParseDoubleNumbersAsStrings(this string str)
         {

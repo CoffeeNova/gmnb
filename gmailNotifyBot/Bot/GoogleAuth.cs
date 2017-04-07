@@ -88,20 +88,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         }
 
-        public static Uri GetAuthenticationUri(string clientId, string clientSecret, string redirectUri = RedirectUri)
-        {
-            var scopes = string.Join("+", Scopes);
-
-            string oauth =
-                $"https://accounts.google.com/o/oauth2/auth?" +
-                $"client_id={clientId}" +
-                $"&client_secret={clientSecret}" +
-                $"&redirect_uri={redirectUri}" +
-                $"&scope={scopes}" +
-                $"&response_type=code";
-            return new Uri(oauth);
-        }
-
 
         private string _accessToken;
         public string AccessToken
@@ -125,13 +111,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         //private Timer _refreshAccessTokenTimer;
         //private static readonly TimeSpan _accessTokenExpiresTime = TimeSpan.FromHours(1);
-        private static readonly List<string> Scopes = new List<string>
-        {
-            @"https://www.googleapis.com/auth/gmail.compose",
-            @"https://mail.google.com/",
-            @"https://www.googleapis.com/auth/userinfo.profile"
-        };
 
-        private const string RedirectUri = @"http://gmailnotify.com/OAuth";
     }
 }
