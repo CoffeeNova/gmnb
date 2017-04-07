@@ -32,58 +32,58 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 if (message.GetType() == typeof(TextMessage))
                     TelegramTextMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramAudioMessage))
+                else if (message.GetType() == typeof(AudioMessage))
                     TelegramAudioMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramDocumentMessage))
+                else if (message.GetType() == typeof(DocumentMessage))
                     TelegramDocumentMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramStickerMessage))
+                else if (message.GetType() == typeof(StickerMessage))
                     TelegramStickerMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramPhotoMessage))
+                else if (message.GetType() == typeof(PhotoMessage))
                     TelegramPhotoMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramGameMessage))
+                else if (message.GetType() == typeof(GameMessage))
                     TelegramGameMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramVideoMessage))
+                else if (message.GetType() == typeof(VideoMessage))
                     TelegramVideoMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramVoiceMessage))
+                else if (message.GetType() == typeof(VoiceMessage))
                     TelegramVoiceMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramContactMessage))
+                else if (message.GetType() == typeof(ContactMessage))
                     TelegramContactMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramLocationMessage))
+                else if (message.GetType() == typeof(LocationMessage))
                     TelegramLocationMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramVenueMessage))
+                else if (message.GetType() == typeof(VenueMessage))
                     TelegramVenueMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramNewChatMemberMessage))
+                else if (message.GetType() == typeof(NewChatMemberMessage))
                     TelegramNewChatMemberMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramLeftChatMemberMessage))
+                else if (message.GetType() == typeof(LeftChatMemberMessage))
                     TelegramLeftChatMemberMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramNewChatTitleMessage))
+                else if (message.GetType() == typeof(NewChatTitleMessage))
                     TelegramNewChatTitleMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramNewChatPhotoMessage))
+                else if (message.GetType() == typeof(NewChatPhotoMessage))
                     TelegramNewChatPhotoMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramMigrateToChatIdMessage))
+                else if (message.GetType() == typeof(MigrateToChatIdMessage))
                     TelegramMigrateToChatIdMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramMigrateFromChatIdMessage))
+                else if (message.GetType() == typeof(MigrateFromChatIdMessage))
                     TelegramMigrateFromChatIdMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramPinnedMessage))
+                else if (message.GetType() == typeof(PinnedMessage))
                     TelegramPinnedMessageEvent?.Invoke(message);
 
-                else if (message.GetType() == typeof(TelegramUnknownMessage))
+                else if (message.GetType() == typeof(UnknownMessage))
                     TelegramUnknownMessageEvent?.Invoke(message);
                 #endregion
             }
@@ -109,24 +109,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public delegate void TelegramMessageEventHandler<in T>(T message);
 
         public event TelegramMessageEventHandler<TextMessage> TelegramTextMessageEvent;
-        public event TelegramMessageEventHandler<TelegramAudioMessage> TelegramAudioMessageEvent;
-        public event TelegramMessageEventHandler<TelegramDocumentMessage> TelegramDocumentMessageEvent;
-        public event TelegramMessageEventHandler<TelegramStickerMessage> TelegramStickerMessageEvent;
-        public event TelegramMessageEventHandler<TelegramPhotoMessage> TelegramPhotoMessageEvent;
-        public event TelegramMessageEventHandler<TelegramGameMessage> TelegramGameMessageEvent;
-        public event TelegramMessageEventHandler<TelegramVideoMessage> TelegramVideoMessageEvent;
-        public event TelegramMessageEventHandler<TelegramVoiceMessage> TelegramVoiceMessageEvent;
-        public event TelegramMessageEventHandler<TelegramContactMessage> TelegramContactMessageEvent;
-        public event TelegramMessageEventHandler<TelegramLocationMessage> TelegramLocationMessageEvent;
-        public event TelegramMessageEventHandler<TelegramVenueMessage> TelegramVenueMessageEvent;
-        public event TelegramMessageEventHandler<TelegramNewChatMemberMessage> TelegramNewChatMemberMessageEvent;
-        public event TelegramMessageEventHandler<TelegramLeftChatMemberMessage> TelegramLeftChatMemberMessageEvent;
-        public event TelegramMessageEventHandler<TelegramNewChatTitleMessage> TelegramNewChatTitleMessageEvent;
-        public event TelegramMessageEventHandler<TelegramNewChatPhotoMessage> TelegramNewChatPhotoMessageEvent;
-        public event TelegramMessageEventHandler<TelegramMigrateToChatIdMessage> TelegramMigrateToChatIdMessageEvent;
-        public event TelegramMessageEventHandler<TelegramMigrateFromChatIdMessage> TelegramMigrateFromChatIdMessageEvent;
-        public event TelegramMessageEventHandler<TelegramPinnedMessage> TelegramPinnedMessageEvent;
-        public event TelegramMessageEventHandler<TelegramUnknownMessage> TelegramUnknownMessageEvent;
+        public event TelegramMessageEventHandler<AudioMessage> TelegramAudioMessageEvent;
+        public event TelegramMessageEventHandler<DocumentMessage> TelegramDocumentMessageEvent;
+        public event TelegramMessageEventHandler<StickerMessage> TelegramStickerMessageEvent;
+        public event TelegramMessageEventHandler<PhotoMessage> TelegramPhotoMessageEvent;
+        public event TelegramMessageEventHandler<GameMessage> TelegramGameMessageEvent;
+        public event TelegramMessageEventHandler<VideoMessage> TelegramVideoMessageEvent;
+        public event TelegramMessageEventHandler<VoiceMessage> TelegramVoiceMessageEvent;
+        public event TelegramMessageEventHandler<ContactMessage> TelegramContactMessageEvent;
+        public event TelegramMessageEventHandler<LocationMessage> TelegramLocationMessageEvent;
+        public event TelegramMessageEventHandler<VenueMessage> TelegramVenueMessageEvent;
+        public event TelegramMessageEventHandler<NewChatMemberMessage> TelegramNewChatMemberMessageEvent;
+        public event TelegramMessageEventHandler<LeftChatMemberMessage> TelegramLeftChatMemberMessageEvent;
+        public event TelegramMessageEventHandler<NewChatTitleMessage> TelegramNewChatTitleMessageEvent;
+        public event TelegramMessageEventHandler<NewChatPhotoMessage> TelegramNewChatPhotoMessageEvent;
+        public event TelegramMessageEventHandler<MigrateToChatIdMessage> TelegramMigrateToChatIdMessageEvent;
+        public event TelegramMessageEventHandler<MigrateFromChatIdMessage> TelegramMigrateFromChatIdMessageEvent;
+        public event TelegramMessageEventHandler<PinnedMessage> TelegramPinnedMessageEvent;
+        public event TelegramMessageEventHandler<UnknownMessage> TelegramUnknownMessageEvent;
         #endregion
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
