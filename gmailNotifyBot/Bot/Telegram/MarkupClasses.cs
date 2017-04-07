@@ -5,7 +5,7 @@ using System.Web;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 {
-    public interface IMarkup
+    public abstract IMarkup
     {
 
     }
