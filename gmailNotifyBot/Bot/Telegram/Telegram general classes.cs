@@ -466,5 +466,196 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         public int? FileSize { get; set; }
     }
 
+    /// <summary>
+    /// Represents one button of the reply keyboard. 
+    /// </summary>
+    public class KeyboardButton
+    {
+        /// <summary>
+        /// Text of the button. If none of the optional fields are used, it will be sent to the bot as a message when the button is pressed.
+        /// </summary>
+        public string Text { get; set; }
 
+        /// <summary>
+        /// Optional. If <see langword="true"/>, the user's phone number will be sent as a contact when the button is pressed. 
+        /// Available in private chats only
+        /// </summary>
+        public bool? RequestContact { get; set; }
+
+        /// <summary>
+        /// Optional. If <see langword="true"/>, the user's current location will be sent when the button is pressed. 
+        /// Available in private chats only.
+        /// </summary>
+        public bool? RequestLocation { get; set; }
+    }
+
+    /// <summary>
+    /// Represents a custom keyboard with reply options.
+    /// </summary>
+    public class ReplyKeyboardMarkup
+    {
+        /// <summary>
+        /// List of button rows, each represented by an List of KeyboardButton objects
+        /// </summary>
+        public List<KeyboardButton> Keyboard { get; set; }
+
+        /// <summary>
+        /// Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons). 
+        /// </summary>
+        /// <remarks>
+        /// Defaults to <see langword="false"/>, in which case the custom keyboard is always of the same height as the app's standard keyboard.
+        /// </remarks>
+        public bool? ResizeKeyboard { get; set; } = false;
+
+        /// <summary>
+        /// Requests clients to hide the keyboard as soon as it's been used. 
+        /// The keyboard will still be available, but clients will automatically display the usual letter-keyboard in the chat – 
+        /// the user can press a special button in the input field to see the custom keyboard again. 
+        /// </summary>
+        /// <remarks>Defaults to <see langword="false"/>.</remarks>
+        public bool? OneTimeKeyboard { get; set; }
+
+        /// <summary>
+        /// Optional. Use this parameter if you want to show the keyboard to specific users only. 
+        /// Targets: 1) users that are @mentioned in the <see cref="TextMessage.Text"/>; 
+        /// 2) if the bot's message is a reply (has ReplyToMessageId), sender of the original message.
+        /// </summary>
+        /// <example>
+        /// A user requests to change the bot‘s language, bot replies to the request with a keyboard to select the new language. 
+        /// Other users in the group don’t see the keyboard.
+        /// </example>
+        public bool? Selective { get; set; }
+    }
+
+    /// <summary>
+    /// Upon receiving a message with this object, Telegram clients will remove the current custom keyboard and display the default letter-keyboard. 
+    /// By default, custom keyboards are displayed until a new keyboard is sent by a bot. 
+    /// An exception is made for one-time keyboards that are hidden immediately after the user presses a button (see <see cref="ReplyKeyboardMarkup"/>).
+    /// </summary>
+    public class ReplyKeyboardRemove
+    {
+        /// <summary>
+        /// Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; 
+        /// if you want to hide the keyboard from sight but keep it accessible, use <see cref="ReplyKeyboardMarkup.OneTimeKeyboard"/>)
+        /// </summary>
+        public bool RemoveKeyboard { get; } = true;
+
+        /// <summary>
+        /// Optional. Use this parameter if you want to show the keyboard to specific users only. 
+        /// Targets: 1) users that are @mentioned in the <see cref="TextMessage.Text"/>; 
+        /// 2) if the bot's message is a reply (has ReplyToMessageId), sender of the original message.
+        /// </summary>
+        /// <example>
+        /// A user votes in a poll, bot returns confirmation message in reply to the vote and removes the keyboard for that user, 
+        /// while still showing the keyboard with poll options to users who haven't voted yet.
+        /// </example>
+        public bool? Selective { get; set; }
+    }
+
+    /// <summary>
+    /// Represents an inline keyboard that appears right next to the message it belongs to.
+    /// </summary>
+    public class InlineKeyboardMarkup
+    {
+        /// <summary>
+        /// Array of button rows, each represented by an Array of InlineKeyboardButton objects.
+        /// </summary>
+        public List<InlineKeyboardButton> InlineKeyboard { get; set; }
+    }
+
+    /// <summary>
+    /// Represents one button of an inline keyboard. You must use exactly one of the optional fields.
+    /// </summary>
+    public class InlineKeyboardButton
+    {
+        /// <summary>
+        /// Label text on the button.
+        /// </summary>
+        public string Text { get; set; }
+
+        /// <summary>
+        /// Optional. HTTP url to be opened when button is pressed.
+        /// </summary>
+        public string Url { get; set; }
+
+        /// <summary>
+        /// Optional. Data to be sent in a <see cref="CallbackQuery"/> to the bot when button is pressed, 1-64 bytes.
+        /// </summary>
+        public string CallbackData { get; set; }
+
+        /// <summary>
+        /// Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot‘s username and the specified inline query in the input field. 
+        /// Can be empty, in which case just the bot’s username will be inserted.
+        /// </summary>
+        public string SwitchInlineQuery { get; set; }
+
+        /// <summary>
+        /// Optional. If set, pressing the button will insert the bot‘s username and the specified inline query in the current chat's input field. 
+        /// Can be empty, in which case only the bot’s username will be inserted.
+        /// </summary>
+        public string SwitchInlineQueryCurrentChat { get; set; }
+
+        /// <summary>
+        /// Optional. Description of the game that will be launched when the user presses the button.
+        /// </summary>
+        /// <remarks>
+        /// This type of button must always be the first button in the first row.
+        /// </remarks>
+        public CallbackGame CallbackGame { get; set; }
+    }
+
+    /// <summary>
+    /// Represents an incoming callback query from a callback button in an inline keyboard. 
+    /// If the button that originated the query was attached to a message sent by the bot, the field message will be present. 
+    /// If the button was attached to a message sent via the bot (in inline mode), the property <see cref="InlineMessageId"/> will be present. 
+    /// Exactly one of the properties <see cref="Data"/> or <see cref="GameShortName"/>  will be present.
+    /// </summary>
+    public class CallbackQuery
+    {
+        /// <summary>
+        /// Unique identifier for this query.
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Sender.
+        /// </summary>
+        public User From { get; set; }
+
+        /// <summary>
+        /// Optional. Message with the callback button that originated the query.
+        /// </summary>
+        /// <remarks>
+        /// Note that message content and message date will not be available if the message is too old.
+        /// </remarks>
+        public Message Message { get; set; }
+
+        /// <summary>
+        /// Optional. Identifier of the message sent via the bot in inline mode, that originated the query.
+        /// </summary>
+        public string InlineMessageId { get; set; }
+
+        /// <summary>
+        /// Global identifier, uniquely corresponding to the chat to which the message with the callback button was sent. Useful for high scores in games.
+        /// </summary>
+        public string ChatInstance { get; set; }
+
+        /// <summary>
+        /// Optional. Data associated with the callback button. 
+        /// </summary>
+        /// <remarks>
+        /// Be aware that a bad client can send arbitrary data in this field.
+        /// </remarks>
+        public string Data { get; set; }
+
+        /// <summary>
+        /// Optional. Short name of a Game to be returned, serves as the unique identifier for the game.
+        /// </summary>
+        public string GameShortName { get; set; }
+    }
+
+    public class CallbackGame
+    {
+        
+    }
 }
