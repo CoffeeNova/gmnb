@@ -122,10 +122,6 @@
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="xNet, Version=3.3.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xNet.3.3.4\lib\xNet.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
@@ -186,16 +182,19 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Bot\Authorizer.cs" />
-    <Compile Include="Bot\DataBaseModels\UserTableModel.cs" />
-    <Compile Include="Bot\DbWorker.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\UserTableModel.cs" />
+    <Compile Include="Bot\DataBase\UserWorker.cs" />
     <Compile Include="Bot\Exceptions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
-    <Compile Include="Bot\Request.cs" />
+    <Compile Include="Bot\Requests.cs" />
     <Compile Include="Bot\RequestsHandler.cs" />
     <Compile Include="Bot\IRequests.cs" />
     <Compile Include="Bot\Telegram\Interfaces.cs" />
+    <Compile Include="Bot\Telegram\MarkupClasses.cs" />
+    <Compile Include="Bot\Telegram\MessageBuilder.cs" />
     <Compile Include="Bot\Telegram\MessageClasses.cs" />
     <Compile Include="Bot\Telegram\Telegram general classes.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethods.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />

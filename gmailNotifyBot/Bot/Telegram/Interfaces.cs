@@ -6,7 +6,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's messages.
     /// </summary>
-    public interface ITelegramMessage
+    public interface IMessage
     {
         /// <summary>
         /// Unique message identifier inside this chat.
@@ -41,7 +41,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's text messages.
     /// </summary>
-    public interface ITelegramTextMessage
+    public interface ITextMessage
     {
         /// <summary>
         /// The actual UTF-8 text of the message, 0-4096 characters.
@@ -58,7 +58,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's audio messages.
     /// </summary>
-    public interface ITelegramAudioMessage
+    public interface IAudioMessage
     {
         /// <summary>
         /// Information about the audio file.
@@ -69,7 +69,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's general file message.
     /// </summary>
-    public interface ITelegramDocumentMessage
+    public interface IDocumentMessage
     {
         /// <summary>
         /// Information about general file.
@@ -96,7 +96,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's photo message.
     /// </summary>
-    public interface ITelegramPhotoMessage
+    public interface IPhotoMessage
     {
         /// <summary>
         /// Available sizes of the photo.
@@ -112,7 +112,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's sticker message.
     /// </summary>
-    public interface ITelegramStickerMessage
+    public interface IStickerMessage
     {
         /// <summary>
         /// information about the sticker.
@@ -123,7 +123,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's video message.
     /// </summary>
-    public interface ITelegramVideoMessage
+    public interface IVideoMessage
     {
         /// <summary>
         /// Information about the video.
@@ -139,7 +139,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's voice message.
     /// </summary>
-    public interface ITelegramVoiceMessage
+    public interface IVoiceMessage
     {
         /// <summary>
         /// Information about the voice.
@@ -161,7 +161,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's shared location message.
     /// </summary>
-    public interface ITelegramLocationMessage
+    public interface ILocationMessage
     {
         /// <summary>
         /// Information about the location.
@@ -172,7 +172,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's venue message.
     /// </summary>
-    public interface ITelegramVenueMessage
+    public interface IVenueMessage
     {
         /// <summary>
         /// Information about the venue.
@@ -183,7 +183,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's game message.
     /// </summary>
-    public interface ITelegramGameMessage
+    public interface IGameMessage
     {
         /// <summary>
         /// Information about the game.
@@ -194,7 +194,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's file message of a file id.
     /// </summary>
-    public interface ITelegramMessageFileId
+    public interface IFileId
     {
         /// <summary>
         /// Interface for the Unique identifier of the Telegram message file
@@ -205,7 +205,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for the image size of the Telegram's message file (photo, sticker, video)
     /// </summary>
-    public interface ITelegramMessageFileImageSize
+    public interface IFileImageSize
     {
         /// <summary>
         /// File widht.
@@ -221,7 +221,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for the duration of the Telegram's message file
     /// </summary>
-    public interface ITelegramMessageFileDuration
+    public interface IFileDuration
     {
         /// <summary>
         /// Duration of the file in seconds as defined by sender
@@ -232,7 +232,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for the size of the Telegram's message file
     /// </summary>
-    public interface ITelegramMessageFileSize
+    public interface IFileSize
     {
         /// <summary>
         /// File size.
@@ -243,7 +243,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for the MIME type of the Telegram's message file.
     /// </summary>
-    public interface ITelegramMessageFileMimeType
+    public interface IFileMimeType
     {
         /// <summary>
         /// MIME type as defined by sender.
@@ -254,7 +254,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for the title of the Telegram's message file.
     /// </summary>
-    public interface ITelegramMessageFileTitle
+    public interface IFileTitle
     {
         /// <summary>
         /// Title of the file as defined by sender or by audio tags.
@@ -265,7 +265,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for the thumbnail of the Telegram's message file.
     /// </summary>
-    public interface ITelegramMessageFileThumb
+    public interface IFileThumb
     {
         /// <summary>
         /// File thumbnail as defined by sender.
@@ -276,7 +276,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for the file name of the Telegram's message file.
     /// </summary>
-    public interface ITelegramFileName
+    public interface IFileName
     {
         /// <summary>
         /// Original filename as defined by sender.

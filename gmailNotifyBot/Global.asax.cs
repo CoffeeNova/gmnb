@@ -10,7 +10,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using CoffeeJelly.gmailNotifyBot.Bot;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
-using CoffeeJelly.tempadll.Extensions;
+using CoffeeJelly.gmailNotifyBot.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -31,17 +31,17 @@ namespace CoffeeJelly.gmailNotifyBot
             //    HandleConnectCommand = true
             //};
             string token = App_LocalResources.Tokens.GmailControlBotToken;
-            BotRequests br = new BotRequests(token);
+            Requests br = new Requests(token);
             //RequestsHandler rh = new RequestsHandler();
             //rh.TelegramTextMessageEvent += Rh_TelegramTextMessageEvent;
-            BotRequests.RequestsArrivedEvent += BotRequests_RequestsArrivedEvent;
+            Requests.RequestsArrivedEvent += BotRequests_RequestsArrivedEvent;
             
         }
 
         private static async void BotRequests_RequestsArrivedEvent(IRequests requests)
         {
             //Console.WriteLine(requests.LastUpdateId);
-            foreach (var r in requests.Requests)
+            foreach (var r in requests.RequestList)
             {
                await WriteParamsToTestFileAsync(r);
             }

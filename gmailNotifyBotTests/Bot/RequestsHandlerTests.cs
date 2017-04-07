@@ -16,7 +16,7 @@ using KellermanSoftware.CompareNetObjects;
 namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
 {
     [TestClass]
-    public class RequestsHandlerTests
+    public class MessageBuilderTests
     {
         public TestContext TestContext { get; set; }
 
@@ -51,7 +51,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         private static Location _location;
         private static List<PhotoSize> _newChatPhoto;
         private static TelegramVoiceMessage _replyTo;
-        private static TelegramMessage _pinnedMessage;
+        private static Message _pinnedMessage;
 
         private static string _textMessageFileName = "SampleTextMessage.json";
         private static string _audioMessageFileName = "SampleAudioMessage.json";
@@ -322,7 +322,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             #endregion
             #region _pinnedMessage
 
-            _pinnedMessage = new TelegramTextMessage
+            _pinnedMessage = new TextMessage
             {
                 From = _user,
                 Text = "testpinned"
@@ -406,21 +406,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
 
         }
 
-        private static void AttachGeneralProperties<T>(T message) where T : TelegramMessage
+        private static void AttachGeneralProperties<T>(T message) where T : Message
         {
             message.MessageId = _messageId;
             message.Chat = _privateChat;
             message.Date = _date;
         }
 
-        private static void AttachGeneralProperties2<T>(T message) where T : TelegramMessage
+        private static void AttachGeneralProperties2<T>(T message) where T : Message
         {
             message.MessageId = _messageId;
             message.Chat = _groupChat;
             message.Date = _date;
         }
 
-        private static void AttachGeneralProperties3<T>(T message) where T : TelegramMessage
+        private static void AttachGeneralProperties3<T>(T message) where T : Message
         {
             message.MessageId = _messageId;
             message.Chat = _superGroupChat;
@@ -436,14 +436,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         [TestMethod]
         public void BuildMessage_TextJSON_TelegramTextMessage()
         {
-            var expected = new TelegramTextMessage
+            var expected = new TextMessage
             {
                 From = _user,
                 Text = _text,
                 Entities = _entities
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramTextMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TextMessage>(_messageToken);
 
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
@@ -462,7 +462,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Caption = _caption
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramAudioMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramAudioMessage>(_messageToken);
 
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
@@ -480,7 +480,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Caption = _caption
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramDocumentMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramDocumentMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -496,7 +496,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Sticker = _sticker
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramStickerMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramStickerMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -513,7 +513,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Caption = _caption
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramPhotoMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramPhotoMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -530,7 +530,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Caption = _caption
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramVideoMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramVideoMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -546,7 +546,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Voice = _voice
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramVoiceMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramVoiceMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -562,7 +562,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Contact = _contact
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramContactMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramContactMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -578,7 +578,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Location = _location
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramLocationMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramLocationMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -596,7 +596,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 NewChatMembers = _users
             };
             AttachGeneralProperties2(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramNewChatMemberMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramNewChatMemberMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -613,7 +613,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 LeftChatMember = _user1,
             };
             AttachGeneralProperties2(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramLeftChatMemberMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramLeftChatMemberMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -629,7 +629,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 NewChatTitle = "testgrp"
             };
             AttachGeneralProperties2(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramNewChatTitleMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramNewChatTitleMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -645,7 +645,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 NewChatPhoto = _newChatPhoto
             };
             AttachGeneralProperties2(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramNewChatPhotoMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramNewChatPhotoMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -661,7 +661,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 MigrateToChatId = -1001076966401
             };
             AttachGeneralProperties2(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramMigrateToChatIdMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramMigrateToChatIdMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -677,7 +677,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 MigrateFromChatId = -200694086
             };
             AttachGeneralProperties3(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramMigrateFromChatIdMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramMigrateFromChatIdMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -687,7 +687,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         [TestMethod]
         public void BuildMessage_ForwardFromJSON_TelegraForwardFromMessage()
         {
-            var expected = new TelegramTextMessage
+            var expected = new TextMessage
             {
                 From = _user,
                 ForwardFrom = _user1,
@@ -695,7 +695,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Text = ":D"
             };
             AttachGeneralProperties3(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramTextMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TextMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -705,14 +705,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         [TestMethod]
         public void BuildMessage_ReplyToJSON_TelegramReplyToMessage()
         {
-            var expected = new TelegramTextMessage
+            var expected = new TextMessage
             {
                 From = _user,
                 ReplyToMessage = _replyTo,
                 Text = "testreply"
             };
             AttachGeneralProperties(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramTextMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TextMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -728,7 +728,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 PinnedMessage = _pinnedMessage
             };
             AttachGeneralProperties3(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramPinnedMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramPinnedMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
@@ -746,7 +746,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Video = _video
             };
             AttachGeneralProperties3(expected);
-            var actual = RequestsHandler.MessageBuilder.BuildMessage<TelegramVideoMessage>(_messageToken);
+            var actual = MessageBuilder.BuildMessage<TelegramVideoMessage>(_messageToken);
             var compareLogic = new CompareLogic(_config);
             var comparisonResult = compareLogic.Compare(expected, actual);
 
