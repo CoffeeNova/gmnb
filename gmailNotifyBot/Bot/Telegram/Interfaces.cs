@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 {
@@ -11,16 +12,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique message identifier inside this chat.
         /// </summary>
+        [JsonProperty("message_id")]
         int MessageId { get; set; }
 
         /// <summary>
         /// Date the message was sent in Unix time.
         /// </summary>
+        [JsonProperty("date")]
         DateTime Date { get; set; }
 
         /// <summary>
         /// Conversation the message belongs to.
         /// </summary>
+        [JsonProperty("chat")]
         Chat Chat { get; set; }
  
 
@@ -34,6 +38,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Sender.
         /// </summary>
+        [JsonProperty("from")]
         User From { get; set; }
 
     }
@@ -46,11 +51,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// The actual UTF-8 text of the message, 0-4096 characters.
         /// </summary>
+        [JsonProperty("text")]
         string Text { get; set; }
 
         /// <summary>
         /// Special entities like usernames, URLs, bot commands, etc. that appear in the text.
         /// </summary>
+        [JsonProperty("entities")]
         List<MessageEntity> Entities { get; set; }
 
     }
@@ -63,6 +70,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Information about the audio file.
         /// </summary>
+        [JsonProperty("audio")]
         Audio Audio { get; set; }
     }
 
@@ -74,11 +82,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Information about general file.
         /// </summary>
+        [JsonProperty("document")]
         Document Document { get; set; }
 
         /// <summary>
         /// Caption for the document, 0-200 characters.
         /// </summary>
+        [JsonProperty("caption")]
         string Caption { get; set; }
     }
 
@@ -101,11 +111,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Available sizes of the photo.
         /// </summary>
+        [JsonProperty("photo")]
         List<PhotoSize> Photo { get; set; }
 
         /// <summary>
         /// Caption for the photo, 0-200 characters.
         /// </summary>
+        [JsonProperty("caption")]
         string Caption { get; set; }
     }
 
@@ -117,6 +129,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// information about the sticker.
         /// </summary>
+        [JsonProperty("sticker")]
         Sticker Sticker { get; set; }
     }
 
@@ -128,11 +141,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Information about the video.
         /// </summary>
+        [JsonProperty("video")]
         Video Video { get; set; }
 
         /// <summary>
         /// Caption for the video, 0-200 characters.
         /// </summary>
+        [JsonProperty("caption")]
         string Caption { get; set; }
     }
 
@@ -144,6 +159,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Information about the voice.
         /// </summary>
+        [JsonProperty("voice")]
         Voice Voice { get; set; }
     }
 
@@ -155,6 +171,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Information about the contact.
         /// </summary>
+        [JsonProperty("contact")]
         Contact Contact { get; set; }
     }
 
@@ -166,6 +183,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Information about the location.
         /// </summary>
+        [JsonProperty("location")]
         Location Location { get; set; }
     }
 
@@ -177,6 +195,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Information about the venue.
         /// </summary>
+        [JsonProperty("venue")]
         Venue Venue { get; set; }
     }
 
@@ -188,6 +207,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Information about the game.
         /// </summary>
+        [JsonProperty("game")]
         Game Game { get; set; }
     }
 
@@ -199,6 +219,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Interface for the Unique identifier of the Telegram message file
         /// </summary>
+        [JsonProperty("file_id")]
         string FileId { get; set; }
     }
 
@@ -210,11 +231,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// File widht.
         /// </summary>
+        [JsonProperty("width")]
         int Width { get; set; }
 
         /// <summary>
         /// File height.
         /// </summary>
+        [JsonProperty("height")]
         int Height { get; set; }
     }
 
@@ -226,6 +249,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Duration of the file in seconds as defined by sender
         /// </summary>
+        [JsonProperty("duration")]
         int Duration { get; set; }
     }
 
@@ -237,6 +261,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// File size.
         /// </summary>
+        [JsonProperty("file_size")]
         int? FileSize { get; set; }
     }
 
@@ -248,6 +273,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// MIME type as defined by sender.
         /// </summary>
+        [JsonProperty("mime_type")]
         string MimeType { get; set; }
     }
 
@@ -259,6 +285,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Title of the file as defined by sender or by audio tags.
         /// </summary>
+        [JsonProperty("title")]
         string Title { get; set; }
     }
 
@@ -270,6 +297,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// File thumbnail as defined by sender.
         /// </summary>
+        [JsonProperty("thumb")]
         PhotoSize Thumb { get; set; }
     }
 
@@ -281,8 +309,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Original filename as defined by sender.
         /// </summary>
+        [JsonProperty("file_name")]
         string FileName { get; set; }
     }
 
+    public interface IMarkup
+    {
+        
+    }
 
 }

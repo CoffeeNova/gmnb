@@ -10,6 +10,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.JsonParsers;
 using CoffeeJelly.gmailNotifyBot.Extensions;
 using KellermanSoftware.CompareNetObjects;
 
@@ -159,7 +160,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             {
                 Type = "url",
                 Offset = 0,
-                Lenght = 24
+                Length = 24
             };
             #endregion
             #region _entities

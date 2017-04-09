@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.JsonParsers;
 using CoffeeJelly.gmailNotifyBot.Extensions;
 using Newtonsoft.Json.Linq;
 using NLog;

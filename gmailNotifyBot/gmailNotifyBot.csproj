@@ -189,11 +189,14 @@
     <Compile Include="Bot\Requests.cs" />
     <Compile Include="Bot\RequestsHandler.cs" />
     <Compile Include="Bot\IRequests.cs" />
+    <Compile Include="Bot\Telegram\Converters\ArrayToListConverter.cs" />
+    <Compile Include="Bot\Telegram\Converters\DateTimeConverter.cs" />
+    <Compile Include="Bot\Telegram\Converters\MessageConverter.cs" />
     <Compile Include="Bot\Telegram\Interfaces.cs" />
-    <Compile Include="Bot\Telegram\MarkupClasses.cs" />
-    <Compile Include="Bot\Telegram\MessageBuilder.cs" />
+    <Compile Include="Bot\Telegram\JsonParsers\GeneralBuilder.cs" />
+    <Compile Include="Bot\Telegram\JsonParsers\MessageBuilder.cs" />
     <Compile Include="Bot\Telegram\MessageClasses.cs" />
-    <Compile Include="Bot\Telegram\Telegram general classes.cs" />
+    <Compile Include="Bot\Telegram\GeneralClasses.cs" />
     <Compile Include="Bot\Telegram\TelegramMethods.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

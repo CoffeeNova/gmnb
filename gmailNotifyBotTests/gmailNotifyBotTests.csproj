@@ -59,7 +59,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Bot\GoogleAuthTests.cs" />
-    <Compile Include="Bot\RequestsHandlerTests.cs" />
+    <Compile Include="Bot\MessageBuilderTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
