@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Converters;
+using Newtonsoft.Json;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 {
@@ -10,21 +12,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique identifier for this user or bot.
         /// </summary>
+        [JsonProperty("id")]
         public int Id { get; set; }
 
         /// <summary>
         /// User's or bot's first name.
         /// </summary>
+        [JsonProperty("first_name")]
         public string FirstName { get; set; }
 
         /// <summary>
         /// User‘s or bot’s last name
         /// </summary>
+        [JsonProperty("last_name")]
         public string LastName { get; set; }
 
         /// <summary>
         /// User‘s or bot’s username.
         /// </summary>
+        [JsonProperty("username")]
         public string Username { get; set; }
     }
 
@@ -36,36 +42,43 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique identifier for this chat.
         /// </summary>
+        [JsonProperty("id")]
         public long Id { get; set; }
 
         /// <summary>
         /// Type of chat, can be either “private”, “group”, “supergroup” or “channel”.
         /// </summary>
+        [JsonProperty("type")]
         public ChatType Type { get; set; }
 
         /// <summary>
         /// Title, for supergroups, channels and group chats.
         /// </summary>
+        [JsonProperty("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Username, for private chats, supergroups and channels if available.
         /// </summary>
+        [JsonProperty("username")]
         public string UserName { get; set; }
 
         /// <summary>
         /// First name of the other party in a private chat.
         /// </summary>
+        [JsonProperty("first_name")]
         public string FirstName { get; set; }
 
         /// <summary>
         /// Last name of the other party in a private chat.
         /// </summary>
+        [JsonProperty("last_name")]
         public string LastName { get; set; }
 
         /// <summary>
         /// <see langword="true"/>: if a group has ‘All Members Are Admins’ enabled.
         /// </summary>
+        [JsonProperty("all_members_are_administrators")]
         public bool? AllMembersAreAdministrators { get; set; }
     }
 
@@ -89,26 +102,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), 
         /// text_mention (for users without usernames)
         /// </remarks>
+        [JsonProperty("type")]
         public string Type { get; set; }
 
         /// <summary>
         /// Offset in UTF-16 code units to the start of the entity.
         /// </summary>
+        [JsonProperty("offset")]
         public int Offset { get; set; }
 
         /// <summary>
         /// Length of the entity in UTF-16 code units.
         /// </summary>
-        public int Lenght { get; set; }
+        [JsonProperty("length")]
+        public int Length { get; set; }
 
         /// <summary>
         /// For “text_link” only, url that will be opened after user taps on the text.
         /// </summary>
+        [JsonProperty("url")]
         public string Url { get; set; }
 
         /// <summary>
         /// For “text_mention” only, the mentioned user.
         /// </summary>
+        [JsonProperty("user")]
         public User User { get; set; }
     }
 
@@ -120,21 +138,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique identifier for this file.
         /// </summary>
+        [JsonProperty("file_id")]
         public string FileId { get; set; }
 
         /// <summary>
         /// Photo width.
         /// </summary>
+        [JsonProperty("width")]
         public int Width { get; set; }
 
         /// <summary>
         /// Photo height.
         /// </summary>
+        [JsonProperty("height")]
         public int Height { get; set; }
 
         /// <summary>
         /// File size.
         /// </summary>
+        [JsonProperty("file_size")]
         public int? FileSize { get; set; }
     }
 
@@ -147,31 +169,37 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique identifier for this file.
         /// </summary>
+        [JsonProperty("file_id")]
         public string FileId { get; set; }
 
         /// <summary>
         /// Duration of the audio in seconds as defined by sender.
         /// </summary>
+        [JsonProperty("duration")]
         public int Duration { get; set; }
 
         /// <summary>
         /// Performer of the audio as defined by sender or by audio tags.
         /// </summary>
+        [JsonProperty("performer")]
         public string Performer { get; set; }
 
         /// <summary>
         /// Title of the audio as defined by sender or by audio tags.
         /// </summary>
+        [JsonProperty("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// MIME type of the file as defined by sender.
         /// </summary>
+        [JsonProperty("mime_type")]
         public string MimeType { get; set; }
 
         /// <summary>
         /// File size.
         /// </summary>
+        [JsonProperty("file_size")]
         public int? FileSize { get; set; }
     }
 
@@ -184,26 +212,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique file identifier.
         /// </summary>
+        [JsonProperty("file_id")]
         public string FileId { get; set; }
 
         /// <summary>
         /// Document thumbnail as defined by sender.
         /// </summary>
+        [JsonProperty("thumb")]
         public PhotoSize Thumb { get; set; }
 
         /// <summary>
         /// Original filename as defined by sender.
         /// </summary>
+        [JsonProperty("file_name")]
         public string FileName { get; set; }
 
         /// <summary>
         /// MIME type of the file as defined by sender.
         /// </summary>
+        [JsonProperty("mime_type")]
         public string MimeType { get; set; }
 
         /// <summary>
         /// File size.
         /// </summary>
+        [JsonProperty("file_size")]
         public int? FileSize { get; set; }
     }
 
@@ -216,31 +249,37 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique file identifier.
         /// </summary>
+        [JsonProperty("file_id")]
         public string FileId { get; set; }
 
         /// <summary>
         /// Sticker width.
         /// </summary>
+        [JsonProperty("width")]
         public int Width { get; set; }
 
         /// <summary>
         /// Sticker height.
         /// </summary>
+        [JsonProperty("height")]
         public int Height { get; set; }
 
         /// <summary>
         /// Sticker thumbnail in .webp or .jpg format.
         /// </summary>
+        [JsonProperty("thumb")]
         public PhotoSize Thumb { get; set; }
 
         /// <summary>
         /// Emoji associated with the sticker.
         /// </summary>
+        [JsonProperty("emoji")]
         public string Emoji { get; set; }
 
         /// <summary>
         /// File size.
         /// </summary>
+        [JsonProperty("file_size")]
         public int? FileSize { get; set; }
     }
 
@@ -253,36 +292,43 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique identifier for this file.
         /// </summary>
+        [JsonProperty("file_id")]
         public string FileId { get; set; }
 
         /// <summary>
         /// Video width as defined by sender.
         /// </summary>
+        [JsonProperty("width")]
         public int Width { get; set; }
 
         /// <summary>
         /// Video height as defined by sender
         /// </summary>
+        [JsonProperty("height")]
         public int Height { get; set; }
 
         /// <summary>
         /// Duration of the video in seconds as defined by sender.
         /// </summary>
+        [JsonProperty("duration")]
         public int Duration { get; set; }
 
         /// <summary>
         /// Video thumbnail.
         /// </summary>
+        [JsonProperty("thumb")]
         public PhotoSize Thumb { get; set; }
 
         /// <summary>
         /// Mime type of a file as defined by sender.
         /// </summary>
+        [JsonProperty("mime_type")]
         public string MimeType { get; set; }
 
         /// <summary>
         /// File size.
         /// </summary>
+        [JsonProperty("file_size")]
         public int? FileSize { get; set; }
     }
 
@@ -295,21 +341,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique identifier for this file
         /// </summary>
+        [JsonProperty("file_id")]
         public string FileId { get; set; }
 
         /// <summary>
         /// Duration of the audio in seconds as defined by sender.
         /// </summary>
+        [JsonProperty("duration")]
         public int Duration { get; set; }
 
         /// <summary>
         /// MIME type of the file as defined by sender.
         /// </summary>
+        [JsonProperty("mime_type")]
         public string MimeType { get; set; }
 
         /// <summary>
         /// File size.
         /// </summary>
+        [JsonProperty("file_size")]
         public int? FileSize { get; set; }
     }
 
@@ -321,21 +371,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Contact's phone number.
         /// </summary>
+        [JsonProperty("phone_number")]
         public string PhoneNumber { get; set; }
 
         /// <summary>
         /// Contact's first name.
         /// </summary>
+        [JsonProperty("first_name")]
         public string FirstName { get; set; }
 
         /// <summary>
         /// Contact's last name.
         /// </summary>
+        [JsonProperty("last_name")]
         public string LastName { get; set; }
 
         /// <summary>
         /// Contact's user identifier in Telegram.
         /// </summary>
+        [JsonProperty("user_id")]
         public int? UserId { get; set; }
     }
 
@@ -347,11 +401,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Longitude as defined by sender.
         /// </summary>
+        [JsonProperty("longitude")]
         public float Longitude { get; set; }
 
         /// <summary>
         /// Latitude as defined by sender.
         /// </summary>
+        [JsonProperty("latitude")]
         public float Latitude { get; set; }
     }
 
@@ -363,21 +419,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Venue location.
         /// </summary>
+        [JsonProperty("location")]
         public Location Location { get; set; }
 
         /// <summary>
         /// Name of the venue.
         /// </summary>
+        [JsonProperty("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Address of the venue.
         /// </summary>
+        [JsonProperty("address")]
         public string Address { get; set; }
 
         /// <summary>
         /// Foursquare identifier of the venue.
         /// </summary>
+        [JsonProperty("foursquare_id")]
         public string FoursquareId { get; set; }
     }
 
@@ -389,11 +449,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Total number of profile pictures the target user has.
         /// </summary>
+        [JsonProperty("total_count")]
         public int TotalCount { get; set; }
 
         /// <summary>
         /// Requested profile pictures (in up to 4 sizes each).
         /// </summary>
+        [JsonConverter(typeof(ArrayToListConverter<PhotoSize>))]
+        [JsonProperty("photos")]
         public List<PhotoSize> Photos { get; set; }
     }
 
@@ -405,16 +468,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Title of the game.
         /// </summary>
+        [JsonProperty("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Description of the game.
         /// </summary>
+        [JsonProperty("description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Photo that will be displayed in the game message in chats.
         /// </summary>
+        [JsonConverter(typeof(ArrayToListConverter<PhotoSize>))]
+        [JsonProperty("photo")]
         public List<PhotoSize> Photo { get; set; }
 
         /// <summary>
@@ -422,16 +489,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// Can be automatically edited to include current high scores for the game when the bot calls setGameScore, 
         /// or manually edited using editMessageText. 0-4096 characters.
         /// </summary>
+        [JsonProperty("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Special entities that appear in text, such as usernames, URLs, bot commands, etc.
         /// </summary>
+        [JsonConverter(typeof(ArrayToListConverter<MessageEntity>))]
+        [JsonProperty("text_entities")]
         public List<MessageEntity> TextEntities { get; set; }
 
         /// <summary>
         /// Animation that will be displayed in the game message in chats.
         /// </summary>
+        [JsonProperty("animation")]
         public Animation Animation { get; set; }
     }
 
@@ -443,26 +514,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// 	Unique file identifier
         /// </summary>
+        [JsonProperty("file_id")]
         public string FileId { get; set; }
 
         /// <summary>
         /// Animation thumbnail as defined by sender.
         /// </summary>
+        [JsonProperty("thumb")]
         public PhotoSize Thumb { get; set; }
 
         /// <summary>
         /// Original animation filename as defined by sender.
         /// </summary>
+        [JsonProperty("file_name")]
         public string FileName { get; set; }
 
         /// <summary>
         /// MIME type of the file as defined by sender.
         /// </summary>
+        [JsonProperty("mime_type")]
         public string MimeType { get; set; }
 
         /// <summary>
         /// File size.
         /// </summary>
+        [JsonProperty("file_size")]
         public int? FileSize { get; set; }
     }
 
@@ -474,29 +550,34 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Text of the button. If none of the optional fields are used, it will be sent to the bot as a message when the button is pressed.
         /// </summary>
+        [JsonProperty("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Optional. If <see langword="true"/>, the user's phone number will be sent as a contact when the button is pressed. 
         /// Available in private chats only
         /// </summary>
+        [JsonProperty("request_contact")]
         public bool? RequestContact { get; set; }
 
         /// <summary>
         /// Optional. If <see langword="true"/>, the user's current location will be sent when the button is pressed. 
         /// Available in private chats only.
         /// </summary>
+        [JsonProperty("request_location")]
         public bool? RequestLocation { get; set; }
     }
 
     /// <summary>
     /// Represents a custom keyboard with reply options.
     /// </summary>
-    public class ReplyKeyboardMarkup
+    public class ReplyKeyboardMarkup : IMarkup
     {
         /// <summary>
         /// List of button rows, each represented by an List of KeyboardButton objects
         /// </summary>
+        [JsonConverter(typeof(ArrayToListConverter<KeyboardButton>))]
+        [JsonProperty("keyboard")]
         public List<KeyboardButton> Keyboard { get; set; }
 
         /// <summary>
@@ -505,6 +586,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <remarks>
         /// Defaults to <see langword="false"/>, in which case the custom keyboard is always of the same height as the app's standard keyboard.
         /// </remarks>
+        [JsonProperty("resize_keyboars")]
         public bool? ResizeKeyboard { get; set; } = false;
 
         /// <summary>
@@ -513,6 +595,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// the user can press a special button in the input field to see the custom keyboard again. 
         /// </summary>
         /// <remarks>Defaults to <see langword="false"/>.</remarks>
+        [JsonProperty("one_time_keyboard")]
         public bool? OneTimeKeyboard { get; set; }
 
         /// <summary>
@@ -524,6 +607,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// A user requests to change the bot‘s language, bot replies to the request with a keyboard to select the new language. 
         /// Other users in the group don’t see the keyboard.
         /// </example>
+        [JsonProperty("selective")]
         public bool? Selective { get; set; }
     }
 
@@ -532,12 +616,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// By default, custom keyboards are displayed until a new keyboard is sent by a bot. 
     /// An exception is made for one-time keyboards that are hidden immediately after the user presses a button (see <see cref="ReplyKeyboardMarkup"/>).
     /// </summary>
-    public class ReplyKeyboardRemove
+    public class ReplyKeyboardRemove : IMarkup
     {
         /// <summary>
         /// Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; 
         /// if you want to hide the keyboard from sight but keep it accessible, use <see cref="ReplyKeyboardMarkup.OneTimeKeyboard"/>)
         /// </summary>
+        [JsonProperty("remove_keyboard")]
         public bool RemoveKeyboard { get; } = true;
 
         /// <summary>
@@ -549,18 +634,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// A user votes in a poll, bot returns confirmation message in reply to the vote and removes the keyboard for that user, 
         /// while still showing the keyboard with poll options to users who haven't voted yet.
         /// </example>
+        [JsonProperty("selective")]
         public bool? Selective { get; set; }
     }
 
     /// <summary>
     /// Represents an inline keyboard that appears right next to the message it belongs to.
     /// </summary>
-    public class InlineKeyboardMarkup
+    public class InlineKeyboardMarkup : IMarkup
     {
         /// <summary>
         /// Array of button rows, each represented by an Array of InlineKeyboardButton objects.
         /// </summary>
-        public List<InlineKeyboardButton> InlineKeyboard { get; set; }
+        [JsonConverter(typeof(ArrayToListConverter<InlineKeyboardButton>))]
+        [JsonProperty("inline_keyboard")]
+        public List<List<InlineKeyboardButton>> InlineKeyboard { get; set; }
     }
 
     /// <summary>
@@ -571,28 +659,33 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Label text on the button.
         /// </summary>
+        [JsonProperty("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Optional. HTTP url to be opened when button is pressed.
         /// </summary>
+        [JsonProperty("url")]
         public string Url { get; set; }
 
         /// <summary>
         /// Optional. Data to be sent in a <see cref="CallbackQuery"/> to the bot when button is pressed, 1-64 bytes.
         /// </summary>
+        [JsonProperty("callback_data")]
         public string CallbackData { get; set; }
 
         /// <summary>
         /// Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot‘s username and the specified inline query in the input field. 
         /// Can be empty, in which case just the bot’s username will be inserted.
         /// </summary>
+        [JsonProperty("switch_inline_query")]
         public string SwitchInlineQuery { get; set; }
 
         /// <summary>
         /// Optional. If set, pressing the button will insert the bot‘s username and the specified inline query in the current chat's input field. 
         /// Can be empty, in which case only the bot’s username will be inserted.
         /// </summary>
+        [JsonProperty("switch_inline_query_current_chat")]
         public string SwitchInlineQueryCurrentChat { get; set; }
 
         /// <summary>
@@ -601,6 +694,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <remarks>
         /// This type of button must always be the first button in the first row.
         /// </remarks>
+        [JsonProperty("callback_game")]
         public CallbackGame CallbackGame { get; set; }
     }
 
@@ -615,11 +709,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique identifier for this query.
         /// </summary>
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Sender.
         /// </summary>
+        [JsonProperty("from")]
         public User From { get; set; }
 
         /// <summary>
@@ -628,16 +724,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <remarks>
         /// Note that message content and message date will not be available if the message is too old.
         /// </remarks>
+        [JsonConverter(typeof(MessageConverter))]
+        [JsonProperty("message")]
         public Message Message { get; set; }
 
         /// <summary>
         /// Optional. Identifier of the message sent via the bot in inline mode, that originated the query.
         /// </summary>
+        [JsonProperty("inline_message_id")]
         public string InlineMessageId { get; set; }
 
         /// <summary>
         /// Global identifier, uniquely corresponding to the chat to which the message with the callback button was sent. Useful for high scores in games.
         /// </summary>
+        [JsonProperty("chat_instance")]
         public string ChatInstance { get; set; }
 
         /// <summary>
@@ -646,16 +746,43 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <remarks>
         /// Be aware that a bad client can send arbitrary data in this field.
         /// </remarks>
+        [JsonProperty("data")]
         public string Data { get; set; }
 
         /// <summary>
         /// Optional. Short name of a Game to be returned, serves as the unique identifier for the game.
         /// </summary>
+        [JsonProperty("game_short_namae")]
         public string GameShortName { get; set; }
     }
 
     public class CallbackGame
     {
         
+    }
+
+    /// <summary>
+    /// Upon receiving a message with this object, Telegram clients will display a reply interface to the user (act as if the user has selected the bot‘s message and tapped ’Reply'). 
+    /// This can be extremely useful if you want to create user-friendly step-by-step interfaces without having to sacrifice privacy mode.
+    /// </summary>
+    public class ForceReply : IMarkup
+    {
+        /// <summary>
+        /// Shows reply interface to the user, as if they manually selected the bot‘s message and tapped ’Reply'
+        /// </summary>
+        [JsonProperty("forse_reply")]
+        public bool ForseReply { get; } = true;
+
+        /// <summary>
+        /// Optional. Use this parameter if you want to show the keyboard to specific users only. 
+        /// Targets: 1) users that are @mentioned in the <see cref="TextMessage.Text"/>; 
+        /// 2) if the bot's message is a reply (has ReplyToMessageId), sender of the original message.
+        /// </summary>
+        /// <example>
+        /// A user votes in a poll, bot returns confirmation message in reply to the vote and removes the keyboard for that user, 
+        /// while still showing the keyboard with poll options to users who haven't voted yet.
+        /// </example>
+        [JsonProperty("selective")]
+        public bool? Selective { get; set; }
     }
 }

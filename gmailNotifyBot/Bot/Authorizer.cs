@@ -50,17 +50,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private async void StartAuthorizeAction(TextMessage message)
         {
-            LogMaker.Log(Logger, $"Start authorizing user with UserId={message.From.Id}.", false);
-            var userModel = await UserContextWorker.FindUserAsync(message.From)
-                         ?? await UserContextWorker.AddNewUserAsync(message.From);
+            //LogMaker.Log(Logger, $"Start authorizing user with UserId={message.From.Id}.", false);
+            //var userModel = await UserContextWorker.FindUserAsync(message.From)
+            //             ?? await UserContextWorker.AddNewUserAsync(message.From);
 
-            if (CheckUserAuthorization(userModel)) return;
+            //if (CheckUserAuthorization(userModel)) return;
 
-            var state = GenerateState(userModel.Id);
-            await UserContextWorker.QueueAsync(userModel.Id, state);
+            //var state = GenerateState(userModel.Id);
+            //await UserContextWorker.QueueAsync(userModel.Id, state);
 
-            var uri = GetAuthenticationUri(state);
-            SenMessage();
+            //var uri = GetAuthenticationUri(state);
+            //SendMessage();
 
         }
 
