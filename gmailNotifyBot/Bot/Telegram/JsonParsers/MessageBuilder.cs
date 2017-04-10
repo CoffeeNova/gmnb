@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Helpers;
+using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -131,7 +132,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.JsonParsers
         public static dynamic BuildUnspecifiedMessage(JToken messageToken)
         {
             if (messageToken == null)
-                throw new Exceptions.TelegramMessageIsUnidentifiedException();
+                throw new TelegramMessageIsUnidentifiedException();
 
              Message message;
             switch (DefineMessage(messageToken))
@@ -210,7 +211,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.JsonParsers
             });
 
             if (messageBody == null || (messageBody as JProperty).Name == null)
-                throw new Exceptions.TelegramMessageIsUnidentifiedException();
+                throw new TelegramMessageIsUnidentifiedException();
             return (messageBody as JProperty).Name;
         }
 

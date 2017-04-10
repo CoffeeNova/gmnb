@@ -184,7 +184,7 @@
     <Compile Include="Bot\Authorizer.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\UserTableModel.cs" />
     <Compile Include="Bot\DataBase\UserWorker.cs" />
-    <Compile Include="Bot\Exceptions.cs" />
+    <Compile Include="Bot\Exceptions\TelegramMessageIsUnidentifiedException.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
     <Compile Include="Bot\Requests.cs" />
     <Compile Include="Bot\RequestsHandler.cs" />
@@ -192,6 +192,7 @@
     <Compile Include="Bot\Telegram\Converters\ArrayToListConverter.cs" />
     <Compile Include="Bot\Telegram\Converters\DateTimeConverter.cs" />
     <Compile Include="Bot\Telegram\Converters\MessageConverter.cs" />
+    <Compile Include="Bot\Telegram\Exceptions\TelegramMethodsGetMeException.cs" />
     <Compile Include="Bot\Telegram\Interfaces.cs" />
     <Compile Include="Bot\Telegram\JsonParsers\GeneralBuilder.cs" />
     <Compile Include="Bot\Telegram\JsonParsers\MessageBuilder.cs" />

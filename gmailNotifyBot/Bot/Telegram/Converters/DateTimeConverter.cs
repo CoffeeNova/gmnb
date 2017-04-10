@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Converters
 {
-    public class DateTimeConverter : JsonConverter
+    internal class DateTimeConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

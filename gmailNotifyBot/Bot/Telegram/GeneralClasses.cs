@@ -576,9 +576,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// List of button rows, each represented by an List of KeyboardButton objects
         /// </summary>
-        [JsonConverter(typeof(ArrayToListConverter<KeyboardButton>))]
+        [JsonConverter(typeof(ArrayToListConverter<List<KeyboardButton>>))]
         [JsonProperty("keyboard")]
-        public List<KeyboardButton> Keyboard { get; set; }
+        public List<List<KeyboardButton>> Keyboard { get; set; }
 
         /// <summary>
         /// Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons). 
@@ -646,7 +646,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Array of button rows, each represented by an Array of InlineKeyboardButton objects.
         /// </summary>
-        [JsonConverter(typeof(ArrayToListConverter<InlineKeyboardButton>))]
+        [JsonConverter(typeof(ArrayToListConverter<List<InlineKeyboardButton>>))]
         [JsonProperty("inline_keyboard")]
         public List<List<InlineKeyboardButton>> InlineKeyboard { get; set; }
     }
@@ -770,7 +770,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Shows reply interface to the user, as if they manually selected the bot‘s message and tapped ’Reply'
         /// </summary>
-        [JsonProperty("forse_reply")]
+        [JsonProperty("force_reply")]
         public bool ForseReply { get; } = true;
 
         /// <summary>

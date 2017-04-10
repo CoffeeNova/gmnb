@@ -6,16 +6,16 @@ using Newtonsoft.Json;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Converters
 {
-    public class ArrayToListConverter<T> : JsonConverter
+    internal class ArrayToListConverter<T> : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value == null) return;
 
-            writer.WriteStartArray();
+            //writer.WriteStartArray();
             serializer.Serialize(writer, value);
             //(value as List<T>).ForEach(i => writer.WriteValue(i));
-            writer.WriteEndArray();
+            //writer.WriteEndArray();
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

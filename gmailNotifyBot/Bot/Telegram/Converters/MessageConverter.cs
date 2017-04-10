@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Converters
 {
-    public class MessageConverter : JsonConverter
+    internal class MessageConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -76,7 +76,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Converters
             new JsonSerializerSettings() { ContractResolver = new MessageSpecifiedConcreteClassConverter() };
     }
 
-    public class MessageSpecifiedConcreteClassConverter : DefaultContractResolver
+    internal class MessageSpecifiedConcreteClassConverter : DefaultContractResolver
     {
         protected override JsonConverter ResolveContractConverter(Type objectType)
         {

@@ -19,64 +19,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
     [TestClass]
     public class MessageBuilderTests
     {
-        public TestContext TestContext { get; set; }
-
-        private JToken _message;
-        private static int _messageId = 100;
-        private static Chat _privateChat;
-        private static Chat _groupChat;
-        private static Chat _superGroupChat;
-        private static DateTime _date;
-        private static User _user;
-        private static User _user1;
-        private static User _user2;
-        private static List<User> _users;
-        private string _text = @"http://www.translate.ru/";
-        private static List<MessageEntity> _entities;
-        private static MessageEntity _urlEntity;
-
-        private static string _caption = "TestCaption";
-        private static JToken _messageToken;
-        private static ComparisonConfig _config;
-        private static Audio _audio;
-        private static Document _document;
-        private static Sticker _sticker;
-        private static PhotoSize _thumb;
-        private static PhotoSize _photoSize1;
-        private static PhotoSize _photoSize2;
-        private static PhotoSize _photoSize3;
-        private static List<PhotoSize> _photo;
-        private static Video _video;
-        private static Voice _voice;
-        private static Contact _contact;
-        private static Location _location;
-        private static List<PhotoSize> _newChatPhoto;
-        private static VoiceMessage _replyTo;
-        private static Message _pinnedMessage;
-
-        private static string _textMessageFileName = "SampleTextMessage.json";
-        private static string _audioMessageFileName = "SampleAudioMessage.json";
-        private static string _documentMessageFileName = "SampleDocumentMessage.json";
-        private static string _stickerMessageFileName = "SampleStickerMessage.json";
-        private static string _photoMessageFileName = "SamplePhotoMessage.json";
-        private static string _gameMessageFileName = "SampleGameMessage.json";
-        private static string _videoMessageFileName = "SampleVideoMessage.json";
-        private static string _voiceMessageFileName = "SampleVoiceMessage.json";
-        private static string _contactMessageFileName = "SampleContactMessage.json";
-
-        private static string _locationMessageFileName = "SampleLocationMessage.json";
-        private static string _venueMessageFileName = "SampleVenueMessage.json";
-        private static string _newChatMemberMessageFileName = "SampleNewChatMemberMessage.json";
-        private static string _leftChatMemberMessageFileName = "SampleLeftChatMemberMessage.json";
-        private static string _newChatTitleMessageFileName = "SampleNewChatTitleMessage.json";
-        private static string _newChatPhotoMessageFileName = "SampleNewChatPhotoMessage.json";
-        private static string _migrateToChatIdMessageFileName = "SampleMigrateToChatIdMessage.json";
-        private static string _migrateFromChatIdMessageFileName = "SampleMigrateFromChatIdMessage.json";
-        private static string _forwardFromMessageFileName = "SampleForwardFromMessage.json";
-        private static string _replyToMessageFileName = "SampleReplyToMessage.json";
-        private static string _pinnedMessageFileName = "SamplePinnedMessage.json";
-        private static string _forwardedVideoMessageFileName = "SampleForwardedVideoMessage.json";
-
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
@@ -753,5 +695,64 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
 
             Assert.IsTrue(comparisonResult.AreEqual, comparisonResult.DifferencesString);
         }
+
+        public TestContext TestContext { get; set; }
+
+        private JToken _message;
+        private static int _messageId = 100;
+        private static Chat _privateChat;
+        private static Chat _groupChat;
+        private static Chat _superGroupChat;
+        private static DateTime _date;
+        private static User _user;
+        private static User _user1;
+        private static User _user2;
+        private static List<User> _users;
+        private string _text = @"http://www.translate.ru/";
+        private static List<MessageEntity> _entities;
+        private static MessageEntity _urlEntity;
+
+        private static string _caption = "TestCaption";
+        private static JToken _messageToken;
+        private static ComparisonConfig _config;
+        private static Audio _audio;
+        private static Document _document;
+        private static Sticker _sticker;
+        private static PhotoSize _thumb;
+        private static PhotoSize _photoSize1;
+        private static PhotoSize _photoSize2;
+        private static PhotoSize _photoSize3;
+        private static List<PhotoSize> _photo;
+        private static Video _video;
+        private static Voice _voice;
+        private static Contact _contact;
+        private static Location _location;
+        private static List<PhotoSize> _newChatPhoto;
+        private static VoiceMessage _replyTo;
+        private static Message _pinnedMessage;
+
+        private static string _textMessageFileName = "SampleTextMessage.json";
+        private static string _audioMessageFileName = "SampleAudioMessage.json";
+        private static string _documentMessageFileName = "SampleDocumentMessage.json";
+        private static string _stickerMessageFileName = "SampleStickerMessage.json";
+        private static string _photoMessageFileName = "SamplePhotoMessage.json";
+        private static string _gameMessageFileName = "SampleGameMessage.json";
+        private static string _videoMessageFileName = "SampleVideoMessage.json";
+        private static string _voiceMessageFileName = "SampleVoiceMessage.json";
+        private static string _contactMessageFileName = "SampleContactMessage.json";
+
+        private static string _locationMessageFileName = "SampleLocationMessage.json";
+        private static string _venueMessageFileName = "SampleVenueMessage.json";
+        private static string _newChatMemberMessageFileName = "SampleNewChatMemberMessage.json";
+        private static string _leftChatMemberMessageFileName = "SampleLeftChatMemberMessage.json";
+        private static string _newChatTitleMessageFileName = "SampleNewChatTitleMessage.json";
+        private static string _newChatPhotoMessageFileName = "SampleNewChatPhotoMessage.json";
+        private static string _migrateToChatIdMessageFileName = "SampleMigrateToChatIdMessage.json";
+        private static string _migrateFromChatIdMessageFileName = "SampleMigrateFromChatIdMessage.json";
+        private static string _forwardFromMessageFileName = "SampleForwardFromMessage.json";
+        private static string _replyToMessageFileName = "SampleReplyToMessage.json";
+        private static string _pinnedMessageFileName = "SamplePinnedMessage.json";
+        private static string _forwardedVideoMessageFileName = "SampleForwardedVideoMessage.json";
+
     }
 }
