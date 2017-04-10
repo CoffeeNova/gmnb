@@ -394,7 +394,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             Assert.IsTrue(comparisonResult.AreEqual, comparisonResult.DifferencesString);
         }
 
-
         [TestMethod]
         public void BuildMessage_AudioJSON_TelegramAudioMessage()
         {
