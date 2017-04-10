@@ -1,0 +1,15 @@
+{
+  "inline_keyboard": 
+  [
+    [
+        {
+          "text": "URL Button",
+          "url": "https://www.twitch.tv"
+        },
+        {
+          "text": "Callback Button",
+          "callback_data": "Test callback data"
+        }
+    ]
+  ]
+}
