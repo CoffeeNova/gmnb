@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
 using KellermanSoftware.CompareNetObjects;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
@@ -24,7 +25,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 ComparePrivateProperties = false,
                 CompareProperties = true,
                 MaxDifferences = 50,
-                MembersToIgnore = new List<string> { "MessageId", "Date" }
+                MembersToIgnore = new List<string> { "MessageId", "Date", "ForwardDate" }
             };
             string token = App_LocalResources.Tokens.GmailControlBotToken;
             _telegramMethods = new TelegramMethods(token);
@@ -76,6 +77,46 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                     }
                 }
             };
+            _testTextKeyboardButton = new KeyboardButton
+            {
+                Text = "Test keyboard button"
+            };
+            _testContactKeyboardButton = new KeyboardButton
+            {
+                Text = "Test contact keyboard button",
+                RequestContact = true
+
+            };
+            _testReplyKeyboardMarkup = new ReplyKeyboardMarkup
+            {
+                Keyboard = new List<List<KeyboardButton>>
+                {
+                    new List<KeyboardButton>
+                    {
+                        _testTextKeyboardButton,
+                        _testContactKeyboardButton,
+                    },
+                    new List<KeyboardButton>
+                    {
+                        _testContactKeyboardButton
+                    }
+                }
+            };
+            _testReplyKeyboardRemove = new ReplyKeyboardRemove();
+            _testForceReply = new ForceReply();
+            _botStartCommandEntity = new MessageEntity
+            {
+                Type = "bot_command",
+                Offset = 0,
+                Length = 6
+            };
+            _user = new User
+            {
+                Id = 170181775,
+                FirstName = "Coffee",
+                LastName = "Jelly",
+                Username = "CoffeeJelly"
+            };
         }
 
         [TestMethod()]
@@ -88,6 +129,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
             var comparationResult = compareLogic.Compare(expected, actual);
 
             Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(TelegramMethodsException), "Should be exception, because wrong token")]
+        public void GetMe_TelegramMethodsGetMeException()
+        {
+            var telegramMethods = new TelegramMethods("fakeToken");
+            var actual = telegramMethods.GetMe();
         }
 
         [TestMethod()]
@@ -107,6 +156,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
             Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
         }
 
+
         [TestMethod()]
         public void SendMessage_TextMessageOnlyString_TextMessage()
         {
@@ -119,6 +169,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
             };
 
             var actual = _telegramMethods.SendMessage(_privateChat.Id, message);
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+        
+        [TestMethod()]
+        public void SendMessageAsync_TextMessageOnlyString_TextMessage()
+        {
+            var message = "test sendMessage";
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                Text = message,
+                From = _botUser
+            };
+
+            var actual = _telegramMethods.SendMessageAsync(_privateChat.Id, message).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -145,6 +213,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         }
 
         [TestMethod()]
+        public void SendMessage_SilentMessage_TextMessage()
+        {
+            var message = "test silent sendMessage";
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                Text = message,
+                From = _botUser
+            };
+
+            var actual = _telegramMethods.SendMessage(_privateChat.Id, message, null, false, true);
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
         public void SendMessage_InlineKeyboardMarkupMessage_TextMessage()
         {
             var message = "https://www.twitch.tv";
@@ -162,14 +248,105 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
 
             Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
         }
+
+        [TestMethod()]
+        public void SendMessage_ReplyKeyboardMarkupMessage_TextMessage()
+        {
+            var message = "test";
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                Text = message,
+                From = _botUser,
+            };
+
+            var actual = _telegramMethods.SendMessage(_privateChat.Id, message, null, false, false, null, _testReplyKeyboardMarkup);
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendMessage_ReplyKeyboardRemove_TextMessage()
+        {
+            var message = "test";
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                Text = message,
+                From = _botUser,
+            };
+
+            var actual = _telegramMethods.SendMessage(_privateChat.Id, message, null, false, false, null, _testReplyKeyboardRemove);
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendMessage_ForseReply_TextMessage()
+        {
+            var message = "ForseReply";
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                Text = message,
+                From = _botUser,
+            };
+
+            var actual = _telegramMethods.SendMessage(_privateChat.Id, message, null, false, false, null, _testForceReply);
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void ForwardMessageTest()
+        {
+            var chatId = 170181775;
+            var fromChatId = 170181775;
+            var messageId = 1;
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser,
+                Entities = new List<MessageEntity> { _botStartCommandEntity },
+                Text ="/start",
+                ForwardFrom = _user
+            };
+
+            var actual = _telegramMethods.ForwardMessage(chatId, fromChatId, messageId);
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [ExpectedException(typeof(TelegramMethodsException))]
+        [TestMethod()]
+        public void SendMessage_TelegramMethodsException()
+        {
+            var actual = _telegramMethods.ForwardMessage(_privateChat.Id, _privateChat.Id, int.MaxValue);
+        }
+
         private static ComparisonConfig _config;
         private static TelegramMethods _telegramMethods;
         private static Chat _privateChat;
         private static User _botUser;
+        private static User _user;
         private static MessageEntity _italicTextEntity;
         private static MessageEntity _urlEntity;
+        private static MessageEntity _botStartCommandEntity;
         private static InlineKeyboardButton _testUrlButton;
         private static InlineKeyboardButton _testCallbackDataButton;
+        private static KeyboardButton _testTextKeyboardButton;
+        private static KeyboardButton _testContactKeyboardButton;
         private static InlineKeyboardMarkup _testInlineKeyboardMarkup;
+        private static ReplyKeyboardMarkup _testReplyKeyboardMarkup;
+        private static ReplyKeyboardRemove _testReplyKeyboardRemove;
+        private static ForceReply _testForceReply;
     }
 }
