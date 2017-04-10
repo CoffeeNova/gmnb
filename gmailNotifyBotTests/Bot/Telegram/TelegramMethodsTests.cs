@@ -2,11 +2,14 @@
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
 using KellermanSoftware.CompareNetObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
 {
@@ -119,6 +122,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
             };
         }
 
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            var path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\"))+ "TestFiles\\";
+            switch (TestContext.TestName)
+            {
+                case nameof(SendPhoto_PhotoName_TextMessage):
+                    _fullFileName = path + _photoFileName;
+                    break;
+                case nameof(SendPhoto_PhotoAndInlineKeyboard_TextMessage):
+                    _fullFileName = path + _photoFileName;
+                    break;
+            }
+        }
+
         [TestMethod()]
         public void GetMeTest()
         {
@@ -168,13 +186,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 From = _botUser
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id, message);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
             Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
         }
-        
+
         [TestMethod()]
         public void SendMessageAsync_TextMessageOnlyString_TextMessage()
         {
@@ -186,7 +204,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 From = _botUser
             };
 
-            var actual = _telegramMethods.SendMessageAsync(_privateChat.Id, message).Result;
+            var actual = _telegramMethods.SendMessageAsync(_privateChat.Id.ToString(), message).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -205,7 +223,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 Entities = new List<MessageEntity> { _italicTextEntity }
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id, "_" + message + "_", "Markdown");
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "_" + message + "_", "Markdown");
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -223,7 +241,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 From = _botUser
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id, message, null, false, true);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, true);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -242,7 +260,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 Entities = new List<MessageEntity> { _urlEntity }
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id, message, null, false, false, null, _testInlineKeyboardMarkup);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testInlineKeyboardMarkup);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -260,7 +278,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 From = _botUser,
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id, message, null, false, false, null, _testReplyKeyboardMarkup);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testReplyKeyboardMarkup);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -278,7 +296,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 From = _botUser,
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id, message, null, false, false, null, _testReplyKeyboardRemove);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testReplyKeyboardRemove);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -296,7 +314,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 From = _botUser,
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id, message, null, false, false, null, _testForceReply);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testForceReply);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -314,11 +332,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 Chat = _privateChat,
                 From = _botUser,
                 Entities = new List<MessageEntity> { _botStartCommandEntity },
-                Text ="/start",
+                Text = "/start",
                 ForwardFrom = _user
             };
 
-            var actual = _telegramMethods.ForwardMessage(chatId, fromChatId, messageId);
+            var actual = _telegramMethods.ForwardMessage(chatId.ToString(), fromChatId, messageId);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -329,8 +347,42 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         [TestMethod()]
         public void SendMessage_TelegramMethodsException()
         {
-            var actual = _telegramMethods.ForwardMessage(_privateChat.Id, _privateChat.Id, int.MaxValue);
+            var actual = _telegramMethods.ForwardMessage(_privateChat.Id.ToString(), _privateChat.Id, int.MaxValue);
         }
+
+        [TestMethod()]
+        public void SendPhoto_PhotoName_TextMessage()
+        {
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendPhoto(_privateChat.Id.ToString(), _fullFileName).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendPhoto_PhotoAndInlineKeyboard_TextMessage()
+        {
+            var text = "gabba-gabba-hey";
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendPhoto(_privateChat.Id.ToString(), _fullFileName, text, true, null, _testInlineKeyboardMarkup).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+        public TestContext TestContext { get; set; }
 
         private static ComparisonConfig _config;
         private static TelegramMethods _telegramMethods;
@@ -348,5 +400,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         private static ReplyKeyboardMarkup _testReplyKeyboardMarkup;
         private static ReplyKeyboardRemove _testReplyKeyboardRemove;
         private static ForceReply _testForceReply;
+        private static string _fullFileName;
+        private static string _photoFileName = "gabba.jpg";
     }
 }

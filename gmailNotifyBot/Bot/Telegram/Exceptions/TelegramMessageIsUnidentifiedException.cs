@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Exceptions
+namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions
 {
         [Serializable]
         public class TelegramMessageIsUnidentifiedException : Exception

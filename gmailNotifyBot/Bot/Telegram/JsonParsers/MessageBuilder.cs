@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Helpers;
-using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

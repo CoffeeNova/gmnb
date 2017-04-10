@@ -96,7 +96,9 @@
     <None Include="TestFiles\SampleVideoMessage.json" />
     <None Include="TestFiles\SampleVoiceMessage.json" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="TestFiles\gabba.jpg" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
