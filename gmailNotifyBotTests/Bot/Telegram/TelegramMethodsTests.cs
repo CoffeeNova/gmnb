@@ -2,6 +2,7 @@
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
 using KellermanSoftware.CompareNetObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using CoffeeJelly.gmailNotifyBot.Extensions;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
 {
@@ -19,6 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
+            _telegramMessagesCount = 0;
             _config = new ComparisonConfig
             {
                 CompareChildren = true,
@@ -122,10 +125,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
             };
         }
 
+        [ClassCleanup]
+        public static void ClassCleanUp()
+        {
+        }
+
         [TestInitialize]
         public void TestInitialize()
         {
-            var path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\"))+ "TestFiles\\";
+           var path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\")) + "TestFiles\\";
             switch (TestContext.TestName)
             {
                 case nameof(SendPhoto_PhotoName_TextMessage):
@@ -135,6 +143,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                     _fullFileName = path + _photoFileName;
                     break;
             }
+        }
+
+        [TestCleanup]
+        public void TestCleanUp()
+        {
+            if (!TestContext.TestName.EqualsAny(nameof(GetMeTest), nameof(GetMe_TelegramMethodsGetMeException), nameof(GetMeAsyncTest)))
+                _telegramMessagesCount++;
         }
 
         [TestMethod()]
@@ -336,7 +351,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 ForwardFrom = _user
             };
 
-            var actual = _telegramMethods.ForwardMessage(chatId.ToString(), fromChatId, messageId);
+            var actual = _telegramMethods.ForwardMessage(chatId.ToString(), fromChatId.ToString(), messageId);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -345,9 +360,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
 
         [ExpectedException(typeof(TelegramMethodsException))]
         [TestMethod()]
-        public void SendMessage_TelegramMethodsException()
+        public void ForwardMessage_TelegramMethodsException()
         {
-            var actual = _telegramMethods.ForwardMessage(_privateChat.Id.ToString(), _privateChat.Id, int.MaxValue);
+            var actual = _telegramMethods.ForwardMessage(_privateChat.Id.ToString(), _privateChat.Id.ToString(), int.MaxValue);
         }
 
         [TestMethod()]
@@ -402,5 +417,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         private static ForceReply _testForceReply;
         private static string _fullFileName;
         private static string _photoFileName = "gabba.jpg";
+
+        private static int _telegramMessagesCount;
     }
 }

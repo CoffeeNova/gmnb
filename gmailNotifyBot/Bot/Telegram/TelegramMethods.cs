@@ -56,82 +56,47 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             return Task.Run(() => GetMe());
         }
 
+        [TelegramMethod("sendMessage")]
         public TextMessage SendMessage(string chatId, string message, string parseMode = null, bool disableWebPagePreview = false,
             bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
-            if (string.IsNullOrEmpty(message))
-                throw new ArgumentNullException(nameof(message));
+            chatId.NullInspect(nameof(chatId));
+            message.NullInspect(nameof(message));
 
-            using (var webClient = new WebClient())
-            {
-                try
-                {
-                    var test = disableNotification.ToString();
-                    var parameters = new NameValueCollection
-                    {
-                        {"chat_id", chatId},
-                        {"text", message},
-                        {"disable_notification", disableNotification.ToString()},
-                        {"disable_web_page_preview", disableWebPagePreview.ToString()}
-                    };
-                    if (parseMode != null)
-                        parameters.Add("parse_mode", parseMode);
-                    if (replyToMessageId != null)
-                        parameters.Add("reply_to_message_id", replyToMessageId.ToString());
-                    if (replyMarkup != null)
-                        parameters.Add("reply_markup",
-                            JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings));
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup);
+            parameters.Add("text", message);
+            parameters.Add("disable_web_page_preview", disableWebPagePreview.ToString());
+            if (parseMode != null) parameters.Add("parse_mode", parseMode);
 
-                    var byteResult = webClient.UploadValues(TelegramBotUrl + Token + "/sendMessage", "POST", parameters);
-                    var strResult = webClient.Encoding.GetString(byteResult);
-                    var json = JsonConvert.DeserializeObject<JToken>(strResult);
-                    return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
-                }
-                catch (WebException ex)
-                {
-                    throw new TelegramMethodsException("Some arguments are not correct.", ex);
-                }
-            }
+            return UploadValues(parameters);
         }
+
 
         public Task<TextMessage> SendMessageAsync(string chatId, string message, string parseMode = null, bool disableWebPagePreview = false,
             bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
-
             return Task.Run(
                     () => SendMessage(chatId, message, parseMode, disableWebPagePreview, disableNotification,
                         replyToMessageId, replyMarkup));
         }
 
-
-        public TextMessage ForwardMessage(string chatId, long fromChatId, int messageId, bool disableNotification = false)
+        [TelegramMethod("forwardMessage")]
+        public TextMessage ForwardMessage(string chatId, string fromChatId, int messageId, bool disableNotification = false)
         {
-            using (var webClient = new WebClient())
-            {
-                try
-                {
-                    var parameters = new NameValueCollection
-                    {
-                        {"chat_id", chatId},
-                        {"from_chat_id", fromChatId.ToString()},
-                        {"message_id", messageId.ToString()},
-                        {"disable_notification", disableNotification.ToString()}
-                    };
+            chatId.NullInspect(nameof(chatId));
+            fromChatId.NullInspect(nameof(fromChatId));
 
-                    var byteResult = webClient.UploadValues(TelegramBotUrl + Token + "/forwardMessage", "POST",
-                        parameters);
-                    var strResult = webClient.Encoding.GetString(byteResult);
-                    var json = JsonConvert.DeserializeObject<JToken>(strResult);
-                    return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
-                }
-                catch (WebException ex)
-                {
-                    throw new TelegramMethodsException("Wrong method arguments, probably chat ides does not exist or wrong message id", ex);
-                }
-            }
+            var parameters = new NameValueCollection
+            {
+                {"from_chat_id", fromChatId},
+                {"message_id", messageId.ToString()}
+            };
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, null, null);
+            return UploadValues(parameters);
         }
 
-        public Task<TextMessage> ForwardMessageAsync(string chatId, long fromChatId, int messageId,
+        public Task<TextMessage> ForwardMessageAsync(string chatId, string fromChatId, int messageId,
             bool disableNotification = false)
         {
             return Task.Run(() => ForwardMessage(chatId, fromChatId, messageId, disableNotification));
@@ -149,18 +114,80 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 
             using (var form = new MultipartFormDataContent())
             {
-                form.Add(new StringContent(chatId, Encoding.UTF8), "chat_id");
-                form.Add(new StringContent(caption, Encoding.UTF8), "caption");
-                form.Add(new StringContent(disableNotification.ToString(), Encoding.UTF8), "disable_notification");
-                if (replyToMessageId != null)
-                    form.Add(new StringContent(replyToMessageId.ToString(), Encoding.UTF8), "reply_to_message_id");
-                if (replyMarkup != null)
-                    form.Add(new StringContent(
-                            JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings), Encoding.UTF8),
-                        "reply_markup");
-
+                SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
                 AddFileDataContent(form, fullFileName);
                 return await UploadFile(form);
+            }
+        }
+
+        public TextMessage SendPhotoByUri(string chatId, Uri photoUri, string caption = "",
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            using (var webClient = new WebClient())
+            {
+                try
+                {
+
+                }
+                catch (WebException ex)
+                {
+                    throw new TelegramMethodsException("Wrong method arguments, probably chat ides does not exist or wrong message id", ex);
+                }
+            }
+            return null;
+        }
+
+
+        private void SendMethodsDefaultContent(NameValueCollection collection, string chatId, bool disableNotification,
+            int? replyToMessageId, IMarkup replyMarkup, string caption = null)
+        {
+            collection.Add("disable_notification", disableNotification.ToString());
+
+            if (chatId != null)
+                collection.Add("chat_id", chatId);
+            if (caption != null)
+                collection.Add("caption", caption);
+            if (replyToMessageId != null)
+                collection.Add("reply_to_message_id", replyToMessageId.ToString());
+            if (replyMarkup != null)
+                collection.Add("reply_markup",
+                    JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings));
+        }
+
+        private void SendMethodsDefaultContent(MultipartFormDataContent form, string chatId, bool disableNotification,
+            int? replyToMessageId, IMarkup replyMarkup, string caption = null)
+        {
+            form.Add(new StringContent(chatId, Encoding.UTF8), "chat_id");
+            form.Add(new StringContent(disableNotification.ToString(), Encoding.UTF8), "disable_notification");
+            if (caption != null)
+                form.Add(new StringContent(caption, Encoding.UTF8), "caption");
+            if (replyToMessageId != null)
+                form.Add(new StringContent(replyToMessageId.ToString(), Encoding.UTF8), "reply_to_message_id");
+            if (replyMarkup != null)
+                form.Add(new StringContent(
+                        JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings), Encoding.UTF8),
+                    "reply_markup");
+        }
+
+        private TextMessage UploadValues(NameValueCollection collection, [CallerMemberName] string callerName = "")
+        {
+            var telegramMethodName = TelegramMethodAttribute.GetMethodNameValue(this.GetType(), callerName);
+            Debug.Assert(!string.IsNullOrEmpty(telegramMethodName),
+                $"Use {nameof(TelegramMethodAttribute)} to avoid error.");
+
+            using (var webClient = new WebClient())
+            {
+                try
+                {
+                    var byteResult = webClient.UploadValues(TelegramBotUrl + Token + "/" + telegramMethodName, "POST", collection);
+                    var strResult = webClient.Encoding.GetString(byteResult);
+                    var json = JsonConvert.DeserializeObject<JToken>(strResult);
+                    return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
+                }
+                catch (WebException ex)
+                {
+                    throw new TelegramMethodsException("Some arguments are not correct.", ex);
+                }
             }
         }
 

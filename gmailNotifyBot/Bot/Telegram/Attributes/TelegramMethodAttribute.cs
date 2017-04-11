@@ -12,6 +12,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes
             MethodName = methodName;
             FileType = fileType;
         }
+
+        public TelegramMethodAttribute(string methodName)
+        {
+            MethodName = methodName;
+        }
+
         public string MethodName { get; set; }
 
         public string FileType { get; set; }
@@ -29,7 +35,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes
 
         public static string GetFileTypeValue(Type classType, string callerMethodName)
         {
-            MethodInfo method = classType.GetMethod(callerMethodName);
+            var method = classType.GetMethod(callerMethodName);
             var attributes = (TelegramMethodAttribute[])method.GetCustomAttributes(typeof(TelegramMethodAttribute), true);
 
             string fileType = "";

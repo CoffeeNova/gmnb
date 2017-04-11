@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Web;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
@@ -21,5 +22,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
             if (obj == null)
                 throw new ArgumentNullException(name);
         }
+
     }
 }
