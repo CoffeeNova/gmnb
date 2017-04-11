@@ -60,7 +60,18 @@
   <ItemGroup>
     <Compile Include="Bot\GoogleAuthTests.cs" />
     <Compile Include="Bot\MessageBuilderTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\ForwardMessageTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\General.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetMeTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendAudioTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendDocumentTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVenueTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendMessageTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendPhotoTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendStickerTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVideoTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendLocationTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVoiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

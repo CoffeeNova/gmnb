@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -368,14 +369,65 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         }
 
         public Task<TextMessage> SendVoiceByUriAsync(string chatId, Uri voiceUri, string caption = null,
-            int? duration = null,  bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+            int? duration = null, bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
             return Task.Run(() =>
-                        SendVoiceByUri(chatId, voiceUri, caption, duration,  disableNotification,
+                        SendVoiceByUri(chatId, voiceUri, caption, duration, disableNotification,
                             replyToMessageId, replyMarkup));
         }
 
 
+        [TelegramMethod("sendLocation")]
+        public TextMessage SendLocation(string chatId, float latitude, float longitude,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup);
+            parameters.Add("latitude", latitude.ToString(CultureInfo.InvariantCulture));
+            parameters.Add("longitude", longitude.ToString(CultureInfo.InvariantCulture));
+
+            return UploadValues(parameters);
+        }
+
+        public Task<TextMessage> SendLocationAsync(string chatId, float latitude, float longitude,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            return Task.Run(() =>
+                        SendLocation(chatId, latitude, longitude, disableNotification,
+                            replyToMessageId, replyMarkup));
+        }
+
+        [TelegramMethod("sendVenue")]
+        public TextMessage SendVenue(string chatId, float latitude, float longitude, string title, string address,
+            string foursquareId = null, bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            title.NullInspect(nameof(title));
+            address.NullInspect(nameof(address));
+
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup);
+            parameters.Add("latitude", latitude.ToString(CultureInfo.InvariantCulture));
+            parameters.Add("longitude", longitude.ToString(CultureInfo.InvariantCulture));
+            parameters.Add("title", title);
+            parameters.Add("address", address);
+            if (foursquareId != null)
+                parameters.Add("foursquare_id", foursquareId);
+
+            return UploadValues(parameters);
+        }
+
+        public Task<TextMessage> SendVenueAsync(string chatId, float latitude, float longitude, string title, string address,
+            string foursquareId = null, bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            return Task.Run(() =>
+                        SendVenue(chatId, latitude, longitude, title, address, foursquareId, disableNotification,
+                            replyToMessageId, replyMarkup));
+        }
+
+        #region private methods
         private void SendMethodsDefaultContent(NameValueCollection collection, string chatId, bool disableNotification,
             int? replyToMessageId, IMarkup replyMarkup, string caption = null)
         {
@@ -477,7 +529,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                     "Bad http request, wrong parameters or something. See inner exception.", ex);
             }
         }
-
+        #endregion
 
 
         private string Token { get; }
