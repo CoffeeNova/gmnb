@@ -142,6 +142,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 case nameof(SendPhoto_PhotoAndInlineKeyboard_TextMessage):
                     _fullFileName = path + _photoFileName;
                     break;
+                case nameof(SendAudio_AudioName_TextMessage):
+                    _fullFileName = path + _audioFileName;
+                    break;
+                case nameof(SendAudio_AudioWithParameters_TextMessage):
+                    _fullFileName = path + _audioFileName;
+                    break;
+                case nameof(SendDocument_DocumentName_TextMessage):
+                    _fullFileName = path + _documentFileName;
+                    break;
+                case nameof(SendSticker_StickerName_TextMessage):
+                    _fullFileName = path + _stickerFileName;
+                    break;
+                case nameof(SendVideo_VideoWithParameters_TextMessage):
+                    _fullFileName = path + _videoFileName;
+                    break;
             }
         }
 
@@ -397,6 +412,273 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
 
             Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
         }
+
+        [TestMethod()]
+        public void SendPhotoByUri_PhotoUri_TextMessage()
+        {
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var uri = new Uri(_photoUri);
+            var actual = _telegramMethods.SendPhotoByUri(_privateChat.Id.ToString(), uri);
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendPhotoByUriAsync_PhotoUriPlusInlineKeyboard_TextMessage()
+        {
+            var caption = "pict with keyboard";
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var uri = new Uri(_photoUri);
+            var actual = _telegramMethods.SendPhotoByUriAsync(_privateChat.Id.ToString(), uri, caption, true, null, _testInlineKeyboardMarkup).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendAudio_AudioName_TextMessage()
+        {
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendAudio(_privateChat.Id.ToString(), _fullFileName).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendAudio_AudioWithParameters_TextMessage()
+        {
+            var caption = "mpthreetest.mp3";
+            var duration = 12;
+            var performer = "unknown";
+            var title = "mpthreetest";
+
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendAudio(_privateChat.Id.ToString(), _fullFileName, caption, duration, performer, title).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendAudioByUri_AudioUri_TextMessage()
+        {
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var uri = new Uri(_audioUri);
+            var actual = _telegramMethods.SendAudioByUri(_privateChat.Id.ToString(), uri);
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendAudioByUriAsync_AudioUriWithParams_TextMessage()
+        {
+            var caption = "mpthreetest.mp3";
+            var duration = 12;
+            var performer = "unknown";
+            var title = "mpthreetest";
+
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var uri = new Uri(_audioUri);
+            var actual = _telegramMethods.SendAudioByUriAsync(_privateChat.Id.ToString(), uri, caption, duration, performer, title).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendDocument_DocumentName_TextMessage()
+        {
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendDocument(_privateChat.Id.ToString(), _fullFileName).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendDocumentByUri_DocumentUri_TextMessage()
+        {
+            var uri = new Uri(_documentUri);
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendDocumentByUri(_privateChat.Id.ToString(), uri);
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendDocumentByUriAsync_DocumentUriPlusCaption_TextMessage()
+        {
+            var uri = new Uri(_documentUri);
+            var caption = "Test caption";
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendDocumentByUriAsync(_privateChat.Id.ToString(), uri, caption).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendSticker_StickerName_TextMessage()
+        {
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendSticker(_privateChat.Id.ToString(), _fullFileName).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendSticker_FileId_TextMessage()
+        {
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendSticker(_privateChat.Id.ToString(), _stickerId).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendStickerByUri_StickerUri_TextMessage()
+        {
+            var uri = new Uri(_stickerUri);
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendStickerByUri(_privateChat.Id.ToString(), uri);
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendVideo_FileId_TextMessage()
+        {
+            var videoId = "BAADAgADJQADk35oS3hn1l33Em0gAg";
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendVideo(_privateChat.Id.ToString(), videoId).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendVideo_VideoWithParameters_TextMessage()
+        {
+            var caption = "video.mp4";
+            var duration = 5;
+            var width = 560;
+            var height = 320;
+
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var actual = _telegramMethods.SendVideo(_privateChat.Id.ToString(), _fullFileName, caption, duration, width, height).Result;
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void SendVideoByUri_VideoUri_TextMessage()
+        {
+            var expected = new TextMessage
+            {
+                Chat = _privateChat,
+                From = _botUser
+            };
+            var uri = new Uri(_videoUri);
+            var actual = _telegramMethods.SendVideoByUri(_privateChat.Id.ToString(), uri);
+
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
+
         public TestContext TestContext { get; set; }
 
         private static ComparisonConfig _config;
@@ -417,6 +699,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         private static ForceReply _testForceReply;
         private static string _fullFileName;
         private static string _photoFileName = "gabba.jpg";
+        private static string _audioFileName = "mpthreetest.mp3";
+        private static string _documentFileName = "AutoUpdate.zip";
+        private static string _stickerFileName = "sticker.webp";
+        private static string _stickerId = "CAADAgADcwEAAsxUSQmpOO9BbxEBVgI";
+        private static string _videoFileName = "video.mp4";
+
+        private static string _photoUri =
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/C_Sharp_wordmark.svg/117px-C_Sharp_wordmark.svg.png";
+        private static string _audioUri =
+            "https://ia802508.us.archive.org/5/items/testmp3testfile/mpthreetest.mp3";
+
+        private static string _documentUri = "http://www.icecubesservice.com/TestDownloadDoc.pdf.zip/at_download/file";
+        private static string _stickerUri = "https://www.gstatic.com/webp/gallery/1.webp";
+        private static string _videoUri = "http://techslides.com/demos/sample-videos/small.mp4";
 
         private static int _telegramMessagesCount;
     }

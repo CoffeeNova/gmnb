@@ -103,11 +103,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         }
 
         [TelegramMethod("sendPhoto", "photo")]
-        public async Task<TextMessage> SendPhoto(string chatId, string fullFileName, string caption = "",
+        public async Task<TextMessage> SendPhoto(string chatId, string photo, string caption = null,
             bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
             chatId.NullInspect(nameof(chatId));
-            caption.NullInspect(nameof(caption));
+            photo.NullInspect(nameof(photo));
 
             if (chatId == string.Empty)
                 throw new ArgumentException($"{nameof(chatId)} should not be empty");
@@ -115,26 +115,264 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             using (var form = new MultipartFormDataContent())
             {
                 SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
-                AddFileDataContent(form, fullFileName);
+                AddFileDataContent(form, photo);
                 return await UploadFile(form);
             }
         }
 
-        public TextMessage SendPhotoByUri(string chatId, Uri photoUri, string caption = "",
+        [TelegramMethod("sendPhoto")]
+        public TextMessage SendPhotoByUri(string chatId, Uri photoUri, string caption = null,
             bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
-            using (var webClient = new WebClient())
-            {
-                try
-                {
+            chatId.NullInspect(nameof(chatId));
+            photoUri.NullInspect(nameof(photoUri));
 
-                }
-                catch (WebException ex)
-                {
-                    throw new TelegramMethodsException("Wrong method arguments, probably chat ides does not exist or wrong message id", ex);
-                }
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
+            parameters.Add("photo", photoUri.OriginalString);
+
+            return UploadValues(parameters);
+        }
+
+        public Task<TextMessage> SendPhotoByUriAsync(string chatId, Uri photoUri, string caption = null,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            return
+                Task.Run(
+                    () => SendPhotoByUri(chatId, photoUri, caption, disableNotification, replyToMessageId, replyMarkup));
+        }
+
+        [TelegramMethod("sendAudio", "audio")]
+        public async Task<TextMessage> SendAudio(string chatId, string audio, string caption = null,
+           int? duration = null, string performer = null, string title = null, bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            audio.NullInspect(nameof(audio));
+
+            if (chatId == string.Empty)
+                throw new ArgumentException($"{nameof(chatId)} should not be empty");
+
+            using (var form = new MultipartFormDataContent())
+            {
+                SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
+                if (duration != null)
+                    form.Add(new StringContent(duration.ToString(), Encoding.UTF8), "duration");
+                if (performer != null)
+                    form.Add(new StringContent(performer, Encoding.UTF8), "performer");
+                if (title != null)
+                    form.Add(new StringContent(title, Encoding.UTF8), "title");
+
+                AddFileDataContent(form, audio);
+                return await UploadFile(form);
             }
-            return null;
+        }
+
+        [TelegramMethod("sendAudio")]
+        public TextMessage SendAudioByUri(string chatId, Uri audioUri, string caption = null,
+           int? duration = null, string performer = null, string title = null, bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            audioUri.NullInspect(nameof(audioUri));
+
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
+            parameters.Add("audio", audioUri.OriginalString);
+            if (duration != null)
+                parameters.Add("duration", duration.ToString());
+            if (performer != null)
+                parameters.Add("performer", performer);
+            if (title != null)
+                parameters.Add("title", title);
+
+            return UploadValues(parameters);
+        }
+
+        public Task<TextMessage> SendAudioByUriAsync(string chatId, Uri audioUri, string caption = null,
+            int? duration = null, string performer = null, string title = null, bool disableNotification = false,
+            int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            return Task.Run(() =>
+                        SendAudioByUri(chatId, audioUri, caption, duration, performer, title, disableNotification,
+                            replyToMessageId, replyMarkup));
+        }
+
+        [TelegramMethod("sendDocument", "document")]
+        public async Task<TextMessage> SendDocument(string chatId, string document, string caption = null,
+             bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            document.NullInspect(nameof(document));
+
+            if (chatId == string.Empty)
+                throw new ArgumentException($"{nameof(chatId)} should not be empty");
+
+            using (var form = new MultipartFormDataContent())
+            {
+                SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
+
+                AddFileDataContent(form, document);
+                return await UploadFile(form);
+            }
+        }
+
+        [TelegramMethod("sendDocument")]
+        public TextMessage SendDocumentByUri(string chatId, Uri documentUri, string caption = null,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            documentUri.NullInspect(nameof(documentUri));
+
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
+            parameters.Add("document", documentUri.OriginalString);
+
+            return UploadValues(parameters);
+        }
+
+        public Task<TextMessage> SendDocumentByUriAsync(string chatId, Uri documentUri, string caption = null,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            return Task.Run(() =>
+                    SendDocumentByUri(chatId, documentUri, caption, disableNotification, replyToMessageId,
+                        replyMarkup));
+        }
+
+        [TelegramMethod("sendSticker", "sticker")]
+        public async Task<TextMessage> SendSticker(string chatId, string sticker,
+             bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            sticker.NullInspect(nameof(sticker));
+
+            if (chatId == string.Empty)
+                throw new ArgumentException($"{nameof(chatId)} should not be empty");
+
+            using (var form = new MultipartFormDataContent())
+            {
+                SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup);
+                AddFileDataContent(form, sticker);
+                return await UploadFile(form);
+            }
+        }
+
+        [TelegramMethod("sendSticker")]
+        public TextMessage SendStickerByUri(string chatId, Uri stickerUri,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            stickerUri.NullInspect(nameof(stickerUri));
+
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup);
+            parameters.Add("sticker", stickerUri.OriginalString);
+
+            return UploadValues(parameters);
+        }
+
+        public Task<TextMessage> SendStickerByUriAsync(string chatId, Uri stickerUri,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            return Task.Run(() =>
+                    SendStickerByUri(chatId, stickerUri, disableNotification, replyToMessageId,
+                        replyMarkup));
+        }
+
+        [TelegramMethod("sendVideo", "video")]
+        public async Task<TextMessage> SendVideo(string chatId, string video, string caption = null, int? duration = null,
+            int? width = null, int? height = null, bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            video.NullInspect(nameof(video));
+
+            if (chatId == string.Empty)
+                throw new ArgumentException($"{nameof(chatId)} should not be empty");
+
+            using (var form = new MultipartFormDataContent())
+            {
+                SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
+                if (duration != null)
+                    form.Add(new StringContent(duration.ToString(), Encoding.UTF8), "duration");
+                if (width != null)
+                    form.Add(new StringContent(width.ToString(), Encoding.UTF8), "width");
+                if (height != null)
+                    form.Add(new StringContent(height.ToString(), Encoding.UTF8), "height");
+
+                AddFileDataContent(form, video);
+                return await UploadFile(form);
+            }
+        }
+
+        [TelegramMethod("sendVideo")]
+        public TextMessage SendVideoByUri(string chatId, Uri videoUri, string caption = null, int? duration = null,
+            int? width = null, int? height = null, bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            videoUri.NullInspect(nameof(videoUri));
+
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
+            parameters.Add("video", videoUri.OriginalString);
+            if (duration != null)
+                parameters.Add("duration", duration.ToString());
+            if (width != null)
+                parameters.Add("width", width.ToString());
+            if (height != null)
+                parameters.Add("height", height.ToString());
+
+            return UploadValues(parameters);
+        }
+
+        public Task<TextMessage> SendVideoByUriAsync(string chatId, Uri videoUri, string caption = null, int? duration = null,
+            int? width = null, int? height = null, bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            return Task.Run(() =>
+                        SendVideoByUri(chatId, videoUri, caption, duration, width, height, disableNotification,
+                            replyToMessageId, replyMarkup));
+        }
+
+        [TelegramMethod("sendVoice", "voice")]
+        public async Task<TextMessage> SendVoice(string chatId, string voice, string caption = null, int? duration = null,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            voice.NullInspect(nameof(voice));
+
+            if (chatId == string.Empty)
+                throw new ArgumentException($"{nameof(chatId)} should not be empty");
+
+            using (var form = new MultipartFormDataContent())
+            {
+                SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
+                if (duration != null)
+                    form.Add(new StringContent(duration.ToString(), Encoding.UTF8), "duration");
+
+                AddFileDataContent(form, voice);
+                return await UploadFile(form);
+            }
+        }
+
+        [TelegramMethod("sendVoice")]
+        public TextMessage SendVoiceByUri(string chatId, Uri voiceUri, string caption = null, int? duration = null,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            chatId.NullInspect(nameof(chatId));
+            voiceUri.NullInspect(nameof(voiceUri));
+
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
+            parameters.Add("voice", voiceUri.OriginalString);
+            if (duration != null)
+                parameters.Add("duration", duration.ToString());
+
+            return UploadValues(parameters);
+        }
+
+        public Task<TextMessage> SendVoiceByUriAsync(string chatId, Uri voiceUri, string caption = null,
+            int? duration = null,  bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        {
+            return Task.Run(() =>
+                        SendVoiceByUri(chatId, voiceUri, caption, duration,  disableNotification,
+                            replyToMessageId, replyMarkup));
         }
 
 
@@ -167,6 +405,32 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                 form.Add(new StringContent(
                         JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings), Encoding.UTF8),
                     "reply_markup");
+        }
+
+        private void AddFileDataContent(MultipartFormDataContent form, string fullFileName, [CallerMemberName] string callerName = "")
+        {
+            fullFileName.NullInspect(nameof(fullFileName));
+
+            var fileType = TelegramMethodAttribute.GetFileTypeValue(this.GetType(), callerName);
+            Debug.Assert(!string.IsNullOrEmpty(fileType),
+                $"Use {nameof(TelegramMethodAttribute)} to avoid error.");
+
+            if (!Path.HasExtension(fullFileName))
+            {
+                form.Add(new StringContent(fullFileName, Encoding.UTF8), fileType);
+                return;
+            }
+
+            try
+            { //can't use using here, because these streams are necessary open
+                var fileStream = new FileStream(fullFileName, FileMode.Open, FileAccess.Read);
+                form.Add(new StreamContent(fileStream), fileType, Path.GetFileName(fullFileName));
+            }
+            catch (Exception ex)
+            {
+                throw new TelegramMethodsException($"Something wrong with the file {fullFileName}", ex);
+            }
+
         }
 
         private TextMessage UploadValues(NameValueCollection collection, [CallerMemberName] string callerName = "")
@@ -214,25 +478,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             }
         }
 
-        private void AddFileDataContent(MultipartFormDataContent form, string fullFileName, [CallerMemberName] string callerName = "")
-        {
-            fullFileName.NullInspect(nameof(fullFileName));
-
-            var fileType = TelegramMethodAttribute.GetFileTypeValue(this.GetType(), callerName);
-            Debug.Assert(!string.IsNullOrEmpty(fileType),
-                $"Use {nameof(TelegramMethodAttribute)} to avoid error.");
-
-            try
-            { //can't use using here, because these streams are necessary open
-                var fileStream = new FileStream(fullFileName, FileMode.Open, FileAccess.Read);
-                form.Add(new StreamContent(fileStream), fileType, Path.GetFileName(fullFileName));
-            }
-            catch (Exception ex)
-            {
-                throw new TelegramMethodsException($"Something wrong with the file {fullFileName}", ex);
-            }
-
-        }
 
 
         private string Token { get; }
