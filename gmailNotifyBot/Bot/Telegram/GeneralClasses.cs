@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Converters;
 using Newtonsoft.Json;
 
@@ -133,7 +134,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents one size of a photo or a file / sticker thumbnail.
     /// </summary>
-    public class PhotoSize : IFileId, IFileImageSize, IFileSize
+    public class PhotoSize : IFile, IFileImageSize
     {
         /// <summary>
         /// Unique identifier for this file.
@@ -163,8 +164,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     ///  Represents an audio file to be treated as music by the Telegram clients.
     /// </summary>
-    public class Audio : IFileId, IFileDuration, IFileMimeType, 
-                        IFileSize
+    public class Audio : IFile, IFileDuration, IFileMimeType
     {
         /// <summary>
         /// Unique identifier for this file.
@@ -206,8 +206,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents a general file (as opposed to photos, voice messages and audio files).
     /// </summary>
-    public class Document : IFileId, IFileThumb, IFileName, 
-                            IFileMimeType, IFileSize
+    public class Document : IFile, IFileThumb, IFileName, 
+                            IFileMimeType
     {
         /// <summary>
         /// Unique file identifier.
@@ -243,8 +243,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents a sticker.
     /// </summary>
-    public class Sticker : IFileId, IFileImageSize, IFileThumb, 
-                            IFileSize
+    public class Sticker : IFile, IFileImageSize, IFileThumb
     {
         /// <summary>
         /// Unique file identifier.
@@ -286,8 +285,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents a video file.
     /// </summary>
-    public class Video : IFileId, IFileImageSize, IFileDuration, 
-                            IFileThumb, IFileMimeType, IFileSize
+    public class Video : IFile, IFileImageSize, IFileDuration, 
+                            IFileThumb, IFileMimeType
     {
         /// <summary>
         /// Unique identifier for this file.
@@ -335,8 +334,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Represents a voice note.
     /// </summary>
-    public class Voice : IFileId, IFileDuration, IFileMimeType,
-        IFileSize
+    public class Voice : IFile, IFileDuration, IFileMimeType
     {
         /// <summary>
         /// Unique identifier for this file
@@ -455,9 +453,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Requested profile pictures (in up to 4 sizes each).
         /// </summary>
-        [JsonConverter(typeof(ArrayToListConverter<PhotoSize>))]
+        [JsonConverter(typeof(ArrayToListConverter<List<PhotoSize>>))]
         [JsonProperty("photos")]
-        public List<PhotoSize> Photos { get; set; }
+        public List<List<PhotoSize>> Photos { get; set; }
     }
 
     /// <summary>
@@ -785,4 +783,59 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         [JsonProperty("selective")]
         public bool? Selective { get; set; }
     }
+
+    /// <summary>
+    /// Represents a file ready to be downloaded. 
+    /// </summary>
+    /// <remarks>
+    /// The file can be downloaded via the link https://api.telegram.org/file/bot&lt;token&gt;/&lt;file_path&gt;
+    /// or by method <see cref="TelegramMethods.DownloadFile(File)"/>. 
+    /// It is guaranteed that the link will be valid for at least 1 hour. 
+    /// When the link expires, a new one can be requested by calling <see cref="TelegramMethods.GetFile(string)"/>.
+    /// </remarks>
+    public class File : IFile
+    {
+        /// <summary>
+        /// Unique identifier for this file
+        /// </summary>
+        [JsonProperty("file_id")]
+        public string FileId { get; set; }
+
+        /// <summary>
+        /// Optional. File size.
+        /// </summary>
+        [JsonProperty("file_size")]
+        public int? FileSize { get; set; }
+
+        /// <summary>
+        /// Optional. File path.
+        /// </summary>
+        /// <remarks>
+        /// Use https://api.telegram.org/file/bot&lt;token&gt;/&lt;file_path&gt; to get the file
+        /// or method <see cref="TelegramMethods.DownloadFile(File)"/>.
+        /// </remarks>
+        [JsonProperty("file_path")]
+        public string FilePath
+        {
+            get { return _filePath; }
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    _filePath = value;
+                    FilePathCreated = DateTime.Now;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonIgnore]
+        public DateTime FilePathCreated { get; private set; }
+
+        private string _filePath;
+
+    }
+
 }

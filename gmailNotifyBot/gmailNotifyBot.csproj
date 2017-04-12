@@ -181,10 +181,12 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Bot\Telegram\Attributes\TelegramActionAttribute.cs" />
     <Compile Include="Bot\Telegram\Attributes\TelegramMethodAttribute.cs" />
     <Compile Include="Bot\Authorizer.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\UserTableModel.cs" />
     <Compile Include="Bot\DataBase\UserWorker.cs" />
+    <Compile Include="Bot\Telegram\Exceptions\TelegramFileDownloadException.cs" />
     <Compile Include="Bot\Telegram\Exceptions\TelegramMessageIsUnidentifiedException.cs" />
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
@@ -200,14 +202,15 @@
     <Compile Include="Bot\Telegram\JsonParsers\MessageBuilder.cs" />
     <Compile Include="Bot\Telegram\MessageClasses.cs" />
     <Compile Include="Bot\Telegram\GeneralClasses.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethods.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethods.General.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethods.GetMethods.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OAuthController.cs" />
-    <Compile Include="Extensions\BoolExtension.cs" />
-    <Compile Include="Extensions\ObjectExtension.cs" />
-    <Compile Include="Extensions\StringExtension.cs" />
+    <Compile Include="Bot\Extensions\BoolExtension.cs" />
+    <Compile Include="Bot\Extensions\ObjectExtension.cs" />
+    <Compile Include="Bot\Extensions\StringExtension.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -241,6 +244,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Compile Include="Bot\Telegram\TelegramMethods.SendMethods.cs" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
@@ -301,6 +305,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Bot\Exceptions\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -1,65 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram.JsonParsers;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.JsonParsers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 {
-    public class TelegramMethods
-    {
-
-        public TelegramMethods(string token)
-        {
-            Token = token;
-        }
-
-        /// <summary>
-        /// A simple method for testing your bot's auth token. Requires no parameters. Returns basic information about the bot in form of a User object.
-        /// </summary>
-        /// <returns></returns>
-        public User GetMe()
-        {
-            using (var webClient = new WebClient())
-            {
-                try
-                {
-                    var content = webClient.DownloadString(TelegramBotUrl + Token + "/getMe");
-                    var newRequests = JsonConvert.DeserializeObject<JObject>(content);
-                    return GeneralBuilder.BuildUser(newRequests["result"]);
-                }
-                catch (WebException ex)
-                {
-                    throw new TelegramMethodsException($"Wrong {nameof(Token)} value.", ex);
-                }
-            }
-        }
-
-        public Task<User> GetMeAsync()
-        {
-            return Task.Run(() => GetMe());
-        }
-
+	public partial class TelegramMethods
+	{
         [TelegramMethod("sendMessage")]
         public TextMessage SendMessage(string chatId, string message, string parseMode = null, bool disableWebPagePreview = false,
-            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+    bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
             chatId.NullInspect(nameof(chatId));
             message.NullInspect(nameof(message));
@@ -70,7 +33,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             parameters.Add("disable_web_page_preview", disableWebPagePreview.ToString());
             if (parseMode != null) parameters.Add("parse_mode", parseMode);
 
-            return UploadValues(parameters);
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
 
@@ -94,7 +58,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                 {"message_id", messageId.ToString()}
             };
             SendMethodsDefaultContent(parameters, chatId, disableNotification, null, null);
-            return UploadValues(parameters);
+
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
         public Task<TextMessage> ForwardMessageAsync(string chatId, string fromChatId, int messageId,
@@ -117,7 +83,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             {
                 SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
                 AddFileDataContent(form, photo);
-                return await UploadFile(form);
+                return await UploadFormData(form);
             }
         }
 
@@ -132,7 +98,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
             parameters.Add("photo", photoUri.OriginalString);
 
-            return UploadValues(parameters);
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
         public Task<TextMessage> SendPhotoByUriAsync(string chatId, Uri photoUri, string caption = null,
@@ -164,7 +131,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                     form.Add(new StringContent(title, Encoding.UTF8), "title");
 
                 AddFileDataContent(form, audio);
-                return await UploadFile(form);
+                return await UploadFormData(form);
             }
         }
 
@@ -185,7 +152,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             if (title != null)
                 parameters.Add("title", title);
 
-            return UploadValues(parameters);
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
         public Task<TextMessage> SendAudioByUriAsync(string chatId, Uri audioUri, string caption = null,
@@ -212,7 +180,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                 SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
 
                 AddFileDataContent(form, document);
-                return await UploadFile(form);
+                return await UploadFormData(form);
             }
         }
 
@@ -227,7 +195,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
             parameters.Add("document", documentUri.OriginalString);
 
-            return UploadValues(parameters);
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
         public Task<TextMessage> SendDocumentByUriAsync(string chatId, Uri documentUri, string caption = null,
@@ -252,7 +221,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             {
                 SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup);
                 AddFileDataContent(form, sticker);
-                return await UploadFile(form);
+                return await UploadFormData(form);
             }
         }
 
@@ -267,7 +236,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup);
             parameters.Add("sticker", stickerUri.OriginalString);
 
-            return UploadValues(parameters);
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
         public Task<TextMessage> SendStickerByUriAsync(string chatId, Uri stickerUri,
@@ -299,7 +269,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                     form.Add(new StringContent(height.ToString(), Encoding.UTF8), "height");
 
                 AddFileDataContent(form, video);
-                return await UploadFile(form);
+                return await UploadFormData(form);
             }
         }
 
@@ -320,7 +290,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             if (height != null)
                 parameters.Add("height", height.ToString());
 
-            return UploadValues(parameters);
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
         public Task<TextMessage> SendVideoByUriAsync(string chatId, Uri videoUri, string caption = null, int? duration = null,
@@ -348,7 +319,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                     form.Add(new StringContent(duration.ToString(), Encoding.UTF8), "duration");
 
                 AddFileDataContent(form, voice);
-                return await UploadFile(form);
+                return await UploadFormData(form);
             }
         }
 
@@ -365,7 +336,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             if (duration != null)
                 parameters.Add("duration", duration.ToString());
 
-            return UploadValues(parameters);
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
         public Task<TextMessage> SendVoiceByUriAsync(string chatId, Uri voiceUri, string caption = null,
@@ -388,7 +360,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             parameters.Add("latitude", latitude.ToString(CultureInfo.InvariantCulture));
             parameters.Add("longitude", longitude.ToString(CultureInfo.InvariantCulture));
 
-            return UploadValues(parameters);
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
         public Task<TextMessage> SendLocationAsync(string chatId, float latitude, float longitude,
@@ -416,7 +389,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             if (foursquareId != null)
                 parameters.Add("foursquare_id", foursquareId);
 
-            return UploadValues(parameters);
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
         public Task<TextMessage> SendVenueAsync(string chatId, float latitude, float longitude, string title, string address,
@@ -427,118 +401,72 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                             replyToMessageId, replyMarkup));
         }
 
-        #region private methods
-        private void SendMethodsDefaultContent(NameValueCollection collection, string chatId, bool disableNotification,
-            int? replyToMessageId, IMarkup replyMarkup, string caption = null)
+        [TelegramMethod("sendContact")]
+        public TextMessage SendContact(string chatId, string phoneNumber, string firstName, string lastName=null, bool disableNotification = false,
+		 int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
-            collection.Add("disable_notification", disableNotification.ToString());
+            chatId.NullInspect(nameof(chatId));
+            phoneNumber.NullInspect(nameof(phoneNumber));
+            firstName.NullInspect(nameof(firstName));
 
-            if (chatId != null)
-                collection.Add("chat_id", chatId);
-            if (caption != null)
-                collection.Add("caption", caption);
-            if (replyToMessageId != null)
-                collection.Add("reply_to_message_id", replyToMessageId.ToString());
-            if (replyMarkup != null)
-                collection.Add("reply_markup",
-                    JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings));
+            var parameters = new NameValueCollection();
+            SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup);
+            parameters.Add("phone_number", phoneNumber);
+            parameters.Add("first_name", firstName);
+            if (lastName != null)
+                parameters.Add("last_name", lastName);
+
+            var json = UploadUrlQuery(parameters);
+            return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
-        private void SendMethodsDefaultContent(MultipartFormDataContent form, string chatId, bool disableNotification,
-            int? replyToMessageId, IMarkup replyMarkup, string caption = null)
+        public Task<TextMessage> SendContactAsync(string chatId, string phoneNumber, string firstName, string lastName = null, bool disableNotification = false,
+         int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
-            form.Add(new StringContent(chatId, Encoding.UTF8), "chat_id");
-            form.Add(new StringContent(disableNotification.ToString(), Encoding.UTF8), "disable_notification");
-            if (caption != null)
-                form.Add(new StringContent(caption, Encoding.UTF8), "caption");
-            if (replyToMessageId != null)
-                form.Add(new StringContent(replyToMessageId.ToString(), Encoding.UTF8), "reply_to_message_id");
-            if (replyMarkup != null)
-                form.Add(new StringContent(
-                        JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings), Encoding.UTF8),
-                    "reply_markup");
+            return Task.Run(() =>
+                        SendContact(chatId, phoneNumber, firstName, lastName, disableNotification,
+                            replyToMessageId, replyMarkup));
         }
 
-        private void AddFileDataContent(MultipartFormDataContent form, string fullFileName, [CallerMemberName] string callerName = "")
-        {
-            fullFileName.NullInspect(nameof(fullFileName));
+        [TelegramMethod("sendChatAction")]
+        public bool SendChatAction(string chatId, Action action)
+	    {
+            chatId.NullInspect(nameof(chatId));
+	        var parameters = new NameValueCollection
+	        {
+	            {"chat_id", chatId},
+	            {"action", TelegramActionAttribute.GetActionValue(action)}
+	        };
 
-            var fileType = TelegramMethodAttribute.GetFileTypeValue(this.GetType(), callerName);
-            Debug.Assert(!string.IsNullOrEmpty(fileType),
-                $"Use {nameof(TelegramMethodAttribute)} to avoid error.");
+            var json = UploadUrlQuery(parameters);
+            var result = (string)json["result"];
+	        return result == null ? false : Convert.ToBoolean(result);
+	    }
 
-            if (!Path.HasExtension(fullFileName))
-            {
-                form.Add(new StringContent(fullFileName, Encoding.UTF8), fileType);
-                return;
-            }
-
-            try
-            { //can't use using here, because these streams are necessary open
-                var fileStream = new FileStream(fullFileName, FileMode.Open, FileAccess.Read);
-                form.Add(new StreamContent(fileStream), fileType, Path.GetFileName(fullFileName));
-            }
-            catch (Exception ex)
-            {
-                throw new TelegramMethodsException($"Something wrong with the file {fullFileName}", ex);
-            }
-
+	    public Task<bool> SendChatActionAsync(string chatId, Action action)
+	    {
+	        return Task.Run(() => SendChatAction(chatId, action));
         }
 
-        private TextMessage UploadValues(NameValueCollection collection, [CallerMemberName] string callerName = "")
-        {
-            var telegramMethodName = TelegramMethodAttribute.GetMethodNameValue(this.GetType(), callerName);
-            Debug.Assert(!string.IsNullOrEmpty(telegramMethodName),
-                $"Use {nameof(TelegramMethodAttribute)} to avoid error.");
+        public enum Action
+	    {
+            [TelegramAction("typing")]
+            Typing,
+            [TelegramAction("upload_photo ")]
+            UploadPhoto,
+            [TelegramAction("record_video")]
+            RecordVideo,
+            [TelegramAction("upload_video")]
+            UploadVideo,
+            [TelegramAction("record_audio")]
+            RecordAudio,
+            [TelegramAction("upload_audio")]
+            UploadAudio,
+            [TelegramAction("upload_document")]
+            UploadDocument,
+            [TelegramAction("find_location")]
+            FindLocation
+	    }
 
-            using (var webClient = new WebClient())
-            {
-                try
-                {
-                    var byteResult = webClient.UploadValues(TelegramBotUrl + Token + "/" + telegramMethodName, "POST", collection);
-                    var strResult = webClient.Encoding.GetString(byteResult);
-                    var json = JsonConvert.DeserializeObject<JToken>(strResult);
-                    return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
-                }
-                catch (WebException ex)
-                {
-                    throw new TelegramMethodsException("Some arguments are not correct.", ex);
-                }
-            }
-        }
-
-        private async Task<TextMessage> UploadFile(MultipartFormDataContent form, [CallerMemberName] string callerName = "")
-        {
-            var telegramMethodName = TelegramMethodAttribute.GetMethodNameValue(this.GetType(), callerName);
-            Debug.Assert(!string.IsNullOrEmpty(telegramMethodName),
-                $"Use {nameof(TelegramMethodAttribute)} to avoid error.");
-
-            try
-            {
-                using (HttpClient httpClient = new HttpClient())
-                {
-                    var responce = await httpClient.PostAsync(TelegramBotUrl + Token + "/" + telegramMethodName, form);
-                    var strResult = await responce.Content.ReadAsStringAsync();
-                    var json = JsonConvert.DeserializeObject<JToken>(strResult);
-                    return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new TelegramMethodsException(
-                    "Bad http request, wrong parameters or something. See inner exception.", ex);
-            }
-        }
-        #endregion
-
-
-        private string Token { get; }
-
-        private const string TelegramBotUrl = "https://api.telegram.org/bot";
-
-        private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
-        {
-            NullValueHandling = NullValueHandling.Ignore
-        };
     }
 }
