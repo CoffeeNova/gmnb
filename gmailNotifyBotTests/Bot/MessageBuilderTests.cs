@@ -372,7 +372,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         private static JToken ReadJsonMessageFromFile(string filename)
         {
             var path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\"));
-            var sampleJsonRequest = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path + @"\\TestFiles\\" + filename));
+            var sampleJsonRequest = JsonConvert.DeserializeObject<JObject>(System.IO.File.ReadAllText(path + @"\\TestFiles\\" + filename));
             return sampleJsonRequest["message"];
         }
 

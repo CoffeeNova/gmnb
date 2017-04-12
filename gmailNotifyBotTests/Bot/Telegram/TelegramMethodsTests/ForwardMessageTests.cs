@@ -37,7 +37,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         [TestMethod()]
         public void ForwardMessage_TelegramMethodsException()
         {
-            var actual = _telegramMethods.ForwardMessage(_privateChat.Id.ToString(), _privateChat.Id.ToString(), int.MaxValue);
+            _telegramMethods.ForwardMessage(_privateChat.Id.ToString(), _privateChat.Id.ToString(), int.MaxValue);
         }
     }
 }

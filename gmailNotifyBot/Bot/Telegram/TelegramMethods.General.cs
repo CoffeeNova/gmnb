@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
+[assembly: InternalsVisibleTo("gmailNotifyBotTests")]
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 {
@@ -31,46 +32,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         public TelegramMethods(string token)
         {
             Token = token;
+            _downloadFile = new DownloadFile();
         }
 
-        public void DownloadFileAsync(File file, string path = null)
+        internal TelegramMethods(string token, bool test = true)
         {
-            if (path == null) path = FileStorage;
-
-            if (DateTime.Now.Subtract(file.FilePathCreated).Hours > 1)
-                throw new TelegramFileDownloadException(
-                    $"The link's lifetime is expired. It is probably not valid now. Try to call {nameof(GetFile)} method again");
-
-            using (var webClient = new WebClient())
-            {
-                try
-                {
-                    webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
-                    webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
-                    webClient.DownloadFileAsync(new Uri(TelegramFileUrl + Token + "/" + file.FilePath),
-                        path.PathFormatter() + file.FileId);
-                }
-                catch (WebException ex)
-                {
-                    throw new TelegramFileDownloadException("Some arguments are not correct.", ex);
-                }
-            }
+            Token = token;
+            _downloadFile = new DownloadFileStub();
         }
 
-
-
-        public event DownloadProgressChangedEventHandler DownloadFileProgressChanged;
-        public event AsyncCompletedEventHandler DownloadFileCompleted;
-
-        private void WebClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            DownloadFileProgressChanged?.Invoke(sender, e);
-        }
-
-        private void WebClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            DownloadFileCompleted?.Invoke(sender, e);
-        }
 
         #region private methods
         private void SendMethodsDefaultContent(NameValueCollection collection, string chatId, bool disableNotification,
@@ -176,6 +146,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         }
         #endregion
 
+    
+
         public string FileStorage { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
         private string Token { get; }
@@ -187,5 +159,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         {
             NullValueHandling = NullValueHandling.Ignore
         };
+        private IDownloadFile _downloadFile;
     }
 }

@@ -34,7 +34,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 MembersToIgnore = new List<string> { "MessageId", "Date", "ForwardDate" }
             };
             string token = App_LocalResources.Tokens.GmailControlBotToken;
-            _telegramMethods = new TelegramMethods(token);
+            _telegramMethods = new TelegramMethods(token, true);
 
             _privateChat = new Chat
             {
@@ -164,53 +164,53 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
             };
             _file = new File
             {
-                FileId = "CAADAgADLgADk35wS_5j0ImZMegiAg";
+                FileId = "CAADAgADLgADk35wS_5j0ImZMegiAg",
             };
         }
 
         [ClassCleanup]
         public static void ClassCleanUp()
         {
+            var fileList = new List<string>(Directory.GetFiles(_testStorageFilesPath));
+            fileList.ForEach(System.IO.File.Delete);
         }
 
         [TestInitialize]
         public void TestInitialize()
         {
-           var testFilesPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\")) + "TestFiles\\";
-           var testStorageFilesPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\")) + "TestStorage\\";
             switch (TestContext.TestName)
             {
                 case nameof(SendPhoto_PhotoName_TextMessage):
-                    _fullFileName = testFilesPath + _photoFileName;
+                    _fullFileName = _testFilesPath + _photoFileName;
                     break;
                 case nameof(SendPhoto_PhotoAndInlineKeyboard_TextMessage):
-                    _fullFileName = testFilesPath + _photoFileName;
+                    _fullFileName = _testFilesPath + _photoFileName;
                     break;
                 case nameof(SendAudio_AudioName_TextMessage):
-                    _fullFileName = testFilesPath + _audioFileName;
+                    _fullFileName = _testFilesPath + _audioFileName;
                     break;
                 case nameof(SendAudio_AudioWithParameters_TextMessage):
-                    _fullFileName = testFilesPath + _audioFileName;
+                    _fullFileName = _testFilesPath + _audioFileName;
                     break;
                 case nameof(SendDocument_DocumentName_TextMessage):
-                    _fullFileName = testFilesPath + _documentFileName;
+                    _fullFileName = _testFilesPath + _documentFileName;
                     break;
                 case nameof(SendSticker_StickerName_TextMessage):
-                    _fullFileName = testFilesPath + _stickerFileName;
+                    _fullFileName = _testFilesPath + _stickerFileName;
                     break;
                 case nameof(SendVideo_VideoWithParameters_TextMessage):
-                    _fullFileName = testFilesPath + _videoFileName;
+                    _fullFileName = _testFilesPath + _videoFileName;
                     break;
                 case nameof(SendVoice_VoiceWithParameters_TextMessage):
-                    _fullFileName = testFilesPath + _voiceFileName;
+                    _fullFileName = _testFilesPath + _voiceFileName;
                     break;
                 case nameof(GetFile_FileId_File):
                     _config.MembersToIgnore.Add("FilePath");
                     _config.MembersToIgnore.Add("FilePathCreated");
                     _config.MembersToIgnore.Add("FileSize");
                     break;
-                case nameof(DownloadFile_File_File):
-                    _fullFileName = testStorageFilesPath;
+                case nameof(DownloadFile_FileId_FileExists):
+                    _fullFileName = _testStorageFilesPath;
                     break;
             }
         }
@@ -233,6 +233,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
 
         public TestContext TestContext { get; set; }
 
+        private static string _projectDirectory =
+            Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\"));
+        private static string _testFilesPath = _projectDirectory + "TestFiles\\";
+        private static string _testStorageFilesPath = _projectDirectory + "TestStorage\\";
         private static ComparisonConfig _config;
         private static TelegramMethods _telegramMethods;
         private static Chat _privateChat;
