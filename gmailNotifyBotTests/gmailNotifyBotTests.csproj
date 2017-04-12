@@ -62,7 +62,9 @@
     <Compile Include="Bot\MessageBuilderTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\ForwardMessageTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\General.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\DownloadFileTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\GetMeTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendChatActionTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendAudioTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendDocumentTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVenueTests.cs" />
@@ -71,6 +73,8 @@
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendStickerTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVideoTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendLocationTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetUserProfilePhotosTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetFileTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVoiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

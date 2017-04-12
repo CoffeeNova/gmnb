@@ -214,13 +214,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's file message of a file id.
     /// </summary>
-    public interface IFileId
+    public interface IFile
     {
         /// <summary>
         /// Interface for the Unique identifier of the Telegram message file
         /// </summary>
         [JsonProperty("file_id")]
         string FileId { get; set; }
+
+        /// <summary>
+        /// File size.
+        /// </summary>
+        [JsonProperty("file_size")]
+        int? FileSize { get; set; }
     }
 
     /// <summary>
@@ -251,18 +257,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// </summary>
         [JsonProperty("duration")]
         int Duration { get; set; }
-    }
-
-    /// <summary>
-    /// Interface for the size of the Telegram's message file
-    /// </summary>
-    public interface IFileSize
-    {
-        /// <summary>
-        /// File size.
-        /// </summary>
-        [JsonProperty("file_size")]
-        int? FileSize { get; set; }
     }
 
     /// <summary>

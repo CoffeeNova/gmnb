@@ -5,7 +5,7 @@ using System.Reflection;
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class TelegramMethodAttribute : Attribute
+    internal class TelegramMethodAttribute : Attribute
     {
         public TelegramMethodAttribute(string methodName, string fileType)
         {

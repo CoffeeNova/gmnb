@@ -128,6 +128,44 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 Latitude = 53.901112F,
                 Longitude = 27.562325F
             };
+            _photoSize1 = new PhotoSize
+            {
+                FileId = "AgADAgADqqcxG4_EJAo-Knthid_Ygy4XSA0ABHFCoFI0_mWuqGEBAAEC",
+                FileSize = 10311,
+                Width = 160,
+                Height = 160
+            };
+            _photoSize2 = new PhotoSize
+            {
+                FileId = "AgADAgADqqcxG4_EJAo-Knthid_Ygy4XSA0ABII7yIDVjT7yqWEBAAEC",
+                FileSize = 22094,
+                Width = 320,
+                Height = 320
+            };
+            _photoSize3 = new PhotoSize
+            {
+                FileId = "AgADAgADqqcxG4_EJAo-Knthid_Ygy4XSA0ABEN3DhgGCbBFqmEBAAEC",
+                FileSize = 57644,
+                Width = 640,
+                Height = 640
+            };
+            _userProfilePhotos = new UserProfilePhotos
+            {
+                TotalCount = 1,
+                Photos = new List<List<PhotoSize>>
+                {
+                    new List<PhotoSize>
+                    {
+                        _photoSize1,
+                        _photoSize2,
+                        _photoSize3
+                    }
+                }
+            };
+            _file = new File
+            {
+                FileId = "CAADAgADLgADk35wS_5j0ImZMegiAg";
+            };
         }
 
         [ClassCleanup]
@@ -138,32 +176,41 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-           var path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\")) + "TestFiles\\";
+           var testFilesPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\")) + "TestFiles\\";
+           var testStorageFilesPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\")) + "TestStorage\\";
             switch (TestContext.TestName)
             {
                 case nameof(SendPhoto_PhotoName_TextMessage):
-                    _fullFileName = path + _photoFileName;
+                    _fullFileName = testFilesPath + _photoFileName;
                     break;
                 case nameof(SendPhoto_PhotoAndInlineKeyboard_TextMessage):
-                    _fullFileName = path + _photoFileName;
+                    _fullFileName = testFilesPath + _photoFileName;
                     break;
                 case nameof(SendAudio_AudioName_TextMessage):
-                    _fullFileName = path + _audioFileName;
+                    _fullFileName = testFilesPath + _audioFileName;
                     break;
                 case nameof(SendAudio_AudioWithParameters_TextMessage):
-                    _fullFileName = path + _audioFileName;
+                    _fullFileName = testFilesPath + _audioFileName;
                     break;
                 case nameof(SendDocument_DocumentName_TextMessage):
-                    _fullFileName = path + _documentFileName;
+                    _fullFileName = testFilesPath + _documentFileName;
                     break;
                 case nameof(SendSticker_StickerName_TextMessage):
-                    _fullFileName = path + _stickerFileName;
+                    _fullFileName = testFilesPath + _stickerFileName;
                     break;
                 case nameof(SendVideo_VideoWithParameters_TextMessage):
-                    _fullFileName = path + _videoFileName;
+                    _fullFileName = testFilesPath + _videoFileName;
                     break;
                 case nameof(SendVoice_VoiceWithParameters_TextMessage):
-                    _fullFileName = path + _voiceFileName;
+                    _fullFileName = testFilesPath + _voiceFileName;
+                    break;
+                case nameof(GetFile_FileId_File):
+                    _config.MembersToIgnore.Add("FilePath");
+                    _config.MembersToIgnore.Add("FilePathCreated");
+                    _config.MembersToIgnore.Add("FileSize");
+                    break;
+                case nameof(DownloadFile_File_File):
+                    _fullFileName = testStorageFilesPath;
                     break;
             }
         }
@@ -173,6 +220,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         {
             if (!TestContext.TestName.EqualsAny(nameof(GetMeTest), nameof(GetMe_TelegramMethodsGetMeException), nameof(GetMeAsyncTest)))
                 _telegramMessagesCount++;
+
+            switch (TestContext.TestName)
+            {
+                case nameof(GetFile_FileId_File):
+                    _config.MembersToIgnore.Remove("FilePath");
+                    _config.MembersToIgnore.Remove("FilePathCreated");
+                    _config.MembersToIgnore.Remove("FileSize");
+                    break;
+            }
         }
 
         public TestContext TestContext { get; set; }
@@ -195,6 +251,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         private static ForceReply _testForceReply;
         private static string _fullFileName;
         private static Location _location;
+        private static UserProfilePhotos _userProfilePhotos;
         private static int _telegramMessagesCount;
+        private static PhotoSize _photoSize1;
+        private static PhotoSize _photoSize2;
+        private static PhotoSize _photoSize3;
+        private static File _file;
     }
 }
