@@ -202,6 +202,7 @@
     <Compile Include="Bot\Telegram\JsonParsers\MessageBuilder.cs" />
     <Compile Include="Bot\Telegram\MessageClasses.cs" />
     <Compile Include="Bot\Telegram\GeneralClasses.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethods.DownloadFile.cs" />
     <Compile Include="Bot\Telegram\TelegramMethods.General.cs" />
     <Compile Include="Bot\Telegram\TelegramMethods.GetMethods.cs" />
     <Compile Include="Controllers\AccountController.cs" />
