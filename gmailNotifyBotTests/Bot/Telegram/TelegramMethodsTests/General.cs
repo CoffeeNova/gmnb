@@ -52,13 +52,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
             };
             _italicTextEntity = new MessageEntity
             {
-                Type = "italic",
+                Type = MessageEntityType.Italic,
                 Offset = 0,
                 Length = 23
             };
             _urlEntity = new MessageEntity
             {
-                Type = "url",
+                Type = MessageEntityType.Url,
                 Offset = 0,
                 Length = 21
             };
@@ -112,7 +112,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
             _testForceReply = new ForceReply();
             _botStartCommandEntity = new MessageEntity
             {
-                Type = "bot_command",
+                Type = MessageEntityType.BotCommand,
                 Offset = 0,
                 Length = 6
             };
@@ -165,6 +165,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
             _file = new File
             {
                 FileId = "CAADAgADLgADk35wS_5j0ImZMegiAg",
+            };
+            _supergroupChat = new Chat
+            {
+                Id = -1001076966401,
+                Title = "testgrp_new_title",
+                Type = ChatType.Supergroup
             };
         }
 
@@ -240,6 +246,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         private static ComparisonConfig _config;
         private static TelegramMethods _telegramMethods;
         private static Chat _privateChat;
+        private static Chat _supergroupChat;
         private static User _botUser;
         private static User _user;
         private static MessageEntity _italicTextEntity;

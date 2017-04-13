@@ -63,6 +63,7 @@
     <Compile Include="Bot\Telegram\TelegramMethodsTests\ForwardMessageTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\General.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\DownloadFileTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\KickChatMemberTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\GetMeTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendChatActionTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendAudioTests.cs" />
