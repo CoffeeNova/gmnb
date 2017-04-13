@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Runtime.Serialization;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 {
@@ -83,11 +85,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         public bool? AllMembersAreAdministrators { get; set; }
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ChatType
     {
+        [EnumMember(Value = "private")]
         Private,
+        [EnumMember(Value = "group")]
         Group,
+        [EnumMember(Value = "supergroup")]
         Supergroup,
+        [EnumMember(Value = "channel")]
         Channel
     }
     /// <summary>
@@ -104,7 +111,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// text_mention (for users without usernames)
         /// </remarks>
         [JsonProperty("type")]
-        public string Type { get; set; }
+        public MessageEntityType Type { get; set; }
 
         /// <summary>
         /// Offset in UTF-16 code units to the start of the entity.
@@ -129,6 +136,33 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// </summary>
         [JsonProperty("user")]
         public User User { get; set; }
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum MessageEntityType
+    {
+        [EnumMember(Value = "mention")]
+        Mention,
+        [EnumMember(Value = "hashtag")]
+        Hashtag,
+        [EnumMember(Value = "bot_command")]
+        BotCommand,
+        [EnumMember(Value = "url")]
+        Url,
+        [EnumMember(Value = "email")]
+        Email,
+        [EnumMember(Value = "bold")]
+        Bold,
+        [EnumMember(Value = "italic")]
+        Italic,
+        [EnumMember(Value = "code")]
+        Code,
+        [EnumMember(Value = "pre")]
+        Pre,
+        [EnumMember(Value = "text_link")]
+        TextLink,
+        [EnumMember(Value = "text_mention")]
+        TextMention
     }
 
     /// <summary>
@@ -789,7 +823,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// </summary>
     /// <remarks>
     /// The file can be downloaded via the link https://api.telegram.org/file/bot&lt;token&gt;/&lt;file_path&gt;
-    /// or by method <see cref="TelegramMethods.DownloadFile(File)"/>. 
+    /// or by method <see cref="TelegramMethods.DownloadFileAsync(File, string)"/>. 
     /// It is guaranteed that the link will be valid for at least 1 hour. 
     /// When the link expires, a new one can be requested by calling <see cref="TelegramMethods.GetFile(string)"/>.
     /// </remarks>
@@ -812,7 +846,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// </summary>
         /// <remarks>
         /// Use https://api.telegram.org/file/bot&lt;token&gt;/&lt;file_path&gt; to get the file
-        /// or method <see cref="TelegramMethods.DownloadFile(File)"/>.
+        /// or method <see cref="TelegramMethods.DownloadFileAsync(File, string)"/>.
         /// </remarks>
         [JsonProperty("file_path")]
         public string FilePath
@@ -829,13 +863,62 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         }
 
         /// <summary>
-        /// 
+        /// The date when <see cref="FilePath"/> created on Telegeram's servers by <see cref="TelegramMethods.GetFile(string)"/> method.
         /// </summary>
         [JsonIgnore]
         public DateTime FilePathCreated { get; private set; }
 
         private string _filePath;
-
     }
 
+    /// <summary>
+    /// Contains information about one member of the chat.
+    /// </summary>
+    public class ChatMember
+    {
+        /// <summary>
+        /// Information about the user.
+        /// </summary>
+        [JsonProperty("user")]
+        public User User { get; set; }
+
+        /// <summary>
+        /// The member's status in the chat.
+        /// </summary>
+        [JsonProperty("status")]
+        public ChatMemberStatus Status { get; set; }
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum ChatMemberStatus
+    {
+        [EnumMember(Value = "creator")]
+        Creator,
+        [EnumMember(Value = "administrator")]
+        Administrator,
+        [EnumMember(Value = "member")]
+        Member,
+        [EnumMember(Value = "left")]
+        Left,
+        [EnumMember(Value = "kicked")]
+        Kicked
+    }
+
+    /// <summary>
+    /// Contains information about why a request was unsuccessfull.
+    /// </summary>
+    public class ResponceParameters
+    {
+        /// <summary>
+        /// Optional. The group has been migrated to a supergroup with the specified identifier.
+        /// </summary>
+        [JsonProperty("migrate_to_chat_id")]
+        public long? MigrateToChatId { get; set; }
+
+        /// <summary>
+        /// Optional. In case of exceeding flood control, the number of seconds left to wait before the request can be repeated.
+        /// </summary>
+        [JsonProperty("retry_after")]
+        public int? RetryAfter { get; set; }
+    }
 }

@@ -100,7 +100,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             #region _urlEntity
             _urlEntity = new MessageEntity
             {
-                Type = "url",
+                Type = MessageEntityType.Url,
                 Offset = 0,
                 Length = 24
             };
@@ -108,7 +108,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             #region _entities
             _entities = new List<MessageEntity>
             {
-                _urlEntity
+                _urlEntity,
             };
             #endregion
             #region _thumb

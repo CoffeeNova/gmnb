@@ -201,9 +201,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.JsonParsers
             return message;
         }
 
-        public static string DefineMessage(JToken jObject)
+        public static string DefineMessage(JToken jToken)
         {
-            var children = jObject.Children();
+            var children = jToken.Children();
             var messageBody = children.FirstOrDefault(j =>
             {
                 var jProperty = j as JProperty;
