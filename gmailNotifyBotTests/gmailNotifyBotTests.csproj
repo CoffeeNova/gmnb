@@ -63,6 +63,12 @@
     <Compile Include="Bot\Telegram\TelegramMethodsTests\ForwardMessageTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\General.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\DownloadFileTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetChatMember.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetChatMemberCountTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetChatAdministratorsTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetChatTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\EditMessageTextTests.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetUpdatesTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\KickChatMemberTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\GetMeTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendChatActionTests.cs" />

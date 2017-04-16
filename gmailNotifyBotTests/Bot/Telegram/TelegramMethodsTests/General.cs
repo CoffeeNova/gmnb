@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
 using KellermanSoftware.CompareNetObjects;
@@ -31,7 +32,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 ComparePrivateProperties = false,
                 CompareProperties = true,
                 MaxDifferences = 50,
-                MembersToIgnore = new List<string> { "MessageId", "Date", "ForwardDate" }
+                MembersToIgnore = new List<string> { "MessageId", "Date", "ForwardDate", "UpdateId" }
             };
             string token = App_LocalResources.Tokens.GmailControlBotToken;
             _telegramMethods = new TelegramMethods(token, true);
@@ -172,6 +173,33 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 Title = "testgrp_new_title",
                 Type = ChatType.Supergroup
             };
+            _testChannel = new Chat
+            {
+                Id = -1001114442404,
+                Title = "TestChannel",
+                Type = ChatType.Channel
+            };
+            _userChatMember = new ChatMember
+            {
+                Status = ChatMemberStatus.Creator,
+                User = _user
+            };
+            _botChatMember = new ChatMember
+            {
+                Status = ChatMemberStatus.Administrator,
+                User = _botUser
+            };
+            _githubBot = new User
+            {
+                Id = 107550100,
+                FirstName = "GitHub",
+                Username = "GitHubBot"
+            };
+            _githubBotChatMember = new ChatMember
+            {
+                Status = ChatMemberStatus.Administrator,
+                User = _githubBot
+            };
         }
 
         [ClassCleanup]
@@ -217,6 +245,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                     break;
                 case nameof(DownloadFile_FileId_FileExists):
                     _fullFileName = _testStorageFilesPath;
+                    break;
+                case nameof(EditMessageText_EditLastMessage_Message):
+                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test EditTextMessage");
+                    _editedTextMessage = _textMessage;
+                    _editedTextMessage.Text = $"Message Edited By {nameof(EditMessageText_EditLastMessage_Message)}";
+                    break;
+                case nameof(GetUpdates_EditedMessagesOnly_ListOfOneUpdate):
+                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test GetUpdates Message 1");
+                    _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test GetUpdates Message 2");
+                    _editedTextMessage =
+                        _telegramMethods.EditMessageText(
+                            $"Message Edited By {nameof(GetUpdates_EditedMessagesOnly_ListOfOneUpdate)}",
+                            _privateChat.Id.ToString(), _textMessage.MessageId);
+                    //Thread.Sleep(2000);
                     break;
             }
         }
@@ -268,5 +310,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         private static PhotoSize _photoSize2;
         private static PhotoSize _photoSize3;
         private static File _file;
+        private static Chat _testChannel;
+        private static ChatMember _userChatMember;
+        private static ChatMember _botChatMember;
+        private static User _githubBot;
+        private static ChatMember _githubBotChatMember;
+        private static int _lastUpdateId = 0;
+        private static TextMessage _textMessage;
+        private static TextMessage _editedTextMessage;
     }
 }

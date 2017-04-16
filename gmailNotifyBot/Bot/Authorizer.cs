@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using CoffeeJelly.gmailNotifyBot.Extensions;
 using NLog;
@@ -15,10 +16,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
     {
         public Authorizer(RequestsHandler requestHandler, string clientId, string redirectUri, List<string> scopes)
         {
-            if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-            if (clientId == null) throw new ArgumentNullException(nameof(clientId));
-            if (redirectUri == null) throw new ArgumentNullException(nameof(redirectUri));
-            if (scopes == null) throw new ArgumentNullException(nameof(scopes));
+            requestHandler.NullInspect(nameof(requestHandler));
+            clientId.NullInspect(nameof(clientId));
+            redirectUri.NullInspect(nameof(redirectUri));
+            scopes.NullInspect(nameof(scopes));
 
             _requestHandler = requestHandler;
             _requestHandler.TelegramTextMessageEvent += _requestHandler_TelegramTextMessageEvent;
@@ -60,8 +61,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             //await UserContextWorker.QueueAsync(userModel.Id, state);
 
             //var uri = GetAuthenticationUri(state);
-            //SendMessage();
-
+            //var telegramMethods = new TelegramMethods()
         }
 
         private bool CheckUserAuthorization(UserModel userModel)

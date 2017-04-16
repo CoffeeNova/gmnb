@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Linq;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes
 {
@@ -24,7 +25,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes
 
         public static string GetMethodNameValue(Type classType, string callerMethodName)
         {
-            MethodInfo method = classType.GetMethod(callerMethodName);
+            var method = classType.GetMethod(callerMethodName);
             var attributes = (TelegramMethodAttribute[])method.GetCustomAttributes(typeof(TelegramMethodAttribute), true);
 
             string methodName = "";

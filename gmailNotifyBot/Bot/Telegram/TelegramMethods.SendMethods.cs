@@ -435,7 +435,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 	        var parameters = new NameValueCollection
 	        {
 	            {"chat_id", chatId},
-	            {"action", TelegramActionAttribute.GetActionValue(action)}
+	            {"action", ActionAttribute.GetActionValue(action)}
 	        };
 
             var json = UploadUrlQuery(parameters);
@@ -447,26 +447,5 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 	    {
 	        return Task.Run(() => SendChatAction(chatId, action));
         }
-
-        public enum Action
-	    {
-            [TelegramAction("typing")]
-            Typing,
-            [TelegramAction("upload_photo ")]
-            UploadPhoto,
-            [TelegramAction("record_video")]
-            RecordVideo,
-            [TelegramAction("upload_video")]
-            UploadVideo,
-            [TelegramAction("record_audio")]
-            RecordAudio,
-            [TelegramAction("upload_audio")]
-            UploadAudio,
-            [TelegramAction("upload_document")]
-            UploadDocument,
-            [TelegramAction("find_location")]
-            FindLocation
-	    }
-
     }
 }

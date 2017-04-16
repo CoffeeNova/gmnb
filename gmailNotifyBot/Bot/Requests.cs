@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
@@ -27,6 +28,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             LastUpdateId = lastUpdateId;
             if (RequestMonitorTimer.Enabled) return;
 
+            _telegramMethods = new TelegramMethods(token);
+            AllowedUpdates = new List<UpdateType> {UpdateType.AllUpdates};
             RequestMonitorTimer.Elapsed += RequestMonitorTimer_Elapsed;
             RequestMonitorTimer.Start();
         }
@@ -38,6 +41,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private void DownloadBotRequests()
         {
+            var updates = _telegramMethods.GetUpdates(LastUpdateId + 1, null, null, AllowedUpdates);
             using (var webClient = new WebClient())
             {
                 var uri = new Uri(TelegramBotUrl + Token + "/getupdates?offset=" + (LastUpdateId + 1));
@@ -109,6 +113,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             AutoReset = true
         };
 
+        private TelegramMethods _telegramMethods;
+
 
         private string Token { get; }
 
@@ -127,6 +133,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         /// </summary>
         public List<JToken> RequestList { get; private set; }
 
+        /// <summary>
+        /// List the types of updates you want your bot to receive.
+        /// </summary>
+        /// <remarks>
+        /// See details <see href="https://core.telegram.org/bots/api#getting-updates"> here</see>>.
+        /// </remarks>
+        public List<UpdateType> AllowedUpdates { get; set; }
     }
 
     public class BotRequestErrorEventArgs : EventArgs
