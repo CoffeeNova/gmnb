@@ -7,20 +7,20 @@ using System.Web;
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes
 {
     [AttributeUsage(AttributeTargets.Field)]
-    internal class TelegramActionAttribute : Attribute
+    internal class ActionAttribute : Attribute
     {
-        public TelegramActionAttribute(string action)
+        public ActionAttribute(string action)
         {
             Action = action;
         }
         public string Action { get; set; }
 
-        public static string GetActionValue(TelegramMethods.Action action)
+        public static string GetActionValue(Action action)
         {
-            var type = typeof(TelegramMethods.Action);
+            var type = typeof(Action);
             var fieldInfoArr = type.GetFields();
             var fieldInfo = fieldInfoArr.First(i => i.Name == action.ToString());
-            var attribute = (TelegramActionAttribute)fieldInfo.GetCustomAttribute(typeof(TelegramActionAttribute));
+            var attribute = (ActionAttribute)fieldInfo.GetCustomAttribute(typeof(ActionAttribute));
 
             return attribute.Action;
         }

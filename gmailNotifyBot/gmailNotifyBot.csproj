@@ -182,11 +182,13 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Bot\Telegram\Attributes\TelegramActionAttribute.cs" />
+    <Compile Include="Bot\Telegram\Attributes\UpdateAttribute.cs" />
+    <Compile Include="Bot\Telegram\Attributes\ActionAttribute.cs" />
     <Compile Include="Bot\Telegram\Attributes\TelegramMethodAttribute.cs" />
     <Compile Include="Bot\Authorizer.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\UserTableModel.cs" />
     <Compile Include="Bot\DataBase\UserWorker.cs" />
+    <Compile Include="Bot\Telegram\Enums.cs" />
     <Compile Include="Bot\Telegram\Exceptions\TelegramFileDownloadException.cs" />
     <Compile Include="Bot\Telegram\Exceptions\TelegramMessageIsUnidentifiedException.cs" />
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
@@ -198,6 +200,7 @@
     <Compile Include="Bot\Telegram\Converters\DateTimeConverter.cs" />
     <Compile Include="Bot\Telegram\Converters\MessageConverter.cs" />
     <Compile Include="Bot\Telegram\Exceptions\TelegramMethodsGetMeException.cs" />
+    <Compile Include="Bot\Telegram\InlineQueryClasses.cs" />
     <Compile Include="Bot\Telegram\Interfaces.cs" />
     <Compile Include="Bot\Telegram\JsonParsers\GeneralBuilder.cs" />
     <Compile Include="Bot\Telegram\JsonParsers\MessageBuilder.cs" />
@@ -206,6 +209,8 @@
     <Compile Include="Bot\Telegram\TelegramMethods.DownloadFile.cs" />
     <Compile Include="Bot\Telegram\TelegramMethods.General.cs" />
     <Compile Include="Bot\Telegram\TelegramMethods.GetMethods.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethods.InlineMethods.cs" />
+    <Compile Include="Bot\Telegram\TelegramMethods.UpdatingMessages.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />

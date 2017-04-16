@@ -13,9 +13,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
     {
         [TestMethod()]
         public void KickChatMember()
-        {
+        { 
             //var expected = _file;
-            //var actual = _telegramMethods.KickChatMember()
+            //var actual = _telegramMethods.KickChatMember(_supergroupChat.Id,  )
 
             //var compareLogic = new CompareLogic(_config);
             //var comparationResult = compareLogic.Compare(expected, actual);

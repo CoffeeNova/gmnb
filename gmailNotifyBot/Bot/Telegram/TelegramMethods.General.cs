@@ -144,9 +144,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                     "Bad http request, wrong parameters or something. See inner exception.", ex);
             }
         }
+
+        private void UpdateMethodsDefaultContent(NameValueCollection collection, string chatId = null, int? messageId = null,
+                                                 string inlineMessageId = null, IMarkup replyMarkup = null)
+        {
+            if (chatId != null)
+                collection.Add("chat_id", chatId);
+            if (messageId != null)
+                collection.Add("message_id", messageId.ToString());
+            if (inlineMessageId != null)
+                collection.Add("inline_message_id", inlineMessageId);
+            if (replyMarkup != null)
+                collection.Add("reply_markup",
+                    JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings));
+        }
         #endregion
 
-    
+
 
         public string FileStorage { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
