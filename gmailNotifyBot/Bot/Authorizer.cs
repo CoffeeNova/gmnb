@@ -1,44 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Extensions;
 using Google.Apis.Auth.OAuth2;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
     public sealed class Authorizer
     {
-        private Authorizer(string token, UpdatesHandler updatesHandler, string clientId, string redirectUri, List<string> scopes)
+        private Authorizer(string token, UpdatesHandler updatesHandler, ClientSecret clientSecret, List<string> scopes)
         {
             updatesHandler.NullInspect(nameof(updatesHandler));
-            clientId.NullInspect(nameof(clientId));
-            redirectUri.NullInspect(nameof(redirectUri));
+            clientSecret.NullInspect(nameof(clientSecret));
             scopes.NullInspect(nameof(scopes));
 
             _updatesHandler = updatesHandler;
             _updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
-            ClientId = clientId;
-            RedirectUri = redirectUri;
+            ClientSecret = clientSecret;
             Scopes = scopes;
             _telegramMethods = new TelegramMethods(token);
             AuthorizeRequestEvent += Authorizer_AuthorizeRequestEvent;
         }
 
-        public static Authorizer GetInstance(string token, UpdatesHandler updatesHandler, string clientId, string redirectUri, List<string> scopes)
+        public static Authorizer GetInstance(string token, UpdatesHandler updatesHandler, ClientSecret clientSecret, List<string> scopes)
         {
             if (Instance == null)
             {
                 lock (_locker)
                 {
                     if (Instance == null)
-                        Instance = new Authorizer(token, updatesHandler, clientId, redirectUri, scopes);
+                        Instance = new Authorizer(token, updatesHandler, clientSecret, scopes);
                 }
             }
             return Instance;
@@ -49,9 +52,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var scopes = string.Join("+", Scopes);
 
             string oauth =
-                GoogleOAuthString +
-                $"client_id={ClientId}" +
-                $"&redirect_uri={RedirectUri}" +
+                GoogleOAuthCodeEndpoint +
+                $"client_id={ClientSecret.ClientId}" +
+                $"&redirect_uri={ClientSecret.RedirectUris[0]}" +
                 $"&scope={scopes}" +
                 $"&response_type=code" +
                 $"&state={state}";
@@ -131,7 +134,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 LogMaker.Log(Logger, $"Server returned empty authorization code for user with id:{id}.", false);
                 return;
             }
-
+            var responceJson = ExchangeCodeForToken(code);
 
         }
 
@@ -150,8 +153,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return value;
         }
 
-        private void ExchangeCodeForToken(string code)
+        private JToken ExchangeCodeForToken(string code)
         {
+            var parameters = new NameValueCollection
+            {
+                {"code", code},
+                {"client_id", ClientSecret.ClientId},
+                {"client_secret", ClientSecret.Secret},
+                {"redirect_uri", ClientSecret.RedirectUris[1]},
+                {"grant_type", "authorization_code"}
+            };
+
+            using (var webClient = new WebClient())
+            {
+                try
+                {
+                    var byteResult = webClient.UploadValues(GoogleOAuthTokenEndpoint, "POST", parameters);
+                    var strResult = webClient.Encoding.GetString(byteResult);
+
+                    return JsonConvert.DeserializeObject<JToken>(strResult);
+                }
+                catch (WebException ex)
+                {
+                    throw new NotImplementedException();
+                }
+            }
         }
 
         private delegate void AuthorizerEventHandler(string code, string state, string error);
@@ -161,25 +187,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private UpdatesHandler _updatesHandler;
         private readonly TelegramMethods _telegramMethods;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly string GoogleOAuthString = @"https://accounts.google.com/o/oauth2/auth?";
+        private static readonly string GoogleOAuthCodeEndpoint= @"https://accounts.google.com/o/oauth2/auth?";
+        private static readonly string GoogleOAuthTokenEndpoint = @"https://www.googleapis.com/oauth2/v4/token";
         private static readonly object _locker = new object();
         private const int MaxPendingMinutes = 5;
-        // private static readonly List<string> Scopes = new List<string>
-        //{
-        //    @"https://www.googleapis.com/auth/gmail.compose",
-        //    @"https://mail.google.com/",
-        //    @"https://www.googleapis.com/auth/userinfo.profile"
-        //};
-
-        // private const string RedirectUri = @"http://gmailnotify.somee.com/OAuth";
 
         public static Authorizer Instance { get; private set; }
 
         public string ConnectStringCommand { get; set; } = @"/connect";
 
-        public string ClientId { get; set; }
 
-        public string RedirectUri { get; set; }
+        public ClientSecret ClientSecret { get; set; }
 
         public List<string> Scopes { get; set; }
 

@@ -25,12 +25,26 @@ namespace CoffeeJelly.gmailNotifyBot
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            //string token = App_LocalResources.Tokens.GmailControlBotToken;
-            //Requests br = new Requests(token);
+            string botToken = App_LocalResources.Tokens.GmailControlBotToken;
+#if DEBUG
+            string clientSecretStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret_debug);
+#else
+            string clientSecretStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret);
+#endif
 
-            //Requests.RequestsArrivedEvent += BotRequests_RequestsArrivedEvent;
-            
+            var clientSecret = JsonConvert.DeserializeObject<ClientSecret>(clientSecretStr);
+
+            var scopes = new List<string>
+            {
+                @"https://www.googleapis.com/auth/gmail.compose",
+                @"https://mail.google.com/",
+                @"https://www.googleapis.com/auth/userinfo.profile"
+            };
+            _updates = new Updates(botToken);
+            _authorizer = Authorizer.GetInstance(botToken, _updatesHandler, clientSecret, scopes);
+
         }
+
 
 
         private static async Task WriteParamsToTestFileAsync(JToken request)
@@ -43,13 +57,15 @@ namespace CoffeeJelly.gmailNotifyBot
 
             using (var fs = new FileStream(path.PathFormatter() + fileName, FileMode.Append, FileAccess.Write))
             {
-                    byte[] info = new UTF8Encoding(true).GetBytes(request + "\r\n");
-                    await fs.WriteAsync(info, 0, info.Length);
+                byte[] info = new UTF8Encoding(true).GetBytes(request + "\r\n");
+                await fs.WriteAsync(info, 0, info.Length);
             }
         }
 
         private const string TelegramBotThreadName = "Telegram Bot Thread";
-        private UpdatesHandler _BotRequestsHandler;
+        private UpdatesHandler _updatesHandler;
+        private Updates _updates;
+        private Authorizer _authorizer;
     }
 
 }
