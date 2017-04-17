@@ -244,3 +244,5 @@ ModelManifest.xml
 /gmailNotifyBot/Tokens.resx
 /gmailNotifyBot/App_LocalResources/Tokens.resx
 /gmailNotifyBot/App_LocalResources/Tokens.Designer.cs
+/gmailNotifyBot/App_LocalResources/client_secret.json
+/gmailNotifyBot/App_LocalResources/client_secret_debug.json

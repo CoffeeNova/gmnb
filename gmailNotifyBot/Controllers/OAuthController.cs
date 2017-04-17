@@ -15,16 +15,23 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
     public class OAuthController : Controller
     {
         [HttpGet]
-        public ActionResult Index(string code, string state, string error)
+        public ActionResult Index()
         {
-            Authorizer.HandleAuthResponse(code, state, error);
-          // var listParams = new List<string> { code, state, error };
-
-            //WriteParamsToTestFileAsync(listParams);
             return null;
         }
 
-        //private 
+        [HttpGet]
+        public ActionResult Code(string code, string state, string error)
+        {
+            Authorizer.HandleAuthResponse(code, state, error);
+            return null;
+        }
+
+        [HttpGet]
+        public ActionResult Token(string code, string state, string error)
+        {
+            return null;
+        }
 
         private async Task WriteParamsToTestFileAsync(List<string> parametrs)
         {
