@@ -6,16 +6,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
     public class UserModel
     {
-        public UserModel(User user = null)
+        public UserModel(Chat chat = null)
         {
-            if (user == null) return;
-            Id = user.Id;
-            FirstName = user.FirstName;
-            LastName = user.LastName;
-            Username = user.Username;
+            if (chat == null) return;
+            Id = chat.Id;
+            FirstName = chat.FirstName;
+            LastName = chat.LastName;
+            Username = chat.Username;
         }
 
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string FirstName { get; set; }
 
@@ -28,7 +28,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
     public class PendingUserModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string State { get; set; }
 

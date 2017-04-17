@@ -10,7 +10,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 {
     public static class UserContextWorker
     {
-        public static UserModel FindUser(User user)
+        public static UserModel FindUser(Chat user)
         {
             using (var db = new UserContext())
             {
@@ -18,7 +18,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static async Task<UserModel> FindUserAsync(User user)
+        public static async Task<UserModel> FindUserAsync(Chat user)
         {
             using (var db = new UserContext())
             {
@@ -26,7 +26,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static UserModel AddNewUser(User user)
+        public static UserModel AddNewUser(Chat user)
         {
             using (var db = new UserContext())
             {
@@ -36,12 +36,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static Task<UserModel> AddNewUserAsync(User user)
+        public static Task<UserModel> AddNewUserAsync(Chat user)
         {
             return Task.Run(() => AddNewUser(user));
         }
 
-        public static PendingUserModel Queue(int userId, string state)
+        public static PendingUserModel Queue(long userId, string state)
         {
             using (var db = new UserContext())
             {
@@ -56,7 +56,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static Task<PendingUserModel> QueueAsync(int userId, string state)
+        public static Task<PendingUserModel> QueueAsync(long userId, string state)
         {
             return Task.Run(() => Queue(userId, state));
         }
@@ -70,9 +70,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static void RemoveFromQueueAsync(PendingUserModel model)
+        public static Task RemoveFromQueueAsync(PendingUserModel model)
         {
-            Task.Run(() => RemoveFromQueue(model));
+            return Task.Run(() => RemoveFromQueue(model));
+        }
+
+        public static PendingUserModel FindPendingUser(long userId)
+        {
+            using (var db = new UserContext())
+            {
+                return db.PendingUser.Find(userId);
+            }
+        }
+
+        public static async Task<PendingUserModel> FindPendingUserAsync(long userId)
+        {
+            using (var db = new UserContext())
+            {
+                return await db.PendingUser.FindAsync(userId);
+            }
         }
     }
 }

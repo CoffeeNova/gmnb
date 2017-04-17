@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using CoffeeJelly.gmailNotifyBot.Bot;
 using CoffeeJelly.gmailNotifyBot.Extensions;
 
 namespace CoffeeJelly.gmailNotifyBot.Controllers
@@ -14,13 +15,16 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
     public class OAuthController : Controller
     {
         [HttpGet]
-        public Task<ActionResult> Index(string code, string state, string error)
+        public ActionResult Index(string code, string state, string error)
         {
-            var listParams = new List<string> { code, state, error };
+            Authorizer.HandleAuthResponse(code, state, error);
+          // var listParams = new List<string> { code, state, error };
 
-            //await WriteParamsToTestFileAsync(listParams);
+            //WriteParamsToTestFileAsync(listParams);
             return null;
         }
+
+        //private 
 
         private async Task WriteParamsToTestFileAsync(List<string> parametrs)
         {

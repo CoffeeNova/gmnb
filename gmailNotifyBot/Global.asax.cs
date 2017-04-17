@@ -25,27 +25,13 @@ namespace CoffeeJelly.gmailNotifyBot
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            //ThreadPool.QueueUserWorkItem((state) => { Thread.CurrentThread.Name = TelegramBotThreadName; RunTelegramBot(); });
-            //_BotRequestsHandler = new RequestsHandler
-            //{
-            //    HandleConnectCommand = true
-            //};
-            string token = App_LocalResources.Tokens.GmailControlBotToken;
-            Requests br = new Requests(token);
-            //RequestsHandler rh = new RequestsHandler();
-            //rh.TelegramTextMessageEvent += Rh_TelegramTextMessageEvent;
-            Requests.RequestsArrivedEvent += BotRequests_RequestsArrivedEvent;
+            //string token = App_LocalResources.Tokens.GmailControlBotToken;
+            //Requests br = new Requests(token);
+
+            //Requests.RequestsArrivedEvent += BotRequests_RequestsArrivedEvent;
             
         }
 
-        private static async void BotRequests_RequestsArrivedEvent(IRequests requests)
-        {
-            //Console.WriteLine(requests.LastUpdateId);
-            foreach (var r in requests.RequestList)
-            {
-               await WriteParamsToTestFileAsync(r);
-            }
-        }
 
         private static async Task WriteParamsToTestFileAsync(JToken request)
         {
@@ -63,7 +49,7 @@ namespace CoffeeJelly.gmailNotifyBot
         }
 
         private const string TelegramBotThreadName = "Telegram Bot Thread";
-        private RequestsHandler _BotRequestsHandler;
+        private UpdatesHandler _BotRequestsHandler;
     }
 
 }

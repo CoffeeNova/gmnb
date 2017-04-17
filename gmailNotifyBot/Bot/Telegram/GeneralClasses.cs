@@ -64,7 +64,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// Username, for private chats, supergroups and channels if available.
         /// </summary>
         [JsonProperty("username")]
-        public string UserName { get; set; }
+        public string Username { get; set; }
 
         /// <summary>
         /// First name of the other party in a private chat.
@@ -937,7 +937,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// should they get out of order.
         /// </remarks>
         [JsonProperty("update_id")]
-        public int UpdateId { get; set; }
+        public long UpdateId { get; set; }
 
         /// <summary>
         /// New incoming message of any kind — <see cref="TextMessage"/>, <see cref="PhotoMessage"/>, <see cref="StickerMessage"/>, etc.
