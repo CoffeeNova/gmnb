@@ -33,7 +33,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                     Message = _editedTextMessage
                 }
             };
-            var allowedUpdates = new List<TelegramMethods.UpdateType> { TelegramMethods.UpdateType.AllUpdates };
+            var allowedUpdates = new List<UpdateType> { UpdateType.AllUpdates };
             var actual = _telegramMethods.GetUpdates(-1, null, null, allowedUpdates);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);

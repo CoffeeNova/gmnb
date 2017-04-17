@@ -117,7 +117,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
                 }
                 catch (WebException ex)
                 {
-                    throw new TelegramMethodsException("Some arguments are not correct.", ex);
+                    throw new TelegramMethodsException("Bad request or error occurs while accessing remote server.", ex);
                 }
             }
         }

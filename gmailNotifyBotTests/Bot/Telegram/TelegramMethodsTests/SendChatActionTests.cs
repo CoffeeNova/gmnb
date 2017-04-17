@@ -16,7 +16,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
         {
             var expected = true;
 
-            var actual = _telegramMethods.SendChatAction(_privateChat.Id.ToString(), TelegramMethods.Action.UploadDocument);
+            var actual = _telegramMethods.SendChatAction(_privateChat.Id.ToString(), Action.UploadDocument);
 
             Assert.AreEqual(expected, actual);
         }

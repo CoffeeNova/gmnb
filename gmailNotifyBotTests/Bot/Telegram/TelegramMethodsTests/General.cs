@@ -42,7 +42,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 Id = 170181775,
                 FirstName = "Coffee",
                 LastName = "Jelly",
-                UserName = "CoffeeJelly",
+                Username = "CoffeeJelly",
                 Type = ChatType.Private
             };
             _botUser = new User

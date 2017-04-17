@@ -12,24 +12,24 @@ using NLog;
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
     /// <summary>
-    /// This class acts as a subscriber <see cref="Requests.RequestsArrivedEvent"/>.
+    /// This class acts as a subscriber <see cref="Updates.UpdatesArrivedEvent"/>.
     /// Recognizes Telegram's messages and forms them as <see cref="Message"/> objects.
     /// Triggers self events depending on the message type recieved.
     /// </summary>
-    public class RequestsHandler
+    public class UpdatesHandler
     {
-        public RequestsHandler()
+        public UpdatesHandler()
         {
             //if (!_testMode)
-            ResumeHandleRequests();
+            ResumeHandleUpdates();
         }
 
-        private void RequestsArrivedEvent(IRequests requests)
+        private void RequestsArrivedEvent(IUpdates updates)
         {
-            foreach (var request in requests.RequestList)
+            foreach (var update in updates.UpdatesList)
             {
-                dynamic message = MessageBuilder.BuildUnspecifiedMessage(request["message"]);
-                #region raising events
+                dynamic message = update.Message;
+                #region raising new message events
                 if (message.GetType() == typeof(TextMessage))
                     TelegramTextMessageEvent?.Invoke(message);
 
@@ -91,18 +91,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         }
 
-        public void StopHandleRequests()
+        public void StopHandleUpdates()
         {
-            if (RequestsHandlerStopped) return;
-            Requests.RequestsArrivedEvent -= RequestsArrivedEvent;
-            RequestsHandlerStopped = true;
+            if (UpdatesHandlerStopped) return;
+            Updates.UpdatesArrivedEvent -= RequestsArrivedEvent;
+            UpdatesHandlerStopped = true;
         }
 
-        public void ResumeHandleRequests()
+        public void ResumeHandleUpdates()
         {
-            if (!RequestsHandlerStopped) return;
-            Requests.RequestsArrivedEvent += RequestsArrivedEvent;
-            RequestsHandlerStopped = false;
+            if (!UpdatesHandlerStopped) return;
+            Updates.UpdatesArrivedEvent += RequestsArrivedEvent;
+            UpdatesHandlerStopped = false;
         }
 
         #region events
@@ -132,58 +132,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        //private bool _anyCommandHandled;
-        //private bool _handleConnectCommand;
-        //private bool _handleConnectCommand2;
-
-
-        //private bool AnyCommandHandled
-        //{
-        //    get { return _anyCommandHandled; }
-        //    set
-        //    {
-        //        if (value)
-        //            _anyCommandHandled = true;
-        //        if (!value && false.EqualsAll(HandleConnectCommand, _handleConnectCommand2))
-        //            _anyCommandHandled = false;
-        //    }
-        //}
-
-        //public bool HandleConnectCommand
-        //{
-        //    get { return _handleConnectCommand; }
-        //    set
-        //    {
-        //        if (value != _handleConnectCommand)
-        //        {
-        //            _handleConnectCommand = value;
-        //            AnyCommandHandled = value;
-        //            if (value)
-        //                AuthorizeCommandEvent += GmnbRequestsHandler_AuthorizeCommandEvent;
-        //            else
-        //                AuthorizeCommandEvent -= GmnbRequestsHandler_AuthorizeCommandEvent;
-        //        }
-        //    }
-        //}
-
-        //public bool HandleConnectCommand2
-        //{
-        //    get { return _handleConnectCommand2; }
-        //    set
-        //    {
-        //        if (value != _handleConnectCommand2)
-        //        {
-        //            _handleConnectCommand2 = value;
-        //            if (value)
-        //                AuthorizeCommandEvent += GmnbRequestsHandler_AuthorizeCommandEvent;
-        //            else
-        //                AuthorizeCommandEvent -= GmnbRequestsHandler_AuthorizeCommandEvent;
-        //        }
-        //    }
-
-        //}
-
-        public bool RequestsHandlerStopped { get; private set; }
+        public bool UpdatesHandlerStopped { get; private set; }
 
         
 
