@@ -23,7 +23,7 @@ namespace CoffeeJelly.gmailNotifyBot
     {
         protected void Application_Start()
         {
-           //Database.SetInitializer(new UserDbInitializer());
+           // Database.SetInitializer(new UserDbInitializer());
 
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

@@ -17,7 +17,9 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 UserId = 1,
                 FirstName = "testFirst",
                 LastName = "testLast",
-                Username = "testUsername"
+                Username = "testUsername",
+                ReceivingTime = DateTime.Now
+                
             });
             db.PendingUser.Add(new PendingUserModel
             {

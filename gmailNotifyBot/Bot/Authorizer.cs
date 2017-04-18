@@ -4,6 +4,8 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
@@ -11,6 +13,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.JsonParsers;
 using CoffeeJelly.gmailNotifyBot.Extensions;
 using Google.Apis.Auth.OAuth2;
 using Newtonsoft.Json;
@@ -58,7 +61,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 $"&redirect_uri={ClientSecret.RedirectUris[0]}" +
                 $"&scope={scopes}" +
                 $"&response_type=code" +
-                $"&state={state}";
+                $"&state={state}" +
+                $"&access_type=offline";
             return new Uri(oauth);
         }
 
@@ -84,20 +88,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private async Task SendAuthorizeLink(TextMessage message)
         {
+            var userContextWorker = new UserContextWorker();
+
             LogMaker.Log(Logger, $"Start authorizing user with UserId={message.Chat.Id}.", false);
-            var userModel = await UserContextWorker.FindUserAsync(message.Chat) ??
-                           await UserContextWorker.AddNewUserAsync(message.Chat);
+            var userModel = await userContextWorker.FindUserAsync(message.Chat.Id) ??
+                           await userContextWorker.AddNewUserAsync(message.Chat);
 
             LogMaker.Log(Logger, $"The user with id:{userModel.UserId} has requested authorization", false);
             if (CheckUserAuthorization(userModel)) return;
 
             var state = Base64.Encode($"{userModel.UserId}");
 
-            var pendingUserModel = await UserContextWorker.FindPendingUserAsync(userModel.UserId);
+            var pendingUserModel = await userContextWorker.FindPendingUserAsync(userModel.UserId);
             if (pendingUserModel != null)
-                await UserContextWorker.UpdateRecordJoinTimeAsync(pendingUserModel.Id, DateTime.Now);
+                await userContextWorker.UpdateRecordJoinTimeAsync(pendingUserModel.Id, DateTime.Now);
             else
-                await UserContextWorker.QueueAsync(userModel.UserId, state);
+                await userContextWorker.QueueAsync(userModel.UserId, state);
 
 
             var uri = GetAuthenticationUri(state);
@@ -122,16 +128,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (!RestoreState(state, out id))
                 return;
 
-                PendingUserModel pendingUserModel = null;
+            PendingUserModel pendingUserModel = null;
+            var userContextWorker = new UserContextWorker();
 
             try
             {
-                pendingUserModel = await UserContextWorker.FindPendingUserAsync(id);
+                pendingUserModel = userContextWorker.FindPendingUser(id);
                 if (pendingUserModel == null)
                     return;
                 if (DateTime.Now.Subtract(pendingUserModel.JoinTime).Minutes > MaxPendingMinutes)
                 {
-                    await _telegramMethods.SendMessageAsync(id.ToString(),
+                    _telegramMethods.SendMessage(id.ToString(),
                         @"Time for authorization has expired. Please type again /connect command.");
                     LogMaker.Log(Logger,
                         $"Authorization attempt from user with id:{id} when authorization time has expired.", false);
@@ -140,7 +147,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
                 if (!string.IsNullOrEmpty(error))
                 {
-                    await _telegramMethods.SendMessageAsync(id.ToString(), "Authorization failed. See ya!");
+                    _telegramMethods.SendMessage(id.ToString(), "Authorization failed. See ya!");
                     LogMaker.Log(Logger,
                         error == "access_denied"
                             ? $"User with id:{id} user declined the authorization request."
@@ -153,16 +160,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     LogMaker.Log(Logger, $"Server returned empty authorization code for user with id:{id}.", false);
                     return;
                 }
-                var responceJson = ExchangeCodeForToken(code);
+                var userModel = userContextWorker.FindUser(id);
+                ExchangeCodeForToken(code, ref userModel);
+                userContextWorker.UpdateUserRecord(userModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new NotImplementedException();
             }
             finally
             {
                 if (pendingUserModel != null)
-                    await UserContextWorker.RemoveFromQueueAsync(pendingUserModel);
+                    userContextWorker.RemoveFromQueue(pendingUserModel);
             }
         }
 
@@ -188,30 +197,68 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return value;
         }
 
-        private JToken ExchangeCodeForToken(string code)
+        private void ExchangeCodeForToken(string code, ref UserModel userModel)
         {
+            userModel.NullInspect(nameof(userModel));
+
             var parameters = new NameValueCollection
             {
                 {"code", code},
                 {"client_id", ClientSecret.ClientId},
                 {"client_secret", ClientSecret.Secret},
-                {"redirect_uri", ClientSecret.RedirectUris[1]},
+                {"redirect_uri", ClientSecret.RedirectUris[0]},
                 {"grant_type", "authorization_code"}
             };
 
-            using (var webClient = new WebClient())
+            try
             {
-                try
+                using (var webClient = new WebClient())
                 {
+                    webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
                     var byteResult = webClient.UploadValues(GoogleOAuthTokenEndpoint, "POST", parameters);
                     var strResult = webClient.Encoding.GetString(byteResult);
 
-                    return JsonConvert.DeserializeObject<JToken>(strResult);
+                    //JsonConvert.DeserializeObject<JToken>(strResult);
+                    JsonConvert.PopulateObject(strResult, userModel);
                 }
-                catch (WebException ex)
+            }
+            catch (WebException ex)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private void ExchangeCodeForToken2(string code, ref UserModel userModel)
+        {
+            userModel.NullInspect(nameof(userModel));
+
+            try
+            {
+                using (var form = new MultipartFormDataContent())
                 {
-                    throw new NotImplementedException();
+                    if (code != null)
+                        form.Add(new StringContent(code, Encoding.UTF8), "code");
+                    if (ClientSecret.ClientId != null)
+                        form.Add(new StringContent(ClientSecret.ClientId, Encoding.UTF8), "client_id");
+                    if (ClientSecret.RedirectUris[1] != null)
+                        form.Add(new StringContent(ClientSecret.RedirectUris[1], Encoding.UTF8), "redirect_uri");
+                    form.Add(new StringContent("authorization_code", Encoding.UTF8), "authorization_code");
+
+                    using (var httpClient = new HttpClient())
+                    {
+                        httpClient.DefaultRequestHeaders.Add("Content-Type", "application/x-www-form-urlencoded");
+                        var responce = httpClient.PostAsync(GoogleOAuthTokenEndpoint, form).Result;
+
+                        var strResult = responce.Content.ReadAsStringAsync().Result;
+                        JsonConvert.PopulateObject(strResult, userModel);
+                        //var json = JsonConvert.DeserializeObject<JToken>(strResult);
+                    }
                 }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new TelegramMethodsException(
+                    "Bad http request, wrong parameters or something. See inner exception.", ex);
             }
         }
 

@@ -11,26 +11,26 @@ using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 {
-    public static class UserContextWorker
+    public class UserContextWorker
     {
-        public static UserModel FindUser(Chat user)
+        public UserModel FindUser(long userId)
         {
-            user.NullInspect(nameof(user));
+            userId.NullInspect(nameof(userId));
 
             using (var db = new UserContext())
             {
-                return db.Users.FirstOrDefault(u => u.UserId == user.Id);
+                return db.Users.FirstOrDefault(u => u.UserId == userId);
             }
         }
 
-        public static Task<UserModel> FindUserAsync(Chat user)
+        public Task<UserModel> FindUserAsync(long userId)
         {
-            user.NullInspect(nameof(user));
+            userId.NullInspect(nameof(userId));
 
-            return Task.Run(() => FindUser(user));
+            return Task.Run(() => FindUser(userId));
         }
 
-        public static UserModel AddNewUser(Chat user)
+        public UserModel AddNewUser(Chat user)
         {
             user.NullInspect(nameof(user));
 
@@ -42,14 +42,29 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static Task<UserModel> AddNewUserAsync(Chat user)
+        public Task<UserModel> AddNewUserAsync(Chat user)
         {
             user.NullInspect(nameof(user));
 
             return Task.Run(() => AddNewUser(user));
         }
 
-        public static PendingUserModel Queue(long userId, string state)
+        public void UpdateUserRecord(UserModel userModel)
+        {
+            using (var db = new UserContext())
+            {
+                db.Users.Attach(userModel);
+                db.Entry(userModel).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
+
+        public Task UpdateUserRecordAsync(UserModel userModel)
+        {
+            return Task.Run(() => UpdateUserRecord(userModel));
+        }
+
+        public PendingUserModel Queue(long userId, string state)
         {
             state.NullInspect(nameof(state));
 
@@ -66,14 +81,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static Task<PendingUserModel> QueueAsync(long userId, string state)
+        public Task<PendingUserModel> QueueAsync(long userId, string state)
         {
             state.NullInspect(nameof(state));
 
             return Task.Run(() => Queue(userId, state));
         }
 
-        public static void RemoveFromQueue(PendingUserModel model)
+        public void RemoveFromQueue(PendingUserModel model)
         {
             model.NullInspect(nameof(model));
 
@@ -84,14 +99,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static Task RemoveFromQueueAsync(PendingUserModel model)
+        public Task RemoveFromQueueAsync(PendingUserModel model)
         {
             model.NullInspect(nameof(model));
 
             return Task.Run(() => RemoveFromQueue(model));
         }
 
-        public static PendingUserModel UpdateRecordJoinTime(long id, DateTime time)
+        public PendingUserModel UpdateRecordJoinTime(long id, DateTime time)
         {
             using (var db = new UserContext())
             {
@@ -105,12 +120,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static Task<PendingUserModel> UpdateRecordJoinTimeAsync(long id, DateTime time)
+        public Task<PendingUserModel> UpdateRecordJoinTimeAsync(long id, DateTime time)
         {
             return Task.Run(() => UpdateRecordJoinTime(id, time));
         }
 
-        public static PendingUserModel FindPendingUser(long userId)
+        public PendingUserModel FindPendingUser(long userId)
         {
             using (var db = new UserContext())
             {
@@ -118,7 +133,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public static Task<PendingUserModel> FindPendingUserAsync(long userId)
+        public Task<PendingUserModel> FindPendingUserAsync(long userId)
         {
             return Task.Run(() => FindPendingUser(userId));
         }
