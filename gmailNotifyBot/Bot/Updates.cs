@@ -16,14 +16,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
     /// A class which permanently observes updates from Telegram's bot server and
     /// notifies subscribers about new updates.
     /// </summary>
-    public class Updates : IUpdates
+    public sealed class Updates : IUpdates
     {
         /// <summary>
         /// Primiry constructor of a class, automatically triggers observation of new updates from Telegram server.
         /// </summary>
         /// <param name="token">Telegram bot token.</param>
         /// <param name="lastUpdateId">Last update ID used as offset in Telegram's api getUpdates function. Default value is 0.</param>
-        public Updates(string token, int lastUpdateId = 0)
+        private Updates(string token, int lastUpdateId)
         {
             Token = token;
             LastUpdateId = lastUpdateId;
@@ -35,9 +35,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             RequestMonitorTimer.Start();
         }
 
+        public static Updates GetInstance(string token, int lastUpdateId = 0)
+        {
+            if (Instance == null)
+            {
+                lock (_locker)
+                {
+                    if (Instance == null)
+                        Instance = new Updates(token, lastUpdateId);
+                }
+            }
+            return Instance;
+        }
+
+        public void Restart()
+        {
+            RequestMonitorTimer.Start();
+        }
+
         private Updates()
         {
-            
+            LogMaker.Log(Logger, "Download updates restarted", false);
         }
 
         private void DownloadUpdates()
@@ -80,12 +98,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         /// <summary>
         /// Triggers when a class stops tracing updates from telegram server.
         /// </summary>
-        public static event BotUpdatesErrorEventHandler UpdatesTracingStoppedEvent;
+        public event BotUpdatesErrorEventHandler UpdatesTracingStoppedEvent;
 
         /// <summary>
         /// Triggers when new updates has been traced on the telegram server.
         /// </summary>
-        public static event BotUpdatesEventHandler UpdatesArrivedEvent;
+        public event BotUpdatesEventHandler UpdatesArrivedEvent;
 
         private const int MaxDelayServerResponce = 2000;
 
@@ -100,8 +118,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private readonly TelegramMethods _telegramMethods;
 
+        private static readonly object _locker = new object();
 
         private string Token { get; }
+
+        public static Updates Instance { get; private set; }
 
         /// <summary>
         /// First update ID in a <see cref="UpdatesList"/> container. 

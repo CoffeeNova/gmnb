@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -9,8 +10,10 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using CoffeeJelly.gmailNotifyBot.Bot;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using CoffeeJelly.gmailNotifyBot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -20,11 +23,14 @@ namespace CoffeeJelly.gmailNotifyBot
     {
         protected void Application_Start()
         {
+           //Database.SetInitializer(new UserDbInitializer());
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            LogMaker.NewMessage += LogMaker_NewMessage;
             string botToken = App_LocalResources.Tokens.GmailControlBotToken;
 #if DEBUG
             string clientSecretStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret_debug);
@@ -32,7 +38,8 @@ namespace CoffeeJelly.gmailNotifyBot
             string clientSecretStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret);
 #endif
 
-            var clientSecret = JsonConvert.DeserializeObject<ClientSecret>(clientSecretStr);
+            var clienSecretJtoken = JsonConvert.DeserializeObject<JToken>(clientSecretStr);
+            var clientSecret = JsonConvert.DeserializeObject<ClientSecret>(clienSecretJtoken["web"].ToString());
 
             var scopes = new List<string>
             {
@@ -40,12 +47,23 @@ namespace CoffeeJelly.gmailNotifyBot
                 @"https://mail.google.com/",
                 @"https://www.googleapis.com/auth/userinfo.profile"
             };
-            _updates = new Updates(botToken);
+            _updates = Updates.GetInstance(botToken);
+            _updates.UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
+            _updatesHandler = new UpdatesHandler();
             _authorizer = Authorizer.GetInstance(botToken, _updatesHandler, clientSecret, scopes);
 
         }
 
+        private void LogMaker_NewMessage(NLog.Logger logger, string message, DateTime time, bool isError)
+        {
+            Debug.WriteLine($"{logger.Name} log message: {message}");
+        }
 
+        private async void Updates_UpdatesTracingStoppedEvent(object sender, BotRequestErrorEventArgs e)
+        {
+            await CoffeeJTools.Delay(5000);
+            _updates.Restart();
+        }
 
         private static async Task WriteParamsToTestFileAsync(JToken request)
         {

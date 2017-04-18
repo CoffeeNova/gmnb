@@ -94,14 +94,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public void StopHandleUpdates()
         {
             if (UpdatesHandlerStopped) return;
-            Updates.UpdatesArrivedEvent -= RequestsArrivedEvent;
+            Updates.Instance.UpdatesArrivedEvent -= RequestsArrivedEvent;
             UpdatesHandlerStopped = true;
         }
 
         public void ResumeHandleUpdates()
         {
             if (!UpdatesHandlerStopped) return;
-            Updates.UpdatesArrivedEvent += RequestsArrivedEvent;
+            Updates.Instance.UpdatesArrivedEvent += RequestsArrivedEvent;
             UpdatesHandlerStopped = false;
         }
 
@@ -132,7 +132,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public bool UpdatesHandlerStopped { get; private set; }
+        public bool UpdatesHandlerStopped { get; private set; } = true;
 
         
 
