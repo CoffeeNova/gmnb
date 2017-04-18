@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
@@ -63,30 +64,45 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public static void HandleAuthResponse(string code, string state, string error)
         {
-            Instance?.AuthorizeRequestEvent(code, state, error);
+            Instance?.AuthorizeRequestEvent?.Invoke(code, state, error);
         }
 
-        private void _updatesHandler_TelegramTextMessageEvent(TextMessage message)
+        private async void _updatesHandler_TelegramTextMessageEvent(TextMessage message)
         {
             if (message.Text == ConnectStringCommand)
-                SendAuthorizeLink(message);
+            {
+                try
+                {
+                    await SendAuthorizeLink(message);
+                }
+                catch (Exception ex)
+                {
+                    throw new NotImplementedException();
+                }
+            }
         }
 
-        private async void SendAuthorizeLink(TextMessage message)
+        private async Task SendAuthorizeLink(TextMessage message)
         {
             LogMaker.Log(Logger, $"Start authorizing user with UserId={message.Chat.Id}.", false);
             var userModel = await UserContextWorker.FindUserAsync(message.Chat) ??
-                            await UserContextWorker.AddNewUserAsync(message.Chat);
+                           await UserContextWorker.AddNewUserAsync(message.Chat);
 
-            LogMaker.Log(Logger, $"The user with id:{userModel.Id} has requested authorization", false);
+            LogMaker.Log(Logger, $"The user with id:{userModel.UserId} has requested authorization", false);
             if (CheckUserAuthorization(userModel)) return;
 
-            var state = Base64.Encode($"{userModel.Id}");
-            await UserContextWorker.QueueAsync(userModel.Id, state);
+            var state = Base64.Encode($"{userModel.UserId}");
+
+            var pendingUserModel = await UserContextWorker.FindPendingUserAsync(userModel.UserId);
+            if (pendingUserModel != null)
+                await UserContextWorker.UpdateRecordJoinTimeAsync(pendingUserModel.Id, DateTime.Now);
+            else
+                await UserContextWorker.QueueAsync(userModel.UserId, state);
+
 
             var uri = GetAuthenticationUri(state);
             await _telegramMethods.SendMessageAsync(message.Chat.Id.ToString(),
-                $"Open this link to authorize the bot: /r/n {uri.OriginalString}");
+                $"Open this link to authorize the bot: \r\n {uri.OriginalString}");
         }
 
         private bool CheckUserAuthorization(UserModel userModel)
@@ -100,42 +116,54 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         //    return 
         //}
 
-        private async void Authorizer_AuthorizeRequestEvent(string code, string state, string error)
+        private async Task Authorizer_AuthorizeRequestEvent(string code, string state, string error)
         {
             long id;
             if (!RestoreState(state, out id))
                 return;
 
-            var pendingUserModel = await UserContextWorker.FindPendingUserAsync(id);
-            if (pendingUserModel == null)
-                return;
+                PendingUserModel pendingUserModel = null;
 
-            if (DateTime.Now.Subtract(pendingUserModel.JoinTime).Minutes > MaxPendingMinutes)
+            try
             {
-                await _telegramMethods.SendMessageAsync(id.ToString(),
+                pendingUserModel = await UserContextWorker.FindPendingUserAsync(id);
+                if (pendingUserModel == null)
+                    return;
+                if (DateTime.Now.Subtract(pendingUserModel.JoinTime).Minutes > MaxPendingMinutes)
+                {
+                    await _telegramMethods.SendMessageAsync(id.ToString(),
                         @"Time for authorization has expired. Please type again /connect command.");
-                await UserContextWorker.RemoveFromQueueAsync(pendingUserModel);
-                LogMaker.Log(Logger, $"Authorization attempt from user with id:{id} when authorization time has expired.", false);
-                return;
-            }
+                    LogMaker.Log(Logger,
+                        $"Authorization attempt from user with id:{id} when authorization time has expired.", false);
+                    return;
+                }
 
-            if (!string.IsNullOrEmpty(error))
+                if (!string.IsNullOrEmpty(error))
+                {
+                    await _telegramMethods.SendMessageAsync(id.ToString(), "Authorization failed. See ya!");
+                    LogMaker.Log(Logger,
+                        error == "access_denied"
+                            ? $"User with id:{id} user declined the authorization request."
+                            : $"Authorization user with id:{id} has faulted with error={error}", false);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(code))
+                {
+                    LogMaker.Log(Logger, $"Server returned empty authorization code for user with id:{id}.", false);
+                    return;
+                }
+                var responceJson = ExchangeCodeForToken(code);
+            }
+            catch (Exception)
             {
-                await _telegramMethods.SendMessageAsync(id.ToString(), "Authorization failed. See ya!");
-                LogMaker.Log(Logger,
-                    error == "access_denied"
-                        ? $"User with id:{id} user declined the authorization request."
-                        : $"Authorization user with id:{id} has faulted with error={error}", false);
-                return;
+                throw new NotImplementedException();
             }
-
-            if (string.IsNullOrEmpty(code))
+            finally
             {
-                LogMaker.Log(Logger, $"Server returned empty authorization code for user with id:{id}.", false);
-                return;
+                if (pendingUserModel != null)
+                    await UserContextWorker.RemoveFromQueueAsync(pendingUserModel);
             }
-            var responceJson = ExchangeCodeForToken(code);
-
         }
 
         private static bool RestoreState(string state, out long id)
@@ -144,8 +172,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             bool value = !string.IsNullOrEmpty(state);
             if (value)
             {
-                var idstr = Base64.Decode(state);
-                value = long.TryParse(idstr, out id);
+                try
+                {
+                    var idstr = Base64.Decode(state);
+                    value = long.TryParse(idstr, out id);
+                }
+                catch (FormatException ex)
+                {
+                    value = false;
+                }
             }
 
             if (!value)
@@ -180,14 +215,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        private delegate void AuthorizerEventHandler(string code, string state, string error);
+        private delegate Task AuthorizerEventHandler(string code, string state, string error);
         private event AuthorizerEventHandler AuthorizeRequestEvent;
 
 
         private UpdatesHandler _updatesHandler;
         private readonly TelegramMethods _telegramMethods;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly string GoogleOAuthCodeEndpoint= @"https://accounts.google.com/o/oauth2/auth?";
+        private static readonly string GoogleOAuthCodeEndpoint = @"https://accounts.google.com/o/oauth2/auth?";
         private static readonly string GoogleOAuthTokenEndpoint = @"https://www.googleapis.com/oauth2/v4/token";
         private static readonly object _locker = new object();
         private const int MaxPendingMinutes = 5;

@@ -57,7 +57,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             if (allowedUpdates != null)
             {
                 var allowedUpdatesString = string.Join(",", allowedUpdates.Select(i => $"\"{UpdateAttribute.GetUpdateType(i)}\""));
-                parameters.Add("allowed_updates", allowedUpdatesString);
+                parameters.Add("allowed_updates", $"[{allowedUpdatesString}]");
             }
             var json = UploadUrlQuery(parameters);
             var result = json["result"];
