@@ -212,12 +212,20 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Bot\Base64.cs" />
     <Compile Include="Bot\ClientSecret.cs" />
+    <Compile Include="Bot\CommandHandler.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\PendingUserModel.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\GmailDbContext.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\UserSettingsModel.cs" />
+    <Compile Include="Bot\Exceptions\AuthorizeException.cs" />
+    <Compile Include="Bot\Exceptions\RevokeTokenException.cs" />
+    <Compile Include="Bot\Exceptions\RefreshTokenException.cs" />
+    <Compile Include="Bot\Exceptions\ExchangeException.cs" />
     <Compile Include="Bot\Telegram\Attributes\UpdateAttribute.cs" />
     <Compile Include="Bot\Telegram\Attributes\ActionAttribute.cs" />
     <Compile Include="Bot\Telegram\Attributes\TelegramMethodAttribute.cs" />
     <Compile Include="Bot\Authorizer.cs" />
-    <Compile Include="Bot\DataBase\DataBaseModels\UserTableModel.cs" />
-    <Compile Include="Bot\DataBase\UserWorker.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\UserModel.cs" />
+    <Compile Include="Bot\DataBase\GmailDbContextWorker.cs" />
     <Compile Include="Bot\Telegram\Enums.cs" />
     <Compile Include="Bot\Telegram\Exceptions\TelegramFileDownloadException.cs" />
     <Compile Include="Bot\Telegram\Exceptions\TelegramMessageIsUnidentifiedException.cs" />
@@ -348,7 +356,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Bot\Exceptions\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>

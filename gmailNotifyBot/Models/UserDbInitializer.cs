@@ -7,9 +7,9 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 
 namespace CoffeeJelly.gmailNotifyBot.Models
 {
-    public class UserDbInitializer : DropCreateDatabaseAlways<UserContext>
+    public class UserDbInitializer : DropCreateDatabaseAlways<GmailBotDbContext>
     {
-        protected override void Seed(UserContext db)
+        protected override void Seed(GmailBotDbContext db)
         {
 
             db.Users.Add(new UserModel
