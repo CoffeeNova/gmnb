@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
@@ -71,6 +72,67 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             Instance?.AuthorizeRequestEvent?.Invoke(code, state, error);
         }
 
+        public async Task RefreshAccessToken(UserModel userModel)
+        {
+            try
+            {
+                //var gmailDbContextWorker = new GmailDbContextWorker();
+                //var userModel = await gmailDbContextWorker.FindUserAsync(userId);
+
+                var parameters = new NameValueCollection
+                {
+                    {"refresh_token", userModel.RefreshToken},
+                    {"client_id", ClientSecret.ClientId},
+                    {"client_secret", ClientSecret.Secret},
+                    {"redirect_uri", ClientSecret.RedirectUris[0]},
+                    {"grant_type", "refresh_token"}
+                };
+
+                using (var webClient = new WebClient())
+                {
+                    webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
+                    var byteResult = await webClient.UploadValuesTaskAsync(GoogleOAuthTokenEndpoint, "POST", parameters);
+                    var strResult = webClient.Encoding.GetString(byteResult);
+
+                    JsonConvert.PopulateObject(strResult, userModel);
+                    TokenRefreshed?.Invoke(userModel);
+                }
+            }
+            catch (WebException ex)
+            {
+                throw new RefreshTokenException("An error occurred while trying to refresh access token.", ex);
+            }
+        }
+
+        public async Task RevokeToken(UserModel userModel)
+        {
+            try
+            {
+                var parameters = new NameValueCollection { {"token", userModel.RefreshToken }};
+
+                using (var webClient = new WebClient())
+                {
+                    webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
+                    var byteResult = await webClient.UploadValuesTaskAsync(GoogleOAuthTokenEndpoint, "POST", parameters);
+                    var strResult = webClient.Encoding.GetString(byteResult);
+                    throw new NotImplementedException("define responce status code, shuold be 200 and return true.");
+                    if (true)
+                    {
+                        userModel.RefreshToken = "";
+                        userModel.AccessToken = "";
+                        TokenRevorkedEvent?.Invoke(userModel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new RevokeTokenException("An error occurred while trying to refresh access token.", ex);
+            }
+
+        }
+
+
+
         private async void _updatesHandler_TelegramTextMessageEvent(TextMessage message)
         {
             if (message.Text == ConnectStringCommand)
@@ -81,29 +143,29 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 }
                 catch (Exception ex)
                 {
-                    throw new NotImplementedException();
+                    throw new AuthorizeException("An error occurred while trying to send the authentication link to the user", ex);
                 }
             }
         }
 
         private async Task SendAuthorizeLink(TextMessage message)
         {
-            var userContextWorker = new UserContextWorker();
+            var gmailDbContextWorker = new GmailDbContextWorker();
 
             LogMaker.Log(Logger, $"Start authorizing user with UserId={message.Chat.Id}.", false);
-            var userModel = await userContextWorker.FindUserAsync(message.Chat.Id) ??
-                           await userContextWorker.AddNewUserAsync(message.Chat);
+            var userModel = await gmailDbContextWorker.FindUserAsync(message.Chat.Id) ??
+                           await gmailDbContextWorker.AddNewUserAsync(message.Chat);
 
             LogMaker.Log(Logger, $"The user with id:{userModel.UserId} has requested authorization", false);
             if (CheckUserAuthorization(userModel)) return;
 
             var state = Base64.Encode($"{userModel.UserId}");
 
-            var pendingUserModel = await userContextWorker.FindPendingUserAsync(userModel.UserId);
+            var pendingUserModel = await gmailDbContextWorker.FindPendingUserAsync(userModel.UserId);
             if (pendingUserModel != null)
-                await userContextWorker.UpdateRecordJoinTimeAsync(pendingUserModel.Id, DateTime.Now);
+                await gmailDbContextWorker.UpdateRecordJoinTimeAsync(pendingUserModel.Id, DateTime.Now);
             else
-                await userContextWorker.QueueAsync(userModel.UserId, state);
+                await gmailDbContextWorker.QueueAsync(userModel.UserId, state);
 
 
             var uri = GetAuthenticationUri(state);
@@ -117,23 +179,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return false;
         }
 
-        //private string GenerateState(int id)
-        //{
-        //    return 
-        //}
-
-        private async Task Authorizer_AuthorizeRequestEvent(string code, string state, string error)
+        private void Authorizer_AuthorizeRequestEvent(string code, string state, string error)
         {
             long id;
             if (!RestoreState(state, out id))
                 return;
 
             PendingUserModel pendingUserModel = null;
-            var userContextWorker = new UserContextWorker();
+            var gmailDbContextWorker = new GmailDbContextWorker();
 
             try
             {
-                pendingUserModel = userContextWorker.FindPendingUser(id);
+                pendingUserModel = gmailDbContextWorker.FindPendingUser(id);
                 if (pendingUserModel == null)
                     return;
                 if (DateTime.Now.Subtract(pendingUserModel.JoinTime).Minutes > MaxPendingMinutes)
@@ -160,18 +217,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     LogMaker.Log(Logger, $"Server returned empty authorization code for user with id:{id}.", false);
                     return;
                 }
-                var userModel = userContextWorker.FindUser(id);
-                ExchangeCodeForToken(code, ref userModel);
-                userContextWorker.UpdateUserRecord(userModel);
+                var userModel = gmailDbContextWorker.FindUser(id);
+                ExchangeCodeForToken(code, userModel);
+                gmailDbContextWorker.UpdateUserRecord(userModel);
+
+                AuthorizationRegistredEvent?.Invoke(userModel);
+                _telegramMethods.SendMessage(id.ToString(), "Authorization successfull! Now you can recieve notifications about new emails and use other functions!");
             }
             catch (Exception ex)
             {
-                throw new NotImplementedException();
+                throw new AuthorizeException("An error occurred while attempting to authorize the user.", ex);
             }
             finally
             {
                 if (pendingUserModel != null)
-                    userContextWorker.RemoveFromQueue(pendingUserModel);
+                    gmailDbContextWorker.RemoveFromQueue(pendingUserModel);
             }
         }
 
@@ -197,7 +257,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return value;
         }
 
-        private void ExchangeCodeForToken(string code, ref UserModel userModel)
+        private void ExchangeCodeForToken(string code, UserModel userModel)
         {
             userModel.NullInspect(nameof(userModel));
 
@@ -224,46 +284,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
             catch (WebException ex)
             {
-                throw new NotImplementedException();
+                throw new ExchangeException("Failure when exchanging code for token, perhaps bad request.", ex);
             }
         }
 
-        private void ExchangeCodeForToken2(string code, ref UserModel userModel)
-        {
-            userModel.NullInspect(nameof(userModel));
-
-            try
-            {
-                using (var form = new MultipartFormDataContent())
-                {
-                    if (code != null)
-                        form.Add(new StringContent(code, Encoding.UTF8), "code");
-                    if (ClientSecret.ClientId != null)
-                        form.Add(new StringContent(ClientSecret.ClientId, Encoding.UTF8), "client_id");
-                    if (ClientSecret.RedirectUris[1] != null)
-                        form.Add(new StringContent(ClientSecret.RedirectUris[1], Encoding.UTF8), "redirect_uri");
-                    form.Add(new StringContent("authorization_code", Encoding.UTF8), "authorization_code");
-
-                    using (var httpClient = new HttpClient())
-                    {
-                        httpClient.DefaultRequestHeaders.Add("Content-Type", "application/x-www-form-urlencoded");
-                        var responce = httpClient.PostAsync(GoogleOAuthTokenEndpoint, form).Result;
-
-                        var strResult = responce.Content.ReadAsStringAsync().Result;
-                        JsonConvert.PopulateObject(strResult, userModel);
-                        //var json = JsonConvert.DeserializeObject<JToken>(strResult);
-                    }
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new TelegramMethodsException(
-                    "Bad http request, wrong parameters or something. See inner exception.", ex);
-            }
-        }
-
-        private delegate Task AuthorizerEventHandler(string code, string state, string error);
+        private delegate void AuthorizerEventHandler(string code, string state, string error);
         private event AuthorizerEventHandler AuthorizeRequestEvent;
+
+        public delegate void AuthorizationRegistredEventHandler(UserModel userModel);
+        public event AuthorizationRegistredEventHandler AuthorizationRegistredEvent;
+
+        public delegate void TokenRevorkedEventHandler(UserModel userModel);
+        public event TokenRevorkedEventHandler TokenRevorkedEvent;
+
+        public delegate void TokenRefreshedEventHandler(UserModel userModel);
+        public event TokenRefreshedEventHandler TokenRefreshed;
 
 
         private UpdatesHandler _updatesHandler;
@@ -271,6 +306,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly string GoogleOAuthCodeEndpoint = @"https://accounts.google.com/o/oauth2/auth?";
         private static readonly string GoogleOAuthTokenEndpoint = @"https://www.googleapis.com/oauth2/v4/token";
+        private static readonly string GoogleOAuthRevokeTokenEndpoint = @"https://accounts.google.com/o/oauth2/revoke";
         private static readonly object _locker = new object();
         private const int MaxPendingMinutes = 5;
 

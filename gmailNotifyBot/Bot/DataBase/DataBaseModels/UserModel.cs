@@ -55,23 +55,4 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
     }
 
-    public class PendingUserModel
-    {
-        public long Id { get; set; }
-
-        public long UserId { get; set; }
-
-        public string State { get; set; }
-
-        public DateTime JoinTime { get; set; }
-    }
-
-    public class UserContext : DbContext
-    {
-        public DbSet<UserModel> Users { get; set; }
-
-        public DbSet<PendingUserModel> PendingUser { get; set; }
-
-    }
-
 }

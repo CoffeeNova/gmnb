@@ -11,13 +11,13 @@ using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 {
-    public class UserContextWorker
+    public class GmailDbContextWorker
     {
         public UserModel FindUser(long userId)
         {
             userId.NullInspect(nameof(userId));
 
-            using (var db = new UserContext())
+            using (var db = new GmailBotDbContext())
             {
                 return db.Users.FirstOrDefault(u => u.UserId == userId);
             }
@@ -34,7 +34,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             user.NullInspect(nameof(user));
 
-            using (var db = new UserContext())
+            using (var db = new GmailBotDbContext())
             {
                 var newModel = db.Users.Add(new UserModel(user));
                 db.SaveChanges();
@@ -51,7 +51,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
         public void UpdateUserRecord(UserModel userModel)
         {
-            using (var db = new UserContext())
+            using (var db = new GmailBotDbContext())
             {
                 db.Users.Attach(userModel);
                 db.Entry(userModel).State = EntityState.Modified;
@@ -68,7 +68,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             state.NullInspect(nameof(state));
 
-            using (var db = new UserContext())
+            using (var db = new GmailBotDbContext())
             {
                 var newModel = db.PendingUser.Add(new PendingUserModel
                 {
@@ -92,7 +92,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             model.NullInspect(nameof(model));
 
-            using (var db = new UserContext())
+            using (var db = new GmailBotDbContext())
             {
                 db.PendingUser.Remove(model);
                 db.SaveChanges();
@@ -108,7 +108,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
         public PendingUserModel UpdateRecordJoinTime(long id, DateTime time)
         {
-            using (var db = new UserContext())
+            using (var db = new GmailBotDbContext())
             {
                 var query = db.PendingUser.Find(id);
                 if (query != null)
@@ -127,7 +127,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
         public PendingUserModel FindPendingUser(long userId)
         {
-            using (var db = new UserContext())
+            using (var db = new GmailBotDbContext())
             {
                 return db.PendingUser.FirstOrDefault(p => p.UserId == userId);
             }
