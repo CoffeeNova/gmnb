@@ -39,7 +39,7 @@ namespace CoffeeJelly.gmailNotifyBot
 #endif
 
             var clienSecretJtoken = JsonConvert.DeserializeObject<JToken>(clientSecretStr);
-            var clientSecret = JsonConvert.DeserializeObject<ClientSecret>(clienSecretJtoken["web"].ToString());
+            var clientSecret = JsonConvert.DeserializeObject<Secrets>(clienSecretJtoken["web"].ToString());
 
             var scopes = new List<string>
             {

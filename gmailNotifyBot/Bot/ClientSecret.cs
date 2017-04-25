@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
-    public class ClientSecret
+    public class Secrets
     {
         [JsonProperty("client_id")]
         public string ClientId { get; set; }
