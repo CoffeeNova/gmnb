@@ -231,6 +231,7 @@
     <Compile Include="Bot\Telegram\Exceptions\TelegramMessageIsUnidentifiedException.cs" />
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
+    <Compile Include="Bot\TestClass.cs" />
     <Compile Include="Bot\Updates.cs" />
     <Compile Include="Bot\UpdatesHandler.cs" />
     <Compile Include="Bot\IUpdates.cs" />

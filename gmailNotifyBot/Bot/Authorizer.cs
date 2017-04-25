@@ -25,7 +25,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 {
     public sealed class Authorizer
     {
-        private Authorizer(string token, UpdatesHandler updatesHandler, ClientSecret clientSecret, List<string> scopes)
+        private Authorizer(string token, UpdatesHandler updatesHandler, Secrets clientSecret, List<string> scopes)
         {
             updatesHandler.NullInspect(nameof(updatesHandler));
             clientSecret.NullInspect(nameof(clientSecret));
@@ -39,7 +39,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             AuthorizeRequestEvent += Authorizer_AuthorizeRequestEvent;
         }
 
-        public static Authorizer GetInstance(string token, UpdatesHandler updatesHandler, ClientSecret clientSecret, List<string> scopes)
+        public static Authorizer GetInstance(string token, UpdatesHandler updatesHandler, Secrets clientSecret, List<string> scopes)
         {
             if (Instance == null)
             {
@@ -315,7 +315,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public string ConnectStringCommand { get; set; } = @"/connect";
 
 
-        public ClientSecret ClientSecret { get; set; }
+        public Secrets ClientSecret { get; set; }
 
         public List<string> Scopes { get; set; }
 

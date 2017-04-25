@@ -9,11 +9,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 {
     public sealed class CommandHandler
     {
-        private CommandHandler(string token, UpdatesHandler updatesHandler, ClientSecret clientSecret)
+        private CommandHandler(string token, UpdatesHandler updatesHandler, Secrets clientSecret)
         {
         }
 
-        public static CommandHandler GetInstance(string token, UpdatesHandler updatesHandler, ClientSecret clientSecret)
+        public static CommandHandler GetInstance(string token, UpdatesHandler updatesHandler, Secrets clientSecret)
         {
             if (Instance == null)
             {
@@ -36,7 +36,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public string ConnectStringCommand { get; set; } = @"/connect";
         public string SettingsStringCommand { get; set; } = @"/settings";
 
-        public ClientSecret ClientSecret { get; set; }
+        public Secrets ClientSecret { get; set; }
 
 
     }
