@@ -64,28 +64,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => UpdateUserRecord(userModel));
         }
 
-        public PendingUserModel Queue(long userId, string state)
+        public PendingUserModel Queue(long userId)
         {
-            state.NullInspect(nameof(state));
-
             using (var db = new GmailBotDbContext())
             {
                 var newModel = db.PendingUser.Add(new PendingUserModel
                 {
                     UserId = userId,
-                    State = state,
-                    JoinTime = DateTime.Now
+                    JoinTimeUtc = DateTime.Now
                 });
                 db.SaveChanges();
                 return newModel;
             }
         }
 
-        public Task<PendingUserModel> QueueAsync(long userId, string state)
+        public Task<PendingUserModel> QueueAsync(long userId)
         {
-            state.NullInspect(nameof(state));
-
-            return Task.Run(() => Queue(userId, state));
+            return Task.Run(() => Queue(userId));
         }
 
         public void RemoveFromQueue(PendingUserModel model)
@@ -94,6 +89,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
             using (var db = new GmailBotDbContext())
             {
+                var entry = db.Entry(model);
+                if (entry.State == EntityState.Detached)
+                    db.PendingUser.Attach(model);
                 db.PendingUser.Remove(model);
                 db.SaveChanges();
             }
@@ -113,7 +111,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
                 var query = db.PendingUser.Find(id);
                 if (query != null)
                 {
-                    query.JoinTime = time;
+                    query.JoinTimeUtc = time;
                     db.SaveChanges();
                 }
                 return query;
@@ -136,6 +134,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         public Task<PendingUserModel> FindPendingUserAsync(long userId)
         {
             return Task.Run(() => FindPendingUser(userId));
+        }
+
+        public UserSettingsModel FindUserSettings(long userId)
+        {
+            userId.NullInspect(nameof(userId));
+
+            using (var db = new GmailBotDbContext())
+            {
+                return db.UserSettings.FirstOrDefault(u => u.UserId == userId);
+            }
+        }
+
+        public Task<UserSettingsModel> FindUserSettingsrAsync(long userId)
+        {
+            userId.NullInspect(nameof(userId));
+
+            return Task.Run(() => FindUserSettings(userId));
         }
     }
 }

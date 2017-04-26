@@ -41,16 +41,12 @@ namespace CoffeeJelly.gmailNotifyBot
             var clienSecretJtoken = JsonConvert.DeserializeObject<JToken>(clientSecretStr);
             var clientSecret = JsonConvert.DeserializeObject<Secrets>(clienSecretJtoken["web"].ToString());
 
-            var scopes = new List<string>
-            {
-                @"https://www.googleapis.com/auth/gmail.compose",
-                @"https://mail.google.com/",
-                @"https://www.googleapis.com/auth/userinfo.profile"
-            };
+            
             _updates = Updates.GetInstance(botToken);
             _updates.UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
             _updatesHandler = new UpdatesHandler();
             _authorizer = Authorizer.GetInstance(botToken, _updatesHandler, clientSecret, scopes);
+            var test = new GmailServiceFactory(clientSecret, scopes);
 
         }
 

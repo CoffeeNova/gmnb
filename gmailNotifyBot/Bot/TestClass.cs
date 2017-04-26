@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
@@ -12,49 +13,66 @@ using Microsoft.Owin.Security.Twitter.Messages;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
-    public class TestClass
+    public sealed class GmailServiceFactory
     {
-        public TestClass(Secrets secrets, List<string> scopes)
+        public static GmailServiceFactory GetInstanse(Secrets secrets)
         {
-            _clientSecrets = new ClientSecrets {ClientId = secrets.ClientId, ClientSecret = secrets.Secret};
-            Scopes = scopes;
+            if (Instance == null)
+            {
+                lock (_locker)
+                {
+                    if (Instance == null)
+                        Instance = new GmailServiceFactory(secrets);
+                }
+            }
+            return Instance;
+        }
+
+        private GmailServiceFactory(Secrets secrets)
+        {
+            _clientSecrets = new ClientSecrets { ClientId = secrets.ClientId, ClientSecret = secrets.Secret };
             Authorizer.Instance.AuthorizationRegistredEvent += Instance_AuthorizationRegistredEvent;
         }
 
-        private void Instance_AuthorizationRegistredEvent(DataBase.DataBaseModels.UserModel userModel)
+        private void Instance_AuthorizationRegistredEvent(UserModel userModel, UserSettingsModel userSettingsModel)
         {
             var token = new TokenResponse
             {
                 RefreshToken = userModel.RefreshToken,
                 AccessToken = userModel.AccessToken,
-                ExpiresInSeconds= userModel.ExpiresIn,
+                ExpiresInSeconds = userModel.ExpiresIn,
                 TokenType = userModel.TokenType,
                 IssuedUtc = userModel.IssuedTimeUtc
             };
-            var credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
+            Credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
                     new GoogleAuthorizationCodeFlow.Initializer
                     {
                         ClientSecrets = _clientSecrets,
                         Scopes = Scopes,
-                        DataStore 
+                        DataStore = new DbDataStore()
                     }),
                 "user",
                 token);
-
-            var service = new GmailService(new Google.Apis.Services.BaseClientService.Initializer()
+            Service = new GmailService(new Google.Apis.Services.BaseClientService.Initializer()
             {
-                ApiKey = "",
-                ApplicationName = "", //this.GetType().ToString()
-                HttpClientInitializer = _credential
+                ApiKey = "AIzaSyCrVK6UQ4h45WH1DQX6BXNMEIikoT_HEwI",
+                ApplicationName = "gmnb", //this.GetType().ToString()
+                HttpClientInitializer = Credentials
             });
-
-           // var emailListRequest = service.Users.Messages.Get
+            var userId = Service.Name;
+            // var emailListRequest = Service.Users.Messages.List()
         }
 
-        private UserCredential _credential;
         private ClientSecrets _clientSecrets;
 
-        public Secrets Secrets { get; set; }
+        private static readonly object _locker = new object();
+
+        public static GmailServiceFactory Instance { get; private set; }
+
         public List<string> Scopes { get; set; }
+
+        public UserCredential Credentials { get; private set; }
+
+        public GmailService Service { get; private set; }
     }
 }

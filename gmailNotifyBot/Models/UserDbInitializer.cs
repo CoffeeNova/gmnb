@@ -11,21 +11,24 @@ namespace CoffeeJelly.gmailNotifyBot.Models
     {
         protected override void Seed(GmailBotDbContext db)
         {
-
             db.Users.Add(new UserModel
             {
                 UserId = 1,
                 FirstName = "testFirst",
                 LastName = "testLast",
                 Username = "testUsername",
-                ReceivingTime = DateTime.Now
-                
+                ReceivingTimeUtc = DateTime.UtcNow
             });
             db.PendingUser.Add(new PendingUserModel
             {
                 UserId = 1,
-                JoinTime = DateTime.Now,
+                JoinTimeUtc = DateTime.UtcNow,
                 State = "testState"
+            });
+            db.UserSettings.Add(new UserSettingsModel
+            {
+                MailNotification = false,
+                UserId = 1
             });
             base.Seed(db);
         }

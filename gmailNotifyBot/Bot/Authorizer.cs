@@ -25,42 +25,40 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 {
     public sealed class Authorizer
     {
-        private Authorizer(string token, UpdatesHandler updatesHandler, Secrets clientSecret, List<string> scopes)
+        private Authorizer(string token, UpdatesHandler updatesHandler, Secrets clientSecret)
         {
             updatesHandler.NullInspect(nameof(updatesHandler));
             clientSecret.NullInspect(nameof(clientSecret));
-            scopes.NullInspect(nameof(scopes));
 
             _updatesHandler = updatesHandler;
             _updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
             ClientSecret = clientSecret;
-            Scopes = scopes;
             _telegramMethods = new TelegramMethods(token);
             AuthorizeRequestEvent += Authorizer_AuthorizeRequestEvent;
         }
 
-        public static Authorizer GetInstance(string token, UpdatesHandler updatesHandler, Secrets clientSecret, List<string> scopes)
+        public static Authorizer GetInstance(string token, UpdatesHandler updatesHandler, Secrets clientSecret)
         {
             if (Instance == null)
             {
                 lock (_locker)
                 {
                     if (Instance == null)
-                        Instance = new Authorizer(token, updatesHandler, clientSecret, scopes);
+                        Instance = new Authorizer(token, updatesHandler, clientSecret);
                 }
             }
             return Instance;
         }
 
-        public Uri GetAuthenticationUri(string state)
+        public Uri GetAuthenticationUri(string state, List<string> scopes)
         {
-            var scopes = string.Join("+", Scopes);
+            var scopesStr = string.Join("+", scopes);
 
             string oauth =
                 GoogleOAuthCodeEndpoint +
                 $"client_id={ClientSecret.ClientId}" +
                 $"&redirect_uri={ClientSecret.RedirectUris[0]}" +
-                $"&scope={scopes}" +
+                $"&scope={scopesStr}" +
                 $"&response_type=code" +
                 $"&state={state}" +
                 $"&access_type=offline";
@@ -108,7 +106,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             try
             {
-                var parameters = new NameValueCollection { {"token", userModel.RefreshToken }};
+                var parameters = new NameValueCollection { { "token", userModel.RefreshToken } };
 
                 using (var webClient = new WebClient())
                 {
@@ -130,8 +128,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
 
         }
-
-
 
         private async void _updatesHandler_TelegramTextMessageEvent(TextMessage message)
         {
@@ -159,18 +155,42 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             LogMaker.Log(Logger, $"The user with id:{userModel.UserId} has requested authorization", false);
             if (CheckUserAuthorization(userModel)) return;
 
-            var state = Base64.Encode($"{userModel.UserId}");
+            var fullAccessState = Base64.Encode($"{userModel.UserId},full");
+            var notifyAccessState = Base64.Encode($"{userModel.UserId},notify");
 
             var pendingUserModel = await gmailDbContextWorker.FindPendingUserAsync(userModel.UserId);
             if (pendingUserModel != null)
-                await gmailDbContextWorker.UpdateRecordJoinTimeAsync(pendingUserModel.Id, DateTime.Now);
+                await gmailDbContextWorker.UpdateRecordJoinTimeAsync(pendingUserModel.Id, DateTime.UtcNow);
             else
-                await gmailDbContextWorker.QueueAsync(userModel.UserId, state);
+                await gmailDbContextWorker.QueueAsync(userModel.UserId);
 
 
-            var uri = GetAuthenticationUri(state);
+            var notifyAccessUri = GetAuthenticationUri(notifyAccessState, _notifyScopes);
+            var fullAccessUri = GetAuthenticationUri(notifyAccessState, _notifyScopes);
+
+            var notifyAccessButton = new InlineKeyboardButton
+            {
+                Text = "Mail Notify",
+                Url = notifyAccessUri.OriginalString
+            };
+            var fullAccessButton = new InlineKeyboardButton
+            {
+                Text = "Full Access",
+                Url = fullAccessUri.OriginalString
+            };
+            var keyboard = new InlineKeyboardMarkup
+            {
+                InlineKeyboard = new List<List<InlineKeyboardButton>>
+                {
+                    new List<InlineKeyboardButton>
+                    {
+                    notifyAccessButton,
+                    fullAccessButton
+                    }
+                }
+            };
             await _telegramMethods.SendMessageAsync(message.Chat.Id.ToString(),
-                $"Open this link to authorize the bot: \r\n {uri.OriginalString}");
+                $"Open one of this link to authorize the bot to get: ", null, false, false, null, keyboard);
         }
 
         private bool CheckUserAuthorization(UserModel userModel)
@@ -182,7 +202,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private void Authorizer_AuthorizeRequestEvent(string code, string state, string error)
         {
             long id;
-            if (!RestoreState(state, out id))
+            string access;
+            if (!RestoreState(state, out id, out access))
                 return;
 
             PendingUserModel pendingUserModel = null;
@@ -193,7 +214,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 pendingUserModel = gmailDbContextWorker.FindPendingUser(id);
                 if (pendingUserModel == null)
                     return;
-                if (DateTime.Now.Subtract(pendingUserModel.JoinTime).Minutes > MaxPendingMinutes)
+                if (DateTime.Now.Subtract(pendingUserModel.JoinTimeUtc).Minutes > MaxPendingMinutes)
                 {
                     _telegramMethods.SendMessage(id.ToString(),
                         @"Time for authorization has expired. Please type again /connect command.");
@@ -221,7 +242,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 ExchangeCodeForToken(code, userModel);
                 gmailDbContextWorker.UpdateUserRecord(userModel);
 
-                AuthorizationRegistredEvent?.Invoke(userModel);
+                var userSettings = gmailDbContextWorker.FindUserSettings(id) ??
+                                   gmailDbContextWorker.AddNewUserSettings(id, access);
+                AuthorizationRegistredEvent?.Invoke(userModel, userSettings);
                 _telegramMethods.SendMessage(id.ToString(), "Authorization successfull! Now you can recieve notifications about new emails and use other functions!");
             }
             catch (Exception ex)
@@ -235,16 +258,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        private static bool RestoreState(string state, out long id)
+        private static bool RestoreState(string state, out long id, out string access)
         {
             id = 0;
+            access = "";
             bool value = !string.IsNullOrEmpty(state);
             if (value)
             {
                 try
                 {
-                    var idstr = Base64.Decode(state);
-                    value = long.TryParse(idstr, out id);
+                    var str = Base64.Decode(state);
+                    var splittedStr = str.Split(',');
+
+                    value = long.TryParse(splittedStr.First(), out id);
+                    access = splittedStr.Last();
                 }
                 catch (FormatException ex)
                 {
@@ -291,7 +318,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private delegate void AuthorizerEventHandler(string code, string state, string error);
         private event AuthorizerEventHandler AuthorizeRequestEvent;
 
-        public delegate void AuthorizationRegistredEventHandler(UserModel userModel);
+        public delegate void AuthorizationRegistredEventHandler(UserModel userModel, UserSettingsModel userSettingsModel);
         public event AuthorizationRegistredEventHandler AuthorizationRegistredEvent;
 
         public delegate void TokenRevorkedEventHandler(UserModel userModel);
@@ -317,7 +344,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public Secrets ClientSecret { get; set; }
 
-        public List<string> Scopes { get; set; }
+        // public List<string> Scopes { get; set; }
+
+        private readonly List<string> _fullAccessScopes = new List<string>
+            {
+                @"https://www.googleapis.com/auth/gmail.compose",
+                @"https://mail.google.com/",
+                @"https://www.googleapis.com/auth/userinfo.profile"
+            };
+
+        private readonly List<string> _notifyScopes = new List<string>();
 
         //public string Token { get; private set; }
 

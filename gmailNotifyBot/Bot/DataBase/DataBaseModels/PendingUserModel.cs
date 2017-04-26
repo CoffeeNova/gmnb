@@ -11,8 +11,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public long UserId { get; set; }
 
-        public string State { get; set; }
+        public DateTime JoinTimeUtc { get; set; }
 
-        public DateTime JoinTime { get; set; }
     }
 }
