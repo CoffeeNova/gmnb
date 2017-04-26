@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using Newtonsoft.Json;
@@ -14,7 +15,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
             FirstName = chat.FirstName;
             LastName = chat.LastName;
             Username = chat.Username;
-            ReceivingTime = DateTime.Now;
             ReceivingTimeUtc = DateTime.UtcNow;
         }
 
@@ -42,15 +42,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         public string AccessToken { get; set; }
 
         [JsonIgnore]
-        public DateTime ReceivingTime { get; set; }
-
-        [JsonIgnore]
         public DateTime ReceivingTimeUtc { get; set; }
 
         [JsonIgnore]
-        public DateTime IssuedTime => ReceivingTime.AddSeconds(ExpiresIn);
-
-        [JsonIgnore]
+        [NotMapped]
         public DateTime IssuedTimeUtc => ReceivingTimeUtc.AddSeconds(ExpiresIn);
 
         [JsonProperty("expires_in")]
