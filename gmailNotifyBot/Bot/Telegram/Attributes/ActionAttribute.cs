@@ -20,6 +20,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes
             var type = typeof(Action);
             var fieldInfoArr = type.GetFields();
             var fieldInfo = fieldInfoArr.First(i => i.Name == action.ToString());
+            if (fieldInfo == null)
+                throw new ArgumentException($"The class {type} has no field {action}.", nameof(action));
             var attribute = (ActionAttribute)fieldInfo.GetCustomAttribute(typeof(ActionAttribute));
 
             return attribute.Action;

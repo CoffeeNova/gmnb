@@ -210,6 +210,7 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Bot\Attributes\ScopesAttribute.cs" />
     <Compile Include="Bot\Base64.cs" />
     <Compile Include="Bot\ClientSecret.cs" />
     <Compile Include="Bot\CommandHandler.cs" />
@@ -232,7 +233,8 @@
     <Compile Include="Bot\Telegram\Exceptions\TelegramMessageIsUnidentifiedException.cs" />
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
-    <Compile Include="Bot\TestClass.cs" />
+    <Compile Include="Bot\GmailServiceFactory.cs" />
+    <Compile Include="Bot\test.cs" />
     <Compile Include="Bot\Updates.cs" />
     <Compile Include="Bot\UpdatesHandler.cs" />
     <Compile Include="Bot\IUpdates.cs" />

@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
+using CoffeeJelly.gmailNotifyBot.Bot.Attributes;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
@@ -28,14 +32,34 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return Instance;
         }
 
+        public async Task RestoreServicesFromStore()
+        {
+            var gmailDbContextWorker = new GmailDbContextWorker();
+            var users = await gmailDbContextWorker.GetAllUsersAsync();
+
+            await Task.Run(() =>
+            {
+                users.ForEach(userModel =>
+                {
+                    var userSettingsModel = gmailDbContextWorker.FindUserSettings(userModel.UserId);
+                    Instance_AuthorizationRegistredEvent(userModel, userSettingsModel);
+
+                });
+            });
+
+        }
+
         private GmailServiceFactory(Secrets secrets)
         {
             _clientSecrets = new ClientSecrets { ClientId = secrets.ClientId, ClientSecret = secrets.Secret };
             Authorizer.Instance.AuthorizationRegistredEvent += Instance_AuthorizationRegistredEvent;
         }
 
-        private void Instance_AuthorizationRegistredEvent(UserModel userModel, UserSettingsModel userSettingsModel)
+        private  void Instance_AuthorizationRegistredEvent(UserModel userModel, UserSettingsModel userSettingsModel)
         {
+            if (ServiceExists(userModel.UserId.ToString()))
+                return;
+
             var token = new TokenResponse
             {
                 RefreshToken = userModel.RefreshToken,
@@ -44,23 +68,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 TokenType = userModel.TokenType,
                 IssuedUtc = userModel.IssuedTimeUtc
             };
-            Credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
+            var credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
                     new GoogleAuthorizationCodeFlow.Initializer
                     {
                         ClientSecrets = _clientSecrets,
-                        Scopes = Scopes,
+                        Scopes = UserAccessAttribute.GetScopesValue(userSettingsModel.Access),
                         DataStore = new DbDataStore()
                     }),
-                "user",
+                userModel.UserId.ToString(),
                 token);
-            Service = new GmailService(new Google.Apis.Services.BaseClientService.Initializer()
+            Services.Add(new GmailService(new Google.Apis.Services.BaseClientService.Initializer
             {
                 ApiKey = "AIzaSyCrVK6UQ4h45WH1DQX6BXNMEIikoT_HEwI",
                 ApplicationName = "gmnb", //this.GetType().ToString()
-                HttpClientInitializer = Credentials
-            });
-            var userId = Service.Name;
-            // var emailListRequest = Service.Users.Messages.List()
+                HttpClientInitializer = credentials
+            }));
+        }
+
+        private bool ServiceExists(string userId)
+        {
+            return Services.Any(s => (s.HttpClientInitializer as UserCredential).UserId == userId);
         }
 
         private ClientSecrets _clientSecrets;
@@ -69,10 +96,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public static GmailServiceFactory Instance { get; private set; }
 
-        public List<string> Scopes { get; set; }
-
-        public UserCredential Credentials { get; private set; }
-
-        public GmailService Service { get; private set; }
+        public List<GmailService> Services { get; } = new List<GmailService>();
     }
 }

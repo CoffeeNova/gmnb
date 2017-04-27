@@ -23,12 +23,12 @@ namespace CoffeeJelly.gmailNotifyBot.Models
             {
                 UserId = 1,
                 JoinTimeUtc = DateTime.UtcNow,
-                State = "testState"
             });
             db.UserSettings.Add(new UserSettingsModel
             {
                 MailNotification = false,
-                UserId = 1
+                UserId = 1,
+                Access = UserAccess.Full
             });
             base.Seed(db);
         }

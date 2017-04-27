@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
@@ -15,8 +17,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
     {
         public UserModel FindUser(long userId)
         {
-            userId.NullInspect(nameof(userId));
-
             using (var db = new GmailBotDbContext())
             {
                 return db.Users.FirstOrDefault(u => u.UserId == userId);
@@ -25,8 +25,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
         public Task<UserModel> FindUserAsync(long userId)
         {
-            userId.NullInspect(nameof(userId));
-
             return Task.Run(() => FindUser(userId));
         }
 
@@ -138,8 +136,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
         public UserSettingsModel FindUserSettings(long userId)
         {
-            userId.NullInspect(nameof(userId));
-
             using (var db = new GmailBotDbContext())
             {
                 return db.UserSettings.FirstOrDefault(u => u.UserId == userId);
@@ -148,9 +144,39 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
         public Task<UserSettingsModel> FindUserSettingsrAsync(long userId)
         {
-            userId.NullInspect(nameof(userId));
-
             return Task.Run(() => FindUserSettings(userId));
+        }
+
+        public UserSettingsModel AddNewUserSettings(long userId, string access)
+        {
+            access.NullInspect(nameof(access));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var userSettings =  db.UserSettings.Add(new UserSettingsModel { UserId = userId, Access = access });
+                db.SaveChanges();
+                return userSettings;
+            }
+        }
+
+        public Task<UserSettingsModel> AddNewUserSettingsAsync(long userId, string access)
+        {
+            access.NullInspect(nameof(access));
+
+            return Task.Run(() => AddNewUserSettings(userId, access));
+        }
+
+        public List<UserModel> GetAllUsers()
+        {
+            using (var db = new GmailBotDbContext())
+            {
+                return db.Users.ToList();
+            }
+        }
+
+        public Task<List<UserModel>> GetAllUsersAsync()
+        {
+            return Task.Run(() => GetAllUsers());
         }
     }
 }
