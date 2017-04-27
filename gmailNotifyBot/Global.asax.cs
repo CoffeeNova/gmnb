@@ -24,7 +24,7 @@ namespace CoffeeJelly.gmailNotifyBot
     {
         protected async void Application_Start()
         {
-            Database.SetInitializer(new UserDbInitializer());
+          //  Database.SetInitializer(new UserDbInitializer());
 
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -47,21 +47,8 @@ namespace CoffeeJelly.gmailNotifyBot
             _updates.UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
             _updatesHandler = new UpdatesHandler();
             _authorizer = Authorizer.GetInstance(botToken, _updatesHandler, clientSecret);
-            var gmailServiceFactory = GmailServiceFactory.GetInstanse(clientSecret);
-            await gmailServiceFactory.RestoreServicesFromStore();
-
-            var service = gmailServiceFactory.Services.First();
-
-            var query = service.Users.Messages.List("me");
-
-            var mail = query.Execute();
-            foreach (var item in mail.Messages)
-
-            {
-                var message = service.Users.Messages.Get("me", item.Id).Execute();
-
-                Debug.WriteLine("Message dump: {0}", message.Payload.Body.Data);
-            }
+            _commandHandler = CommandHandler.GetInstance(botToken, _updatesHandler, clientSecret);
+           
             // var labels = service.Users.Watch(new Google.Apis.Gmail.v1.Data.WatchRequest(),mbox)
         }
 
@@ -95,6 +82,7 @@ namespace CoffeeJelly.gmailNotifyBot
         private UpdatesHandler _updatesHandler;
         private Updates _updates;
         private Authorizer _authorizer;
+        private CommandHandler _commandHandler;
     }
 
 }
