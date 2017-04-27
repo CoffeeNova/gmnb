@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using CoffeeJelly.gmailNotifyBot.Bot.Attributes;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
@@ -113,7 +114,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
                     var byteResult = await webClient.UploadValuesTaskAsync(GoogleOAuthTokenEndpoint, "POST", parameters);
                     var strResult = webClient.Encoding.GetString(byteResult);
-                    throw new NotImplementedException("define responce status code, shuold be 200 and return true.");
+                    throw new NotImplementedException("define responce status code, should be 200 and return true.");
                     if (true)
                     {
                         userModel.RefreshToken = "";
@@ -155,8 +156,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             LogMaker.Log(Logger, $"The user with id:{userModel.UserId} has requested authorization", false);
             if (CheckUserAuthorization(userModel)) return;
 
-            var fullAccessState = Base64.Encode($"{userModel.UserId},full");
-            var notifyAccessState = Base64.Encode($"{userModel.UserId},notify");
+            var fullAccessState = Base64.Encode($"{userModel.UserId},{UserAccess.Full}");
+            var notifyAccessState = Base64.Encode($"{userModel.UserId},{UserAccess.Notify}");
 
             var pendingUserModel = await gmailDbContextWorker.FindPendingUserAsync(userModel.UserId);
             if (pendingUserModel != null)
@@ -165,8 +166,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 await gmailDbContextWorker.QueueAsync(userModel.UserId);
 
 
-            var notifyAccessUri = GetAuthenticationUri(notifyAccessState, _notifyScopes);
-            var fullAccessUri = GetAuthenticationUri(notifyAccessState, _notifyScopes);
+            var notifyAccessUri = GetAuthenticationUri(notifyAccessState, UserAccessAttribute.GetScopesValue(UserAccess.Notify));
+            var fullAccessUri = GetAuthenticationUri(fullAccessState, UserAccessAttribute.GetScopesValue(UserAccess.Full));
 
             var notifyAccessButton = new InlineKeyboardButton
             {
@@ -213,7 +214,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             {
                 pendingUserModel = gmailDbContextWorker.FindPendingUser(id);
                 if (pendingUserModel == null)
+                {
+                    _telegramMethods.SendMessage(id.ToString(),
+                        @"Time for authorization has expired. Please type again /connect command.");
                     return;
+                }
                 if (DateTime.Now.Subtract(pendingUserModel.JoinTimeUtc).Minutes > MaxPendingMinutes)
                 {
                     _telegramMethods.SendMessage(id.ToString(),
@@ -305,7 +310,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     var byteResult = webClient.UploadValues(GoogleOAuthTokenEndpoint, "POST", parameters);
                     var strResult = webClient.Encoding.GetString(byteResult);
 
-                    //JsonConvert.DeserializeObject<JToken>(strResult);
                     JsonConvert.PopulateObject(strResult, userModel);
                 }
             }
@@ -346,14 +350,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         // public List<string> Scopes { get; set; }
 
-        private readonly List<string> _fullAccessScopes = new List<string>
-            {
-                @"https://www.googleapis.com/auth/gmail.compose",
-                @"https://mail.google.com/",
-                @"https://www.googleapis.com/auth/userinfo.profile"
-            };
+//        private readonly List<string> _fullAccessScopes = new List<string>
+            //{
+            //    @"https://www.googleapis.com/auth/gmail.compose",
+            //    @"https://mail.google.com/",
+            //    @"https://www.googleapis.com/auth/userinfo.profile"
+            //};
 
-        private readonly List<string> _notifyScopes = new List<string>();
+        //private readonly List<string> _notifyScopes = new List<string>();
 
         //public string Token { get; private set; }
 

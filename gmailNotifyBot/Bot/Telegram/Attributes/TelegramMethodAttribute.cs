@@ -25,7 +25,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes
 
         public static string GetMethodNameValue(Type classType, string callerMethodName)
         {
+            if (string.IsNullOrEmpty(callerMethodName))
+                throw new ArgumentNullException(nameof(callerMethodName), "Should have a value.");
+
             var method = classType.GetMethod(callerMethodName);
+            if (method == null)
+                throw new ArgumentException($"The class {classType} has no method {callerMethodName}.", nameof(callerMethodName));
+        
             var attributes = (TelegramMethodAttribute[])method.GetCustomAttributes(typeof(TelegramMethodAttribute), true);
 
             string methodName = "";
@@ -36,7 +42,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Attributes
 
         public static string GetFileTypeValue(Type classType, string callerMethodName)
         {
+            if (string.IsNullOrEmpty(callerMethodName))
+                throw new ArgumentNullException(nameof(callerMethodName), "Should have a value.");
+
             var method = classType.GetMethod(callerMethodName);
+            if (method == null)
+                throw new ArgumentException($"The class {classType} has no method {callerMethodName}.", nameof(callerMethodName));
             var attributes = (TelegramMethodAttribute[])method.GetCustomAttributes(typeof(TelegramMethodAttribute), true);
 
             string fileType = "";

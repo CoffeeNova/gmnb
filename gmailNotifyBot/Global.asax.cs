@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -21,9 +22,9 @@ namespace CoffeeJelly.gmailNotifyBot
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        protected void Application_Start()
+        protected async void Application_Start()
         {
-           // Database.SetInitializer(new UserDbInitializer());
+            Database.SetInitializer(new UserDbInitializer());
 
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -41,13 +42,27 @@ namespace CoffeeJelly.gmailNotifyBot
             var clienSecretJtoken = JsonConvert.DeserializeObject<JToken>(clientSecretStr);
             var clientSecret = JsonConvert.DeserializeObject<Secrets>(clienSecretJtoken["web"].ToString());
 
-            
+
             _updates = Updates.GetInstance(botToken);
             _updates.UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
             _updatesHandler = new UpdatesHandler();
-            _authorizer = Authorizer.GetInstance(botToken, _updatesHandler, clientSecret, scopes);
-            var test = new GmailServiceFactory(clientSecret, scopes);
+            _authorizer = Authorizer.GetInstance(botToken, _updatesHandler, clientSecret);
+            var gmailServiceFactory = GmailServiceFactory.GetInstanse(clientSecret);
+            await gmailServiceFactory.RestoreServicesFromStore();
 
+            var service = gmailServiceFactory.Services.First();
+
+            var query = service.Users.Messages.List("me");
+
+            var mail = query.Execute();
+            foreach (var item in mail.Messages)
+
+            {
+                var message = service.Users.Messages.Get("me", item.Id).Execute();
+
+                Debug.WriteLine("Message dump: {0}", message.Payload.Body.Data);
+            }
+            // var labels = service.Users.Watch(new Google.Apis.Gmail.v1.Data.WatchRequest(),mbox)
         }
 
         private void LogMaker_NewMessage(NLog.Logger logger, string message, DateTime time, bool isError)
