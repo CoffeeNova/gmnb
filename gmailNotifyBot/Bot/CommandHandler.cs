@@ -19,6 +19,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             updatesHandler.NullInspect(nameof(updatesHandler));
             clientSecret.NullInspect(nameof(clientSecret));
 
+            _botMessages = new BotMessages(token);
+
+            _authorizer = Authorizer.GetInstance(token, updatesHandler, clientSecret);
             _updatesHandler = updatesHandler;
             ClientSecret = clientSecret;
             _updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
@@ -39,11 +42,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private async void _updatesHandler_TelegramTextMessageEvent(TextMessage message)
         {
-            if (message.Text == TestStringCommand)
+            if (message.Text == Commands.TEST_STRING_COMMAND)
             {
+                LogMaker.Log(Logger, $"{Commands.TEST_STRING_COMMAND} command received from user with id {message.Chat.Id}", false);
                 try
                 {
                     await HandleTestCommand(message);
+                }
+                catch (CommandHandlerException ex)
+                {
+                    LogMaker.Log(Logger, ex);
+                    _botMessages.WrongCredentialsMessage(message.Chat.Id.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -51,16 +60,28 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     // throw new AuthorizeException("An error occurred while trying to send the authentication link to the user", ex);
                 }
             }
+            if (message.Text == Commands.CONNECT_STRING_COMMAND)
+            {
+                try
+                {
+                    await _authorizer.SendAuthorizeLink(message);
+                }
+                catch (AuthorizeException ex)
+                {
+                    LogMaker.Log(Logger, ex);
+                }
+            }
         }
 
         private async Task HandleTestCommand(TextMessage message)
         {
             var gmailServiceFactory = GmailServiceFactory.GetInstanse(ClientSecret);
-            await gmailServiceFactory.RestoreServicesFromStore();
+            //await gmailServiceFactory.RestoreServicesFromStore();
 
             var service = gmailServiceFactory.Services.FirstOrDefault(s => (s.HttpClientInitializer as UserCredential).UserId == message.Chat.Id.ToString());
             if (service == null)
-                return;
+                throw new CommandHandlerException($"Service with credentials from user with id={message.Chat.Id} is not created. User, probably, is not authorized");
+
             var query = service.Users.Messages.List("me");
 
             var mail = query.Execute();
@@ -72,14 +93,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
 
         private UpdatesHandler _updatesHandler;
-        private readonly TelegramMethods _telegramMethods;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly object _locker = new object();
+        private BotMessages _botMessages;
+        private Authorizer _authorizer;
 
         public static CommandHandler Instance { get; private set; }
 
-        public string TestStringCommand { get; set; } = @"/test";
-        public string SettingsStringCommand { get; set; } = @"/settings";
 
         public Secrets ClientSecret { get; set; }
 

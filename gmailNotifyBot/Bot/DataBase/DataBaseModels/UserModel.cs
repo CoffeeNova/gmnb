@@ -15,7 +15,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
             FirstName = chat.FirstName;
             LastName = chat.LastName;
             Username = chat.Username;
-            ReceivingTimeUtc = DateTime.UtcNow;
         }
 
         public UserModel()
@@ -41,12 +40,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }
 
-        [JsonIgnore]
-        public DateTime ReceivingTimeUtc { get; set; }
+        //[JsonIgnore]
+        //public DateTime ReceivingTimeUtc { get; set; }
 
-        [JsonIgnore]
-        [NotMapped]
-        public DateTime IssuedTimeUtc => ReceivingTimeUtc.AddSeconds(ExpiresIn);
+        [JsonProperty("IssuedUtc")]
+        //[NotMapped]
+        public DateTime IssuedTimeUtc { get; set; }
 
         [JsonProperty("expires_in")]
         public int ExpiresIn { get; set; }

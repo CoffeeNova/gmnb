@@ -87,6 +87,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 else if (message.GetType() == typeof(UnknownMessage))
                     TelegramUnknownMessageEvent?.Invoke(message);
                 #endregion
+
+                var callbackQuery = update.CallbackQuery;
+                if (callbackQuery != null)
+                    TelegramCallbackQueryEvent?.Invoke(callbackQuery);
             }
 
         }
@@ -109,6 +113,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public delegate void TelegramMessageEventHandler<in T>(T message);
 
+        public delegate void TelegramCallbackQuery(CallbackQuery callbackQuery);
+
         public event TelegramMessageEventHandler<TextMessage> TelegramTextMessageEvent;
         public event TelegramMessageEventHandler<AudioMessage> TelegramAudioMessageEvent;
         public event TelegramMessageEventHandler<DocumentMessage> TelegramDocumentMessageEvent;
@@ -128,13 +134,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public event TelegramMessageEventHandler<MigrateFromChatIdMessage> TelegramMigrateFromChatIdMessageEvent;
         public event TelegramMessageEventHandler<PinnedMessage> TelegramPinnedMessageEvent;
         public event TelegramMessageEventHandler<UnknownMessage> TelegramUnknownMessageEvent;
+        public event TelegramCallbackQuery TelegramCallbackQueryEvent;
         #endregion
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public bool UpdatesHandlerStopped { get; private set; } = true;
 
-        
+
 
     }
 
