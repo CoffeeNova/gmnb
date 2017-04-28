@@ -7,7 +7,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 
 namespace CoffeeJelly.gmailNotifyBot.Models
 {
-    public class UserDbInitializer : DropCreateDatabaseAlways<GmailBotDbContext>
+    public class UserDbInitializer : CreateDatabaseIfNotExists<GmailBotDbContext>
     {
         protected override void Seed(GmailBotDbContext db)
         {
@@ -16,8 +16,7 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 UserId = 1,
                 FirstName = "testFirst",
                 LastName = "testLast",
-                Username = "testUsername",
-                ReceivingTimeUtc = DateTime.UtcNow
+                Username = "testUsername"
             });
             db.PendingUser.Add(new PendingUserModel
             {

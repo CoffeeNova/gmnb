@@ -37,6 +37,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var gmailDbContextWorker = new GmailDbContextWorker();
             var users = await gmailDbContextWorker.GetAllUsersAsync();
 
+            if (users == null) return;
             await Task.Run(() =>
             {
                 users.ForEach(userModel =>
