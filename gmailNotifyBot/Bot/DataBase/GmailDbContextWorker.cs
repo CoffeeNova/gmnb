@@ -28,7 +28,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => FindUser(userId));
         }
 
-        public UserModel AddNewUser(Chat user)
+        public UserModel AddNewUser(User user)
         {
             user.NullInspect(nameof(user));
 
@@ -40,7 +40,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<UserModel> AddNewUserAsync(Chat user)
+        public Task<UserModel> AddNewUserAsync(User user)
         {
             user.NullInspect(nameof(user));
 
@@ -60,6 +60,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         public Task UpdateUserRecordAsync(UserModel userModel)
         {
             return Task.Run(() => UpdateUserRecord(userModel));
+        }
+
+        public void RemoveUserRecord(UserModel model)
+        {
+            model.NullInspect(nameof(model));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var entry = db.Entry(model);
+                if (entry.State == EntityState.Detached)
+                    db.Users.Attach(model);
+                db.Users.Remove(model);
+                db.SaveChanges();
+            }
+        }
+
+        public Task RemoveUserRecordAsync(UserModel model)
+        {
+            model.NullInspect(nameof(model));
+            return Task.Run(() => RemoveUserRecord(model));
         }
 
         public PendingUserModel Queue(long userId)
@@ -153,7 +173,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
             using (var db = new GmailBotDbContext())
             {
-                var userSettings =  db.UserSettings.Add(new UserSettingsModel { UserId = userId, Access = access });
+                var userSettings = db.UserSettings.Add(new UserSettingsModel { UserId = userId, Access = access });
                 db.SaveChanges();
                 return userSettings;
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 
@@ -13,9 +14,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             _telegramMethods = new TelegramMethods(token);
         }
 
-        public async void WrongCredentialsMessage(string chatId)
+        public async Task WrongCredentialsMessage(string userId)
         {
-            await _telegramMethods.SendMessageAsync(chatId, @"I am lost your credentials. Please reauthorize me using /connect command or click a button below.", null, false, false, null, ReauthorizeButton);
+            await _telegramMethods.SendMessageAsync(userId, @"I am lost your credentials. Please reauthorize me using /connect command or click a button below.", null, false, false, null, ReauthorizeButton);
         }
 
         private static InlineKeyboardMarkup ReauthorizeButton
@@ -41,7 +42,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        public async void AuthorizeMessage(string chatId, Uri notifyAccessUri, Uri fullAccessUri)
+        public async Task AuthorizeMessage(string userId, Uri notifyAccessUri, Uri fullAccessUri)
         {
             var notifyAccessButton = new InlineKeyboardButton
             {
@@ -64,8 +65,32 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     }
                 }
             };
-            await _telegramMethods.SendMessageAsync(chatId,
+            await _telegramMethods.SendMessageAsync(userId,
                 $"Open one of this link to authorize the bot to get: ", null, false, false, null, keyboard);
+        }
+
+        public async Task AuthorizationTimeExpiredMessage(string userId)
+        {
+            await
+                _telegramMethods.SendMessageAsync(userId,
+                    @"Time for authorization has expired. Please type again /connect command.");
+        }
+
+        public async Task AuthorizationFailedMessage(string userId)
+        {
+            await
+                _telegramMethods.SendMessageAsync(userId, "Authorization failed. See ya!");
+        }
+
+        public async Task AuthorizationSuccessfulMessage(string userId)
+        {
+            await
+                _telegramMethods.SendMessageAsync(userId, "Authorization successful! Now you can recieve notifications about new emails and use other functions!");
+        }
+
+        public async Task EmailAddressMessage(string userId, string emailAddress)
+        {
+            await _telegramMethods.SendMessageAsync(userId, emailAddress);
         }
         private static TelegramMethods _telegramMethods;
 

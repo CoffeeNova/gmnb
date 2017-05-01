@@ -35,7 +35,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             // _updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
             ClientSecret = clientSecret;
             _botMessages = new BotMessages(token);
-            _telegramMethods = new TelegramMethods(token);
             AuthorizeRequestEvent += Authorizer_AuthorizeRequestEvent;
         }
 
@@ -63,7 +62,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 $"&scope={scopesStr}" +
                 $"&response_type=code" +
                 $"&state={state}" +
-                $"&access_type=offline";
+                $"&access_type=offline" +
+                $"&prompt=consent";
             return new Uri(oauth);
         }
 
@@ -104,11 +104,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        public async Task RevokeToken(UserModel userModel)
+        public async Task RevokeTokenAsync(UserModel userModel)
         {
             try
             {
-                var parameters = new NameValueCollection { { "token", userModel.RefreshToken } };
+                var parameters = userModel.RefreshToken != null 
+                    ? new NameValueCollection { { "token", userModel.RefreshToken } } 
+                    : new NameValueCollection { { "token", userModel.AccessToken } };
 
                 using (var webClient = new WebClient())
                 {
@@ -131,30 +133,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         }
 
-        //private async void _updatesHandler_TelegramTextMessageEvent(TextMessage message)
-        //{
-        //    if (message.Text == Commands.ConnectStringCommand)
-        //    {
-        //        try
-        //        {
-        //            await SendAuthorizeLink(message);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            throw new AuthorizeException("An error occurred while trying to send the authentication link to the user", ex);
-        //        }
-        //    }
-        //}
-
-        public async Task SendAuthorizeLink(TextMessage message)
+        public async Task SendAuthorizeLink(ISender message)
         {
             try
             {
                 var gmailDbContextWorker = new GmailDbContextWorker();
 
-                LogMaker.Log(Logger, $"Start authorizing user with UserId={message.Chat.Id}.", false);
-                var userModel = await gmailDbContextWorker.FindUserAsync(message.Chat.Id) ??
-                                await gmailDbContextWorker.AddNewUserAsync(message.Chat);
+                LogMaker.Log(Logger, $"Start authorizing user with UserId={message.From.Id}.", false);
+                var userModel = await gmailDbContextWorker.FindUserAsync(message.From.Id) ??
+                                await gmailDbContextWorker.AddNewUserAsync(message.From);
 
                 LogMaker.Log(Logger, $"The user with id:{userModel.UserId} has requested authorization", false);
                 if (CheckUserAuthorization(userModel)) return;
@@ -170,7 +157,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
                 var notifyAccessUri = GetAuthenticationUri(notifyAccessState, UserAccessAttribute.GetScopesValue(UserAccess.Notify));
                 var fullAccessUri = GetAuthenticationUri(fullAccessState, UserAccessAttribute.GetScopesValue(UserAccess.Full));
-                _botMessages.AuthorizeMessage(message.Chat.Id.ToString(), notifyAccessUri, fullAccessUri);
+                _botMessages.AuthorizeMessage(message.From.Id.ToString(), notifyAccessUri, fullAccessUri);
             }
             catch (Exception ex)
             {
@@ -191,6 +178,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (!RestoreState(state, out id, out access))
                 return;
 
+            UserModel userModel = null;
             PendingUserModel pendingUserModel = null;
             var gmailDbContextWorker = new GmailDbContextWorker();
 
@@ -199,14 +187,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 pendingUserModel = gmailDbContextWorker.FindPendingUser(id);
                 if (pendingUserModel == null)
                 {
-                    _telegramMethods.SendMessage(id.ToString(),
-                        @"Time for authorization has expired. Please type again /connect command.");
+                    _botMessages.AuthorizationTimeExpiredMessage(id.ToString());
                     return;
                 }
                 if (DateTime.Now.Subtract(pendingUserModel.JoinTimeUtc).Minutes > MaxPendingMinutes)
                 {
-                    _telegramMethods.SendMessage(id.ToString(),
-                        @"Time for authorization has expired. Please type again /connect command.");
+                    _botMessages.AuthorizationTimeExpiredMessage(id.ToString());
                     LogMaker.Log(Logger,
                         $"Authorization attempt from user with id:{id} when authorization time has expired.", false);
                     return;
@@ -214,7 +200,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
                 if (!string.IsNullOrEmpty(error))
                 {
-                    _telegramMethods.SendMessage(id.ToString(), "Authorization failed. See ya!");
+                    _botMessages.AuthorizationFailedMessage(id.ToString());
                     LogMaker.Log(Logger,
                         error == "access_denied"
                             ? $"User with id:{id} user declined the authorization request."
@@ -227,17 +213,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     LogMaker.Log(Logger, $"Server returned empty authorization code for user with id:{id}.", false);
                     return;
                 }
-                var userModel = gmailDbContextWorker.FindUser(id);
+                userModel = gmailDbContextWorker.FindUser(id);
                 ExchangeCodeForToken(code, userModel);
+                
                 gmailDbContextWorker.UpdateUserRecord(userModel);
 
                 var userSettings = gmailDbContextWorker.FindUserSettings(id) ??
                                    gmailDbContextWorker.AddNewUserSettings(id, access);
                 AuthorizationRegistredEvent?.Invoke(userModel, userSettings);
-                _telegramMethods.SendMessage(id.ToString(), "Authorization successfull! Now you can recieve notifications about new emails and use other functions!");
+                _botMessages.AuthorizationSuccessfulMessage(id.ToString());
             }
             catch (Exception ex)
             {
+                gmailDbContextWorker.RemoveUserRecord(userModel);
                 throw new AuthorizeException("An error occurred while attempting to authorize the user.", ex);
             }
             finally
@@ -293,7 +281,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
                     var byteResult = webClient.UploadValues(GoogleOAuthTokenEndpoint, "POST", parameters);
                     var strResult = webClient.Encoding.GetString(byteResult);
-
                     JsonConvert.PopulateObject(strResult, userModel);
                 }
             }
@@ -324,7 +311,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private static readonly string GoogleOAuthRevokeTokenEndpoint = @"https://accounts.google.com/o/oauth2/revoke";
         private static readonly object _locker = new object();
         private const int MaxPendingMinutes = 5;
-        private BotMessages _botMessages;
+        private readonly BotMessages _botMessages;
 
         public static Authorizer Instance { get; private set; }
 
