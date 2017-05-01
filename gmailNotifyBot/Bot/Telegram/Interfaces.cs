@@ -33,7 +33,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// Interface for Telegram's user messages.
     /// </summary>
-    public interface ISenderMessage
+    public interface ISender
     {
         /// <summary>
         /// Sender.

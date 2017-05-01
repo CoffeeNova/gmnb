@@ -47,7 +47,7 @@ namespace CoffeeJelly.gmailNotifyBot
             _updatesHandler = new UpdatesHandler();
             _authorizer = Authorizer.GetInstance(botToken, _updatesHandler, clientSecret);
 
-            var gmailServiceFactory = GmailServiceFactory.GetInstanse(clientSecret);
+            var gmailServiceFactory = ServiceFactory.GetInstanse(clientSecret);
             await gmailServiceFactory.RestoreServicesFromStore();
 
             _commandHandler = CommandHandler.GetInstance(botToken, _updatesHandler, clientSecret);

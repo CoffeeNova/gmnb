@@ -28,72 +28,85 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             foreach (var update in updates.UpdatesList)
             {
-                dynamic message = update.Message;
-                #region raising new message events
-                if (message.GetType() == typeof(TextMessage))
-                    TelegramTextMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(AudioMessage))
-                    TelegramAudioMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(DocumentMessage))
-                    TelegramDocumentMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(StickerMessage))
-                    TelegramStickerMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(PhotoMessage))
-                    TelegramPhotoMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(GameMessage))
-                    TelegramGameMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(VideoMessage))
-                    TelegramVideoMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(VoiceMessage))
-                    TelegramVoiceMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(ContactMessage))
-                    TelegramContactMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(LocationMessage))
-                    TelegramLocationMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(VenueMessage))
-                    TelegramVenueMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(NewChatMemberMessage))
-                    TelegramNewChatMemberMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(LeftChatMemberMessage))
-                    TelegramLeftChatMemberMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(NewChatTitleMessage))
-                    TelegramNewChatTitleMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(NewChatPhotoMessage))
-                    TelegramNewChatPhotoMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(MigrateToChatIdMessage))
-                    TelegramMigrateToChatIdMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(MigrateFromChatIdMessage))
-                    TelegramMigrateFromChatIdMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(PinnedMessage))
-                    TelegramPinnedMessageEvent?.Invoke(message);
-
-                else if (message.GetType() == typeof(UnknownMessage))
-                    TelegramUnknownMessageEvent?.Invoke(message);
-                #endregion
-
-                var callbackQuery = update.CallbackQuery;
-                if (callbackQuery != null)
-                    TelegramCallbackQueryEvent?.Invoke(callbackQuery);
+                TryRaiseNewMessageEvent(update.Message);
+                TryRaiseNewCallbackQueryEvent(update.CallbackQuery);
             }
 
         }
+
+        private void TryRaiseNewMessageEvent(Message message)
+        {
+            if (message == null) return;
+
+            dynamic dMessage = message;
+
+            #region raising new message events
+            if (dMessage.GetType() == typeof(TextMessage))
+                TelegramTextMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(AudioMessage))
+                TelegramAudioMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(DocumentMessage))
+                TelegramDocumentMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(StickerMessage))
+                TelegramStickerMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(PhotoMessage))
+                TelegramPhotoMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(GameMessage))
+                TelegramGameMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(VideoMessage))
+                TelegramVideoMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(VoiceMessage))
+                TelegramVoiceMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(ContactMessage))
+                TelegramContactMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(LocationMessage))
+                TelegramLocationMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(VenueMessage))
+                TelegramVenueMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(NewChatMemberMessage))
+                TelegramNewChatMemberMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(LeftChatMemberMessage))
+                TelegramLeftChatMemberMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(NewChatTitleMessage))
+                TelegramNewChatTitleMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(NewChatPhotoMessage))
+                TelegramNewChatPhotoMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(MigrateToChatIdMessage))
+                TelegramMigrateToChatIdMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(MigrateFromChatIdMessage))
+                TelegramMigrateFromChatIdMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(PinnedMessage))
+                TelegramPinnedMessageEvent?.Invoke(dMessage);
+
+            else if (dMessage.GetType() == typeof(UnknownMessage))
+                TelegramUnknownMessageEvent?.Invoke(dMessage);
+            #endregion
+
+        }
+
+        private void TryRaiseNewCallbackQueryEvent(CallbackQuery callbackQuery)
+        {
+            if (callbackQuery == null) return;
+            TelegramCallbackQueryEvent?.Invoke(callbackQuery);
+        }
+
 
         public void StopHandleUpdates()
         {

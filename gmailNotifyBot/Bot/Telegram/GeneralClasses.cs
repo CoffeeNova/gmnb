@@ -12,6 +12,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// </summary>
     public class User
     {
+        public static implicit operator string(User obj)
+        {
+            return obj.Id.ToString();
+        }
+
         /// <summary>
         /// Unique identifier for this user or bot.
         /// </summary>
@@ -736,7 +741,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// If the button was attached to a message sent via the bot (in inline mode), the property <see cref="InlineMessageId"/> will be present. 
     /// Exactly one of the properties <see cref="Data"/> or <see cref="GameShortName"/>  will be present.
     /// </summary>
-    public class CallbackQuery
+    public class CallbackQuery : ISender
     {
         /// <summary>
         /// Unique identifier for this query.

@@ -8,13 +8,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
     public class UserModel
     {
-        public UserModel(Chat chat = null)
+        public UserModel(User user = null)
         {
-            if (chat == null) return;
-            UserId = chat.Id;
-            FirstName = chat.FirstName;
-            LastName = chat.LastName;
-            Username = chat.Username;
+            if (user == null) return;
+            UserId = user.Id;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
+            Username = user.Username;
+            IssuedTimeUtc = DateTime.UtcNow;
         }
 
         public UserModel()
