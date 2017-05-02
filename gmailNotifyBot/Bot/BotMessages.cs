@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -7,10 +8,13 @@ using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
-    public class BotMessages
+    internal class BotMessages
     {
         public BotMessages(string token)
         {
+            _botSettings = BotSettings.Instance;
+            Debug.Assert(_botSettings == null || !_botSettings.AllSettingsAreSet(),
+                "Set all properties at BotSettings class.");
             _telegramMethods = new TelegramMethods(token);
         }
 
@@ -98,9 +102,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.SendMessageAsync(userId, $"{Emoji.Denied}  There is no messages in your Inbox.");
         }
 
+        public async Task GmailInlineCommandMessage(string userId)
+        {
+            await _telegramMethods.SendMessageAsync(userId, $"@{_botSettings.Username} Inbox:");
+        }
 
-        private static TelegramMethods _telegramMethods;
-
+        private readonly TelegramMethods _telegramMethods;
+        private BotSettings _botSettings;
     }
 
     public static class Emoji
