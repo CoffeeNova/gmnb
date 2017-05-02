@@ -221,6 +221,7 @@
     <Compile Include="Bot\Attributes\ScopesAttribute.cs" />
     <Compile Include="Bot\Base64.cs" />
     <Compile Include="Bot\BotMessages.cs" />
+    <Compile Include="Bot\BotSettings.cs" />
     <Compile Include="Bot\ClientSecret.cs" />
     <Compile Include="Bot\CommandHandler.cs" />
     <Compile Include="Bot\Commands.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="Bot\Exceptions\AuthorizeException.cs" />
     <Compile Include="Bot\Exceptions\CommandHandlerException.cs" />
     <Compile Include="Bot\Exceptions\DbDataStroreException.cs" />
+    <Compile Include="Bot\Exceptions\FormattedGmailMessageException.cs" />
     <Compile Include="Bot\Exceptions\RevokeTokenException.cs" />
     <Compile Include="Bot\Exceptions\RefreshTokenException.cs" />
     <Compile Include="Bot\Exceptions\ExchangeException.cs" />
@@ -272,6 +274,7 @@
     <Compile Include="Bot\Extensions\BoolExtension.cs" />
     <Compile Include="Bot\Extensions\ObjectExtension.cs" />
     <Compile Include="Bot\Extensions\StringExtension.cs" />
+    <Compile Include="Bot\FormatedGmailMessage.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -382,6 +385,7 @@
     <EmbeddedResource Include="App_LocalResources\Tokens.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Tokens.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

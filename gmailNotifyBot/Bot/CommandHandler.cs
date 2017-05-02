@@ -11,7 +11,6 @@ using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
-using HtmlAgilityPack;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
@@ -96,7 +95,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 }
             }
             #endregion
-            if (message.Text ==Commands.INBOX_COMMAND)
+            if (message.Text == Commands.INBOX_COMMAND)
             {
                 logCommandRecieved(Commands.INBOX_COMMAND);
                 try
@@ -156,88 +155,43 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
             var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
             if (mailInfoResponce == null) return;
-            string snippet = "";
-            string senderAddress = "";
-            string subject = "";
-            string date = "";
-            string body = "";
-            MessagePayload(mailInfoResponce, ref snippet, ref senderAddress, ref subject, ref date, ref body);
-            
+            var formatedMessage = new FormattedGmailMessage(mailInfoResponce);
 
-            Debug.WriteLine(body);
+
+            Debug.WriteLine(formatedMessage.Body);
 
         }
 
         private async Task HandleGetInboxMessagesCommand(ISender sender)
         {
-            var service = SearchServiceByUserId(sender.From);
-            var query = service.GmailService.Users.Messages.List("me");
-            query.LabelIds = "INBOX";
-            var listMessagesResponce = await query.ExecuteAsync();
-            if (listMessagesResponce?.Messages != null)
-                await _botMessages.EmptyInboxMessage(sender.From);
+            //var service = SearchServiceByUserId(sender.From);
+            //var query = service.GmailService.Users.Messages.List("me");
+            //query.LabelIds = "INBOX";
+            //var listMessagesResponce = await query.ExecuteAsync();
+            //if (listMessagesResponce?.Messages == null || listMessagesResponce.Messages.Count == 0)
+            //{
+            //    await _botMessages.EmptyInboxMessage(sender.From);
+            //    return;
+            //}
 
-            var message = listMessagesResponce.Messages.First();
-            var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
-            var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
-            if (mailInfoResponce == null) return;
+            //var formatedMessages = new List<FormattedGmailMessage>();
+            //foreach (var message in listMessagesResponce.Messages)
+            //{
+            //    var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
+            //    var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
+            //    if (mailInfoResponce == null) continue;
+            //    formatedMessages.Add(new FormattedGmailMessage(mailInfoResponce));
+            //}
 
-            //await _botMessages.EmailAddressMessage(sender.From, userinfo.Name);
-        }
-
-        private void MessagePayload(Google.Apis.Gmail.v1.Data.Message message, ref string snippet, ref string sender, ref string subject, ref string date, ref string body)
-        {
-            if (message?.Payload == null)
-                throw new ArgumentNullException(nameof(message.Payload));
-
-            snippet = message.Snippet;
-            var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
-            if (messagePartHeader != null)
-                sender = messagePartHeader.Value;
-            messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Subject");
-            if (messagePartHeader != null)
-                subject = messagePartHeader.Value;
-            messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
-            if (messagePartHeader != null)
-                date = messagePartHeader.Value;
-            if (message.Payload.Parts != null)
-                DecodeDevidedBody(message.Payload.Parts, out body);
-            else if (message.Payload.Body?.Data != null)
-                body = DecodeBase64(message.Payload.Body.Data);
-        }
-
-        private static string DecodeBase64(string base64EncodedData)
-        {
-            base64EncodedData = base64EncodedData.Replace('-', '+');
-            base64EncodedData = base64EncodedData.Replace('_', '/');
-            return Base64.Decode(base64EncodedData);
-        }
-
-        private void DecodeDevidedBody(IList<MessagePart> parts, out string decodedBody)
-        {
-            parts.NullInspect(nameof(parts));
-
-            decodedBody = "";
-            foreach (var part in parts)
-            {
-                if (part.Parts != null)
-                    DecodeDevidedBody(part.Parts, out decodedBody);
-                else if (part.Body?.Data != null)
-                    decodedBody += DecodeBase64(part.Body.Data);
-            }
+            await _botMessages.GmailInlineCommandMessage(sender.From);
         }
 
         private void PrepareMessage(ref string message)
         {
-            
+
         }
 
-        private string ParseInnerText(string html)
-        {
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(html);
-            return htmlDoc.DocumentNode.InnerText;
-        }
+
 
         private UpdatesHandler _updatesHandler;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

@@ -31,6 +31,9 @@ namespace CoffeeJelly.gmailNotifyBot
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            var botSettings = BotSettings.GetInstance();
+            botSettings.Username = System.Configuration.ConfigurationSettings.AppSettings["Username"];
+
             LogMaker.NewMessage += LogMaker_NewMessage;
             string botToken = App_LocalResources.Tokens.GmailControlBotToken;
 #if DEBUG
