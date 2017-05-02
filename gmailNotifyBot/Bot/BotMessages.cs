@@ -26,7 +26,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 var reauthorizeButton = new InlineKeyboardButton
                 {
                     Text = "Reauthorize",
-                    CallbackData = Commands.CONNECT_STRING_COMMAND
+                    CallbackData = Commands.CONNECT_COMMAND
                 };
 
                 return new InlineKeyboardMarkup
@@ -92,7 +92,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             await _telegramMethods.SendMessageAsync(userId, emailAddress);
         }
+
+        public async Task EmptyInboxMessage(string userId)
+        {
+            await _telegramMethods.SendMessageAsync(userId, $"{Emoji.Denied}  There is no messages in your Inbox.");
+        }
+
+
         private static TelegramMethods _telegramMethods;
 
     }
+
+    public static class Emoji
+    {
+        public const string Denied = "\ud83d\udeab"; //red crossed-out circle
+        
+    }
+
 }
