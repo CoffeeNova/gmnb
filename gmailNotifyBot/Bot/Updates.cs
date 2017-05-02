@@ -81,8 +81,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             //если образовалась очередь, выдать ошибку задержки ответа сервера
             if (!DownloadBotRequestsSemaphore.WaitOne(0))
-            {
-                var message = "Telegram server response timeout. Can't download content.";
+            { 
+                   var message = "Telegram server response timeout. Can't download content.";
                 LogMaker.Log(Logger, message, true);
                 RequestMonitorTimer.Stop();
                 UpdatesTracingStoppedEvent?.Invoke(this, new BotRequestErrorEventArgs(message));

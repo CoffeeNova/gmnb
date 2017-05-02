@@ -10,6 +10,8 @@ using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Gmail.v1;
+using Google.Apis.Gmail.v1.Data;
+using HtmlAgilityPack;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
@@ -45,9 +47,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private async void _updatesHandler_TelegramTextMessageEvent(TextMessage message)
         {
-            if (message.Text == Commands.TESTNAME_STRING_COMMAND)
+            var logCommandRecieved =
+                new Action<string>(
+                    command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)message.From}", false));
+
+            #region testname
+            if (message.Text == Commands.TESTNAME_COMMAND)
             {
-                LogMaker.Log(Logger, $"{Commands.TESTNAME_STRING_COMMAND} command received from user with id {(string)message.From}", false);
+                logCommandRecieved(Commands.TESTNAME_COMMAND);
                 try
                 {
                     await HandleTestNameCommand(message);
@@ -63,9 +70,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     // throw new AuthorizeException("An error occurred while trying to send the authentication link to the user", ex);
                 }
             }
-            if (message.Text == Commands.TESTGETMESSAGE_STRING_COMMAND)
+            #endregion
+            if (message.Text == Commands.TESTMESSAGE_COMMAND)
             {
-                LogMaker.Log(Logger, $"{Commands.TESTNAME_STRING_COMMAND} command received from user with id {(string)message.From}", false);
+                logCommandRecieved(Commands.TESTMESSAGE_COMMAND);
                 try
                 {
                     await HandleTestMessageCommand(message);
@@ -74,8 +82,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                 }
             }
-
-            if (message.Text == Commands.CONNECT_STRING_COMMAND)
+            #region connect
+            if (message.Text == Commands.CONNECT_COMMAND)
+            {
+                LogMaker.Log(Logger, $"{Commands.TESTMESSAGE_COMMAND} command received from user with id {(string)message.From}", false);
                 try
                 {
                     await _authorizer.SendAuthorizeLink(message);
@@ -84,6 +94,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                     LogMaker.Log(Logger, ex);
                 }
+            }
+            #endregion
+            if (message.Text ==Commands.INBOX_COMMAND)
+            {
+                logCommandRecieved(Commands.INBOX_COMMAND);
+                try
+                {
+                    await HandleGetInboxMessagesCommand(message);
+                }
+                catch
+                {
+
+                }
+            }
+
         }
 
         private async void _updatesHandler_TelegramCallbackQueryEvent(CallbackQuery callbackQuery)
@@ -91,7 +116,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (callbackQuery.Data == null)
                 return;
 
-            if (callbackQuery.Data == Commands.CONNECT_STRING_COMMAND)
+            if (callbackQuery.Data == Commands.CONNECT_COMMAND)
                 try
                 {
                     await _authorizer.SendAuthorizeLink(callbackQuery);
@@ -123,6 +148,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             var service = SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Messages.List("me");
+            query.LabelIds = "INBOX";
             var listMessagesResponce = await query.ExecuteAsync();
             if (listMessagesResponce?.Messages == null) return;
 
@@ -130,29 +156,87 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
             var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
             if (mailInfoResponce == null) return;
+            string snippet = "";
+            string senderAddress = "";
+            string subject = "";
+            string date = "";
+            string body = "";
+            MessagePayload(mailInfoResponce, ref snippet, ref senderAddress, ref subject, ref date, ref body);
+            
 
+            Debug.WriteLine(body);
 
-
-            //var getReq =
-            //    new UsersResource.MessagesResource.GetRequest(service.GmailService, "me", message.Id)
-            //    {
-            //        Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Full
-            //    };
-
-            //var message1 = await getReq.ExecuteAsync();
-
-
-            //foreach (var part in message1.Payload.Parts)
-            //{
-            //    byte[] data = Convert.FromBase64String(part.Body.Data);
-            //    string decodedString = Encoding.UTF8.GetString(data);
-            //    Debug.WriteLine(decodedString);
-            //}
         }
 
-        private void MessagePayload(Google.Apis.Gmail.v1.Data.Message message, out string snippet, out string sender, out string subject, out string body)
+        private async Task HandleGetInboxMessagesCommand(ISender sender)
         {
-            throw new NotImplementedException();
+            var service = SearchServiceByUserId(sender.From);
+            var query = service.GmailService.Users.Messages.List("me");
+            query.LabelIds = "INBOX";
+            var listMessagesResponce = await query.ExecuteAsync();
+            if (listMessagesResponce?.Messages != null)
+                await _botMessages.EmptyInboxMessage(sender.From);
+
+            var message = listMessagesResponce.Messages.First();
+            var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
+            var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
+            if (mailInfoResponce == null) return;
+
+            //await _botMessages.EmailAddressMessage(sender.From, userinfo.Name);
+        }
+
+        private void MessagePayload(Google.Apis.Gmail.v1.Data.Message message, ref string snippet, ref string sender, ref string subject, ref string date, ref string body)
+        {
+            if (message?.Payload == null)
+                throw new ArgumentNullException(nameof(message.Payload));
+
+            snippet = message.Snippet;
+            var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
+            if (messagePartHeader != null)
+                sender = messagePartHeader.Value;
+            messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Subject");
+            if (messagePartHeader != null)
+                subject = messagePartHeader.Value;
+            messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
+            if (messagePartHeader != null)
+                date = messagePartHeader.Value;
+            if (message.Payload.Parts != null)
+                DecodeDevidedBody(message.Payload.Parts, out body);
+            else if (message.Payload.Body?.Data != null)
+                body = DecodeBase64(message.Payload.Body.Data);
+        }
+
+        private static string DecodeBase64(string base64EncodedData)
+        {
+            base64EncodedData = base64EncodedData.Replace('-', '+');
+            base64EncodedData = base64EncodedData.Replace('_', '/');
+            return Base64.Decode(base64EncodedData);
+        }
+
+        private void DecodeDevidedBody(IList<MessagePart> parts, out string decodedBody)
+        {
+            parts.NullInspect(nameof(parts));
+
+            decodedBody = "";
+            foreach (var part in parts)
+            {
+                if (part.Parts != null)
+                    DecodeDevidedBody(part.Parts, out decodedBody);
+                else if (part.Body?.Data != null)
+                    decodedBody += DecodeBase64(part.Body.Data);
+            }
+        }
+
+        private void PrepareMessage(ref string message)
+        {
+            
+        }
+
+        private string ParseInnerText(string html)
+        {
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(html);
+            return htmlDoc.DocumentNode.InnerText;
         }
 
         private UpdatesHandler _updatesHandler;
