@@ -83,6 +83,7 @@
     <Compile Include="Bot\Telegram\TelegramMethodsTests\GetUserProfilePhotosTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\GetFileTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVoiceTests.cs" />
+    <Compile Include="Bot\Telegram\ToolsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -107,6 +107,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.SendMessageAsync(userId, $"@{_botSettings.Username} Inbox:");
         }
 
+        public async Task InboxAnswerInlineQuery(string userId)
+        {
+            //await _telegramMethods.AnswerInlineQuery(userId, )
+        }
+
         private readonly TelegramMethods _telegramMethods;
         private BotSettings _botSettings;
     }

@@ -8,13 +8,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the general Telegram message.
     /// </summary>
-    public abstract class Message : IMessage
+    public abstract class Message : IMessage, ISender
     {
         /// <summary>
         /// Unique message identifier inside this chat.
         /// </summary>
         [JsonProperty("message_id")]
         public int MessageId { get; set; }
+
+        /// <summary>
+        /// Sender, can be empty for messages sent to channels.
+        /// </summary>
+        [JsonProperty("from")]
+        public User From { get; set; }
 
         /// <summary>
         /// Date the message was sent.
@@ -65,14 +71,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram text user's message.
     /// </summary>
-    public class TextMessage : Message, ISender, ITextMessage
+    public class TextMessage : Message,  ITextMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Text message, the actual UTF-8 text of the message, 0-4096 characters.
         /// </summary>
@@ -99,14 +99,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram audio message.
     /// </summary>
-    public class AudioMessage : Message, ISender, IAudioMessage
+    public class AudioMessage : Message,  IAudioMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about the audio file.
         /// </summary>
@@ -123,14 +117,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram document message.
     /// </summary>
-    public class DocumentMessage : Message, ISender, IDocumentMessage
+    public class DocumentMessage : Message,  IDocumentMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about general file.
         /// </summary>
@@ -147,14 +135,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram sticker message.
     /// </summary>
-    public class StickerMessage : Message, ISender, IStickerMessage
+    public class StickerMessage : Message, IStickerMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about the sticker.
         /// </summary>
@@ -165,14 +147,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram photo message.
     /// </summary>
-    public class PhotoMessage : Message, ISender, IPhotoMessage
+    public class PhotoMessage : Message, IPhotoMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Available sizes of the photo.
         /// </summary>
@@ -190,14 +166,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram game message.
     /// </summary>
-    public class GameMessage : Message, ISender, IGameMessage
+    public class GameMessage : Message, IGameMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about the game.
         /// </summary>
@@ -208,14 +178,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram video message.
     /// </summary>
-    public class VideoMessage : Message, ISender, IVideoMessage
+    public class VideoMessage : Message, IVideoMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about the video.
         /// </summary>
@@ -232,14 +196,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram voice message.
     /// </summary>
-    public class VoiceMessage : Message, ISender, IVoiceMessage
+    public class VoiceMessage : Message, IVoiceMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about the voice.
         /// </summary>
@@ -250,14 +208,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram shared contact message.
     /// </summary>
-    public class ContactMessage : Message, ISender, ITelegramContactMessage
+    public class ContactMessage : Message,  ITelegramContactMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about the contact.
         /// </summary>
@@ -268,14 +220,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram shared location message.
     /// </summary>
-    public class LocationMessage : Message, ISender, ILocationMessage
+    public class LocationMessage : Message,  ILocationMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about the location.
         /// </summary>
@@ -286,14 +232,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// <summary>
     /// A class which represents the Telegram venue message.
     /// </summary>
-    public class VenueMessage : Message, ISender, IVenueMessage
+    public class VenueMessage : Message, IVenueMessage
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about the venue.
         /// </summary>
@@ -306,12 +246,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// </summary>
     public class NewChatMemberMessage : Message
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Information about first member, which been added to the group.
         /// </summary>
@@ -339,12 +273,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     public class LeftChatMemberMessage : Message
     {
         /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
-        /// <summary>
         /// Information about member, which been removed from the group.
         /// </summary>
         [JsonProperty("left_chat_member")]
@@ -364,12 +292,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     public class NewChatTitleMessage : Message
     {
         /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
-        /// <summary>
         /// A Title. :>
         /// </summary>
         [JsonProperty("new_chat_title")]
@@ -381,12 +303,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// </summary>
     public class NewChatPhotoMessage : Message
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Available sizes of the new chat photo.
         /// </summary>
@@ -413,12 +329,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     public class MigrateToChatIdMessage : Message
     {
         /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
-        /// <summary>
         /// Supergroup identifier.
         /// </summary>
         [JsonProperty("migrate_to_chat_id")]
@@ -432,12 +342,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     public class MigrateFromChatIdMessage : Message
     {
         /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
-        /// <summary>
         /// Supergroup identifier.
         /// </summary>
         [JsonProperty("migrate_from_chat_id")]
@@ -449,12 +353,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// </summary>
     public class PinnedMessage : Message
     {
-        /// <summary>
-        /// Sender, can be empty for messages sent to channels.
-        /// </summary>
-        [JsonProperty("from")]
-        public User From { get; set; }
-
         /// <summary>
         /// Pinned message.
         /// </summary>

@@ -29,6 +29,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             ClientSecret = clientSecret;
             _updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
             _updatesHandler.TelegramCallbackQueryEvent += _updatesHandler_TelegramCallbackQueryEvent;
+            _updatesHandler.TelegramInlineQueryEvent += _updatesHandler_TelegramInlineQueryEvent;
         }
 
         public static CommandHandler GetInstance(string token, UpdatesHandler updatesHandler, Secrets clientSecret)
@@ -46,6 +47,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private async void _updatesHandler_TelegramTextMessageEvent(TextMessage message)
         {
+            if (message?.Text == null)
+                throw new ArgumentNullException(nameof(message));
+
             var logCommandRecieved =
                 new Action<string>(
                     command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)message.From}", false));
@@ -61,7 +65,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 catch (CommandHandlerException ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    _botMessages.WrongCredentialsMessage(message.From);
+                    await _botMessages.WrongCredentialsMessage(message.From);
                 }
                 catch (Exception ex)
                 {
@@ -112,10 +116,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private async void _updatesHandler_TelegramCallbackQueryEvent(CallbackQuery callbackQuery)
         {
-            if (callbackQuery.Data == null)
-                return;
+            if (callbackQuery?.Data == null)
+                throw new ArgumentNullException(nameof(callbackQuery));
 
+            var logCommandRecieved = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)callbackQuery.From}", false));
             if (callbackQuery.Data == Commands.CONNECT_COMMAND)
+            {
+                logCommandRecieved(Commands.CONNECT_COMMAND);
                 try
                 {
                     await _authorizer.SendAuthorizeLink(callbackQuery);
@@ -124,7 +131,29 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                     LogMaker.Log(Logger, ex);
                 }
+            }
         }
+
+        private async void _updatesHandler_TelegramInlineQueryEvent(InlineQuery inlineQuery)
+        {
+            if (inlineQuery?.Query == null)
+                throw new ArgumentNullException(nameof(inlineQuery));
+
+            var logCommandRecieved = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)inlineQuery.From}", false));
+            if (inlineQuery.Query == Commands.INBOX_INLINE_QUERY_COMMAND)
+            {
+                logCommandRecieved(Commands.INBOX_INLINE_QUERY_COMMAND);
+                try
+                {
+                    await HandleInboxInlineQueryCommand(inlineQuery);
+                }
+                catch
+                {
+                    
+                }
+            }
+        }
+
 
         private Service SearchServiceByUserId(string userId)
         {
@@ -164,31 +193,35 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private async Task HandleGetInboxMessagesCommand(ISender sender)
         {
-            //var service = SearchServiceByUserId(sender.From);
-            //var query = service.GmailService.Users.Messages.List("me");
-            //query.LabelIds = "INBOX";
-            //var listMessagesResponce = await query.ExecuteAsync();
-            //if (listMessagesResponce?.Messages == null || listMessagesResponce.Messages.Count == 0)
-            //{
-            //    await _botMessages.EmptyInboxMessage(sender.From);
-            //    return;
-            //}
-
-            //var formatedMessages = new List<FormattedGmailMessage>();
-            //foreach (var message in listMessagesResponce.Messages)
-            //{
-            //    var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
-            //    var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
-            //    if (mailInfoResponce == null) continue;
-            //    formatedMessages.Add(new FormattedGmailMessage(mailInfoResponce));
-            //}
-
             await _botMessages.GmailInlineCommandMessage(sender.From);
+        }
+
+        private async Task HandleInboxInlineQueryCommand(ISender sender)
+        {
+            var service = SearchServiceByUserId(sender.From);
+            var query = service.GmailService.Users.Messages.List("me");
+            query.LabelIds = "INBOX";
+            var listMessagesResponce = await query.ExecuteAsync();
+            if (listMessagesResponce?.Messages == null || listMessagesResponce.Messages.Count == 0)
+            {
+                await _botMessages.EmptyInboxMessage(sender.From);
+                return;
+            }
+
+            var formatedMessages = new List<FormattedGmailMessage>();
+            foreach (var message in listMessagesResponce.Messages)
+            {
+                var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
+                var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
+                if (mailInfoResponce == null) continue;
+                formatedMessages.Add(new FormattedGmailMessage(mailInfoResponce));
+            }
+            await _botMessages.InboxAnswerInlineQuery(sender.From);
         }
 
         private void PrepareMessage(ref string message)
         {
-
+            
         }
 
 

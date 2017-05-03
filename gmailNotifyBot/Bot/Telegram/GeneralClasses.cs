@@ -997,4 +997,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         [JsonProperty("callback_query")]
         public CallbackQuery CallbackQuery { get; set; }
     }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum ParseMode
+    {
+        [EnumMember(Value = "Markdown")]
+        Markdown,
+        [EnumMember(Value = "HTML")]
+        Html
+    }
 }
