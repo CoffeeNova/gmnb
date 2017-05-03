@@ -47,7 +47,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     public interface ITextMessage
     {
         /// <summary>
-        /// The actual UTF-8 text of the message, 0-4096 characters.
+        /// The actual UTF-8 text of the message.
         /// </summary>
         [JsonProperty("text")]
         string Text { get; set; }
@@ -84,7 +84,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         Document Document { get; set; }
 
         /// <summary>
-        /// Caption for the document, 0-200 characters.
+        /// Caption for the document.
         /// </summary>
         [JsonProperty("caption")]
         string Caption { get; set; }
@@ -113,7 +113,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         List<PhotoSize> Photo { get; set; }
 
         /// <summary>
-        /// Caption for the photo, 0-200 characters.
+        /// Caption for the photo.
         /// </summary>
         [JsonProperty("caption")]
         string Caption { get; set; }
@@ -143,7 +143,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         Video Video { get; set; }
 
         /// <summary>
-        /// Caption for the video, 0-200 characters.
+        /// Caption for the video.
         /// </summary>
         [JsonProperty("caption")]
         string Caption { get; set; }
@@ -310,32 +310,59 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         
     }
 
-    public interface IThumb
+    public interface IResultThumb
     {
         /// <summary>
         /// Url of the thumbnail for the result.
         /// </summary>
-        ///<remarks>Optional.</remarks>
         [JsonProperty("thumb_url")]
         string ThumbUrl { get; set; }
 
         /// <summary>
         /// Thumbnail width.
         /// </summary>
-        ///<remarks>Optional.</remarks>
         [JsonProperty("thumb_width")]
         int? ThumbWidth { get; set; }
 
         /// <summary>
         /// Thumbnail height.
         /// </summary>
-        ///<remarks>Optional.</remarks>
         [JsonProperty("thumb_height")]
         int? ThumbHeight { get; set; }
     }
 
     public interface IInputMessageContent
     {
-        
+
+    }
+
+    public interface IResultPhoto
+    {
+        /// <summary>
+        /// A valid URL of the photo.
+        /// </summary>
+        [JsonProperty("photo_url")]
+        string PhotoUrl { get; set; }
+
+        /// <summary>
+        /// Width of the photo.
+        /// </summary>
+        [JsonProperty("photo_width")]
+        int? PhotoWidth { get; set; }
+
+        /// <summary>
+        /// Height of the photo.
+        /// </summary>
+        [JsonProperty("photo_height")]
+        int? PhotoHeight { get; set; }
+    }
+
+    public interface IResultTitle
+    {
+        /// <summary>
+        /// Title for the result.
+        /// </summary>
+        [JsonProperty("title")]
+        string Title { get; set; }
     }
 }

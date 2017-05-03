@@ -4,6 +4,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Extensions;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 {
@@ -20,7 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// <summary>
         /// Unique identifier for this user or bot.
         /// </summary>
-        [JsonProperty("id")]
+        [JsonProperty("id", Required = Required.Always) ]
         public int Id { get; set; }
 
         /// <summary>
@@ -521,13 +522,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         [JsonProperty("photo")]
         public List<PhotoSize> Photo { get; set; }
 
+        private string _text;
+
         /// <summary>
         /// Brief description of the game or high scores included in the game message. 
         /// Can be automatically edited to include current high scores for the game when the bot calls setGameScore, 
         /// or manually edited using editMessageText. 0-4096 characters.
         /// </summary>
         [JsonProperty("text")]
-        public string Text { get; set; }
+        public string Text
+        {
+            get { return _text; }
+            set
+            {
+                if (value != null && !value.Length.InRange(0, 4096))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"{value} Length should be from 0 to 4096 characters.");
+                _text = value;
+            }
+        }
 
         /// <summary>
         /// Special entities that appear in text, such as usernames, URLs, bot commands, etc.

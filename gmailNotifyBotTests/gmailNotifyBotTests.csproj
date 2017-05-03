@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Bot\GoogleAuthTests.cs" />
     <Compile Include="Bot\MessageBuilderTests.cs" />
+    <Compile Include="Bot\Telegram\Extensions\StringExtensionTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\ForwardMessageTests.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\General.cs" />
     <Compile Include="Bot\Telegram\TelegramMethodsTests\DownloadFileTests.cs" />
@@ -121,6 +122,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestFiles\gabba.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TestStorage\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
