@@ -130,7 +130,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 
             try
             {
-                using (HttpClient httpClient = new HttpClient())
+                using (var httpClient = new HttpClient())
                 {
                     var responce = await httpClient.PostAsync(TelegramBotUrl + Token + "/" + telegramMethodName, form);
                     var strResult = await responce.Content.ReadAsStringAsync();

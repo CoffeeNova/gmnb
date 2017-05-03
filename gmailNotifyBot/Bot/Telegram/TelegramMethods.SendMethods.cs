@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -21,8 +22,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
 	public partial class TelegramMethods
 	{
         [TelegramMethod("sendMessage")]
-        public TextMessage SendMessage(string chatId, string message, string parseMode = null, bool disableWebPagePreview = false,
-    bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
+        public TextMessage SendMessage(string chatId, string message, ParseMode? parseMode = null, bool disableWebPagePreview = false,
+            bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
             chatId.NullInspect(nameof(chatId));
             message.NullInspect(nameof(message));
@@ -31,14 +32,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
             SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup);
             parameters.Add("text", message);
             parameters.Add("disable_web_page_preview", disableWebPagePreview.ToString());
-            if (parseMode != null) parameters.Add("parse_mode", parseMode);
 
+            if (parseMode.HasValue)
+            {
+                var parse = JsonConvert.SerializeObject(parseMode, Formatting.None, Settings);
+                parameters.Add("parse_mode", parse.Trim('"'));
+
+            }
             var json = UploadUrlQuery(parameters);
             return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
         }
 
-
-        public Task<TextMessage> SendMessageAsync(string chatId, string message, string parseMode = null, bool disableWebPagePreview = false,
+        public Task<TextMessage> SendMessageAsync(string chatId, string message, ParseMode? parseMode = null, bool disableWebPagePreview = false,
             bool disableNotification = false, int? replyToMessageId = null, IMarkup replyMarkup = null)
         {
             return Task.Run(

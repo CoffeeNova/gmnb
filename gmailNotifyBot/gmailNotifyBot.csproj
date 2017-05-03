@@ -248,6 +248,8 @@
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
     <Compile Include="Bot\GmailServiceFactory.cs" />
+    <Compile Include="Bot\Telegram\Extensions\IntExtension.cs" />
+    <Compile Include="Bot\Telegram\Tools.cs" />
     <Compile Include="Bot\test.cs" />
     <Compile Include="Bot\Updates.cs" />
     <Compile Include="Bot\UpdatesHandler.cs" />

@@ -26,8 +26,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         /// </summary>
         [JsonProperty("chat")]
         Chat Chat { get; set; }
- 
-
     }
 
     /// <summary>
@@ -312,4 +310,32 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         
     }
 
+    public interface IThumb
+    {
+        /// <summary>
+        /// Url of the thumbnail for the result.
+        /// </summary>
+        ///<remarks>Optional.</remarks>
+        [JsonProperty("thumb_url")]
+        string ThumbUrl { get; set; }
+
+        /// <summary>
+        /// Thumbnail width.
+        /// </summary>
+        ///<remarks>Optional.</remarks>
+        [JsonProperty("thumb_width")]
+        int? ThumbWidth { get; set; }
+
+        /// <summary>
+        /// Thumbnail height.
+        /// </summary>
+        ///<remarks>Optional.</remarks>
+        [JsonProperty("thumb_height")]
+        int? ThumbHeight { get; set; }
+    }
+
+    public interface IInputMessageContent
+    {
+        
+    }
 }

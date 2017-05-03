@@ -59,7 +59,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram.Tests
                 Entities = new List<MessageEntity> { _italicTextEntity }
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "_" + message + "_", "Markdown");
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "_" + message + "_", ParseMode.Markdown);
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
