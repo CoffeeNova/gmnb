@@ -1,0 +1,3 @@
+﻿1. Add Requared JsonPropertyAttribute to all telegram types.
+2. Realese cyclical update telegram server and webhook in library.
+3. Sort Telegram types to different files.

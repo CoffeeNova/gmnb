@@ -239,8 +239,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             #region _location
             _location = new Location
             {
-               Latitude = 53.901112F,
-               Longitude = 27.562325F
+                Latitude = 53.901112F,
+                Longitude = 27.562325F
             };
             #endregion
             #region _newChatPhoto
@@ -376,6 +376,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             return sampleJsonRequest["message"];
         }
 
+        private static string RandomString(int length)
+        {
+            var random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
         [TestMethod]
         public void BuildMessage_TextJSON_TelegramTextMessage()
         {
@@ -392,6 +400,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             var comparisonResult = compareLogic.Compare(expected, actual);
 
             Assert.IsTrue(comparisonResult.AreEqual, comparisonResult.DifferencesString);
+        }
+
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [TestMethod]
+        public void BuildMessage_TextMessage_ArgumentOutOfRangeException()
+        {
+            var expected = new TextMessage
+            {
+                From = _user,
+                Text = RandomString(5000),
+                Entities = _entities
+            };
         }
 
         [TestMethod]

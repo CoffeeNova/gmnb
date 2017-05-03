@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Converters;
+using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Extensions;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
@@ -73,12 +74,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
     /// </summary>
     public class TextMessage : Message,  ITextMessage
     {
+        private string _text;
         /// <summary>
         /// Text message, the actual UTF-8 text of the message, 0-4096 characters.
         /// </summary>
         [JsonProperty("text")]
-        public string Text { get; set; }
-
+        public string Text
+        {
+            get { return _text; }
+            set
+            {
+                if (value != null && !value.Length.InRange(0, 4096))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"{value} Length should be from 0 to 4096 characters.");
+                _text = value;
+            }
+        }
         /// <summary>
         /// Special entities like usernames, URLs, bot commands, etc. that appear in the text.
         /// </summary>
@@ -107,11 +117,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         [JsonProperty("audio")]
         public Audio Audio { get; set; }
 
+        private string _caption;
+
         /// <summary>
         /// Caption for the document, 0-200 characters.
         /// </summary>
         [JsonProperty("caption")]
-        public string Caption { get; set; }
+        public string Caption
+        {
+            get { return _caption; }
+            set
+            {
+                if (value != null && !value.Length.InRange(0, 200))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"{value} Length should be from 0 to 200 characters.");
+                _caption = value;
+            }
+        }
     }
 
     /// <summary>
@@ -125,11 +146,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         [JsonProperty("document")]
         public Document Document { get; set; }
 
+        private string _caption;
+
         /// <summary>
         /// Caption for the document, 0-200 characters.
         /// </summary>
         [JsonProperty("caption")]
-        public string Caption { get; set; }
+        public string Caption
+        {
+            get { return _caption; }
+            set
+            {
+                if (value != null && !value.Length.InRange(0, 200))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"{value} Length should be from 0 to 200 characters.");
+                _caption = value;
+            }
+        }
     }
 
     /// <summary>
@@ -156,11 +188,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         [JsonProperty("photo")]
         public List<PhotoSize> Photo { get; set; }
 
+        private string _caption;
+
         /// <summary>
         /// Caption for the photo, 0-200 characters.
         /// </summary>
         [JsonProperty("caption")]
-        public string Caption { get; set; }
+        public string Caption
+        {
+            get { return _caption; }
+            set
+            {
+                if (value != null && !value.Length.InRange(0, 200))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"{value} Length should be from 0 to 200 characters.");
+                _caption = value;
+            }
+        }
     }
 
     /// <summary>
@@ -186,11 +229,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Telegram
         [JsonProperty("video")]
         public Video Video { get; set; }
 
+        private string _caption;
+
         /// <summary>
         /// Caption for the video, 0-200 characters.
         /// </summary>
         [JsonProperty("caption")]
-        public string Caption { get; set; }
+        public string Caption
+        {
+            get { return _caption; }
+            set
+            {
+                if (value != null && !value.Length.InRange(0, 200))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"{value} Length should be from 0 to 200 characters.");
+                _caption = value;
+            }
+        }
     }
 
     /// <summary>
