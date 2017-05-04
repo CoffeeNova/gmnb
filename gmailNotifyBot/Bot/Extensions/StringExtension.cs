@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace CoffeeJelly.gmailNotifyBot.Extensions
+namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
 {
     public static class StringExtension
     {

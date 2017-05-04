@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -11,9 +9,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using CoffeeJelly.gmailNotifyBot.Bot;
-using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
-using CoffeeJelly.gmailNotifyBot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,7 +28,9 @@ namespace CoffeeJelly.gmailNotifyBot
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             var botSettings = BotSettings.GetInstance();
+#pragma warning disable 618
             botSettings.Username = System.Configuration.ConfigurationSettings.AppSettings["Username"];
+#pragma warning restore 618
 
             LogMaker.NewMessage += LogMaker_NewMessage;
             string botToken = App_LocalResources.Tokens.GmailControlBotToken;

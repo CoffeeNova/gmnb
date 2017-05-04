@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gmailNotifyBot", "gmailNoti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gmailNotifyBotTests", "gmailNotifyBotTests\gmailNotifyBotTests.csproj", "{1F739CEF-96E9-4046-8133-524035CCE388}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramApiWrapper", "TelegramApiWrapper\TelegramApiWrapper.csproj", "{C8FFF337-C98C-4DC2-957C-5211EDD3082F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramApiWrapperTests", "TelegramApiWrapperTests\TelegramApiWrapperTests.csproj", "{BECEA582-EEAE-4D9C-BEB5-EC1759B67442}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{1F739CEF-96E9-4046-8133-524035CCE388}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F739CEF-96E9-4046-8133-524035CCE388}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F739CEF-96E9-4046-8133-524035CCE388}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8FFF337-C98C-4DC2-957C-5211EDD3082F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8FFF337-C98C-4DC2-957C-5211EDD3082F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8FFF337-C98C-4DC2-957C-5211EDD3082F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8FFF337-C98C-4DC2-957C-5211EDD3082F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BECEA582-EEAE-4D9C-BEB5-EC1759B67442}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BECEA582-EEAE-4D9C-BEB5-EC1759B67442}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BECEA582-EEAE-4D9C-BEB5-EC1759B67442}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BECEA582-EEAE-4D9C-BEB5-EC1759B67442}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

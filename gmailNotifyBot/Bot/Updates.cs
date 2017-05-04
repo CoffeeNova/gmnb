@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Threading;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using CoffeeJelly.TelegramApiWrapper.Exceptions;
+using CoffeeJelly.TelegramApiWrapper.Types;
+using CoffeeJelly.TelegramApiWrapper.Types.General;
 using NLog;
+using TelegramMethods = CoffeeJelly.TelegramApiWrapper.Methods.TelegramMethods;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
@@ -51,10 +49,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public void Restart()
         {
             RequestMonitorTimer.Start();
-        }
-
-        private Updates()
-        {
             LogMaker.Log(Logger, "Download updates restarted", false);
         }
 

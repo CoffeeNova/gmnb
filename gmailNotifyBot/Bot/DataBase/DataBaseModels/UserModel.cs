@@ -1,7 +1,5 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
+using CoffeeJelly.TelegramApiWrapper.Types.General;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
