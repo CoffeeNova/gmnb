@@ -5,7 +5,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult
     /// <summary>
     /// Represents a link to an article or web page.
     /// </summary>
-    public class InlineQueryResultArticle : InlineQueryResult, IResultThumb, IResultTitle
+    public class InlineQueryResultArticle : InlineQueryResultContent, IResultThumb, IResultTitle
     {
         /// <summary>
         /// Type of the result.

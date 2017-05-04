@@ -311,6 +311,9 @@ namespace CoffeeJelly.TelegramApiWrapper.Types
         
     }
 
+    /// <summary>
+    /// Interface represents the thumbnail parameters.
+    /// </summary>
     public interface IResultThumb
     {
         /// <summary>
@@ -337,6 +340,9 @@ namespace CoffeeJelly.TelegramApiWrapper.Types
 
     }
 
+    /// <summary>
+    /// Interface represents the photo file parameters.
+    /// </summary>
     public interface IResultPhoto
     {
         /// <summary>
@@ -358,6 +364,33 @@ namespace CoffeeJelly.TelegramApiWrapper.Types
         int? PhotoHeight { get; set; }
     }
 
+    /// <summary>
+    /// Interface represents the gif file parameters.
+    /// </summary>
+    public interface IResultGif
+    {
+        /// <summary>
+        /// A valid URL for the GIF file. File size must not exceed 1MB.
+        /// </summary>
+        [JsonProperty("gif_url")]
+        string GifUrl { get; set; }
+
+        /// <summary>
+        /// Width of the GIF.
+        /// </summary>
+        [JsonProperty("gif_width")]
+        int? GifWidth { get; set; }
+
+        /// <summary>
+        /// Height of the GIF.
+        /// </summary>
+        [JsonProperty("gif_height")]
+        int? GifHeight { get; set; }
+    }
+
+    /// <summary>
+    /// Interface for the title of the Telegram's InlineQueryResult file.
+    /// </summary>
     public interface IResultTitle
     {
         /// <summary>
@@ -365,5 +398,95 @@ namespace CoffeeJelly.TelegramApiWrapper.Types
         /// </summary>
         [JsonProperty("title")]
         string Title { get; set; }
+    }
+
+    /// <summary>
+    /// Interface represents the mpeg4 gif file parameters.
+    /// </summary>
+    public interface IResultMpeg4
+    {
+        /// <summary>
+        /// A valid URL for the MP4 file. File size must not exceed 1MB.
+        /// </summary>
+        [JsonProperty("mpeg4_url")]
+        string Mpeg4Url { get; set; }
+
+        /// <summary>
+        /// Video width.
+        /// </summary>
+        [JsonProperty("mpeg4_width")]
+        int? Mpeg4Width { get; set; }
+
+        /// <summary>
+        /// Video height.
+        /// </summary>
+        [JsonProperty("mpeg4_height")]
+        int? Mpeg4Height { get; set; }
+    }
+
+    /// <summary>
+    /// Interface represents the video file parameters.
+    /// </summary>
+    public interface IResulVideo
+    {
+        /// <summary>
+        /// A valid URL for the MP4 file. File size must not exceed 1MB.
+        /// </summary>
+        [JsonProperty("video_url")]
+        string VideoUrl { get; set; }
+
+        /// <summary>
+        /// Video width.
+        /// </summary>
+        [JsonProperty("video_width")]
+        int? VideoWidth { get; set; }
+
+        /// <summary>
+        /// Video height.
+        /// </summary>
+        [JsonProperty("video_height")]
+        int? VideoHeight { get; set; }
+
+        /// <summary>
+        /// Video duration in seconds.
+        /// </summary>
+        [JsonProperty("video_duration")]
+        int? VideoDuration { get; set; }
+    }
+
+    /// <summary>
+    /// Interface represents the audio file parameters.
+    /// </summary>
+    public interface IResulAudio
+    {
+        /// <summary>
+        /// A valid URL for the audio file.
+        /// </summary>
+        [JsonProperty("audio_url")]
+        string AudioUrl { get; set; }
+
+        /// <summary>
+        /// Audio duration in seconds.
+        /// </summary>
+        [JsonProperty("audio_duration")]
+        int? AudioDuration { get; set; }
+    }
+
+    /// <summary>
+    /// Interface represents the voice recording parameters.
+    /// </summary>
+    public interface IResulVoice
+    {
+        /// <summary>
+        /// A valid URL for the voice recording.
+        /// </summary>
+        [JsonProperty("voice_url")]
+        string VoiceUrl { get; set; }
+
+        /// <summary>
+        /// Voice duration in seconds.
+        /// </summary>
+        [JsonProperty("voice_duration")]
+        int? VoiceDuration { get; set; }
     }
 }
