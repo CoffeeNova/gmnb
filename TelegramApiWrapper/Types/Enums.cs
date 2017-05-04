@@ -108,4 +108,17 @@ namespace CoffeeJelly.TelegramApiWrapper.Types
         [ChatAction("find_location")]
         FindLocation
     }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum MimeType
+    {
+        [EnumMember(Value = "text/html")]
+        TextHtml,
+        [EnumMember(Value = "video/mp4")]
+        VideoMp4,
+        [EnumMember(Value = "application/pdf")]
+        ApplicationPdf,
+        [EnumMember(Value = "application/zip")]
+        ApplicationZip
+    }
 }

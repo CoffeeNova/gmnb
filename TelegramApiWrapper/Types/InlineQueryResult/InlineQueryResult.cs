@@ -34,17 +34,40 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult
         }
 
         /// <summary>
-        /// Content of the message to be sent.
-        /// </summary>
-        /// <remarks>Optional.</remarks>
-        [JsonProperty("input_message_content")]
-        public IInputMessageContent InputMessageContent { get; set; }
-
-        /// <summary>
         /// <see cref="InlineKeyboardMarkup"/> attached to the message.
         /// </summary>
         /// <remarks>Optional.</remarks>
         [JsonProperty("reply_markup")]
         public InlineKeyboardMarkup ReplyMarkup { get; set; }
+    }
+
+    public abstract class InlineQueryResultContent : InlineQueryResult
+    {
+        /// <summary>
+        /// Content of the message to be sent.
+        /// </summary>
+        /// <remarks>Optional.</remarks>
+        [JsonProperty("input_message_content")]
+        public IInputMessageContent InputMessageContent { get; set; }
+    }
+
+    public abstract class InlineQueryResultCaption : InlineQueryResultContent
+    {
+        private string _caption;
+
+        /// <summary>
+        /// Optional. Caption of the GIF file to be sent, 0-200 characters
+        /// </summary>
+        [JsonProperty("caption")]
+        public string Caption
+        {
+            get { return _caption; }
+            set
+            {
+                if (value != null && value.Length.InRange(0, 200))
+                    throw new ArgumentOutOfRangeException(nameof(value), "A value should not exceed 200 characters.");
+                _caption = value;
+            }
+        }
     }
 }

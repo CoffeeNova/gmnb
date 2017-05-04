@@ -125,16 +125,16 @@
     <None Include="TestFiles\SampleVoiceMessage.json" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Token.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Token.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="TestFiles\gabba.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TestStorage\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Token.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Token.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
