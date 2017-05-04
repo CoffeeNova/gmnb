@@ -236,40 +236,16 @@
     <Compile Include="Bot\Exceptions\RevokeTokenException.cs" />
     <Compile Include="Bot\Exceptions\RefreshTokenException.cs" />
     <Compile Include="Bot\Exceptions\ExchangeException.cs" />
-    <Compile Include="Bot\Telegram\Attributes\UpdateAttribute.cs" />
-    <Compile Include="Bot\Telegram\Attributes\ActionAttribute.cs" />
-    <Compile Include="Bot\Telegram\Attributes\TelegramMethodAttribute.cs" />
     <Compile Include="Bot\Authorizer.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\UserModel.cs" />
     <Compile Include="Bot\DataBase\GmailDbContextWorker.cs" />
-    <Compile Include="Bot\Telegram\Enums.cs" />
-    <Compile Include="Bot\Telegram\Exceptions\TelegramFileDownloadException.cs" />
-    <Compile Include="Bot\Telegram\Exceptions\TelegramMessageIsUnidentifiedException.cs" />
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
     <Compile Include="Bot\GmailServiceFactory.cs" />
-    <Compile Include="Bot\Telegram\Extensions\StringExtension.cs" />
-    <Compile Include="Bot\Telegram\Extensions\IntExtension.cs" />
-    <Compile Include="Bot\Telegram\Tools.cs" />
     <Compile Include="Bot\test.cs" />
     <Compile Include="Bot\Updates.cs" />
     <Compile Include="Bot\UpdatesHandler.cs" />
     <Compile Include="Bot\IUpdates.cs" />
-    <Compile Include="Bot\Telegram\Converters\ArrayToListConverter.cs" />
-    <Compile Include="Bot\Telegram\Converters\DateTimeConverter.cs" />
-    <Compile Include="Bot\Telegram\Converters\MessageConverter.cs" />
-    <Compile Include="Bot\Telegram\Exceptions\TelegramMethodsGetMeException.cs" />
-    <Compile Include="Bot\Telegram\InlineQueryClasses.cs" />
-    <Compile Include="Bot\Telegram\Interfaces.cs" />
-    <Compile Include="Bot\Telegram\JsonParsers\GeneralBuilder.cs" />
-    <Compile Include="Bot\Telegram\JsonParsers\MessageBuilder.cs" />
-    <Compile Include="Bot\Telegram\MessageClasses.cs" />
-    <Compile Include="Bot\Telegram\GeneralClasses.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethods.DownloadFile.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethods.General.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethods.GetMethods.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethods.InlineMethods.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethods.UpdatingMessages.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -292,7 +268,6 @@
     <Compile Include="Tools.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Bot\Telegram\ToDo.Txt" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -314,8 +289,6 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Compile Include="Bot\Telegram\TelegramMethods.SendMethods.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethods.Actions.cs" />
     <EmbeddedResource Include="App_LocalResources\client_secret.json" />
     <EmbeddedResource Include="App_LocalResources\client_secret_debug.json" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />
@@ -392,6 +365,12 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TelegramApiWrapper\TelegramApiWrapper.csproj">
+      <Project>{c8fff337-c98c-4dc2-957c-5211edd3082f}</Project>
+      <Name>TelegramApiWrapper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -426,6 +405,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.0.1\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.0.1\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -433,4 +413,15 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <Target Name="BeforeBuild">
+    <Version VersionFile="Properties\version.txt" Major="1" Minor="0" BuildType="Automatic" StartDate="02/27/2017" RevisionType="BuildIncrement">
+      <Output TaskParameter="Major" PropertyName="Major" />
+      <Output TaskParameter="Minor" PropertyName="Minor" />
+      <Output TaskParameter="Build" PropertyName="Build" />
+      <Output TaskParameter="Revision" PropertyName="Revision" />
+    </Version>
+    <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\VersionInfo.cs" AssemblyVersion="$(Major).$(Minor)" AssemblyFileVersion="$(Major).$(Minor).$(Build).$(Revision)" />
+  </Target>
+  <Import Project="..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
 </Project>

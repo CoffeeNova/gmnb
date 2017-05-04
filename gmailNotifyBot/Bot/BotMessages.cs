@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
+using CoffeeJelly.TelegramApiWrapper.Types.General;
+using TelegramMethods = CoffeeJelly.TelegramApiWrapper.Methods.TelegramMethods;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
@@ -13,7 +12,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public BotMessages(string token)
         {
             _botSettings = BotSettings.Instance;
-            Debug.Assert(_botSettings == null || !_botSettings.AllSettingsAreSet(),
+            Debug.Assert(_botSettings != null && _botSettings.AllSettingsAreSet(),
                 "Set all properties at BotSettings class.");
             _telegramMethods = new TelegramMethods(token);
         }

@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Gmail.v1;
-using Google.Apis.Gmail.v1.Data;
+using CoffeeJelly.TelegramApiWrapper.Types;
+using CoffeeJelly.TelegramApiWrapper.Types.General;
+using CoffeeJelly.TelegramApiWrapper.Types.Message;
+
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot

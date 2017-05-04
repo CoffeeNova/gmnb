@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C8FFF337-C98C-4DC2-957C-5211EDD3082F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CoffeeJelly.TelegramApiWrapper</RootNamespace>
+    <AssemblyName>TelegramApiWrapper</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attributes\ActionAttribute.cs" />
+    <Compile Include="Attributes\TelegramMethodAttribute.cs" />
+    <Compile Include="Attributes\UpdateAttribute.cs" />
+    <Compile Include="Converters\ArrayToListConverter.cs" />
+    <Compile Include="Converters\DateTimeConverter.cs" />
+    <Compile Include="Converters\MessageConverter.cs" />
+    <Compile Include="Exceptions\TelegramFileDownloadException.cs" />
+    <Compile Include="Exceptions\TelegramMessageIsUnidentifiedException.cs" />
+    <Compile Include="Exceptions\TelegramMethodsGetMeException.cs" />
+    <Compile Include="Extensions\BoolExtension.cs" />
+    <Compile Include="Extensions\GeneralExtensions.cs" />
+    <Compile Include="Extensions\IntExtension.cs" />
+    <Compile Include="Extensions\StringExtension.cs" />
+    <Compile Include="JsonParsers\GeneralBuilder.cs" />
+    <Compile Include="JsonParsers\MessageBuilder.cs" />
+    <Compile Include="Methods\TelegramMethods.Actions.cs" />
+    <Compile Include="Methods\TelegramMethods.DownloadFile.cs" />
+    <Compile Include="Methods\TelegramMethods.General.cs" />
+    <Compile Include="Methods\TelegramMethods.GetMethods.cs" />
+    <Compile Include="Methods\TelegramMethods.InlineMethods.cs" />
+    <Compile Include="Methods\TelegramMethods.SendMethods.cs" />
+    <Compile Include="Methods\TelegramMethods.UpdatingMessages.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\VersionInfo.cs" />
+    <Compile Include="Tools.cs" />
+    <Compile Include="Types\Enums.cs" />
+    <Compile Include="Types\General\Animation.cs" />
+    <Compile Include="Types\General\Audio.cs" />
+    <Compile Include="Types\General\CallbackGame.cs" />
+    <Compile Include="Types\General\CallbackQuery.cs" />
+    <Compile Include="Types\General\Chat.cs" />
+    <Compile Include="Types\General\ChatMember.cs" />
+    <Compile Include="Types\General\Contact.cs" />
+    <Compile Include="Types\General\Document.cs" />
+    <Compile Include="Types\General\File.cs" />
+    <Compile Include="Types\General\ForceReply.cs" />
+    <Compile Include="Types\General\Game.cs" />
+    <Compile Include="Types\General\InlineKeyboardButton.cs" />
+    <Compile Include="Types\General\InlineKeyboardMarkup.cs" />
+    <Compile Include="Types\General\KeyboardButton.cs" />
+    <Compile Include="Types\General\Location.cs" />
+    <Compile Include="Types\General\MessageEntity.cs" />
+    <Compile Include="Types\General\PhotoSize.cs" />
+    <Compile Include="Types\General\ReplyKeyboardMarkup.cs" />
+    <Compile Include="Types\General\ReplyKeyboardRemove.cs" />
+    <Compile Include="Types\General\ResponseParameters.cs" />
+    <Compile Include="Types\General\Sticker.cs" />
+    <Compile Include="Types\General\Update.cs" />
+    <Compile Include="Types\General\User.cs" />
+    <Compile Include="Types\General\UserProfilePhotos.cs" />
+    <Compile Include="Types\General\Venue.cs" />
+    <Compile Include="Types\General\Video.cs" />
+    <Compile Include="Types\General\Voice.cs" />
+    <Compile Include="Types\InlineQuery.cs" />
+    <Compile Include="Types\InlineQueryResult\ChosenInlineResult.cs" />
+    <Compile Include="Types\InlineQueryResult\InlineQueryResult.cs" />
+    <Compile Include="Types\InlineQueryResult\InlineQueryResultArticle.cs" />
+    <Compile Include="Types\InlineQueryResult\InlineQueryResultPhoto.cs" />
+    <Compile Include="Types\InlineQueryResult\InlineQueryResultType.cs" />
+    <Compile Include="Types\InputMessageContent\InputContactMessageContent.cs" />
+    <Compile Include="Types\InputMessageContent\InputLocationMessageContent.cs" />
+    <Compile Include="Types\InputMessageContent\InputTextMessageContent.cs" />
+    <Compile Include="Types\InputMessageContent\InputVenueMessageContent.cs" />
+    <Compile Include="Types\Interfaces.cs" />
+    <Compile Include="Types\Message\.Message.cs" />
+    <Compile Include="Types\Message\AudioMessage.cs" />
+    <Compile Include="Types\Message\ContactMessage.cs" />
+    <Compile Include="Types\Message\DocumentMessage.cs" />
+    <Compile Include="Types\Message\GameMessage.cs" />
+    <Compile Include="Types\Message\LeftChatMemberMessage.cs" />
+    <Compile Include="Types\Message\LocationMessage.cs" />
+    <Compile Include="Types\Message\MigrateFromChatIdMessage.cs" />
+    <Compile Include="Types\Message\MigrateToChatIdMessage.cs" />
+    <Compile Include="Types\Message\NewChatMemberMessage.cs" />
+    <Compile Include="Types\Message\NewChatPhotoMessage.cs" />
+    <Compile Include="Types\Message\NewChatTitleMessage.cs" />
+    <Compile Include="Types\Message\PhotoMessage.cs" />
+    <Compile Include="Types\Message\PinnedMessage.cs" />
+    <Compile Include="Types\Message\ServiceMessage.cs" />
+    <Compile Include="Types\Message\StickerMessage.cs" />
+    <Compile Include="Types\Message\TextMessage.cs" />
+    <Compile Include="Types\Message\VenueMessage.cs" />
+    <Compile Include="Types\Message\VideoMessage.cs" />
+    <Compile Include="Types\Message\VoiceMessage.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ToDo.Txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <Target Name="BeforeBuild">
+    <Version VersionFile="Properties\version.txt" Major="1" Minor="0" BuildType="Automatic" StartDate="02/27/2017" RevisionType="BuildIncrement">
+      <Output TaskParameter="Major" PropertyName="Major" />
+      <Output TaskParameter="Minor" PropertyName="Minor" />
+      <Output TaskParameter="Build" PropertyName="Build" />
+      <Output TaskParameter="Revision" PropertyName="Revision" />
+    </Version>
+    <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\VersionInfo.cs" AssemblyVersion="$(Major).$(Minor)" AssemblyFileVersion="$(Major).$(Minor).$(Build).$(Revision)" />
+  </Target>
+</Project>

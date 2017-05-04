@@ -6,7 +6,7 @@
     <ProjectGuid>{1F739CEF-96E9-4046-8133-524035CCE388}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>gmailNotifyBotTests</RootNamespace>
+    <RootNamespace>CoffeeJelly.gmailNotifyBotTests</RootNamespace>
     <AssemblyName>gmailNotifyBotTests</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -59,32 +59,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Bot\GoogleAuthTests.cs" />
-    <Compile Include="Bot\MessageBuilderTests.cs" />
-    <Compile Include="Bot\Telegram\Extensions\StringExtensionTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\ForwardMessageTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\General.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\DownloadFileTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetChatMember.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetChatMemberCountTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetChatAdministratorsTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetChatTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\EditMessageTextTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetUpdatesTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\KickChatMemberTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetMeTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendChatActionTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendAudioTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendDocumentTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVenueTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendMessageTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendPhotoTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendStickerTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVideoTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendLocationTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetUserProfilePhotosTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\GetFileTests.cs" />
-    <Compile Include="Bot\Telegram\TelegramMethodsTests\SendVoiceTests.cs" />
-    <Compile Include="Bot\Telegram\ToolsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,40 +66,17 @@
       <Project>{0d123ffe-fb4a-45f0-a4c2-f8fa21b38e67}</Project>
       <Name>gmailNotifyBot</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TelegramApiWrapper\TelegramApiWrapper.csproj">
+      <Project>{C8FFF337-C98C-4DC2-957C-5211EDD3082F}</Project>
+      <Name>TelegramApiWrapper</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="AppReadme\Compare-NET-Objects-Help.chm" />
     <None Include="packages.config" />
-    <None Include="TestFiles\SampleAudioMessage.json" />
-    <None Include="TestFiles\SampleContactMessage.json" />
-    <None Include="TestFiles\SampleDocumentMessage.json" />
-    <None Include="TestFiles\SampleForwardedVideoMessage.json" />
-    <None Include="TestFiles\SampleForwardFromMessage.json" />
-    <None Include="TestFiles\SampleLeftChatMemberMessage.json" />
-    <None Include="TestFiles\SampleLocationMessage.json" />
-    <None Include="TestFiles\SampleMessage.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\SampleMigrateFromChatIdMessage.json" />
-    <None Include="TestFiles\SampleMigrateToChatIdMessage.json" />
-    <None Include="TestFiles\SampleNewChatMemberMessage.json" />
-    <None Include="TestFiles\SampleNewChatPhotoMessage.json" />
-    <None Include="TestFiles\SampleNewChatTitleMessage.json" />
-    <None Include="TestFiles\SamplePhotoMessage.json" />
-    <None Include="TestFiles\SamplePinnedMessage.json" />
-    <None Include="TestFiles\SampleReplyToMessage.json" />
-    <None Include="TestFiles\SampleStickerMessage.json" />
-    <None Include="TestFiles\SampleTextMessage.json" />
-    <None Include="TestFiles\SampleVideoMessage.json" />
-    <None Include="TestFiles\SampleVoiceMessage.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="TestFiles\gabba.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="TestStorage\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

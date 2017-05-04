@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Globalization;
-using System.ComponentModel;
-using System.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace CoffeeJelly
+namespace CoffeeJelly.gmailNotifyBot
 {
     public class CoffeeJTools
     {

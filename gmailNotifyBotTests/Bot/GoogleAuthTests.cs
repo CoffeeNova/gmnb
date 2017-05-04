@@ -1,21 +1,15 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CoffeeJelly.gmailNotifyBot.Bot;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
+namespace gmailNotifyBotTests.Bot
 {
     [TestClass()]
     public class GoogleAuthTests
     {
-        [TestMethod()]
-        public void GetTest()
-        {
-            Assert.Fail();
-        }
+        //[TestMethod()]
+        //public void GetTest()
+        //{
+        //    Assert.Fail();
+        //}
 
         [TestMethod]
         public void GetAutenticationUriTest()

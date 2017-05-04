@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using CoffeeJelly.gmailNotifyBot.Bot;
-using CoffeeJelly.gmailNotifyBot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 
 namespace CoffeeJelly.gmailNotifyBot.Controllers
 {

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
+using CoffeeJelly.TelegramApiWrapper.Types.General;
 
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase

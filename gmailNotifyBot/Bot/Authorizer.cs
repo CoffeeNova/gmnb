@@ -4,20 +4,13 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Attributes;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram.Exceptions;
-using CoffeeJelly.gmailNotifyBot.Bot.Telegram.JsonParsers;
-using CoffeeJelly.gmailNotifyBot.Extensions;
-using Google.Apis.Auth.OAuth2;
+using CoffeeJelly.TelegramApiWrapper.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
@@ -157,7 +150,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
                 var notifyAccessUri = GetAuthenticationUri(notifyAccessState, UserAccessAttribute.GetScopesValue(UserAccess.Notify));
                 var fullAccessUri = GetAuthenticationUri(fullAccessState, UserAccessAttribute.GetScopesValue(UserAccess.Full));
-                _botMessages.AuthorizeMessage(message.From.Id.ToString(), notifyAccessUri, fullAccessUri);
+                await _botMessages.AuthorizeMessage(message.From.Id.ToString(), notifyAccessUri, fullAccessUri);
             }
             catch (Exception ex)
             {
@@ -171,8 +164,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return false;
         }
 
+#pragma warning disable 4014
         private void Authorizer_AuthorizeRequestEvent(string code, string state, string error)
         {
+
             long id;
             string access;
             if (!RestoreState(state, out id, out access))
@@ -234,6 +229,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     gmailDbContextWorker.RemoveFromQueue(pendingUserModel);
             }
         }
+#pragma warning enable 4014
 
         private static bool RestoreState(string state, out long id, out string access)
         {

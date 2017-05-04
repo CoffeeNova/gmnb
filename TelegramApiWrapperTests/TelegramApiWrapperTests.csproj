@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BECEA582-EEAE-4D9C-BEB5-EC1759B67442}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CoffeeJelly.TelegramApiWrapperTests</RootNamespace>
+    <AssemblyName>TelegramApiWrapperTests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="KellermanSoftware.Compare-NET-Objects, Version=3.6.0.0, Culture=neutral, PublicKeyToken=d970ace04cc85217, processorArchitecture=MSIL">
+      <HintPath>..\packages\CompareNETObjects.3.06.0.0\lib\net46\KellermanSoftware.Compare-NET-Objects.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="Extensions\StringExtensionTests.cs" />
+    <Compile Include="JsonParsers\MessageBuilderTests.cs" />
+    <Compile Include="Methods\DownloadFileTests.cs" />
+    <Compile Include="Methods\EditMessageTextTests.cs" />
+    <Compile Include="Methods\ForwardMessageTests.cs" />
+    <Compile Include="Methods\General.cs" />
+    <Compile Include="Methods\GetChatAdministratorsTests.cs" />
+    <Compile Include="Methods\GetChatMember.cs" />
+    <Compile Include="Methods\GetChatMemberCountTests.cs" />
+    <Compile Include="Methods\GetChatTests.cs" />
+    <Compile Include="Methods\GetFileTests.cs" />
+    <Compile Include="Methods\GetMeTests.cs" />
+    <Compile Include="Methods\GetUpdatesTests.cs" />
+    <Compile Include="Methods\GetUserProfilePhotosTests.cs" />
+    <Compile Include="Methods\KickChatMemberTests.cs" />
+    <Compile Include="Methods\SendAudioTests.cs" />
+    <Compile Include="Methods\SendChatActionTests.cs" />
+    <Compile Include="Methods\SendDocumentTests.cs" />
+    <Compile Include="Methods\SendLocationTests.cs" />
+    <Compile Include="Methods\SendMessageTests.cs" />
+    <Compile Include="Methods\SendPhotoTests.cs" />
+    <Compile Include="Methods\SendStickerTests.cs" />
+    <Compile Include="Methods\SendVenueTests.cs" />
+    <Compile Include="Methods\SendVideoTests.cs" />
+    <Compile Include="Methods\SendVoiceTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Token.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Token.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ToolsTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TelegramApiWrapper\TelegramApiWrapper.csproj">
+      <Project>{C8FFF337-C98C-4DC2-957C-5211EDD3082F}</Project>
+      <Name>TelegramApiWrapper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AppReadme\Compare-NET-Objects-Help.chm" />
+    <None Include="packages.config" />
+    <None Include="TestFiles\SampleAudioMessage.json" />
+    <None Include="TestFiles\SampleContactMessage.json" />
+    <None Include="TestFiles\SampleDocumentMessage.json" />
+    <None Include="TestFiles\SampleForwardedVideoMessage.json" />
+    <None Include="TestFiles\SampleForwardFromMessage.json" />
+    <None Include="TestFiles\SampleLeftChatMemberMessage.json" />
+    <None Include="TestFiles\SampleLocationMessage.json" />
+    <None Include="TestFiles\SampleMessage.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\SampleMigrateFromChatIdMessage.json" />
+    <None Include="TestFiles\SampleMigrateToChatIdMessage.json" />
+    <None Include="TestFiles\SampleNewChatMemberMessage.json" />
+    <None Include="TestFiles\SampleNewChatPhotoMessage.json" />
+    <None Include="TestFiles\SampleNewChatTitleMessage.json" />
+    <None Include="TestFiles\SamplePhotoMessage.json" />
+    <None Include="TestFiles\SamplePinnedMessage.json" />
+    <None Include="TestFiles\SampleReplyToMessage.json" />
+    <None Include="TestFiles\SampleStickerMessage.json" />
+    <None Include="TestFiles\SampleTextMessage.json" />
+    <None Include="TestFiles\SampleVideoMessage.json" />
+    <None Include="TestFiles\SampleVoiceMessage.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Token.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Token.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestFiles\gabba.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TestStorage\" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

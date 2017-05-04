@@ -22,10 +22,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         }
 
+        private BotSettings()
+        {
+            
+        }
         public bool AllSettingsAreSet()
         {
-            var propertiesInfo = this.GetType().GetProperties(BindingFlags.Public);
-            return propertiesInfo.All(p => p.GetValue(null) != null);
+            var propertiesInfo = this.GetType().GetProperties(BindingFlags.Instance |  BindingFlags.Public);
+            return propertiesInfo.All(p => p.GetValue(this) != null);
         }
 
         private static readonly object _locker = new object();
