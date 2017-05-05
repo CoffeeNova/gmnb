@@ -1,4 +1,4 @@
-﻿using CoffeeJelly.TelegramApiWrapper.Types.Message;
+﻿using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using KellermanSoftware.CompareNetObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

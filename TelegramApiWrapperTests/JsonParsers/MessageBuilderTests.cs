@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using CoffeeJelly.TelegramApiWrapper.Types;
 using CoffeeJelly.TelegramApiWrapper.Types.General;
-using CoffeeJelly.TelegramApiWrapper.Types.Message;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using KellermanSoftware.CompareNetObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;

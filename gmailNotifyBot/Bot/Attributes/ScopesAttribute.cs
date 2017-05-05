@@ -19,7 +19,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Attributes
         public static List<string> GetScopesValue(string userAccess)
         {
             if(string.IsNullOrEmpty(userAccess))
-                throw new ArgumentNullException(nameof(userAccess), "Should have a value.");
+                throw new ArgumentNullException(nameof(userAccess), "Must have a value.");
 
             var type = typeof(UserAccess);
             var fieldInfoArr = type.GetFields();

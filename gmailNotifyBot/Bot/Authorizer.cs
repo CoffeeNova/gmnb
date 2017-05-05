@@ -24,10 +24,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             updatesHandler.NullInspect(nameof(updatesHandler));
             clientSecret.NullInspect(nameof(clientSecret));
 
-            // _updatesHandler = updatesHandler;
-            // _updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
             ClientSecret = clientSecret;
-            _botMessages = new BotMessages(token);
+            _botMessages = new BotActions(token);
             AuthorizeRequestEvent += Authorizer_AuthorizeRequestEvent;
         }
 
@@ -69,9 +67,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             try
             {
-                //var gmailDbContextWorker = new GmailDbContextWorker();
-                //var userModel = await gmailDbContextWorker.FindUserAsync(userId);
-
                 var parameters = new NameValueCollection
                 {
                     {"refresh_token", userModel.RefreshToken},
@@ -110,7 +105,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
                     var byteResult = await webClient.UploadValuesTaskAsync(GoogleOAuthTokenEndpoint, "POST", parameters);
                     var strResult = webClient.Encoding.GetString(byteResult);
-                    throw new NotImplementedException("define responce status code, should be 200 and return true.");
+                    throw new NotImplementedException("define responce status code, must be 200 and return true.");
                     if (true)
                     {
                         userModel.RefreshToken = "";
@@ -307,7 +302,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private static readonly string GoogleOAuthRevokeTokenEndpoint = @"https://accounts.google.com/o/oauth2/revoke";
         private static readonly object _locker = new object();
         private const int MaxPendingMinutes = 5;
-        private readonly BotMessages _botMessages;
+        private readonly BotActions _botMessages;
 
         public static Authorizer Instance { get; private set; }
 

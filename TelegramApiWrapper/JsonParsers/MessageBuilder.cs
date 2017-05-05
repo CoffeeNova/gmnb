@@ -2,7 +2,7 @@
 using System.Linq;
 using CoffeeJelly.TelegramApiWrapper.Exceptions;
 using CoffeeJelly.TelegramApiWrapper.Extensions;
-using CoffeeJelly.TelegramApiWrapper.Types.Message;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

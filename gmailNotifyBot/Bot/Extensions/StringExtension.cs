@@ -47,7 +47,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
             if (str == null)
                 throw new ArgumentNullException(nameof(str));
             if (str == string.Empty)
-                throw new ArgumentException($"{nameof(str)} should not be empty.");
+                throw new ArgumentException($"{nameof(str)} must not be empty.");
 
             str.PathFormatter();
             var splittedStr = str.Split('\\');

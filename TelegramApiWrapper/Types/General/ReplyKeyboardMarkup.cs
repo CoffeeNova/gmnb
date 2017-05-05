@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using CoffeeJelly.TelegramApiWrapper.Converters;
-using CoffeeJelly.TelegramApiWrapper.Types.Message;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramApiWrapper.Types.General

@@ -88,7 +88,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Methods
             return JsonConvert.DeserializeObject<bool>(result);
         }
 
-        public Task<bool> answerCallbackQueryAsync(string callbackQueryId, string text = null, bool? showAlert = null, string url = null, int? cacheTime = null)
+        public Task<bool> AnswerCallbackQueryAsync(string callbackQueryId, string text = null, bool? showAlert = null, string url = null, int? cacheTime = null)
         {
             callbackQueryId.NullInspect(nameof(callbackQueryId));
             return Task.Run(() => AnswerCallbackQuery(callbackQueryId, text, showAlert, url, cacheTime));

@@ -84,6 +84,7 @@
     <Compile Include="Methods\SendVenueTests.cs" />
     <Compile Include="Methods\SendVideoTests.cs" />
     <Compile Include="Methods\SendVoiceTests.cs" />
+    <Compile Include="Methods\AnswerInlineQueryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Token.Designer.cs">
       <AutoGen>True</AutoGen>

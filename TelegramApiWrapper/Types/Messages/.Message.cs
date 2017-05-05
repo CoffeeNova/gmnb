@@ -3,7 +3,7 @@ using CoffeeJelly.TelegramApiWrapper.Converters;
 using CoffeeJelly.TelegramApiWrapper.Types.General;
 using Newtonsoft.Json;
 
-namespace CoffeeJelly.TelegramApiWrapper.Types.Message
+namespace CoffeeJelly.TelegramApiWrapper.Types.Messages
 {
     /// <summary>
     /// A class which represents the general Telegram message.
@@ -66,13 +66,5 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.Message
         [JsonConverter(typeof(DateTimeConverter))]
         [JsonProperty("edit_date")]
         public DateTime? EditDate { get; set; }
-    }
-
-    /// <summary>
-    /// Temprory class for unknown Telegram message.
-    /// </summary>
-    public class UnknownMessage : Message
-    {
-
     }
 }

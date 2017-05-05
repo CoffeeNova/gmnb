@@ -220,7 +220,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Bot\Attributes\ScopesAttribute.cs" />
     <Compile Include="Bot\Base64.cs" />
-    <Compile Include="Bot\BotMessages.cs" />
+    <Compile Include="Bot\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
     <Compile Include="Bot\ClientSecret.cs" />
     <Compile Include="Bot\CommandHandler.cs" />

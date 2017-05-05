@@ -1,4 +1,5 @@
 ﻿using CoffeeJelly.TelegramApiWrapper.Converters;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramApiWrapper.Types.General
@@ -31,7 +32,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.General
         /// </remarks>
         [JsonConverter(typeof(MessageConverter))]
         [JsonProperty("message")]
-        public Message.Message Message { get; set; }
+        public Message Message { get; set; }
 
         /// <summary>
         /// Optional. Identifier of the message sent via the bot in inline mode, that originated the query.

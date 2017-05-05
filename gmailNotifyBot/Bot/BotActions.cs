@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using CoffeeJelly.TelegramApiWrapper.Types.General;
+using CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult;
+using CoffeeJelly.TelegramApiWrapper.Types.InputMessageContent;
 using TelegramMethods = CoffeeJelly.TelegramApiWrapper.Methods.TelegramMethods;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
-    internal class BotMessages
+    internal class BotActions
     {
-        public BotMessages(string token)
+        public BotActions(string token)
         {
             _botSettings = BotSettings.Instance;
             Debug.Assert(_botSettings != null && _botSettings.AllSettingsAreSet(),
@@ -106,14 +108,35 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.SendMessageAsync(userId, $"@{_botSettings.Username} Inbox:");
         }
 
-        public async Task InboxAnswerInlineQuery(string userId)
+        public async Task InboxAnswerInlineQuery(string userId, List<FormattedGmailMessage> messages)
         {
-            //await _telegramMethods.AnswerInlineQuery(userId, )
+            var inlineQueryResults = new List<InlineQueryResult>();
+            foreach (var message in messages)
+            {
+                inlineQueryResults.Add(new InlineQueryResultArticle
+                {
+                    Id = message.Id,//Base64.Encode("Inbox:" + message.Id),
+                    Title = $"From: {message.Sender} <{message.Date}> /r/n {message.Subject}",
+                    Description = message.Snippet,
+                    InputMessageContent = new InputTextMessageContent
+                    {
+                        MessageText = "Message:"
+                    }
+                });
+            }
+            await _telegramMethods.AnswerInlineQueryAsync(userId, inlineQueryResults, 30, true, "5");
+        }
+
+        public async Task EditProceedMessage(string chatId, string messageId)
+        {
+            await _telegramMethods.EditMessageTextAsync("Success", chatId, messageId);
         }
 
         private readonly TelegramMethods _telegramMethods;
         private BotSettings _botSettings;
     }
+
+
 
     public static class Emoji
     {

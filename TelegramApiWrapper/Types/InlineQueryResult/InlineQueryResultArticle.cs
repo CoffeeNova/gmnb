@@ -50,6 +50,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult
         /// <summary>
         /// Thumbnail width.
         /// </summary>
+        ///<remarks>Optional.</remarks>
         [JsonProperty("thumb_width")]
         public int? ThumbWidth { get; set; }
 

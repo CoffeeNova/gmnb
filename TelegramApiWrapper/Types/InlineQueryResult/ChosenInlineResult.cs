@@ -6,7 +6,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult
     /// <summary>
     /// Represents a result of an inline query that was chosen by the user and sent to their chat partner.
     /// </summary>
-    public class ChosenInlineResult
+    public class ChosenInlineResult : ISender
     {
         /// <summary>
         /// The unique identifier for the result that was chosen.
