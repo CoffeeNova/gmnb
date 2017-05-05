@@ -8,7 +8,7 @@ using CoffeeJelly.TelegramApiWrapper.Extensions;
 using CoffeeJelly.TelegramApiWrapper.Methods;
 using CoffeeJelly.TelegramApiWrapper.Types;
 using CoffeeJelly.TelegramApiWrapper.Types.General;
-using CoffeeJelly.TelegramApiWrapper.Types.Message;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using KellermanSoftware.CompareNetObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using File = CoffeeJelly.TelegramApiWrapper.Types.General.File;
@@ -259,7 +259,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Methods.Tests
                     _editedTextMessage =
                         _telegramMethods.EditMessageText(
                             $"Message Edited By {nameof(GetUpdates_EditedMessagesOnly_ListOfOneUpdate)}",
-                            _privateChat.Id.ToString(), _textMessage.MessageId);
+                            _privateChat.Id.ToString(), _textMessage.MessageId.ToString());
                     //Thread.Sleep(2000);
                     break;
             }

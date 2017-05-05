@@ -26,7 +26,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
             long userId;
             if (!long.TryParse(key, out userId))
-                throw new ArgumentException("Wrong key, it should be an User Id number.", key);
+                throw new ArgumentException("Wrong key, it must be an User Id number.", key);
 
             var userModel = await dbWorker.FindUserAsync(userId);
             if (userModel == null)

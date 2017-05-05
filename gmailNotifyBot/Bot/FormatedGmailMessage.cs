@@ -20,6 +20,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (message?.Payload == null)
                 throw new FormattedGmailMessageException($"{nameof(message.Payload)}");
 
+            Id = message.Id;
+            ThreadId = message.ThreadId;
             Snippet = message.Snippet;
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
             if (messagePartHeader != null)
@@ -70,6 +72,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             htmlDoc.LoadHtml(html);
             return htmlDoc.DocumentNode.InnerText;
         }
+
+        public string Id { get; set; }
+
+        public string ThreadId { get; set; }
 
         public string Snippet { get; private set; }
 

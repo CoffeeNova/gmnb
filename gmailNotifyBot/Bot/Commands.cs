@@ -14,5 +14,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string NEW_COMMAND = @"/new";
         public const string INBOX_COMMAND = @"/inbox";
         public const string INBOX_INLINE_QUERY_COMMAND = "Inbox:";
+        //public const string PROCEED_EDIT_MESSAGE_COMMAND = "Proceed.. Please wait.";
     }
 }

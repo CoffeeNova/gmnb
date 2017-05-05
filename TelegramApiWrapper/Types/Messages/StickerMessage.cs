@@ -1,7 +1,7 @@
 ﻿using CoffeeJelly.TelegramApiWrapper.Types.General;
 using Newtonsoft.Json;
 
-namespace CoffeeJelly.TelegramApiWrapper.Types.Message
+namespace CoffeeJelly.TelegramApiWrapper.Types.Messages
 {
     /// <summary>
     /// A class which represents the Telegram sticker message.

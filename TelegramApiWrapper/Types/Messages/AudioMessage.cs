@@ -3,19 +3,19 @@ using CoffeeJelly.TelegramApiWrapper.Extensions;
 using CoffeeJelly.TelegramApiWrapper.Types.General;
 using Newtonsoft.Json;
 
-namespace CoffeeJelly.TelegramApiWrapper.Types.Message
+namespace CoffeeJelly.TelegramApiWrapper.Types.Messages
 {
     /// <summary>
-    /// A class which represents the Telegram document message.
+    /// A class which represents the Telegram audio message.
     /// </summary>
-    public class DocumentMessage : Message, IDocumentMessage
+    public class AudioMessage : Message, IAudioMessage
     {
         /// <summary>
-        /// Information about general file.
+        /// Information about the audio file.
         /// </summary>
         /// <remarks>Optional.</remarks>
-        [JsonProperty("document")]
-        public Document Document { get; set; }
+        [JsonProperty("audio")]
+        public Audio Audio { get; set; }
 
         private string _caption;
 

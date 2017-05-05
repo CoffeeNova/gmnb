@@ -14,7 +14,7 @@ using CoffeeJelly.TelegramApiWrapper.Extensions;
 using CoffeeJelly.TelegramApiWrapper.JsonParsers;
 using CoffeeJelly.TelegramApiWrapper.Types;
 using CoffeeJelly.TelegramApiWrapper.Types.General;
-using CoffeeJelly.TelegramApiWrapper.Types.Message;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -141,13 +141,13 @@ namespace CoffeeJelly.TelegramApiWrapper.Methods
             }
         }
 
-        private void UpdateMethodsDefaultContent(NameValueCollection collection, string chatId = null, int? messageId = null,
+        private void UpdateMethodsDefaultContent(NameValueCollection collection, string chatId = null, string messageId = null,
                                                  string inlineMessageId = null, IMarkup replyMarkup = null)
         {
             if (chatId != null)
                 collection.Add("chat_id", chatId);
             if (messageId != null)
-                collection.Add("message_id", messageId.ToString());
+                collection.Add("message_id", messageId);
             if (inlineMessageId != null)
                 collection.Add("inline_message_id", inlineMessageId);
             if (replyMarkup != null)

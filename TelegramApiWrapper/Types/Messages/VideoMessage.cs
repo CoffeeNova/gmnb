@@ -3,24 +3,24 @@ using CoffeeJelly.TelegramApiWrapper.Extensions;
 using CoffeeJelly.TelegramApiWrapper.Types.General;
 using Newtonsoft.Json;
 
-namespace CoffeeJelly.TelegramApiWrapper.Types.Message
+namespace CoffeeJelly.TelegramApiWrapper.Types.Messages
 {
     /// <summary>
-    /// A class which represents the Telegram audio message.
+    /// A class which represents the Telegram video message.
     /// </summary>
-    public class AudioMessage : Message, IAudioMessage
+    public class VideoMessage : Message, IVideoMessage
     {
         /// <summary>
-        /// Information about the audio file.
+        /// Information about the video.
         /// </summary>
         /// <remarks>Optional.</remarks>
-        [JsonProperty("audio")]
-        public Audio Audio { get; set; }
+        [JsonProperty("video")]
+        public Video Video { get; set; }
 
         private string _caption;
 
         /// <summary>
-        /// Caption for the document, 0-200 characters.
+        /// Caption for the video, 0-200 characters.
         /// </summary>
         /// <remarks>Optional.</remarks>
         [JsonProperty("caption")]

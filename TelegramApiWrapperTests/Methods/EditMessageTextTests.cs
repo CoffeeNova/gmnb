@@ -10,7 +10,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Methods.Tests
         {
             var expected = _textMessage;
             var actual =
-                _telegramMethods.EditMessageText(_editedTextMessage.Text, _editedTextMessage.Chat.Id.ToString(), _editedTextMessage.MessageId);
+                _telegramMethods.EditMessageText(_editedTextMessage.Text, _editedTextMessage.Chat.Id.ToString(), _editedTextMessage.MessageId.ToString());
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 

@@ -1,6 +1,6 @@
 ﻿using CoffeeJelly.TelegramApiWrapper.Converters;
 using CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult;
-using CoffeeJelly.TelegramApiWrapper.Types.Message;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramApiWrapper.Types.General
@@ -27,7 +27,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.General
         /// <remarks>Optional.</remarks>
         [JsonProperty("message")]
         [JsonConverter(typeof(MessageConverter))]
-        public Message.Message Message { get; set; }
+        public Message Message { get; set; }
 
         /// <summary>
         /// New version of a message that is known to the bot and was edited.
@@ -35,7 +35,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.General
         /// <remarks>Optional.</remarks>
         [JsonProperty("edited_message")]
         [JsonConverter(typeof(MessageConverter))]
-        public Message.Message EditedMessage { get; set; }
+        public Message EditedMessage { get; set; }
 
         /// <summary>
         /// New incoming channel post of any kind — <see cref="TextMessage"/>, <see cref="PhotoMessage"/>, <see cref="StickerMessage"/>, etc.
@@ -43,7 +43,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.General
         /// <remarks>Optional.</remarks>
         [JsonProperty("channel_post")]
         [JsonConverter(typeof(MessageConverter))]
-        public Message.Message ChannelPost { get; set; }
+        public Message ChannelPost { get; set; }
 
         /// <summary>
         /// New version of a channel post that is known to the bot and was edited.
@@ -51,7 +51,7 @@ namespace CoffeeJelly.TelegramApiWrapper.Types.General
         /// <remarks>Optional.</remarks>
         [JsonProperty("edited_channel_post")]
         [JsonConverter(typeof(MessageConverter))]
-        public Message.Message EditedChannelPost { get; set; }
+        public Message EditedChannelPost { get; set; }
 
         /// <summary>
         /// New incoming inline query.

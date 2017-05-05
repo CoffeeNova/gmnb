@@ -7,8 +7,9 @@ using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.TelegramApiWrapper.Types;
 using CoffeeJelly.TelegramApiWrapper.Types.General;
-using CoffeeJelly.TelegramApiWrapper.Types.Message;
-
+using CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
+using Google.Apis.Gmail.v1;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
@@ -20,7 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             updatesHandler.NullInspect(nameof(updatesHandler));
             clientSecret.NullInspect(nameof(clientSecret));
 
-            _botMessages = new BotMessages(token);
+            _botActions = new BotActions(token);
 
             _authorizer = Authorizer.GetInstance(token, updatesHandler, clientSecret);
             _updatesHandler = updatesHandler;
@@ -28,6 +29,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             _updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
             _updatesHandler.TelegramCallbackQueryEvent += _updatesHandler_TelegramCallbackQueryEvent;
             _updatesHandler.TelegramInlineQueryEvent += _updatesHandler_TelegramInlineQueryEvent;
+            _updatesHandler.TelegramChosenInlineEvent += _updatesHandler_TelegramChosenInlineEvent;
         }
 
         public static CommandHandler GetInstance(string token, UpdatesHandler updatesHandler, Secrets clientSecret)
@@ -63,11 +65,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 catch (CommandHandlerException ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    await _botMessages.WrongCredentialsMessage(message.From);
+                    await _botActions.WrongCredentialsMessage(message.From);
                 }
                 catch (Exception ex)
                 {
-                    Debug.Assert(false, $"Exception is not impemented yet.");
+                    LogMaker.Log(Logger, ex);
+                    Debug.Assert(false, $"Message to chat abou exeption");
                     // throw new AuthorizeException("An error occurred while trying to send the authentication link to the user", ex);
                 }
             }
@@ -79,8 +82,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                     await HandleTestMessageCommand(message);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    LogMaker.Log(Logger, ex);
+                    Debug.Assert(false, $"Message to chat abou exeption");
                 }
             }
             #region connect
@@ -94,6 +99,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 catch (AuthorizeException ex)
                 {
                     LogMaker.Log(Logger, ex);
+                    Debug.Assert(false, $"Message to chat abou exeption");
+
                 }
             }
             #endregion
@@ -104,11 +111,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                     await HandleGetInboxMessagesCommand(message);
                 }
-                catch
+                catch (Exception ex)
                 {
-
+                    LogMaker.Log(Logger, ex);
+                    Debug.Assert(false, $"Message to chat abou exeption");
                 }
             }
+            #region system delete message
+            //if (message.Text == Commands.PROCEED_EDIT_MESSAGE_COMMAND)
+            //{
+            //    logCommandRecieved(Commands.PROCEED_EDIT_MESSAGE_COMMAND);
+            //    try
+            //    {
+            //        await _botActions.EditProceedMessage(message.Chat.Id.ToString(), message.MessageId.ToString());
+            //    }
+            //    catch(Exception ex)
+            //    {
+            //        LogMaker.Log(Logger, ex);
+            //    }
+            //}
+            #endregion
 
         }
 
@@ -128,6 +150,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 catch (AuthorizeException ex)
                 {
                     LogMaker.Log(Logger, ex);
+                    Debug.Assert(false, $"Message to chat about exeption");
                 }
             }
         }
@@ -145,13 +168,36 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                     await HandleInboxInlineQueryCommand(inlineQuery);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    
+                    LogMaker.Log(Logger, ex);
+                    Debug.Assert(false, $"Message to chat about exeption");
                 }
             }
         }
 
+        private async void _updatesHandler_TelegramChosenInlineEvent(ChosenInlineResult chosenInlineResult)
+        {
+            if (chosenInlineResult?.Query == null)
+                throw new ArgumentNullException(nameof(chosenInlineResult), $"{nameof(chosenInlineResult.Query)} must not be a null.");
+            if (chosenInlineResult.ResultId == null)
+                throw new ArgumentNullException(nameof(chosenInlineResult), $"{nameof(chosenInlineResult.ResultId)} must not be a null.");
+
+            var logCommandRecieved = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)chosenInlineResult.From}", false));
+            if (chosenInlineResult.Query == Commands.INBOX_INLINE_QUERY_COMMAND)
+            {
+                logCommandRecieved(Commands.INBOX_INLINE_QUERY_COMMAND);
+                try
+                {
+                    await HandleInboxChosenInineResult(chosenInlineResult);
+                }
+                catch (Exception ex)
+                {
+                    LogMaker.Log(Logger, ex);
+                    Debug.Assert(false, $"Message to chat about exeption");
+                }
+            }
+        }
 
         private Service SearchServiceByUserId(string userId)
         {
@@ -167,7 +213,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var service = SearchServiceByUserId(sender.From);
             var query = service.Oauth2Service.Userinfo.Get();
             var userinfo = await query.ExecuteAsync();
-            await _botMessages.EmailAddressMessage(sender.From, userinfo.Name);
+            await _botActions.EmailAddressMessage(sender.From, userinfo.Name);
         }
 
         private async Task HandleTestMessageCommand(ISender sender)
@@ -191,10 +237,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private async Task HandleGetInboxMessagesCommand(ISender sender)
         {
-            await _botMessages.GmailInlineCommandMessage(sender.From);
+            await _botActions.GmailInlineCommandMessage(sender.From);
         }
 
-        private async Task HandleInboxInlineQueryCommand(ISender sender)
+        private async Task HandleInboxInlineQueryCommand(InlineQuery sender)
         {
             var service = SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Messages.List("me");
@@ -202,19 +248,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var listMessagesResponce = await query.ExecuteAsync();
             if (listMessagesResponce?.Messages == null || listMessagesResponce.Messages.Count == 0)
             {
-                await _botMessages.EmptyInboxMessage(sender.From);
+                await _botActions.EmptyInboxMessage(sender.From);
                 return;
             }
 
             var formatedMessages = new List<FormattedGmailMessage>();
-            foreach (var message in listMessagesResponce.Messages)
+            foreach (var message in listMessagesResponce.Messages.Take(5))
             {
                 var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
+                mailInfoRequest.Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Metadata;
                 var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
                 if (mailInfoResponce == null) continue;
                 formatedMessages.Add(new FormattedGmailMessage(mailInfoResponce));
             }
-            await _botMessages.InboxAnswerInlineQuery(sender.From);
+            await _botActions.InboxAnswerInlineQuery(sender.Id, formatedMessages);
+        }
+
+        private async Task HandleInboxChosenInineResult(ChosenInlineResult chosenInlineResult)
+        {
+            var messageId = chosenInlineResult.ResultId;
+            var service = SearchServiceByUserId(chosenInlineResult.From);
+            var query = service.GmailService.Users.Messages.Get("me", messageId);
+            var messageResponce = await query.ExecuteAsync();
+            var formattedMessage = new FormattedGmailMessage(messageResponce);
+
+            //await _botActions.InboxAnswerInlineQuery(sender.Id, formatedMessages);
         }
 
         private void PrepareMessage(ref string message)
@@ -227,7 +285,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private UpdatesHandler _updatesHandler;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly object _locker = new object();
-        private BotMessages _botMessages;
+        private BotActions _botActions;
         private Authorizer _authorizer;
 
         public static CommandHandler Instance { get; private set; }

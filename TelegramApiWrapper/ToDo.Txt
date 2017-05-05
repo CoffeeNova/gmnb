@@ -1,3 +1,5 @@
-﻿1. Add Requared JsonPropertyAttribute to all telegram types.
+﻿+ 1. Add Requared JsonPropertyAttribute to all telegram types.
 2. Realese cyclical update telegram server and webhook in library.
-3. Sort Telegram types to different files.
++ 3. Sort Telegram types to different files.
+4. Tests for AnswerInlineQuery, AnswerInlineQueryAsync and Update methods.
+5. Documentation for all telegram methods.

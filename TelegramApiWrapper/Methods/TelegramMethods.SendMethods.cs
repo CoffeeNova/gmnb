@@ -8,7 +8,7 @@ using CoffeeJelly.TelegramApiWrapper.Attributes;
 using CoffeeJelly.TelegramApiWrapper.Extensions;
 using CoffeeJelly.TelegramApiWrapper.JsonParsers;
 using CoffeeJelly.TelegramApiWrapper.Types;
-using CoffeeJelly.TelegramApiWrapper.Types.Message;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramApiWrapper.Methods

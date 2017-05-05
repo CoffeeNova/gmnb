@@ -1,6 +1,7 @@
 ﻿using CoffeeJelly.TelegramApiWrapper.Types;
 using CoffeeJelly.TelegramApiWrapper.Types.General;
-using CoffeeJelly.TelegramApiWrapper.Types.Message;
+using CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult;
+using CoffeeJelly.TelegramApiWrapper.Types.Messages;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
@@ -21,10 +22,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private void RequestsArrivedEvent(IUpdates updates)
         {
             foreach (var update in updates.UpdatesList)
+            {
                 TryRaiseNewMessageEvent(update.Message);
+                TryRaiseNewCallbackQueryEvent(update.CallbackQuery);
+                TryRaiseNewInlineQueryEvent(update.InlineQuery);
+                TryRaiseNewChosenInlineResult(update.ChosenInlineResult);
+            }
         }
 
-        private void TryRaiseNewMessageEvent(ISender sender)
+        private void TryRaiseNewMessageEvent(Message sender)
         {
             if (sender == null) return;
 
@@ -88,16 +94,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             else if (dSender.GetType() == typeof(UnknownMessage))
                 TelegramUnknownMessageEvent?.Invoke(dSender);
             #endregion
+        }
 
-            #region raising CallbackQuery event
-            if (dSender.GetType() == typeof(CallbackQuery))
-                TelegramCallbackQueryEvent?.Invoke(dSender);
-            #endregion
+        private void TryRaiseNewCallbackQueryEvent(CallbackQuery sender)
+        {
+            if (sender == null) return;
+            TelegramCallbackQueryEvent?.Invoke(sender);
+        }
 
-            #region raising InlineQuery event
-            if (dSender.GetType() == typeof(InlineQuery))
-                TelegramInlineQueryEvent?.Invoke(dSender);
-            #endregion
+        private void TryRaiseNewInlineQueryEvent(InlineQuery sender)
+        {
+            if (sender == null) return;
+            TelegramInlineQueryEvent?.Invoke(sender);
+        }
+
+        private void TryRaiseNewChosenInlineResult(ChosenInlineResult sender)
+        {
+            if (sender == null) return;
+            TelegramChosenInlineEvent?.Invoke(sender);
         }
 
         public void StopHandleUpdates()
@@ -115,7 +129,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
 
         #region events
-        public delegate void TelegramSenderEventHandler<in T>(T sender) where T: ISender;
+        public delegate void TelegramSenderEventHandler<in T>(T sender) where T : ISender;
 
         public event TelegramSenderEventHandler<TextMessage> TelegramTextMessageEvent;
         public event TelegramSenderEventHandler<AudioMessage> TelegramAudioMessageEvent;
@@ -138,6 +152,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public event TelegramSenderEventHandler<UnknownMessage> TelegramUnknownMessageEvent;
         public event TelegramSenderEventHandler<CallbackQuery> TelegramCallbackQueryEvent;
         public event TelegramSenderEventHandler<InlineQuery> TelegramInlineQueryEvent;
+        public event TelegramSenderEventHandler<ChosenInlineResult> TelegramChosenInlineEvent;
         #endregion
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
