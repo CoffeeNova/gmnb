@@ -28,7 +28,12 @@ namespace CoffeeJelly.gmailNotifyBot.Models
             {
                 MailNotification = false,
                 UserId = 1,
-                Access = UserAccess.Full
+                Access = UserAccess.Full,
+                IgnoreList = new List<string>
+                {
+                 "testadr1@gmail.com",   
+                 "testadr2@gmail.com"
+                }
             });
             base.Seed(db);
         }
