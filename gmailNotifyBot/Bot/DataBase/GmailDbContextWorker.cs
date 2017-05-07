@@ -195,5 +195,94 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             return Task.Run(() => GetAllUsers());
         }
+
+        public void AddToIgnoreList(long userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var query = db.UserSettings.FirstOrDefault(a => a.UserId == userId);
+                if (query == null) return;
+
+                query.IgnoreList.Add(address);
+                db.SaveChanges();
+            }
+        }
+
+        public async Task AddToIgnoreListAsync(long userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var query = await db.UserSettings.FirstOrDefaultAsync(a => a.UserId == userId);
+                if (query == null) return;
+
+                query.IgnoreList.Add(address);
+                await db.SaveChangesAsync();
+            }
+        }
+
+        public Task AddToIgnoreListAsyncTest(long userId, string address)
+        {
+            return Task.Run(() => AddToIgnoreList(userId, address));
+        }
+
+        public void RemoveFromIgnoreList(long userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var query = db.UserSettings.FirstOrDefault(a => a.UserId == userId);
+                if (query == null) return;
+
+                var removed = query.IgnoreList.Remove(address);
+                if (removed)
+                    db.SaveChanges();
+            }
+        }
+
+        public async Task RemoveFromIgnoreListAsync(long userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var query = await db.UserSettings.FirstOrDefaultAsync(a => a.UserId == userId);
+                if (query == null) return;
+
+                var removed = query.IgnoreList.Remove(address);
+                if (removed)
+                    await db.SaveChangesAsync();
+            }
+        }
+
+        public bool IsPresentInIgnoreList(long userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var query = db.UserSettings.FirstOrDefault(a => a.UserId == userId);
+                if (query == null) return false;
+
+                return query.IgnoreList.Any(a => a == address);
+            }
+        }
+
+        public async Task<bool> IsPresentInIgnoreListAsync(long userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var query = await db.UserSettings.FirstOrDefaultAsync(a => a.UserId == userId);
+                if (query == null) return false ;
+
+                return query.IgnoreList.Any(a => a == address);
+            }
+        }
     }
 }

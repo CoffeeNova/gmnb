@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using Google.Apis.Gmail.v1.Data;
 using HtmlAgilityPack;
 
+[assembly: InternalsVisibleTo("gmailNotifyBotTests")]
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
     internal sealed class FormattedGmailMessage
@@ -23,19 +25,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             Id = message.Id;
             ThreadId = message.ThreadId;
             Snippet = message.Snippet;
+            LabelIds = message.LabelIds == null ? null : new List<string>(message.LabelIds);
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
             if (messagePartHeader != null)
-                Sender = messagePartHeader.Value;
+            {
+                SenderEmail = messagePartHeader.Value?.GetBetweenFirst('<', '>');
+                SenderName = messagePartHeader.Value?.ReplaceFirst($" <{SenderEmail}>", "");
+            }
+
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Subject");
             if (messagePartHeader != null)
                 Subject = messagePartHeader.Value;
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
                 Date = messagePartHeader.Value;
+            _body = new List<string>();
             if (message.Payload.Parts != null)
-                DecodeDevidedBody(message.Payload.Parts, out _body);
+                DecodeDevidedBody(message.Payload.Parts, _body);
             else if (message.Payload.Body?.Data != null)
-                Body = DecodeBody(message.Payload.Body.Data);
+                Body.Add(DecodeBody(message.Payload.Body.Data));
         }
 
         private static string DecodeBody(string base64EncodedData)
@@ -45,23 +53,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return Base64.Decode(base64EncodedData);
         }
 
-        private void DecodeDevidedBody(IList<MessagePart> parts, out string decodedBody)
+        private void DecodeDevidedBody(IList<MessagePart> parts, List<string> decodedBody)
         {
             parts.NullInspect(nameof(parts));
 
-            decodedBody = "";
             foreach (var part in parts)
             {
                 if (part.Parts != null)
-                    DecodeDevidedBody(part.Parts, out decodedBody);
+                    DecodeDevidedBody(part.Parts, decodedBody);
                 else if (part.Body?.Data != null)
-                    decodedBody += DecodeBody(part.Body.Data);
+                    decodedBody.Add(DecodeBody(part.Body.Data));
             }
         }
 
         private string FormateBody()
         {
-            if(_body == null) return null;
+            if (_body == null) return null;
 
             throw new NotImplementedException();
         }
@@ -77,22 +84,28 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public string ThreadId { get; set; }
 
-        public string Snippet { get; private set; }
+        public string Snippet { get; set; }
 
-        public string Sender { get; private set; }
+        public string SenderName { get; set; }
 
-        public string Subject { get; private set; }
+        public string SenderEmail { get; set; }
 
-        public string Date { get; private set; }
+        public string Subject { get; set; }
 
-        private string _body;
+        public string Date { get; set; }
 
-        public string Body
+        public List<string> LabelIds;
+
+        private List<string> _body;
+
+        public List<string> Body
         {
             get { return _body; }
             set { _body = value; }
         }
 
-        public string FormattedBody => FormateBody();
+        public bool MultiPartBody => Body?.Count > 1;
+
+        //public string FormattedBody => FormateBody();
     }
 }

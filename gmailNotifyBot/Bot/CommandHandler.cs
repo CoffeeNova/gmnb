@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.TelegramApiWrapper.Types;
@@ -26,6 +27,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             _authorizer = Authorizer.GetInstance(token, updatesHandler, clientSecret);
             _updatesHandler = updatesHandler;
             ClientSecret = clientSecret;
+            _dbWorker = new GmailDbContextWorker();
             _updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
             _updatesHandler.TelegramCallbackQueryEvent += _updatesHandler_TelegramCallbackQueryEvent;
             _updatesHandler.TelegramInlineQueryEvent += _updatesHandler_TelegramInlineQueryEvent;
@@ -91,7 +93,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             #region connect
             if (message.Text == Commands.CONNECT_COMMAND)
             {
-                LogMaker.Log(Logger, $"{Commands.TESTMESSAGE_COMMAND} command received from user with id {(string)message.From}", false);
+                logCommandRecieved(message.Text);
                 try
                 {
                     await _authorizer.SendAuthorizeLink(message);
@@ -106,7 +108,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             #endregion
             if (message.Text == Commands.INBOX_COMMAND)
             {
-                logCommandRecieved(Commands.INBOX_COMMAND);
+                logCommandRecieved(message.Text);
                 try
                 {
                     await HandleGetInboxMessagesCommand(message);
@@ -161,12 +163,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 throw new ArgumentNullException(nameof(inlineQuery));
 
             var logCommandRecieved = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)inlineQuery.From}", false));
-            if (inlineQuery.Query == Commands.INBOX_INLINE_QUERY_COMMAND)
+            if (inlineQuery.Query == Commands.INBOX_INLINE_QUERY_COMMAND || inlineQuery.Query == Commands.ALL_INLINE_QUERY_COMMAND)
             {
-                logCommandRecieved(Commands.INBOX_INLINE_QUERY_COMMAND);
+                logCommandRecieved(inlineQuery.Query);
                 try
                 {
-                    await HandleInboxInlineQueryCommand(inlineQuery);
+                    var labelId = "";
+                    if (inlineQuery.Query == Commands.INBOX_INLINE_QUERY_COMMAND)
+                        labelId = "INBOX";
+                    else if (inlineQuery.Query == Commands.ALL_INLINE_QUERY_COMMAND)
+                        labelId = "ALL";
+                    await HandleShowMessagesInlineQueryCommand(inlineQuery, labelId);
                 }
                 catch (Exception ex)
                 {
@@ -184,12 +191,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 throw new ArgumentNullException(nameof(chosenInlineResult), $"{nameof(chosenInlineResult.ResultId)} must not be a null.");
 
             var logCommandRecieved = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)chosenInlineResult.From}", false));
-            if (chosenInlineResult.Query == Commands.INBOX_INLINE_QUERY_COMMAND)
+            if (chosenInlineResult.Query == Commands.INBOX_INLINE_QUERY_COMMAND || chosenInlineResult.Query == Commands.ALL_INLINE_QUERY_COMMAND)
             {
-                logCommandRecieved(Commands.INBOX_INLINE_QUERY_COMMAND);
+                logCommandRecieved(chosenInlineResult.Query);
                 try
                 {
-                    await HandleInboxChosenInineResult(chosenInlineResult);
+                    await HandleGetMesssagesChosenInlineResult(chosenInlineResult);
                 }
                 catch (Exception ex)
                 {
@@ -235,16 +242,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         }
 
-        private async Task HandleGetInboxMessagesCommand(ISender sender)
+        private async Task HandleGetInboxMessagesCommand(Message sender)
         {
             await _botActions.GmailInlineCommandMessage(sender.From);
         }
 
-        private async Task HandleInboxInlineQueryCommand(InlineQuery sender)
+        private async Task HandleShowMessagesInlineQueryCommand(InlineQuery sender, string labelId)
         {
             var service = SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Messages.List("me");
-            query.LabelIds = "INBOX";
+            query.LabelIds = labelId;
             var listMessagesResponce = await query.ExecuteAsync();
             if (listMessagesResponce?.Messages == null || listMessagesResponce.Messages.Count == 0)
             {
@@ -261,32 +268,36 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 if (mailInfoResponce == null) continue;
                 formatedMessages.Add(new FormattedGmailMessage(mailInfoResponce));
             }
-            await _botActions.InboxAnswerInlineQuery(sender.Id, formatedMessages);
+            await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages);
         }
 
-        private async Task HandleInboxChosenInineResult(ChosenInlineResult chosenInlineResult)
+        private async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult chosenInlineResult)
         {
             var messageId = chosenInlineResult.ResultId;
             var service = SearchServiceByUserId(chosenInlineResult.From);
             var query = service.GmailService.Users.Messages.Get("me", messageId);
             var messageResponce = await query.ExecuteAsync();
             var formattedMessage = new FormattedGmailMessage(messageResponce);
-
-            //await _botActions.InboxAnswerInlineQuery(sender.Id, formatedMessages);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(chosenInlineResult.From.Id, formattedMessage.SenderEmail);
+            //await _botActions.ChosenShortMessage(chosenInlineResult.From, formattedMessage, 1);
         }
 
         private void PrepareMessage(ref string message)
         {
-            
+
         }
 
-
+        private bool SendersAddressIsIgnotred(string userId, string address)
+        {
+            
+        }
 
         private UpdatesHandler _updatesHandler;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly object _locker = new object();
         private BotActions _botActions;
         private Authorizer _authorizer;
+        private GmailDbContextWorker _dbWorker;
 
         public static CommandHandler Instance { get; private set; }
 
