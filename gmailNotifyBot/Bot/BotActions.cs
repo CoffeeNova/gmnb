@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
-using CoffeeJelly.TelegramApiWrapper.Types.General;
-using CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult;
-using CoffeeJelly.TelegramApiWrapper.Types.InputMessageContent;
-using TelegramMethods = CoffeeJelly.TelegramApiWrapper.Methods.TelegramMethods;
+using CoffeeJelly.TelegramBotApiWrapper.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
+using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
+using CoffeeJelly.TelegramBotApiWrapper.Types.InputMessageContent;
+using TelegramMethods = CoffeeJelly.TelegramBotApiWrapper.Methods.TelegramMethods;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
@@ -137,7 +138,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             var header = MarkdownStyledMessageHeader(message);
             var keyboard = MessageKeyboardMarkup(userId, message, page, state, isIgnored);
-            //_telegramMethods.SendMessageAsync(userid, message., null, false, false, null, )
+            await _telegramMethods.SendMessageAsync(userId, header, ParseMode.Markdown, false, false, null, keyboard);
         }
 
         private string MarkdownStyledMessageHeader(FormattedGmailMessage message)
@@ -151,6 +152,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             message.NullInspect(nameof(message));
 
             var keyboardMarkup = new InlineKeyboardMarkup();
+            keyboardMarkup.InlineKeyboard = new List<List<InlineKeyboardButton>>();
             var firstRow = new List<InlineKeyboardButton>();
             var secondRow = new List<InlineKeyboardButton>();
             var thirdRow = new List<InlineKeyboardButton>();
@@ -230,7 +232,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 case MessageKeyboardState.Minimized:
                     #region minimized
 
-                    expandButton.Text = $"{Emoji.DownTriangle} Expand message";
+                    expandButton.Text = $"{Emoji.DownTriangle} Expand";
                     expandButton.CallbackData = Commands.EXPANDCOMMAND;
                     actions.Text = $"{Emoji.Dashboard} Actions";
                     actions.CallbackData = Commands.EXPANDMESSAGEACTIONS;
@@ -242,7 +244,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 #endregion
                 case MessageKeyboardState.Maximized:
                     #region maximized
-                    expandButton.Text = $"{Emoji.UpTriangle} Hide message";
+                    expandButton.Text = $"{Emoji.UpTriangle} Hide";
                     expandButton.CallbackData = Commands.HIDECOMMAND;
                     actions.Text = $"{Emoji.TurnedDownArrow} Actions";
                     actions.CallbackData = Commands.EXPANDMESSAGEACTIONS;
@@ -254,7 +256,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 #endregion
                 case MessageKeyboardState.MinimizedActions:
                     #region minimazedActions
-                    expandButton.Text = $"{Emoji.DownTriangle} Expand message";
+                    expandButton.Text = $"{Emoji.DownTriangle} Expand";
                     expandButton.CallbackData = Commands.EXPANDCOMMAND;
                     actions.Text = $"{Emoji.TurnedUpArrow} Actions";
                     actions.CallbackData = Commands.EXPANDMESSAGEACTIONS;
@@ -270,7 +272,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 #endregion
                 case MessageKeyboardState.MaximizedActions:
                     #region maximizedActions
-                    expandButton.Text = $"{Emoji.UpTriangle} Hide message";
+                    expandButton.Text = $"{Emoji.UpTriangle} Hide";
                     expandButton.CallbackData = Commands.HIDECOMMAND;
                     actions.Text = $"{Emoji.TurnedDownArrow} Actions";
                     actions.CallbackData = Commands.EXPANDMESSAGEACTIONS;

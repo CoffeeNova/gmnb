@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using CoffeeJelly.TelegramApiWrapper.Converters;
+using CoffeeJelly.TelegramBotApiWrapper.Converters;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {

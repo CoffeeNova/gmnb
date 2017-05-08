@@ -366,9 +366,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TelegramApiWrapper\TelegramApiWrapper.csproj">
+    <ProjectReference Include="..\TelegramBotApiWrapper\TelegramBotApiWrapper.csproj">
       <Project>{c8fff337-c98c-4dc2-957c-5211edd3082f}</Project>
-      <Name>TelegramApiWrapper</Name>
+      <Name>TelegramBotApiWrapper</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

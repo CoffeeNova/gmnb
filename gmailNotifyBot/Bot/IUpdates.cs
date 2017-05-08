@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CoffeeJelly.TelegramApiWrapper.Types.General;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {

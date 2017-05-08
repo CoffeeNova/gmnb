@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
-using CoffeeJelly.TelegramApiWrapper.Types.General;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase

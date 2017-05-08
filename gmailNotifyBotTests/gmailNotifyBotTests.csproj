@@ -96,9 +96,9 @@
       <Project>{0d123ffe-fb4a-45f0-a4c2-f8fa21b38e67}</Project>
       <Name>gmailNotifyBot</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TelegramApiWrapper\TelegramApiWrapper.csproj">
+    <ProjectReference Include="..\TelegramBotApiWrapper\TelegramBotApiWrapper.csproj">
       <Project>{C8FFF337-C98C-4DC2-957C-5211EDD3082F}</Project>
-      <Name>TelegramApiWrapper</Name>
+      <Name>TelegramBotApiWrapper</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
