@@ -175,22 +175,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramCallbackQueryEvent exeption");
                 }
             }
-            else if (callbackQuery.Data == Commands.EXPANDCOMMAND)
+            else if (callbackQuery.Data.StartsWith(Commands.EXPAND_COMMAND))
             {
                 logCommandRecieved(callbackQuery.Data);
                 try
                 {
-                  //  await _authorizer.SendAuthorizeLink(callbackQuery);
+                    var callbackData = new CallbackData(callbackQuery.Data);
+                    await HandleCallbackQueryExpandCommand(callbackQuery, callbackData.MessageId, callbackData.Page, callbackData.MessageKeyboardState);
                 }
                 catch (CommandHandlerException ex)
                 {
                     LogMaker.Log(Logger, ex);
-                   // await _botActions.WrongCredentialsMessage(message.From);
+                    await _botActions.WrongCredentialsMessage(callbackQuery.From);
                 }
-                catch (AuthorizeException ex)
+                catch (Exception ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramCallbackQueryEvent exeption");
+                    Debug.Assert(false, $"Message to chat about Commands.EXPAND_COMMAND exeption");
                 }
             }
         }
@@ -309,25 +310,44 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages);
         }
 
-        private async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult chosenInlineResult)
+        private async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult sender)
         {
-            var messageId = chosenInlineResult.ResultId;
-            var service = SearchServiceByUserId(chosenInlineResult.From);
-            var query = service.GmailService.Users.Messages.Get("me", messageId);
-            var messageResponce = await query.ExecuteAsync();
-            var formattedMessage = new FormattedGmailMessage(messageResponce);
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(chosenInlineResult.From.Id, formattedMessage.SenderEmail);
-            await _botActions.ChosenShortMessage(chosenInlineResult.From, formattedMessage, 1, BotActions.MessageKeyboardState.Minimized, isIgnored);
+            var messageId = sender.ResultId;
+            var formattedMessage = await FormateGmailMessage(sender, messageId);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            await _botActions.ChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
 
         /// <summary>
-        /// 
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.EXPAND_COMMAND"/>.
+        /// This method returns the page <paramref name="page"/> of a message with id=<paramref name="messageId"/> to the chat with updated <see cref="InlineKeyboardMarkup"/> (page slider keyboard)
         /// </summary>
         /// <param name="sender"></param>
+        /// <param name="messageId"></param>
+        /// <param name="page"></param>
+        /// <param name="state"></param>
         /// <returns></returns>
-        private async Task HandleExpandCallbackQueryCommand(CallbackQuery sender)
+        private async Task HandleCallbackQueryExpandCommand(CallbackQuery sender, string messageId, int page, MessageKeyboardState state)
         {
+            if (state == MessageKeyboardState.Maximized || state == MessageKeyboardState.MaximizedActions)
+                throw new ArgumentException("Must be a minimized or minimizedAction state.", nameof(state));
 
+            var formattedMessage = await FormateGmailMessage(sender, messageId);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var newState = state == MessageKeyboardState.Minimized
+                ? MessageKeyboardState.Maximized
+                : MessageKeyboardState.MaximizedActions;
+            var newPage = page == 0 ? 1 : page;
+            await _botActions.ShowMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage, newState, isIgnored);
+
+        }
+
+        private async Task<FormattedGmailMessage> FormateGmailMessage(ISender sender, string messageId)
+        {
+            var service = SearchServiceByUserId(sender.From);
+            var query = service.GmailService.Users.Messages.Get("me", messageId);
+            var messageResponce = await query.ExecuteAsync();
+            return new FormattedGmailMessage(messageResponce);
         }
 
         private UpdatesHandler _updatesHandler;

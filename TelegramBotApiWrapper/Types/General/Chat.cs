@@ -8,6 +8,25 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
     public class Chat
     {
         /// <summary>
+        /// Performs an implicit conversion from <see cref="Chat"/> to <see cref="string"/>.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns><see cref="Chat.Id"/> as <see cref="string"/></returns>
+        public static implicit operator string(Chat obj)
+        {
+            return obj.Id.ToString();
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Chat"/> to <see cref="long"/>.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns><see cref="Chat.Id"/> as <see cref="long"/></returns>
+        public static implicit operator long(Chat obj)
+        {
+            return obj.Id;
+        }
+        /// <summary>
         /// Unique identifier for this chat.
         /// </summary>
         [JsonProperty("id", Required = Required.Always)]

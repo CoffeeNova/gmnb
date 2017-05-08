@@ -7,9 +7,24 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
     /// </summary>
     public class User
     {
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="User"/> to <see cref="string"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="User"/> instance.</param>
+        /// <returns><see cref="User.Id"/> as <see cref="string"/></returns>
         public static implicit operator string(User obj)
         {
             return obj.Id.ToString();
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="User"/> to <see cref="int"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="User"/> instance.</param>
+        /// <returns><see cref="User.Id"/> as <see cref="int"/></returns>
+        public static implicit operator int(User obj)
+        {
+            return obj.Id;
         }
 
         /// <summary>

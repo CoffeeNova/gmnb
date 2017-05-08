@@ -16,9 +16,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string ALL_COMMAND = "@/all";
         public const string INBOX_INLINE_QUERY_COMMAND = "Inbox";
         public const string ALL_INLINE_QUERY_COMMAND = "All";
-        public const string EXPANDCOMMAND = "/expand";
-        public const string HIDECOMMAND = "/hide";
-        public const string EXPANDMESSAGEACTIONS = "/ema";
+        public const string EXPAND_COMMAND = "/expand";
+        public const string HIDE_COMMAND = "/hide";
+        public const string EXPAND_MESSAGE_ACTIONS = "/ema";
         public const string NEXTPAGE_COMMAND = "/nextpage";
         public const string PREVPAGE_COMMAND = "/prevpage";
         public const string TO_UNREAD_COMMAND = "/tounread";

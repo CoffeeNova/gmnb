@@ -17,5 +17,16 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
             Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
         }
 
+        [TestMethod()]
+        public void EditMessageText_EditLastMessage_ParsedMessage()
+        {
+            var expected = _textMessage;
+            var actual =
+                _telegramMethods.EditMessageText($"<b>{_editedTextMessage.Text}</b>", _editedTextMessage.Chat.Id.ToString(), _editedTextMessage.MessageId.ToString(), null, Types.ParseMode.Html);
+            var compareLogic = new CompareLogic(_config);
+            var comparationResult = compareLogic.Compare(expected, actual);
+
+            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+        }
     }
 }
