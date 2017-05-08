@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CoffeeJelly.TelegramBotApiWrapper.Attributes;
 using CoffeeJelly.TelegramBotApiWrapper.Extensions;
 using CoffeeJelly.TelegramBotApiWrapper.JsonParsers;
+using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
     {
         [TelegramMethod("editMessageText")]
         public TextMessage EditMessageText(string newText, string chatId = null, string messageId = null, string inlineMessageId = null,
-                                                    string parseMode = null, bool? disabeleWebPagePreview = null, InlineKeyboardMarkup replyMarkup = null)
+                                                    ParseMode? parseMode = null, bool? disableWebPagePreview = null, InlineKeyboardMarkup replyMarkup = null)
         {
             newText.NullInspect(nameof(newText));
 
@@ -40,11 +41,14 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             var parameters = new NameValueCollection { { "text", newText } };
 
             UpdateMethodsDefaultContent(parameters, chatId, messageId, inlineMessageId, replyMarkup);
-           
-            if (parseMode != null)
-                parameters.Add("parse_mode", parseMode);
-            if (disabeleWebPagePreview != null)
-                parameters.Add("disable_web_page_preview", disabeleWebPagePreview.ToString());
+
+            if (parseMode.HasValue)
+            {
+                var parse = JsonConvert.SerializeObject(parseMode, Formatting.None, Settings);
+                parameters.Add("parse_mode", parse.Trim('"'));
+            }
+            if (disableWebPagePreview.HasValue)
+                parameters.Add("disable_web_page_preview", disableWebPagePreview.ToString());
 
             var json = UploadUrlQuery(parameters);
             try
@@ -59,7 +63,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
 
         [TelegramMethod("editMessageText")]
         public Task<TextMessage> EditMessageTextAsync(string newText, string chatId = null, string messageId = null,
-                        string inlineMessageId = null, string parseMode = null, bool? disabeleWebPagePreview = null,
+                        string inlineMessageId = null, ParseMode? parseMode = null, bool? disabeleWebPagePreview = null,
                         InlineKeyboardMarkup replyMarkup = null, CancellationToken cancellationToken = default(CancellationToken))
 
         {

@@ -239,6 +239,7 @@
     <Compile Include="Bot\Authorizer.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\UserModel.cs" />
     <Compile Include="Bot\DataBase\GmailDbContextWorker.cs" />
+    <Compile Include="Bot\Extensions\EnumExtension.cs" />
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
     <Compile Include="Bot\GmailServiceFactory.cs" />

@@ -253,6 +253,12 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                     _editedTextMessage = _textMessage;
                     _editedTextMessage.Text = $"Message Edited By {nameof(EditMessageText_EditLastMessage_Message)}";
                     break;
+                case nameof(EditMessageText_EditLastMessage_ParsedMessage):
+                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test EditTextMessage");
+                    _editedTextMessage = _textMessage;
+                    _editedTextMessage.Text = $"Message Edited By {nameof(EditMessageText_EditLastMessage_Message)}";
+                    _config.MembersToIgnore.Add("Entities");
+                    break;
                 case nameof(GetUpdates_EditedMessagesOnly_ListOfOneUpdate):
                     _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test GetUpdates Message 1");
                     _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test GetUpdates Message 2");
@@ -277,6 +283,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                     _config.MembersToIgnore.Remove("FilePath");
                     _config.MembersToIgnore.Remove("FilePathCreated");
                     _config.MembersToIgnore.Remove("FileSize");
+                    break;
+                case nameof(EditMessageText_EditLastMessage_ParsedMessage):
+                    _config.MembersToIgnore.Remove("Entities");
                     break;
             }
         }
