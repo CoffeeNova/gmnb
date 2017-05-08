@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
-using CoffeeJelly.TelegramApiWrapper.Types;
-using CoffeeJelly.TelegramApiWrapper.Types.General;
-using CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult;
-using CoffeeJelly.TelegramApiWrapper.Types.Messages;
+using CoffeeJelly.TelegramBotApiWrapper.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
+using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
+using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using Google.Apis.Gmail.v1;
 using NLog;
 
@@ -72,60 +72,80 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 catch (Exception ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat abou exeption");
+                    Debug.Assert(false, $"Message to chat about Commands.TESTNAME_COMMAND exeption");
                     // throw new AuthorizeException("An error occurred while trying to send the authentication link to the user", ex);
                 }
             }
             #endregion
-            if (message.Text == Commands.TESTMESSAGE_COMMAND)
+            else if (message.Text == Commands.TESTMESSAGE_COMMAND)
             {
                 logCommandRecieved(Commands.TESTMESSAGE_COMMAND);
                 try
                 {
                     await HandleTestMessageCommand(message);
                 }
+                catch (CommandHandlerException ex)
+                {
+                    LogMaker.Log(Logger, ex);
+                    await _botActions.WrongCredentialsMessage(message.From);
+                }
                 catch (Exception ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat abou exeption");
+                    Debug.Assert(false, $"Message to chat about Commands.TESTMESSAGE_COMMAND exeption");
                 }
             }
             #region connect
-            if (message.Text == Commands.CONNECT_COMMAND)
+            else if (message.Text == Commands.CONNECT_COMMAND)
             {
                 logCommandRecieved(message.Text);
                 try
                 {
                     await _authorizer.SendAuthorizeLink(message);
                 }
+                catch (CommandHandlerException ex)
+                {
+                    LogMaker.Log(Logger, ex);
+                    await _botActions.WrongCredentialsMessage(message.From);
+                }
                 catch (AuthorizeException ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat abou exeption");
+                    Debug.Assert(false, $"Message to chat about Commands.CONNECT_COMMAND exeption");
 
                 }
             }
             #endregion
-            if (message.Text == Commands.INBOX_COMMAND)
+            else if (message.Text == Commands.INBOX_COMMAND)
             {
                 logCommandRecieved(message.Text);
                 try
                 {
                     await HandleGetInboxMessagesCommand(message);
                 }
+                catch (CommandHandlerException ex)
+                {
+                    LogMaker.Log(Logger, ex);
+                    await _botActions.WrongCredentialsMessage(message.From);
+                }
                 catch (Exception ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat abou exeption");
+                    Debug.Assert(false, $"Message to chat about Commands.INBOX_COMMAND exeption");
                 }
             }
             #region system delete message
-            //if (message.Text == Commands.PROCEED_EDIT_MESSAGE_COMMAND)
+            //else if (message.Text == Commands.PROCEED_EDIT_MESSAGE_COMMAND)
             //{
             //    logCommandRecieved(Commands.PROCEED_EDIT_MESSAGE_COMMAND);
             //    try
             //    {
             //        await _botActions.EditProceedMessage(message.Chat.Id.ToString(), message.MessageId.ToString());
+            //    }
+            //catch (CommandHandlerException ex)
+            //    {
+            //        LogMaker.Log(Logger, ex);
+            //        await _botActions.WrongCredentialsMessage(message.From);
             //    }
             //    catch(Exception ex)
             //    {
@@ -152,7 +172,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 catch (AuthorizeException ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about exeption");
+                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramCallbackQueryEvent exeption");
+                }
+            }
+            else if (callbackQuery.Data == Commands.EXPANDCOMMAND)
+            {
+                logCommandRecieved(callbackQuery.Data);
+                try
+                {
+                  //  await _authorizer.SendAuthorizeLink(callbackQuery);
+                }
+                catch (CommandHandlerException ex)
+                {
+                    LogMaker.Log(Logger, ex);
+                   // await _botActions.WrongCredentialsMessage(message.From);
+                }
+                catch (AuthorizeException ex)
+                {
+                    LogMaker.Log(Logger, ex);
+                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramCallbackQueryEvent exeption");
                 }
             }
         }
@@ -178,7 +216,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 catch (Exception ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about exeption");
+                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramInlineQueryEvent exeption");
                 }
             }
         }
@@ -201,7 +239,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 catch (Exception ex)
                 {
                     LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about exeption");
+                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramChosenInlineEvent exeption");
                 }
             }
         }
@@ -279,17 +317,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var messageResponce = await query.ExecuteAsync();
             var formattedMessage = new FormattedGmailMessage(messageResponce);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(chosenInlineResult.From.Id, formattedMessage.SenderEmail);
-            //await _botActions.ChosenShortMessage(chosenInlineResult.From, formattedMessage, 1);
+            await _botActions.ChosenShortMessage(chosenInlineResult.From, formattedMessage, 1, BotActions.MessageKeyboardState.Minimized, isIgnored);
         }
 
-        private void PrepareMessage(ref string message)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        private async Task HandleExpandCallbackQueryCommand(CallbackQuery sender)
         {
 
-        }
-
-        private bool SendersAddressIsIgnotred(string userId, string address)
-        {
-            
         }
 
         private UpdatesHandler _updatesHandler;

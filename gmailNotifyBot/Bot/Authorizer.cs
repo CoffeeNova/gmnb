@@ -10,7 +10,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
-using CoffeeJelly.TelegramApiWrapper.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;

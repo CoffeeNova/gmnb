@@ -1,7 +1,7 @@
-﻿using CoffeeJelly.TelegramApiWrapper.Types;
-using CoffeeJelly.TelegramApiWrapper.Types.General;
-using CoffeeJelly.TelegramApiWrapper.Types.InlineQueryResult;
-using CoffeeJelly.TelegramApiWrapper.Types.Messages;
+﻿using CoffeeJelly.TelegramBotApiWrapper.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
+using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
+using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot

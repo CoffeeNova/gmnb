@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using CoffeeJelly.TelegramApiWrapper.Exceptions;
-using CoffeeJelly.TelegramApiWrapper.Types;
-using CoffeeJelly.TelegramApiWrapper.Types.General;
+using CoffeeJelly.TelegramBotApiWrapper.Exceptions;
+using CoffeeJelly.TelegramBotApiWrapper.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using NLog;
-using TelegramMethods = CoffeeJelly.TelegramApiWrapper.Methods.TelegramMethods;
+using TelegramMethods = CoffeeJelly.TelegramBotApiWrapper.Methods.TelegramMethods;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
