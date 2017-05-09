@@ -71,7 +71,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                 Task.Run(
                     () =>
                         EditMessageText(newText, chatId, messageId, inlineMessageId, parseMode,
-                            disabeleWebPagePreview, replyMarkup));
+                            disabeleWebPagePreview, replyMarkup), cancellationToken);
         }
 
         public TextMessage EditMessageCaption()

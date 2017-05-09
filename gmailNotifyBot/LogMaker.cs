@@ -23,6 +23,13 @@ namespace CoffeeJelly.gmailNotifyBot
             NewMessage?.Invoke(logger, ex.Message, currentDate, true);
         }
 
+        public static void Log(Logger logger, Exception ex, string message)
+        {
+            DateTime currentDate = DateTime.Now;
+            logger.Error(ex, message);
+            NewMessage?.Invoke(logger, ex.Message, currentDate, true);
+        }
+
         public delegate void MessageDelegate(Logger logger, string message, DateTime time, bool isError);
         public static event MessageDelegate NewMessage;
     }
