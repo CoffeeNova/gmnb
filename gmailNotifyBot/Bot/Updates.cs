@@ -57,7 +57,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             try
             {
                 var updates = _telegramMethods.GetUpdates(LastUpdateId + 1, null, null, AllowedUpdates);
-                DownloadBotRequestsSemaphore.Release();
                 if (updates.Count == 0)
                     return;
                 UpdatesList = updates;
@@ -69,6 +68,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             {
                 LogMaker.Log(Logger, ex);
             }
+            finally
+            {
+                DownloadBotRequestsSemaphore.Release();
+            }
         }
 
         private void RequestMonitorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -76,7 +79,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             //если образовалась очередь, выдать ошибку задержки ответа сервера
             if (!DownloadBotRequestsSemaphore.WaitOne(0))
             { 
-                   var message = "Telegram server response timeout. Can't download content.";
+                var message = "Telegram server response timeout. Can't download content.";
                 LogMaker.Log(Logger, message, true);
                 RequestMonitorTimer.Stop();
                 UpdatesTracingStoppedEvent?.Invoke(this, new BotRequestErrorEventArgs(message));

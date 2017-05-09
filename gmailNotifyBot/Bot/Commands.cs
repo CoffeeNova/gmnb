@@ -14,11 +14,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string NEW_COMMAND = @"/new";
         public const string INBOX_COMMAND = @"/inbox";
         public const string ALL_COMMAND = "@/all";
-        public const string INBOX_INLINE_QUERY_COMMAND = "Inbox";
-        public const string ALL_INLINE_QUERY_COMMAND = "All";
+        public const string INBOX_INLINE_QUERY_COMMAND = "inbox";
+        public const string ALL_INLINE_QUERY_COMMAND = "all";
         public const string EXPAND_COMMAND = "/expand";
         public const string HIDE_COMMAND = "/hide";
-        public const string EXPAND_MESSAGE_ACTIONS = "/ema";
+        public const string EXPAND_ACTIONS_COMMAND = "/expandActions";
+        public const string HIDE_ACTIONS_COMMAND = "/hideActions";
         public const string NEXTPAGE_COMMAND = "/nextpage";
         public const string PREVPAGE_COMMAND = "/prevpage";
         public const string TO_UNREAD_COMMAND = "/tounread";

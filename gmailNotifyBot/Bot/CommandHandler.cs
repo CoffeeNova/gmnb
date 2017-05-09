@@ -11,7 +11,9 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using Google.Apis.Gmail.v1;
+using Google.Apis.Gmail.v1.Data;
 using NLog;
+using Message = CoffeeJelly.TelegramBotApiWrapper.Types.Messages.Message;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
@@ -64,7 +66,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                     await HandleTestNameCommand(message);
                 }
-                catch (CommandHandlerException ex)
+                catch (ServiceNotFoundException ex)
                 {
                     LogMaker.Log(Logger, ex);
                     await _botActions.WrongCredentialsMessage(message.From);
@@ -77,6 +79,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 }
             }
             #endregion
+            #region testmessage
             else if (message.Text == Commands.TESTMESSAGE_COMMAND)
             {
                 logCommandRecieved(Commands.TESTMESSAGE_COMMAND);
@@ -84,7 +87,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                     await HandleTestMessageCommand(message);
                 }
-                catch (CommandHandlerException ex)
+                catch (ServiceNotFoundException ex)
                 {
                     LogMaker.Log(Logger, ex);
                     await _botActions.WrongCredentialsMessage(message.From);
@@ -95,6 +98,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     Debug.Assert(false, $"Message to chat about Commands.TESTMESSAGE_COMMAND exeption");
                 }
             }
+            #endregion
             #region connect
             else if (message.Text == Commands.CONNECT_COMMAND)
             {
@@ -103,7 +107,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                     await _authorizer.SendAuthorizeLink(message);
                 }
-                catch (CommandHandlerException ex)
+                catch (ServiceNotFoundException ex)
                 {
                     LogMaker.Log(Logger, ex);
                     await _botActions.WrongCredentialsMessage(message.From);
@@ -116,6 +120,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 }
             }
             #endregion
+            #region inbox_command
             else if (message.Text == Commands.INBOX_COMMAND)
             {
                 logCommandRecieved(message.Text);
@@ -123,17 +128,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 {
                     await HandleGetInboxMessagesCommand(message);
                 }
-                catch (CommandHandlerException ex)
+                catch (ServiceNotFoundException ex)
                 {
                     LogMaker.Log(Logger, ex);
                     await _botActions.WrongCredentialsMessage(message.From);
                 }
                 catch (Exception ex)
                 {
-                    LogMaker.Log(Logger, ex);
+                    LogMaker.Log(Logger, ex, $"An exception has been thrown in processing TextMessage with command {message.Text}");
                     Debug.Assert(false, $"Message to chat about Commands.INBOX_COMMAND exeption");
                 }
             }
+            #endregion
             #region system delete message
             //else if (message.Text == Commands.PROCEED_EDIT_MESSAGE_COMMAND)
             //{
@@ -142,7 +148,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             //    {
             //        await _botActions.EditProceedMessage(message.Chat.Id.ToString(), message.MessageId.ToString());
             //    }
-            //catch (CommandHandlerException ex)
+            //catch (ServiceNotFoundException ex)
             //    {
             //        LogMaker.Log(Logger, ex);
             //        await _botActions.WrongCredentialsMessage(message.From);
@@ -153,7 +159,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             //    }
             //}
             #endregion
-
         }
 
         private async void _updatesHandler_TelegramCallbackQueryEvent(CallbackQuery callbackQuery)
@@ -162,38 +167,76 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 throw new ArgumentNullException(nameof(callbackQuery));
 
             var logCommandRecieved = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)callbackQuery.From}", false));
-            if (callbackQuery.Data == Commands.CONNECT_COMMAND)
-            {
-                logCommandRecieved(Commands.CONNECT_COMMAND);
-                try
-                {
-                    await _authorizer.SendAuthorizeLink(callbackQuery);
-                }
-                catch (AuthorizeException ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramCallbackQueryEvent exeption");
-                }
-            }
-            else if (callbackQuery.Data.StartsWith(Commands.EXPAND_COMMAND))
+            if (callbackQuery.Data.StartsWithAny(Commands.CONNECT_COMMAND, Commands.EXPAND_COMMAND, Commands.HIDE_COMMAND, Commands.EXPAND_ACTIONS_COMMAND, Commands.HIDE_ACTIONS_COMMAND,
+                Commands.TO_READ_COMMAND, Commands.TO_UNREAD_COMMAND, Commands.TO_SPAM_COMMAND, Commands.REMOVE_SPAM_COMMAND))
             {
                 logCommandRecieved(callbackQuery.Data);
                 try
                 {
                     var callbackData = new CallbackData(callbackQuery.Data);
-                    await HandleCallbackQueryExpandCommand(callbackQuery, callbackData.MessageId, callbackData.Page, callbackData.MessageKeyboardState);
+
+                    if (callbackData.Command == Commands.CONNECT_COMMAND)
+                        await _authorizer.SendAuthorizeLink(callbackQuery);
+
+                    else if (callbackData.Command == Commands.EXPAND_COMMAND)
+                        await HandleCallbackQueryExpandCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.HIDE_COMMAND)
+                        await HandleCallbackQueryHideCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.EXPAND_ACTIONS_COMMAND)
+                        await HandleCallbackQueryExpandActionsCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.HIDE_ACTIONS_COMMAND)
+                        await HandleCallbackQueryHideActionsCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.TO_READ_COMMAND)
+                        await HandleCallbackQueryToReadCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.TO_UNREAD_COMMAND)
+                        await HandleCallbackQueryToUnReadCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.TO_SPAM_COMMAND)
+                        await HandleCallbackQueryToSpamCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.TO_INBOX_COMMAND)
+                        await HandleCallbackQueryRemoveSpamCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.DELETE_COMMAND)
+                        await HandleCallbackQueryToTrashCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.ARCHIVE_COMMAND)
+                        await HandleCallbackQueryArchiveCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.UNIGNORE_COMMAND)
+                        await HandleCallbackQueryUnignoreCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.IGNORE_COMMAND)
+                        await HandleCallbackQueryIgnoreCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.NEXTPAGE_COMMAND)
+                        await HandleCallbackQueryNextPageCommand(callbackQuery, callbackData);
+
+                    else if (callbackData.Command == Commands.PREVPAGE_COMMAND)
+                        await HandleCallbackQueryPrevPageCommand(callbackQuery, callbackData);
                 }
-                catch (CommandHandlerException ex)
+                catch (AuthorizeException ex)
+                {
+                    LogMaker.Log(Logger, ex);
+                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramCallbackQueryEvent authorize_exeption");
+                }
+                catch (ServiceNotFoundException ex)
                 {
                     LogMaker.Log(Logger, ex);
                     await _botActions.WrongCredentialsMessage(callbackQuery.From);
                 }
                 catch (Exception ex)
                 {
-                    LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about Commands.EXPAND_COMMAND exeption");
+                    LogMaker.Log(Logger, ex, $"An exception has been thrown in processing CallbackQuery with command {callbackQuery.Data}");
+                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramCallbackQueryEvent exeption");
                 }
             }
+
         }
 
         private async void _updatesHandler_TelegramInlineQueryEvent(InlineQuery inlineQuery)
@@ -214,11 +257,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                         labelId = "ALL";
                     await HandleShowMessagesInlineQueryCommand(inlineQuery, labelId);
                 }
-                catch (Exception ex)
+                catch (ServiceNotFoundException ex)
                 {
                     LogMaker.Log(Logger, ex);
+                    await _botActions.WrongCredentialsMessage(inlineQuery.From);
+                }
+                catch (Exception ex)
+                {
+                    LogMaker.Log(Logger, ex, $"An exception has been thrown in processing InlineQuery with command {inlineQuery.Query}");
                     Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramInlineQueryEvent exeption");
                 }
+
             }
         }
 
@@ -245,15 +294,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        private Service SearchServiceByUserId(string userId)
-        {
-            var gmailServiceFactory = ServiceFactory.GetInstanse(ClientSecret);
-            var service = gmailServiceFactory.ServiceCollection.FirstOrDefault(s => s.UserCredential.UserId == userId);
-            if (service == null)
-                throw new CommandHandlerException($"Service with credentials from user with id={userId} is not created. User, probably, is not authorized");
-            return service;
-        }
-
         private async Task HandleTestNameCommand(ISender sender)
         {
             var service = SearchServiceByUserId(sender.From);
@@ -271,14 +311,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (listMessagesResponce?.Messages == null) return;
 
             var message = listMessagesResponce.Messages.First();
-            var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
-            var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
+            var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
+            var mailInfoResponce = await getMailRequest.ExecuteAsync();
             if (mailInfoResponce == null) return;
-            var formatedMessage = new FormattedGmailMessage(mailInfoResponce);
-
-
-            Debug.WriteLine(formatedMessage.Body);
-
+            var formattedMessage = new FormattedGmailMessage(mailInfoResponce);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            await _botActions.ChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
 
         private async Task HandleGetInboxMessagesCommand(Message sender)
@@ -301,9 +339,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var formatedMessages = new List<FormattedGmailMessage>();
             foreach (var message in listMessagesResponce.Messages.Take(5))
             {
-                var mailInfoRequest = service.GmailService.Users.Messages.Get("me", message.Id);
-                mailInfoRequest.Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Metadata;
-                var mailInfoResponce = await mailInfoRequest.ExecuteAsync();
+                var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
+                getMailRequest.Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Metadata;
+                var mailInfoResponce = await getMailRequest.ExecuteAsync();
                 if (mailInfoResponce == null) continue;
                 formatedMessages.Add(new FormattedGmailMessage(mailInfoResponce));
             }
@@ -313,40 +351,295 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult sender)
         {
             var messageId = sender.ResultId;
-            var formattedMessage = await FormateGmailMessage(sender, messageId);
+            var formattedMessage = await GetMessage(sender.From, messageId);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
             await _botActions.ChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
 
         /// <summary>
         /// Handles <see cref="CallbackQuery"/> <see cref="Commands.EXPAND_COMMAND"/>.
-        /// This method returns the page <paramref name="page"/> of a message with id=<paramref name="messageId"/> to the chat with updated <see cref="InlineKeyboardMarkup"/> (page slider keyboard)
+        /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
+        ///  which <see cref="CallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Maximized"/> or 
+        /// <see langword="MessageKeyboardState.MaximizedActions"/> which updates it to the 1st page.
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="messageId"></param>
-        /// <param name="page"></param>
-        /// <param name="state"></param>
+        /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryExpandCommand(CallbackQuery sender, string messageId, int page, MessageKeyboardState state)
+        private async Task HandleCallbackQueryExpandCommand(CallbackQuery sender, CallbackData callbackData)
         {
-            if (state == MessageKeyboardState.Maximized || state == MessageKeyboardState.MaximizedActions)
-                throw new ArgumentException("Must be a minimized or minimizedAction state.", nameof(state));
+            if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.Maximized, MessageKeyboardState.MaximizedActions))
+                throw new ArgumentException("Must be a Minimized or MinimizedAction state.", nameof(callbackData.MessageKeyboardState));
 
-            var formattedMessage = await FormateGmailMessage(sender, messageId);
+            var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
-            var newState = state == MessageKeyboardState.Minimized
+            var newState = callbackData.MessageKeyboardState == MessageKeyboardState.Minimized
                 ? MessageKeyboardState.Maximized
                 : MessageKeyboardState.MaximizedActions;
-            var newPage = page == 0 ? 1 : page;
-            await _botActions.ShowMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage, newState, isIgnored);
+            var newPage = 1;
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage, newState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.HIDE_COMMAND"/>.
+        /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
+        /// which <see cref="CallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Minimized"/> or 
+        /// <see langword="MessageKeyboardState.MinimizedActions"/> which updates it to the 0 page.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryHideCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.Minimized, MessageKeyboardState.MinimizedActions))
+                throw new ArgumentException("Must be a Maximized or MaximizedAction state.", nameof(callbackData.MessageKeyboardState));
+
+            var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var newState = callbackData.MessageKeyboardState == MessageKeyboardState.Maximized
+                ? MessageKeyboardState.Minimized
+                : MessageKeyboardState.MinimizedActions;
+            var newPage = 0;
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage, newState, isIgnored);
 
         }
 
-        private async Task<FormattedGmailMessage> FormateGmailMessage(ISender sender, string messageId)
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.EXPAND_ACTIONS_COMMAND"/>.
+        /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
+        /// which <see cref="CallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.MinimizedActions"/> or 
+        /// <see langword="MessageKeyboardState.MaximizedActions"/> which updates it on the set <see cref="CallbackData.Page"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryExpandActionsCommand(CallbackQuery sender, CallbackData callbackData)
         {
-            var service = SearchServiceByUserId(sender.From);
+            if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.MinimizedActions, MessageKeyboardState.MaximizedActions))
+                throw new ArgumentException("Must be a Minimized or Maximized state.", nameof(callbackData.MessageKeyboardState));
+
+            var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Remove, sender.From, callbackData.MessageId, callbackData.Etag, "UNREAD");
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var newState = callbackData.MessageKeyboardState == MessageKeyboardState.Minimized
+                ? MessageKeyboardState.MinimizedActions
+                : MessageKeyboardState.MaximizedActions;
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, newState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.HIDE_ACTIONS_COMMAND"/>.
+        /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
+        /// which <see cref="CallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Minimized"/> or 
+        /// <see langword="MessageKeyboardState.Maximized"/> which updates it on the set <see cref="CallbackData.Page"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryHideActionsCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.Minimized, MessageKeyboardState.Maximized))
+                throw new ArgumentException("Must be a MinimizedActions or MaximizedActions state.", nameof(callbackData.MessageKeyboardState));
+
+            var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var newState = callbackData.MessageKeyboardState == MessageKeyboardState.MinimizedActions
+                ? MessageKeyboardState.Minimized
+                : MessageKeyboardState.Maximized;
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, newState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.TO_READ_COMMAND"/>.
+        /// This method removes message's "UNREAD" label and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryToReadCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Remove, sender.From, callbackData.MessageId, callbackData.Etag, "UNREAD");
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.TO_READ_COMMAND"/>.
+        /// This method adds "UNREAD" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryToUnReadCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "UNREAD");
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.TO_SPAM_COMMAND"/>.
+        /// This method adds "SPAM" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryToSpamCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "SPAM");
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.REMOVE_SPAM_COMMAND"/>.
+        /// This method adds "INBOX" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryRemoveSpamCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "INBOX");
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.REMOVE_SPAM_COMMAND"/>.
+        /// This method adds "TRASH" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryToTrashCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "TRASH");
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.REMOVE_SPAM_COMMAND"/>.
+        /// This method removes "INBOX" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryArchiveCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Remove, sender.From, callbackData.MessageId, callbackData.Etag, "INBOX");
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.UNIGNORE_COMMAND"/>.
+        /// Removes senders email address from db.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryUnignoreCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
+            await _dbWorker.RemoveFromIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, false);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.IGNORE_COMMAND"/>.
+        /// Adds senders email address to db.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryIgnoreCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
+            await _dbWorker.AddToIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, false);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.NEXTPAGE_COMMAND"/>.
+        /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/> where Page property increased by 1.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryNextPageCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
+            if (formattedMessage.FormattedBody.Count <= callbackData.Page)
+                throw new InvalidOperationException("Execution of this method is not permissible in this situation");
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var newPage = callbackData.Page + 1;
+            await
+                _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage,
+                    callbackData.MessageKeyboardState, isIgnored);
+        }
+
+        /// <summary>
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.NEXTPAGE_COMMAND"/>.
+        /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/> where Page property decreased by 1.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
+        private async Task HandleCallbackQueryPrevPageCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+            var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
+            if (callbackData.Page < 2)
+                throw new InvalidOperationException("Execution of this method is not permissible in this situation");
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var newPage = callbackData.Page - 1;
+            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage, callbackData.MessageKeyboardState, isIgnored);
+        }
+
+        private Service SearchServiceByUserId(string userId)
+        {
+            var gmailServiceFactory = ServiceFactory.GetInstanse(ClientSecret);
+            var service = gmailServiceFactory.ServiceCollection.FirstOrDefault(s => s.UserCredential.UserId == userId);
+            if (service == null)
+                throw new ServiceNotFoundException($"Service with credentials from user with id={userId} is not created. User, probably, is not authorized");
+            return service;
+        }
+
+
+        private async Task<FormattedGmailMessage> GetMessage(string userId, string messageId)
+        {
+            var service = SearchServiceByUserId(userId);
             var query = service.GmailService.Users.Messages.Get("me", messageId);
             var messageResponce = await query.ExecuteAsync();
+            return new FormattedGmailMessage(messageResponce);
+        }
+
+        private async Task<FormattedGmailMessage> ModifyMessageLabels(ModifyLabelsAction action, string userId, string messageId, string eTag = null, params string[] labels)
+        {
+            var labelsList = labels.ToList();
+            if (action == ModifyLabelsAction.Add)
+                return await ModifyMessageLabels(userId, messageId, labelsList, null, eTag);
+            return await ModifyMessageLabels(userId, messageId, null, labelsList, eTag);
+        }
+
+        private async Task<FormattedGmailMessage> ModifyMessageLabels(string userId, string messageId, List<string> addedLabels = null, List<string> removedLabels = null, string eTag = null)
+        {
+            var service = SearchServiceByUserId(userId);
+            var modifyMessageRequest = new ModifyMessageRequest
+            {
+                ETag = eTag,
+                AddLabelIds = addedLabels,
+                RemoveLabelIds = removedLabels
+            };
+            var modifyRequest = service.GmailService.Users.Messages.Modify(modifyMessageRequest, "me", messageId);
+            var messageResponce = await modifyRequest.ExecuteAsync();
+            var getRequest = service.GmailService.Users.Messages.Get("me", messageResponce.Id);
+            messageResponce = await getRequest.ExecuteAsync();
             return new FormattedGmailMessage(messageResponce);
         }
 
@@ -362,6 +655,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public Secrets ClientSecret { get; set; }
 
+    }
 
+    public enum ModifyLabelsAction
+    {
+        Add,
+        Remove
     }
 }

@@ -134,5 +134,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
             var value = Regex.Match(text, $"(?s)(?<={left}).*?(?={right})");
             return value.Value;
         }
+
+        public static bool StartsWithAny(this string str, params string[] patterns)
+        {
+            foreach (string pattern in patterns)
+                if (str.StartsWith(pattern))
+                    return true;
+            return false;
+        }
+
+        public static bool StartsWithAny(this string str, StringComparison comparisonType, params string[] patterns)
+        {
+            foreach (string pattern in patterns)
+                if (str.StartsWith(pattern, comparisonType))
+                    return true;
+            return false;
+        }
     }
 }

@@ -3,3 +3,4 @@
 + 3. Sort Telegram types to different files.
 4. Tests for AnswerInlineQuery, AnswerInlineQueryAsync and Update methods.
 5. Documentation for all telegram methods.
+6. Add CancelationToken parameter to all telegam async methods.

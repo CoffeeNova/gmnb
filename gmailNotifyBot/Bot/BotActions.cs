@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
@@ -24,30 +25,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public async Task WrongCredentialsMessage(string userId)
         {
-            await _telegramMethods.SendMessageAsync(userId, @"I am lost your credentials. Please reauthorize me using /connect command or click a button below.", null, false, false, null, ReauthorizeButton);
-        }
-
-        private static InlineKeyboardMarkup ReauthorizeButton
-        {
-            get
+            var button = new InlineKeyboardButton
             {
-                var reauthorizeButton = new InlineKeyboardButton
+                Text = "Reauthorize",
+                CallbackData = new CallbackData
                 {
-                    Text = "Reauthorize",
-                    CallbackData = Commands.CONNECT_COMMAND
-                };
-
-                return new InlineKeyboardMarkup
-                {
-                    InlineKeyboard = new List<List<InlineKeyboardButton>>
-                    {
-                        new List<InlineKeyboardButton>
-                        {
-                            reauthorizeButton
-                        }
-                    }
-                };
-            }
+                    Command = Commands.CONNECT_COMMAND
+                }
+            };
+            var keyboard = new InlineKeyboardMarkup
+            {
+                InlineKeyboard = new List<List<InlineKeyboardButton>> { new List<InlineKeyboardButton> { button } }
+            };
+            await _telegramMethods.SendMessageAsync(userId, @"I am lost your credentials. Please reauthorize me using /connect command or click a button below.", null, false, false, null, keyboard);
         }
 
         public async Task AuthorizeMessage(string userId, Uri notifyAccessUri, Uri fullAccessUri)
@@ -135,41 +125,47 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.EditMessageTextAsync("Success", chatId, messageId);
         }
 
-        public async Task ChosenShortMessage(string userId, FormattedGmailMessage message, bool isIgnored)
+        public async Task ChosenShortMessage(string chatId, FormattedGmailMessage formattedMessage, bool isIgnored)
         {
-            var header = HTMLStyledMessageHeader(message);
-            var keyboard = MessageKeyboardMarkup(message, 0, MessageKeyboardState.Minimized, isIgnored);
-            await _telegramMethods.SendMessageAsync(userId, header, ParseMode.Html, false, false, null, keyboard);
+            var header = HtmlStyledMessageHeader(formattedMessage);
+            var message = header + $"\r\n\r\n {formattedMessage.Snippet}";
+            var keyboard = MessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task ShowMessage(string chatId, int messageId, FormattedGmailMessage message, int page, MessageKeyboardState state, bool isIgnored)
+        public async Task UpdateMessage(string chatId, int messageId, FormattedGmailMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
         {
-            var header = HTMLStyledMessageHeader(message);
-            var keyboard = MessageKeyboardMarkup(message, page, state, isIgnored);
-            await _telegramMethods.EditMessageTextAsync(header + "/r/n" + message.Body[page -1], chatId, messageId.ToString(), null, null, null, keyboard);
+            var header = HtmlStyledMessageHeader(formattedMessage);
+            var keyboard = MessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
+            var displayedMessage = page == 0
+                ? header + $"\r\n\r\n {formattedMessage.Snippet}"
+                : header + "\r\n" + formattedMessage.FormattedBody[page - 1];
+            await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
-        private string HTMLStyledMessageHeader(FormattedGmailMessage message)
+        private string HtmlStyledMessageHeader(FormattedGmailMessage message)
         {
             return
-                $"From: <b>{message.SenderName}</b>   <i>{message.SenderEmail}</i>\r\n <b>{message.Subject}</b> \r\n\r\n {message.Snippet}";
+                $"From: <b>{message.SenderName}</b>    <i>{message.SenderEmail}</i> \r\n<b>{message.Subject}</b>";
         }
+
 
         private InlineKeyboardMarkup MessageKeyboardMarkup(FormattedGmailMessage message, int page, MessageKeyboardState state, bool isIgnored)
         {
             message.NullInspect(nameof(message));
 
-            var keyboardMarkup = new InlineKeyboardMarkup();
-            keyboardMarkup.InlineKeyboard = new List<List<InlineKeyboardButton>>();
+            var keyboardMarkup = new InlineKeyboardMarkup { InlineKeyboard = new List<List<InlineKeyboardButton>>() };
             var firstRow = new List<InlineKeyboardButton>();
             var secondRow = new List<InlineKeyboardButton>();
             var thirdRow = new List<InlineKeyboardButton>();
             var expandButton = new InlineKeyboardButton();
-            var actions = new InlineKeyboardButton();
-            var showInBrowserButton = new InlineKeyboardButton
+            var actionsButton = new InlineKeyboardButton();
+            var generalCallbackData = new CallbackData
             {
-                Text = "Open in Browser",
-                Url = $@"https://mail.google.com/mail/u/0/#inbox/{message.Id}"
+                MessageId = message.Id,
+                Page = page,
+                MessageKeyboardState = state,
+                Etag = message.ETag
             };
             InlineKeyboardButton nextPageButton = null;
             InlineKeyboardButton prevPageButton = null;
@@ -179,8 +175,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 ? $"{Emoji.Eye} To Read"
                 : $"{Emoji.RedArrowedMail} To Unread",
                 CallbackData = message.LabelIds.Exists(label => label == "UNREAD")
-                ? Commands.TO_READ_COMMAND
-                : Commands.TO_UNREAD_COMMAND
+                ? new CallbackData(generalCallbackData) { Command = Commands.TO_READ_COMMAND }
+                : new CallbackData(generalCallbackData) { Command = Commands.TO_UNREAD_COMMAND }
             };
             var spamButton = new InlineKeyboardButton
             {
@@ -188,8 +184,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 ? $"{Emoji.LovelyLatter} Not Spam"
                 : $"{Emoji.RestrictionSign} Spam",
                 CallbackData = message.LabelIds.Exists(label => label == "SPAM")
-                ? Commands.REMOVE_SPAM_COMMAND
-                : Commands.TO_SPAM_COMMAND
+                ? new CallbackData(generalCallbackData) { Command = Commands.TO_INBOX_COMMAND }
+                : new CallbackData(generalCallbackData) { Command = Commands.TO_SPAM_COMMAND }
             };
             var trashButton = new InlineKeyboardButton
             {
@@ -197,8 +193,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 ? $"{Emoji.ClosedMailbox} Restore"
                 : $"{Emoji.RecycleBin} Delete",
                 CallbackData = message.LabelIds.Exists(label => label == "TRASH")
-                ? Commands.TO_INBOX_COMMAND
-                : Commands.DELETE_COMMAND
+                ? new CallbackData(generalCallbackData) { Command = Commands.TO_INBOX_COMMAND }
+                : new CallbackData(generalCallbackData) { Command = Commands.DELETE_COMMAND }
             };
             var archiveButton = new InlineKeyboardButton
             {
@@ -206,13 +202,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 ? $"{Emoji.Multifolder} To Archive"
                 : $"{Emoji.ClosedMailbox} To Inbox",
                 CallbackData = message.LabelIds.Exists(label => label == "INBOX")
-                ? Commands.ARCHIVE_COMMAND
-                : Commands.TO_INBOX_COMMAND
+                ? new CallbackData(generalCallbackData) { Command = Commands.ARCHIVE_COMMAND }
+                : new CallbackData(generalCallbackData) { Command = Commands.TO_INBOX_COMMAND }
             };
             var notifyButton = new InlineKeyboardButton
             {
                 Text = isIgnored ? "Unignore" : "Ignore",
-                CallbackData = isIgnored ? Commands.UNIGNORE_COMMAND : Commands.IGNORE_COMMAND
+                CallbackData = isIgnored
+                ? new CallbackData(generalCallbackData) { Command = Commands.UNIGNORE_COMMAND }
+                : new CallbackData(generalCallbackData) { Command = Commands.IGNORE_COMMAND }
             };
 
             var pageSliderFunc = new Func<List<InlineKeyboardButton>>(() =>
@@ -220,7 +218,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 var row = new List<InlineKeyboardButton>();
                 if (message.MultiPartBody)
                 {
-                    if (page < message.Body?.Count)
+                    if (page < message.FormattedBody?.Count)
                     {
                         nextPageButton = new InlineKeyboardButton();
                         nextPageButton.Text = $"To Page {page + 1} {Emoji.RightArrow}";
@@ -240,6 +238,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 return row;
             });
             string expandButtonCommand = "";
+            string actionsButtonCommand = "";
             switch (state)
             {
                 case MessageKeyboardState.Minimized:
@@ -247,35 +246,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
                     expandButton.Text = $"{Emoji.DownTriangle} Expand";
                     expandButtonCommand = Commands.EXPAND_COMMAND;
-                    actions.Text = $"{Emoji.Dashboard} Actions";
-                    actions.CallbackData = Commands.EXPAND_MESSAGE_ACTIONS;
+                    actionsButton.Text = $"{Emoji.TurnedDownArrow} Actions";
+                    actionsButtonCommand = Commands.EXPAND_ACTIONS_COMMAND;
                     firstRow.Add(expandButton);
-                    firstRow.Add(actions);
-                    firstRow.Add(showInBrowserButton);
-
+                    firstRow.Add(actionsButton);
                     break;
                 #endregion
                 case MessageKeyboardState.Maximized:
                     #region maximized
                     expandButton.Text = $"{Emoji.UpTriangle} Hide";
                     expandButtonCommand = Commands.HIDE_COMMAND;
-                    actions.Text = $"{Emoji.TurnedDownArrow} Actions";
-                    actions.CallbackData = Commands.EXPAND_MESSAGE_ACTIONS;
+                    actionsButton.Text = $"{Emoji.TurnedDownArrow} Actions";
+                    actionsButtonCommand = Commands.EXPAND_ACTIONS_COMMAND;
                     firstRow = pageSliderFunc();
                     secondRow.Add(expandButton);
-                    secondRow.Add(actions);
-                    secondRow.Add(showInBrowserButton);
+                    secondRow.Add(actionsButton);
                     break;
                 #endregion
                 case MessageKeyboardState.MinimizedActions:
                     #region minimazedActions
                     expandButton.Text = $"{Emoji.DownTriangle} Expand";
                     expandButtonCommand = Commands.EXPAND_COMMAND;
-                    actions.Text = $"{Emoji.TurnedUpArrow} Actions";
-                    actions.CallbackData = Commands.EXPAND_MESSAGE_ACTIONS;
+                    actionsButton.Text = $"{Emoji.TurnedUpArrow} Actions";
+                    actionsButtonCommand = Commands.HIDE_ACTIONS_COMMAND;
                     firstRow.Add(expandButton);
-                    firstRow.Add(actions);
-                    firstRow.Add(showInBrowserButton);
+                    firstRow.Add(actionsButton);
                     secondRow.Add(unreadButton);
                     secondRow.Add(spamButton);
                     secondRow.Add(trashButton);
@@ -287,12 +282,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     #region maximizedActions
                     expandButton.Text = $"{Emoji.UpTriangle} Hide";
                     expandButtonCommand = Commands.HIDE_COMMAND;
-                    actions.Text = $"{Emoji.TurnedDownArrow} Actions";
-                    actions.CallbackData = Commands.EXPAND_MESSAGE_ACTIONS;
+                    actionsButton.Text = $"{Emoji.TurnedUpArrow} Actions";
+                    actionsButtonCommand = Commands.HIDE_ACTIONS_COMMAND;
                     firstRow = pageSliderFunc();
                     secondRow.Add(expandButton);
-                    secondRow.Add(actions);
-                    secondRow.Add(showInBrowserButton);
+                    secondRow.Add(actionsButton);
                     thirdRow.Add(unreadButton);
                     thirdRow.Add(spamButton);
                     thirdRow.Add(trashButton);
@@ -301,12 +295,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     break;
                     #endregion
             }
-            expandButton.CallbackData = new CallbackData
+            expandButton.CallbackData = new CallbackData(generalCallbackData)
             {
-                Command = expandButtonCommand,
-                MessageId = message.Id,
-                Page = page,
-                MessageKeyboardState = state
+                Command = expandButtonCommand
+            };
+            actionsButton.CallbackData = new CallbackData(generalCallbackData)
+            {
+                Command = actionsButtonCommand
             };
             keyboardMarkup.InlineKeyboard.Add(firstRow);
             keyboardMarkup.InlineKeyboard.Add(secondRow);
@@ -316,7 +311,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
 
         private readonly TelegramMethods _telegramMethods;
-        private BotSettings _botSettings;
+        private readonly BotSettings _botSettings;
     }
 
     public enum MessageKeyboardState
@@ -331,46 +326,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         MaximizedActions
     }
 
-    public class CallbackData
-    {
-        public CallbackData()
-        {
 
-        }
-
-        public CallbackData(string serializedCallbackData)
-        {
-            serializedCallbackData.NullInspect(nameof(serializedCallbackData));
-
-            try
-            {
-                var splitted = serializedCallbackData.Split(Separator);
-                Command = splitted[0];
-                MessageId = splitted[1];
-                Page = Int32.Parse(splitted[2]);
-                MessageKeyboardState = splitted[3].ToEnum<MessageKeyboardState>();
-            }
-            catch
-            {
-                throw new ArgumentException("Must be an implicit operator returned type.", nameof(serializedCallbackData));
-            }
-
-        }
-        public string Command { get; set; } = "";
-
-        public string MessageId { get; set; } = "";
-
-        public int Page { get; set; }
-
-        public MessageKeyboardState MessageKeyboardState { get; set; } = MessageKeyboardState.Minimized;
-
-        public static implicit operator string(CallbackData obj)
-        {
-            return $"{obj.Command}{Separator}{obj.MessageId}{Separator}{obj.Page}{Separator}{obj.MessageKeyboardState.ToEnumString()}";
-        }
-
-        private const char Separator = ':';
-    }
 
     public static class Emoji
     {

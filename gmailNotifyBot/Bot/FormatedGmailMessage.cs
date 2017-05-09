@@ -25,6 +25,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             Id = message.Id;
             ThreadId = message.ThreadId;
             Snippet = message.Snippet;
+            ETag = message.ETag;
             LabelIds = message.LabelIds == null ? null : new List<string>(message.LabelIds);
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
             if (messagePartHeader != null)
@@ -66,19 +67,36 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        private string FormateBody()
+        private static List<string> FormateBody(IEnumerable<string> body)
         {
-            if (_body == null) return null;
-
-            throw new NotImplementedException();
+            return body?.Select(FormateText).ToList();
         }
 
-        private string ParseInnerText(string html)
+        private static string FormateText(string text)
+        {
+            AddUrlTags(ref text);
+            ParseInnerText(ref text);
+            ReplaceSymbolsWithHtmlEntities(ref text);
+            return text;
+        }
+
+        private static void  AddUrlTags(ref string text)
+        {
+        }
+
+        private static void ParseInnerText(ref string text)
         {
             var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(html);
-            return htmlDoc.DocumentNode.InnerText;
+            htmlDoc.LoadHtml(text);
+            text = htmlDoc.DocumentNode.InnerText;
         }
+
+        private static void ReplaceSymbolsWithHtmlEntities(ref string text)
+        {
+            
+        }
+
+        
 
         public string Id { get; set; }
 
@@ -94,6 +112,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public string Date { get; set; }
 
+        public string ETag { get; set; }
+
         public List<string> LabelIds;
 
         private List<string> _body;
@@ -101,8 +121,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public List<string> Body
         {
             get { return _body; }
-            set { _body = value; }
+            set
+            {
+                _body = value;
+            }
         }
+
+        private List<string> _formattedBody;
+
+        public List<string> FormattedBody => FormateBody(_body);
 
         public bool MultiPartBody => Body?.Count > 1;
 

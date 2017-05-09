@@ -222,6 +222,7 @@
     <Compile Include="Bot\Base64.cs" />
     <Compile Include="Bot\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
+    <Compile Include="Bot\CallbackClasses.cs" />
     <Compile Include="Bot\ClientSecret.cs" />
     <Compile Include="Bot\CommandHandler.cs" />
     <Compile Include="Bot\Commands.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Bot\Authorizer.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\UserModel.cs" />
     <Compile Include="Bot\DataBase\GmailDbContextWorker.cs" />
+    <Compile Include="Bot\Exceptions\ServiceNotFoundException.cs" />
     <Compile Include="Bot\Extensions\EnumExtension.cs" />
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
