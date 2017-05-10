@@ -40,11 +40,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
                 Date = messagePartHeader.Value;
-            _body = new List<string>();
+            _body = new List<BodyForm>();
             if (message.Payload.Parts != null)
                 DecodeDevidedBody(message.Payload.Parts, _body);
             else if (message.Payload.Body?.Data != null)
-                Body.Add(DecodeBody(message.Payload.Body.Data));
+                _body.Add(new BodyForm(message.Payload.MimeType, DecodeBody(message.Payload.Body.Data)));
+
+            MimeTypes = new List<string> {"text/html"};
         }
 
         private static string DecodeBody(string base64EncodedData)
@@ -54,7 +56,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return Base64.Decode(base64EncodedData);
         }
 
-        private void DecodeDevidedBody(IList<MessagePart> parts, List<string> decodedBody)
+        private void DecodeDevidedBody(IList<MessagePart> parts, List<BodyForm> decodedBody)
         {
             parts.NullInspect(nameof(parts));
 
@@ -63,16 +65,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 if (part.Parts != null)
                     DecodeDevidedBody(part.Parts, decodedBody);
                 else if (part.Body?.Data != null)
-                    decodedBody.Add(DecodeBody(part.Body.Data));
+                    decodedBody.Add(new BodyForm(part.MimeType, DecodeBody(part.Body.Data)));
             }
         }
 
-        private static List<string> FormatBody(IEnumerable<string> body)
+        private List<string> FormatBody(List<BodyForm> body)
         {
-            return body?.Select(FormatText).ToList();
+            var stringedBody = "";
+            foreach (var bodyForm in body)
+            {
+                if (bodyForm.MimeType.EqualsAny(MimeTypes?.ToArray()))
+                    stringedBody += bodyForm.Value;
+            }
+            if (string.IsNullOrEmpty(stringedBody))
+                return new List<string>();
+
+            var formatted = FormatText(stringedBody);
+            return formatted.DivideByLength(PageLength).ToList();
         }
 
-        private static string FormatText(string text)
+        private string FormatText(string text)
         {
             AddUrlTags(ref text);
             ParseInnerText(ref text);
@@ -86,9 +98,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private static void ParseInnerText(ref string text)
         {
-            //var htmlDoc = new HtmlDocument();
-            //htmlDoc.LoadHtml(text);
-            //text = htmlDoc.DocumentNode.InnerText;
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(text);
+            text = htmlDoc.DocumentNode.InnerText;
         }
 
         private static void ReplaceSymbolsWithHtmlEntities(ref string text)
@@ -98,8 +110,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             text = text.Replace(">", "&gt;");
             text = text.Replace("\"", "&quot;");
         }
-
-
 
         public string Id { get; set; }
 
@@ -119,9 +129,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public List<string> LabelIds;
 
-        private List<string> _body;
+        public int PageLength { get; set; } = 1000;
 
-        public List<string> Body
+        private List<BodyForm> _body;
+
+        public List<BodyForm> Body
         {
             get { return _body; }
             set
@@ -136,6 +148,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public bool MultiPartBody => Body?.Count > 1;
 
-        //public string FormattedBody => FormateBody();
+        public List<string> MimeTypes { get; set; }
+    }
+
+    public class BodyForm
+    {
+        public BodyForm(string mimeType, string value)
+        {
+            MimeType = mimeType;
+            Value = value;
+        }
+
+        public string MimeType { get; }
+
+        public string Value { get; }
     }
 }

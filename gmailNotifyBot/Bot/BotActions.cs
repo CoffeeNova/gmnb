@@ -154,7 +154,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var keyboard = MessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
             var displayedMessage = page == 0
                 ? header + $"\r\n\r\n {formattedMessage.Snippet}"
-                : header + $"\r\n + {formattedMessage.FormattedBody[page - 1]}";
+                : header + $"\r\n\r\n {formattedMessage.FormattedBody[page - 1]}";
             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
