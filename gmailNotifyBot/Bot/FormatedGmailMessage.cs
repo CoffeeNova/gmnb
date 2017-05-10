@@ -6,6 +6,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using Google.Apis.Gmail.v1.Data;
 using HtmlAgilityPack;
+using CoffeeJelly.TelegramBotApiWrapper;
 
 [assembly: InternalsVisibleTo("gmailNotifyBotTests")]
 namespace CoffeeJelly.gmailNotifyBot.Bot
@@ -40,11 +41,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
                 Date = messagePartHeader.Value;
-            _body = new List<string>();
+            _body = "";
             if (message.Payload.Parts != null)
-                DecodeDevidedBody(message.Payload.Parts, _body);
+                DecodeDevidedBody(message.Payload.Parts, ref _body);
             else if (message.Payload.Body?.Data != null)
-                Body.Add(DecodeBody(message.Payload.Body.Data));
+                _body = DecodeBody(message.Payload.Body.Data);
         }
 
         private static string DecodeBody(string base64EncodedData)
@@ -54,22 +55,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return Base64.Decode(base64EncodedData);
         }
 
-        private void DecodeDevidedBody(IList<MessagePart> parts, List<string> decodedBody)
+        private void DecodeDevidedBody(IList<MessagePart> parts, ref string decodedBody)
         {
             parts.NullInspect(nameof(parts));
-
             foreach (var part in parts)
             {
                 if (part.Parts != null)
-                    DecodeDevidedBody(part.Parts, decodedBody);
+                    DecodeDevidedBody(part.Parts, ref decodedBody);
                 else if (part.Body?.Data != null)
-                    decodedBody.Add(DecodeBody(part.Body.Data));
+                    decodedBody += DecodeBody(part.Body.Data);
             }
         }
 
-        private static List<string> FormateBody(IEnumerable<string> body)
+        private static List<string> FormateBody(string body)
         {
-            return body?.Select(FormateText).ToList();
+            return body?.DivideByLength(PageLength).Select(FormateText).ToList();
         }
 
         private static string FormateText(string text)
@@ -93,7 +93,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private static void ReplaceSymbolsWithHtmlEntities(ref string text)
         {
-            
+            text = text.Replace("&", "&amp;");
+            text = text.Replace("<", "&lt;");
+            text = text.Replace(">", "&gt;");
+            text = text.Replace("\"", "&quot;");
         }
 
         
@@ -114,11 +117,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public string ETag { get; set; }
 
+        public static int PageLength { get; } = 2000;
+
         public List<string> LabelIds;
 
-        private List<string> _body;
+        private string _body;
 
-        public List<string> Body
+        public string Body
         {
             get { return _body; }
             set
@@ -127,11 +132,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        private List<string> _formattedBody;
-
         public List<string> FormattedBody => FormateBody(_body);
 
-        public bool MultiPartBody => Body?.Count > 1;
+        public bool MultiPartBody => FormattedBody?.Count > 1;
 
         //public string FormattedBody => FormateBody();
     }

@@ -53,112 +53,37 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             if (message?.Text == null)
                 throw new ArgumentNullException(nameof(message));
+            if (!message.Text.StartsWithAny(Commands.TESTNAME_COMMAND, Commands.TESTMESSAGE_COMMAND,
+                    Commands.CONNECT_COMMAND, Commands.INBOX_COMMAND, Commands.TESTTHREAD_COMMAND)) return;
 
-            var logCommandRecieved =
-                new Action<string>(
-                    command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)message.From}", false));
-
-            #region testname
-            if (message.Text == Commands.TESTNAME_COMMAND)
+            LogMaker.Log(Logger, $"{message.Text} command received from user with id {(string)message.From}", false);
+            try
             {
-                logCommandRecieved(Commands.TESTNAME_COMMAND);
-                try
-                {
+                if (message.Text.StartsWith(Commands.TESTNAME_COMMAND))
                     await HandleTestNameCommand(message);
-                }
-                catch (ServiceNotFoundException ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    await _botActions.WrongCredentialsMessage(message.From);
-                }
-                catch (Exception ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about Commands.TESTNAME_COMMAND exeption");
-                    // throw new AuthorizeException("An error occurred while trying to send the authentication link to the user", ex);
-                }
-            }
-            #endregion
-            #region testmessage
-            else if (message.Text == Commands.TESTMESSAGE_COMMAND)
-            {
-                logCommandRecieved(Commands.TESTMESSAGE_COMMAND);
-                try
-                {
+                else if (message.Text == Commands.TESTMESSAGE_COMMAND)
                     await HandleTestMessageCommand(message);
-                }
-                catch (ServiceNotFoundException ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    await _botActions.WrongCredentialsMessage(message.From);
-                }
-                catch (Exception ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about Commands.TESTMESSAGE_COMMAND exeption");
-                }
-            }
-            #endregion
-            #region connect
-            else if (message.Text == Commands.CONNECT_COMMAND)
-            {
-                logCommandRecieved(message.Text);
-                try
-                {
+                else if (message.Text == Commands.CONNECT_COMMAND)
                     await _authorizer.SendAuthorizeLink(message);
-                }
-                catch (ServiceNotFoundException ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    await _botActions.WrongCredentialsMessage(message.From);
-                }
-                catch (AuthorizeException ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about Commands.CONNECT_COMMAND exeption");
-
-                }
-            }
-            #endregion
-            #region inbox_command
-            else if (message.Text == Commands.INBOX_COMMAND)
-            {
-                logCommandRecieved(message.Text);
-                try
-                {
+                else if (message.Text == Commands.INBOX_COMMAND)
                     await HandleGetInboxMessagesCommand(message);
-                }
-                catch (ServiceNotFoundException ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    await _botActions.WrongCredentialsMessage(message.From);
-                }
-                catch (Exception ex)
-                {
-                    LogMaker.Log(Logger, ex, $"An exception has been thrown in processing TextMessage with command {message.Text}");
-                    Debug.Assert(false, $"Message to chat about Commands.INBOX_COMMAND exeption");
-                }
+                else if (message.Text == Commands.TESTTHREAD_COMMAND)
+                    await HandleTestThreadCommand(message);
             }
-            #endregion
-            #region system delete message
-            //else if (message.Text == Commands.PROCEED_EDIT_MESSAGE_COMMAND)
-            //{
-            //    logCommandRecieved(Commands.PROCEED_EDIT_MESSAGE_COMMAND);
-            //    try
-            //    {
-            //        await _botActions.EditProceedMessage(message.Chat.Id.ToString(), message.MessageId.ToString());
-            //    }
-            //catch (ServiceNotFoundException ex)
-            //    {
-            //        LogMaker.Log(Logger, ex);
-            //        await _botActions.WrongCredentialsMessage(message.From);
-            //    }
-            //    catch(Exception ex)
-            //    {
-            //        LogMaker.Log(Logger, ex);
-            //    }
-            //}
-            #endregion
+            catch (ServiceNotFoundException ex)
+            {
+                LogMaker.Log(Logger, ex);
+                await _botActions.WrongCredentialsMessage(message.From);
+            }
+            catch (AuthorizeException ex)
+            {
+                LogMaker.Log(Logger, ex);
+                await _botActions.AuthorizationErrorMessage(message.Chat);
+            }
+            catch (Exception ex)
+            {
+                LogMaker.Log(Logger, ex, $"An exception has been thrown in processing TextMessage with command {message.Text}");
+            }
         }
 
         private async void _updatesHandler_TelegramCallbackQueryEvent(CallbackQuery callbackQuery)
@@ -166,77 +91,76 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (callbackQuery?.Data == null)
                 throw new ArgumentNullException(nameof(callbackQuery));
 
-            var logCommandRecieved = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)callbackQuery.From}", false));
-            if (callbackQuery.Data.StartsWithAny(Commands.CONNECT_COMMAND, Commands.EXPAND_COMMAND, Commands.HIDE_COMMAND, Commands.EXPAND_ACTIONS_COMMAND, Commands.HIDE_ACTIONS_COMMAND,
-                Commands.TO_READ_COMMAND, Commands.TO_UNREAD_COMMAND, Commands.TO_SPAM_COMMAND, Commands.REMOVE_SPAM_COMMAND))
+            if (!callbackQuery.Data.StartsWithAny(Commands.CONNECT_COMMAND, Commands.EXPAND_COMMAND,
+                    Commands.HIDE_COMMAND, Commands.EXPAND_ACTIONS_COMMAND, Commands.HIDE_ACTIONS_COMMAND,
+                    Commands.TO_READ_COMMAND, Commands.TO_UNREAD_COMMAND, Commands.TO_SPAM_COMMAND,
+                    Commands.REMOVE_SPAM_COMMAND, Commands.NEXTPAGE_COMMAND, Commands.PREVPAGE_COMMAND)) return;
+
+            LogMaker.Log(Logger,
+                $"{callbackQuery.Data} command received from user with id {(string)callbackQuery.From}", false);
+            try
             {
-                logCommandRecieved(callbackQuery.Data);
-                try
-                {
-                    var callbackData = new CallbackData(callbackQuery.Data);
+                var callbackData = new CallbackData(callbackQuery.Data);
 
-                    if (callbackData.Command == Commands.CONNECT_COMMAND)
-                        await _authorizer.SendAuthorizeLink(callbackQuery);
+                if (callbackData.Command == Commands.CONNECT_COMMAND)
+                    await _authorizer.SendAuthorizeLink(callbackQuery);
 
-                    else if (callbackData.Command == Commands.EXPAND_COMMAND)
-                        await HandleCallbackQueryExpandCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.EXPAND_COMMAND)
+                    await HandleCallbackQueryExpandCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.HIDE_COMMAND)
-                        await HandleCallbackQueryHideCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.HIDE_COMMAND)
+                    await HandleCallbackQueryHideCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.EXPAND_ACTIONS_COMMAND)
-                        await HandleCallbackQueryExpandActionsCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.EXPAND_ACTIONS_COMMAND)
+                    await HandleCallbackQueryExpandActionsCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.HIDE_ACTIONS_COMMAND)
-                        await HandleCallbackQueryHideActionsCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.HIDE_ACTIONS_COMMAND)
+                    await HandleCallbackQueryHideActionsCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.TO_READ_COMMAND)
-                        await HandleCallbackQueryToReadCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.TO_READ_COMMAND)
+                    await HandleCallbackQueryToReadCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.TO_UNREAD_COMMAND)
-                        await HandleCallbackQueryToUnReadCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.TO_UNREAD_COMMAND)
+                    await HandleCallbackQueryToUnReadCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.TO_SPAM_COMMAND)
-                        await HandleCallbackQueryToSpamCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.TO_SPAM_COMMAND)
+                    await HandleCallbackQueryToSpamCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.TO_INBOX_COMMAND)
-                        await HandleCallbackQueryRemoveSpamCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.TO_INBOX_COMMAND)
+                    await HandleCallbackQueryRemoveSpamCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.DELETE_COMMAND)
-                        await HandleCallbackQueryToTrashCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.DELETE_COMMAND)
+                    await HandleCallbackQueryToTrashCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.ARCHIVE_COMMAND)
-                        await HandleCallbackQueryArchiveCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.ARCHIVE_COMMAND)
+                    await HandleCallbackQueryArchiveCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.UNIGNORE_COMMAND)
-                        await HandleCallbackQueryUnignoreCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.UNIGNORE_COMMAND)
+                    await HandleCallbackQueryUnignoreCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.IGNORE_COMMAND)
-                        await HandleCallbackQueryIgnoreCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.IGNORE_COMMAND)
+                    await HandleCallbackQueryIgnoreCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.NEXTPAGE_COMMAND)
-                        await HandleCallbackQueryNextPageCommand(callbackQuery, callbackData);
+                else if (callbackData.Command == Commands.NEXTPAGE_COMMAND)
+                    await HandleCallbackQueryNextPageCommand(callbackQuery, callbackData);
 
-                    else if (callbackData.Command == Commands.PREVPAGE_COMMAND)
-                        await HandleCallbackQueryPrevPageCommand(callbackQuery, callbackData);
-                }
-                catch (AuthorizeException ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramCallbackQueryEvent authorize_exeption");
-                }
-                catch (ServiceNotFoundException ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    await _botActions.WrongCredentialsMessage(callbackQuery.From);
-                }
-                catch (Exception ex)
-                {
-                    LogMaker.Log(Logger, ex, $"An exception has been thrown in processing CallbackQuery with command {callbackQuery.Data}");
-                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramCallbackQueryEvent exeption");
-                }
+                else if (callbackData.Command == Commands.PREVPAGE_COMMAND)
+                    await HandleCallbackQueryPrevPageCommand(callbackQuery, callbackData);
             }
-
+            catch (AuthorizeException ex)
+            {
+                LogMaker.Log(Logger, ex);
+                await _botActions.AuthorizationErrorMessage(callbackQuery.Message.Chat);
+            }
+            catch (ServiceNotFoundException ex)
+            {
+                LogMaker.Log(Logger, ex);
+                await _botActions.WrongCredentialsMessage(callbackQuery.Message.Chat);
+            }
+            catch (Exception ex)
+            {
+                LogMaker.Log(Logger, ex, $"An exception has been thrown in processing CallbackQuery with command {callbackQuery.Data}");
+            }
         }
 
         private async void _updatesHandler_TelegramInlineQueryEvent(InlineQuery inlineQuery)
@@ -244,30 +168,29 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (inlineQuery?.Query == null)
                 throw new ArgumentNullException(nameof(inlineQuery));
 
-            var logCommandRecieved = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)inlineQuery.From}", false));
-            if (inlineQuery.Query == Commands.INBOX_INLINE_QUERY_COMMAND || inlineQuery.Query == Commands.ALL_INLINE_QUERY_COMMAND)
-            {
-                logCommandRecieved(inlineQuery.Query);
-                try
-                {
-                    var labelId = "";
-                    if (inlineQuery.Query == Commands.INBOX_INLINE_QUERY_COMMAND)
-                        labelId = "INBOX";
-                    else if (inlineQuery.Query == Commands.ALL_INLINE_QUERY_COMMAND)
-                        labelId = "ALL";
-                    await HandleShowMessagesInlineQueryCommand(inlineQuery, labelId);
-                }
-                catch (ServiceNotFoundException ex)
-                {
-                    LogMaker.Log(Logger, ex);
-                    await _botActions.WrongCredentialsMessage(inlineQuery.From);
-                }
-                catch (Exception ex)
-                {
-                    LogMaker.Log(Logger, ex, $"An exception has been thrown in processing InlineQuery with command {inlineQuery.Query}");
-                    Debug.Assert(false, $"Message to chat about _updatesHandler_TelegramInlineQueryEvent exeption");
-                }
+            if (!inlineQuery.Query.StartsWithAny(Commands.INBOX_INLINE_QUERY_COMMAND, Commands.ALL_INLINE_QUERY_COMMAND)) return;
 
+            LogMaker.Log(Logger, $"{inlineQuery.Query} command received from user with id {(string)inlineQuery.From}", false);
+            try
+            {
+                var labelId = "";
+                if (inlineQuery.Query.StartsWith(Commands.INBOX_INLINE_QUERY_COMMAND))
+                    labelId = "INBOX";
+
+                var splittedQuery = inlineQuery.Query.Split(' ');
+                var pageStr = splittedQuery.Length > 1 ? splittedQuery[1] : "";
+                int page;
+                page = Int32.TryParse(pageStr, out page) == false ? 1 : page;
+                await HandleShowMessagesInlineQueryCommand(inlineQuery, labelId, page);
+            }
+            catch (ServiceNotFoundException ex)
+            {
+                LogMaker.Log(Logger, ex);
+                await _botActions.WrongCredentialsMessage(inlineQuery.From);
+            }
+            catch (Exception ex)
+            {
+                LogMaker.Log(Logger, ex, $"An exception has been thrown in processing InlineQuery with command {inlineQuery.Query}");
             }
         }
 
@@ -319,25 +242,70 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _botActions.ChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
 
+        private async Task HandleTestThreadCommand(ISender sender)
+        {
+            var service = SearchServiceByUserId(sender.From);
+            var query = service.GmailService.Users.Threads.List("me");
+            query.LabelIds = "INBOX";
+            var listThreadsResponce = await query.ExecuteAsync();
+            if (listThreadsResponce?.Threads == null) return;
+
+            var thread = listThreadsResponce.Threads.First();
+            var getMailRequest = service.GmailService.Users.Messages.Get("me", thread.Id);
+            var mailInfoResponce = await getMailRequest.ExecuteAsync();
+            if (mailInfoResponce == null) return;
+            var formattedMessage = new FormattedGmailMessage(mailInfoResponce);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            await _botActions.ChosenShortMessage(sender.From, formattedMessage, isIgnored);
+        }
+
         private async Task HandleGetInboxMessagesCommand(Message sender)
         {
             await _botActions.GmailInlineCommandMessage(sender.From);
         }
 
-        private async Task HandleShowMessagesInlineQueryCommand(InlineQuery sender, string labelId)
+        private async Task HandleShowMessagesInlineQueryCommand(InlineQuery sender, string labelId, int page = 1)
         {
+            if (page < 1)
+                throw new ArgumentOutOfRangeException(nameof(page), "Must be not lower then 1");
+
             var service = SearchServiceByUserId(sender.From);
+
             var query = service.GmailService.Users.Messages.List("me");
-            query.LabelIds = labelId;
-            var listMessagesResponce = await query.ExecuteAsync();
+            if (string.IsNullOrEmpty(labelId))
+                query.IncludeSpamTrash = false;
+            else
+                query.LabelIds = labelId;
+
+            query.MaxResults = 50;
+            int offset;
+            Int32.TryParse(sender.Offset, out offset);
+            if (offset >= 50)
+            {
+                page++;
+                offset = offset - 50;
+            }
+            ListMessagesResponse listMessagesResponce = null;
+            string pageToken = null;
+            while (page >= 1)
+            {
+                query.PageToken = pageToken;
+                listMessagesResponce = await query.ExecuteAsync();
+                if (string.IsNullOrEmpty(listMessagesResponce.NextPageToken))
+                    break;
+                pageToken = listMessagesResponce.NextPageToken;
+                page--;
+            }
             if (listMessagesResponce?.Messages == null || listMessagesResponce.Messages.Count == 0)
             {
-                await _botActions.EmptyInboxMessage(sender.From);
+                if (string.IsNullOrEmpty(labelId))
+                    await _botActions.EmptyAllMessage(sender.From, page);
+                else
+                    await _botActions.EmptyLabelMessage(sender.From, labelId, page);
                 return;
             }
-
             var formatedMessages = new List<FormattedGmailMessage>();
-            foreach (var message in listMessagesResponce.Messages.Take(5))
+            foreach (var message in listMessagesResponce.Messages.Skip(offset).Take(5))
             {
                 var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
                 getMailRequest.Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Metadata;
@@ -345,7 +313,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 if (mailInfoResponce == null) continue;
                 formatedMessages.Add(new FormattedGmailMessage(mailInfoResponce));
             }
-            await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages);
+
+            await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages, offset + 5);
         }
 
         private async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult sender)

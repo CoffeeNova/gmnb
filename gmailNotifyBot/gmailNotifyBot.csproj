@@ -241,6 +241,7 @@
     <Compile Include="Bot\DataBase\DataBaseModels\UserModel.cs" />
     <Compile Include="Bot\DataBase\GmailDbContextWorker.cs" />
     <Compile Include="Bot\Exceptions\ServiceNotFoundException.cs" />
+    <Compile Include="Bot\Extensions\CollectionExtension.cs" />
     <Compile Include="Bot\Extensions\EnumExtension.cs" />
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />

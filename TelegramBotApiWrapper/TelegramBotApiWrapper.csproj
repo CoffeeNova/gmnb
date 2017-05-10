@@ -50,6 +50,7 @@
     <Compile Include="Attributes\ActionAttribute.cs" />
     <Compile Include="Attributes\TelegramMethodAttribute.cs" />
     <Compile Include="Attributes\UpdateAttribute.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Converters\ArrayToListConverter.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\MessageConverter.cs" />
