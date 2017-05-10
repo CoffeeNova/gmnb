@@ -17,10 +17,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            _bodyPart1 = Tools.RandomString(2000);
-            _bodyPart2 = Tools.RandomString(2000);
-            _bodyPart3 = Tools.RandomString(2000);
-            _bodyPart4 = Tools.RandomString(2);
             _config = new ComparisonConfig
             {
                 CompareChildren = true,
@@ -38,10 +34,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 ThreadId = _threadId,
                 SenderName = _senderName,
                 SenderEmail = _senderAddress,
-                Body = _bodyPart1 + _bodyPart2 + _bodyPart3 + _bodyPart4,
+                Body = new List<BodyForm>
+                    {
+                        _bodyPart1,
+                        _bodyPart2,
+                        _bodyPart3,
+                        _bodyPart4
+                    },
                 Date = _date,
                 Snippet = _snippet,
-                Subject = _subject
+                Subject = _subject,
+                MimeTypes = new List<string> { "text/plain"}
             };
         }
 
@@ -82,8 +85,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                             {
                                 Body = new MessagePartBody
                                 {
-                                    Data = Base64.Encode(_bodyPart1)
-                                }
+                                    Data = Base64.Encode(_bodyPart1.Value)
+                                },
+                                MimeType = _bodyPart1.MimeType
                             },
                             new MessagePart
                             {
@@ -93,15 +97,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                                     {
                                         Body = new MessagePartBody
                                         {
-                                            Data = Base64.Encode(_bodyPart2)
-                                        }
+                                            Data = Base64.Encode(_bodyPart2.Value)
+                                        },
+                                        MimeType = _bodyPart2.MimeType
                                     },
                                     new MessagePart
                                     {
                                         Body = new MessagePartBody
                                         {
-                                            Data = Base64.Encode(_bodyPart3)
-                                        }
+                                            Data = Base64.Encode(_bodyPart3.Value)
+                                        },
+                                        MimeType = _bodyPart3.MimeType
                                     }
                                 }
                             },
@@ -109,8 +115,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                             {
                                 Body = new MessagePartBody
                                 {
-                                    Data = Base64.Encode(_bodyPart4)
-                                }
+                                    Data = Base64.Encode(_bodyPart4.Value)
+                                },
+                                MimeType = _bodyPart4.MimeType
                             }
                         }
                     }
@@ -152,29 +159,33 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                             {
                                 Body = new MessagePartBody
                                 {
-                                    Data = Base64.Encode(_bodyPart1)
-                                }
+                                    Data = Base64.Encode(_bodyPart1.Value)
+                                },
+                                MimeType = _bodyPart1.MimeType
                             },
                             new MessagePart
                             {
                                 Body = new MessagePartBody
                                 {
-                                    Data = Base64.Encode(_bodyPart2)
-                                }
+                                    Data = Base64.Encode(_bodyPart2.Value)
+                                },
+                                MimeType = _bodyPart2.MimeType
                             },
                             new MessagePart
                             {
                                 Body = new MessagePartBody
                                 {
-                                    Data = Base64.Encode(_bodyPart3)
-                                }
+                                    Data = Base64.Encode(_bodyPart3.Value)
+                                },
+                                MimeType = _bodyPart3.MimeType
                             },
                             new MessagePart
                             {
                                 Body = new MessagePartBody
                                 {
-                                    Data = Base64.Encode(_bodyPart4)
-                                }
+                                    Data = Base64.Encode(_bodyPart4.Value)
+                                },
+                                MimeType = _bodyPart4.MimeType
                             }
                         }
                     }
@@ -213,11 +224,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         private static string _senderAddress = "testaddr@gmail.com";
         private static string _subject = "testSubject";
         private static string _date = "testDate";
+        private static BodyForm _bodyPart1 = new BodyForm("text/plain", Tools.RandomString(2000));
+        private static BodyForm _bodyPart2 = new BodyForm("text/html", Tools.RandomString(2000));
+        private static BodyForm _bodyPart3 = new BodyForm("text/plain", Tools.RandomString(2000));
+        private static BodyForm _bodyPart4 = new BodyForm("text/plain", Tools.RandomString(2));
         private static ComparisonConfig _config;
-        private static string _bodyPart1;
-        private static string _bodyPart2;
-        private static string _bodyPart3;
-        private static string _bodyPart4;
 
         private Message _message;
         private static FormattedGmailMessage _formattedMessage;
