@@ -6,7 +6,6 @@ using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using Google.Apis.Gmail.v1.Data;
 using HtmlAgilityPack;
-using CoffeeJelly.TelegramBotApiWrapper;
 
 [assembly: InternalsVisibleTo("gmailNotifyBotTests")]
 namespace CoffeeJelly.gmailNotifyBot.Bot
@@ -41,11 +40,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
                 Date = messagePartHeader.Value;
-            _body = "";
+            _body = new List<string>();
             if (message.Payload.Parts != null)
-                DecodeDevidedBody(message.Payload.Parts, ref _body);
+                DecodeDevidedBody(message.Payload.Parts, _body);
             else if (message.Payload.Body?.Data != null)
-                _body = DecodeBody(message.Payload.Body.Data);
+                Body.Add(DecodeBody(message.Payload.Body.Data));
         }
 
         private static string DecodeBody(string base64EncodedData)
@@ -55,24 +54,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return Base64.Decode(base64EncodedData);
         }
 
-        private void DecodeDevidedBody(IList<MessagePart> parts, ref string decodedBody)
+        private void DecodeDevidedBody(IList<MessagePart> parts, List<string> decodedBody)
         {
             parts.NullInspect(nameof(parts));
+
             foreach (var part in parts)
             {
                 if (part.Parts != null)
-                    DecodeDevidedBody(part.Parts, ref decodedBody);
+                    DecodeDevidedBody(part.Parts, decodedBody);
                 else if (part.Body?.Data != null)
-                    decodedBody += DecodeBody(part.Body.Data);
+                    decodedBody.Add(DecodeBody(part.Body.Data));
             }
         }
 
-        private static List<string> FormateBody(string body)
+        private static List<string> FormatBody(IEnumerable<string> body)
         {
-            return body?.DivideByLength(PageLength).Select(FormateText).ToList();
+            return body?.Select(FormatText).ToList();
         }
 
-        private static string FormateText(string text)
+        private static string FormatText(string text)
         {
             AddUrlTags(ref text);
             ParseInnerText(ref text);
@@ -80,15 +80,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return text;
         }
 
-        private static void  AddUrlTags(ref string text)
+        private static void AddUrlTags(ref string text)
         {
         }
 
         private static void ParseInnerText(ref string text)
         {
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(text);
-            text = htmlDoc.DocumentNode.InnerText;
+            //var htmlDoc = new HtmlDocument();
+            //htmlDoc.LoadHtml(text);
+            //text = htmlDoc.DocumentNode.InnerText;
         }
 
         private static void ReplaceSymbolsWithHtmlEntities(ref string text)
@@ -99,7 +99,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             text = text.Replace("\"", "&quot;");
         }
 
-        
+
 
         public string Id { get; set; }
 
@@ -117,13 +117,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public string ETag { get; set; }
 
-        public static int PageLength { get; } = 2000;
-
         public List<string> LabelIds;
 
-        private string _body;
+        private List<string> _body;
 
-        public string Body
+        public List<string> Body
         {
             get { return _body; }
             set
@@ -132,9 +130,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        public List<string> FormattedBody => FormateBody(_body);
+        private List<string> _formattedBody;
 
-        public bool MultiPartBody => FormattedBody?.Count > 1;
+        public List<string> FormattedBody => FormatBody(_body);
+
+        public bool MultiPartBody => Body?.Count > 1;
 
         //public string FormattedBody => FormateBody();
     }
