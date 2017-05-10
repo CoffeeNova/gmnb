@@ -19,7 +19,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                                                     ParseMode? parseMode = null, bool? disableWebPagePreview = null, InlineKeyboardMarkup replyMarkup = null)
         {
             newText.NullInspect(nameof(newText));
-
+            if (!newText.Length.InRange(Constants.MESSAGE_TEXT_MIN_LENGTH, Constants.MESSAGE_TEXT_MAX_LENGTH))
+                throw new ArgumentOutOfRangeException(nameof(newText),
+                    $"Must be in range from {Constants.MESSAGE_TEXT_MIN_LENGTH} to {Constants.MESSAGE_TEXT_MAX_LENGTH}");
             if (inlineMessageId == null)
             {
                 if (chatId == null)
@@ -38,6 +40,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                     throw new ArgumentException(
                         $"If {nameof(inlineMessageId)} is specified {nameof(messageId)} must be a null value.");
             }
+               
             var parameters = new NameValueCollection { { "text", newText } };
 
             UpdateMethodsDefaultContent(parameters, chatId, messageId, inlineMessageId, replyMarkup);

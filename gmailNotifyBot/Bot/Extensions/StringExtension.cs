@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -149,6 +150,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
                 if (str.StartsWith(pattern, comparisonType))
                     return true;
             return false;
+        }
+
+        /// <summary>
+        /// Devide string into parts of <paramref name="chunkLength"/> length
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="chunkLength"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> DivideByLength(this string text, int chunkLength)
+        {
+            int chunks = (int)Math.Ceiling(text.Length / (double)chunkLength);
+            var devided = Enumerable.Range(0, chunks).Select(i =>
+            {
+                if (i == chunks -1)
+                    return text.Substring(i * chunkLength, text.Length - i* chunkLength);
+                return text.Substring(i*chunkLength, chunkLength);
+            });
+            return devided;
         }
     }
 }

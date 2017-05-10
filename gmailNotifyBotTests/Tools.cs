@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoffeeJelly.gmailNotifyBotTests
+namespace CoffeeJelly.gmailNotifyBot.Tests
 {
     internal static class Tools
     {

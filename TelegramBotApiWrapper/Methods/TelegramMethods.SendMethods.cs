@@ -21,6 +21,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
         {
             chatId.NullInspect(nameof(chatId));
             message.NullInspect(nameof(message));
+            if (!message.Length.InRange(Constants.MESSAGE_TEXT_MIN_LENGTH, Constants.MESSAGE_TEXT_MAX_LENGTH))
+                throw new ArgumentOutOfRangeException(nameof(message),
+                    $"Must be in range from {Constants.MESSAGE_TEXT_MIN_LENGTH} to {Constants.MESSAGE_TEXT_MAX_LENGTH}");
 
             var parameters = new NameValueCollection();
             SendMethodsDefaultContent(parameters, chatId, disableNotification, replyToMessageId, replyMarkup);

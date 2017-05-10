@@ -11,6 +11,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string CONNECT_COMMAND = @"/connect";
         public const string TESTNAME_COMMAND = @"/testname";
         public const string TESTMESSAGE_COMMAND = @"/testmessage";
+        public const string TESTTHREAD_COMMAND = @"/testthread";
         public const string NEW_COMMAND = @"/new";
         public const string INBOX_COMMAND = @"/inbox";
         public const string ALL_COMMAND = "@/all";

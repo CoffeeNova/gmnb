@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CoffeeJelly.gmailNotifyBotTests;
+using CoffeeJelly.gmailNotifyBot.Tests;
 using KellermanSoftware.CompareNetObjects;
 using Google.Apis.Gmail.v1.Data;
 
@@ -17,6 +17,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
+            _bodyPart1 = Tools.RandomString(2000);
+            _bodyPart2 = Tools.RandomString(2000);
+            _bodyPart3 = Tools.RandomString(2000);
+            _bodyPart4 = Tools.RandomString(2);
             _config = new ComparisonConfig
             {
                 CompareChildren = true,
@@ -34,13 +38,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 ThreadId = _threadId,
                 SenderName = _senderName,
                 SenderEmail = _senderAddress,
-                Body = new List<string>
-                    {
-                        _bodyPart1,
-                        _bodyPart2,
-                        _bodyPart3,
-                        _bodyPart4
-                    },
+                Body = _bodyPart1 + _bodyPart2 + _bodyPart3 + _bodyPart4,
                 Date = _date,
                 Snippet = _snippet,
                 Subject = _subject
@@ -118,7 +116,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                     }
                     #endregion
                 };
-               
+
             }
             if (TestContext.TestName == nameof(FormattedGmailMessage_1lvlPartedMessage_FormattedMessage))
             {
@@ -215,11 +213,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         private static string _senderAddress = "testaddr@gmail.com";
         private static string _subject = "testSubject";
         private static string _date = "testDate";
-        private static string _bodyPart1 = "first part";
-        private static string _bodyPart2 = "second part";
-        private static string _bodyPart3 = "third part";
-        private static string _bodyPart4 = "fourth part";
         private static ComparisonConfig _config;
+        private static string _bodyPart1;
+        private static string _bodyPart2;
+        private static string _bodyPart3;
+        private static string _bodyPart4;
 
         private Message _message;
         private static FormattedGmailMessage _formattedMessage;
