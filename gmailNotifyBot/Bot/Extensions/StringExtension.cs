@@ -175,15 +175,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
         }
 
         /// <summary>
-        /// Devide string into parts of <paramref name="maxChunkLength"/> length
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="maxChunkLength"></param>
-        /// <param name="minChunkLength"></param>
-        /// <returns></returns>
-
-
-        /// <summary>
         /// Devide text into parts of <paramref name="linesCount"/> length
         /// </summary>
         /// <param name="text"></param>

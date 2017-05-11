@@ -79,11 +79,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 else
                     stringedBody += bodyForm.Value;
             }
-            if (string.IsNullOrEmpty(stringedBody))
+            if (String.IsNullOrEmpty(stringedBody))
                 return new List<string>();
 
             var formatted = FormatText(stringedBody);
-            return formatted.DivideByLength(LinesPerPage).ToList();
+            return DivideIntoPages(formatted, 2000, 3000);
         }
 
         private static string HtmlConvertToPlainText(string html)
@@ -111,7 +111,35 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             //text = htmlDoc.DocumentNode.InnerText;
         }
 
+        private static List<string> DivideIntoPages(string text, int minChunkLength, int maxChunkLength)
+        {
+            if (minChunkLength < 1)
+                throw new ArgumentOutOfRangeException(nameof(maxChunkLength), "Must equals at least 1");
 
+            int floatingLength = 0;
+            int chunks = (int)Math.Ceiling(text.Length / (double)minChunkLength);
+            var devided = Enumerable.Range(0, chunks).Select(i =>
+            {
+                if (floatingLength >= text.Length)
+                    return null;
+                if (floatingLength + maxChunkLength > text.Length)
+                {
+                    floatingLength = text.Length;
+                    return text.Substring(floatingLength);
+                }
+                var temp = text.Substring(floatingLength, maxChunkLength);
+                var newLineIndex = temp.LastIndexOf(Environment.NewLine, StringComparison.Ordinal);
+                if (newLineIndex < minChunkLength)
+                {
+                    floatingLength += maxChunkLength;
+                    return temp;
+                }
+                floatingLength += newLineIndex + 1;
+                return temp.Substring(0, newLineIndex);
+            }).ToList();
+            devided.RemoveAll(i => string.IsNullOrEmpty(i));
+            return devided;
+        }
 
         private static void ReplaceSymbolsWithHtmlEntities(ref string text)
         {
@@ -158,7 +186,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public bool MultiPartBody => Body?.Count > 1;
 
-        public List<string> MimeTypes { get; set; } = new List<string> { "text/html" };
+        public List<string> MimeTypes { get; set; } = new List<string> { "text/plain" };
 
         public bool HtmlConvertToPlain { get; set; } = true;
     }
