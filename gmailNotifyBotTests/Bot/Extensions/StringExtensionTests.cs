@@ -2,6 +2,7 @@
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,33 +60,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions.Tests
             //Assert.IsTrue(result.AreEqual, result.DifferencesString);
         }
 
-        public static IEnumerable<string> DivideByLength(string text, int minChunkLength, int maxChunkLength)
-        {
-            if (minChunkLength < 1)
-                throw new ArgumentOutOfRangeException(nameof(maxChunkLength), "Must equals at least 1");
-
-            int floatingLength = 0;
-            int chunks = (int)Math.Ceiling(text.Length / (double)minChunkLength);
-            var devided = Enumerable.Range(0, chunks).Select(i =>
-            {
-                if (floatingLength >= text.Length)
-                    return null;
-                if (floatingLength + maxChunkLength > text.Length)
-                {
-                    floatingLength = text.Length;
-                    return text.Substring(floatingLength);
-                }
-                var temp = text.Substring(floatingLength, maxChunkLength);
-                var newLineIndex = temp.LastIndexOf(Environment.NewLine, StringComparison.Ordinal);
-                if (newLineIndex < minChunkLength)
-                {
-                    floatingLength += maxChunkLength;
-                    return temp;
-                }
-                floatingLength += newLineIndex + 1;
-                return temp.Substring(0, floatingLength);
-            });
-            return devided;
-        }
+        
     }
 }

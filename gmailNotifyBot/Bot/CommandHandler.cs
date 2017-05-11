@@ -61,8 +61,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             {
                 if (message.Text.StartsWith(Commands.TESTNAME_COMMAND))
                     await HandleTestNameCommand(message);
-                else if (message.Text == Commands.TESTMESSAGE_COMMAND)
-                    await HandleTestMessageCommand(message);
+                else if (message.Text.StartsWith(Commands.TESTMESSAGE_COMMAND))
+                {
+                    var splittedtext = message.Text.Split(' ');
+                    var messageID = splittedtext.Length > 1 ? splittedtext[1] : "";
+                    await HandleTestMessageCommand(message, messageID);
+                }
                 else if (message.Text == Commands.CONNECT_COMMAND)
                     await _authorizer.SendAuthorizeLink(message);
                 else if (message.Text == Commands.INBOX_COMMAND)
@@ -225,15 +229,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _botActions.EmailAddressMessage(sender.From, userinfo.Name);
         }
 
-        private async Task HandleTestMessageCommand(ISender sender)
+        private async Task HandleTestMessageCommand(ISender sender, string messageId)
         {
             var service = SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Messages.List("me");
-            query.LabelIds = "INBOX";
+            //query.LabelIds = "INBOX";
             var listMessagesResponce = await query.ExecuteAsync();
             if (listMessagesResponce?.Messages == null) return;
 
             var message = listMessagesResponce.Messages.First();
+            if (!string.IsNullOrEmpty(messageId))
+                message = listMessagesResponce.Messages.SingleOrDefault(m => m.Id == messageId);
+            if (message == null)
+                return;
+
             var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
             var mailInfoResponce = await getMailRequest.ExecuteAsync();
             if (mailInfoResponce == null) return;
