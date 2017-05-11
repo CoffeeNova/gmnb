@@ -44,7 +44,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 Date = _date,
                 Snippet = _snippet,
                 Subject = _subject,
-                MimeTypes = new List<string> { "text/plain"}
+                MimeTypes = new List<string> { "text/plain" }
             };
         }
 
@@ -125,7 +125,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 };
 
             }
-            if (TestContext.TestName == nameof(FormattedGmailMessage_1lvlPartedMessage_FormattedMessage))
+            if (TestContext.TestName ==nameof(FormattedGmailMessage_1lvlPartedMessage_FormattedMessage) ||
+                TestContext.TestName == nameof(FormattedGmailMessage_PartedMessage_FormattedBody))
             {
                 _message = new Message
                 {
@@ -198,7 +199,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         public void FormattedGmailMessage_2lvlPartedMessage_FormattedMessage()
         {
             var expected = _formattedMessage;
-            var actual = new FormattedGmailMessage(_message);
+            var actual = new FormattedGmailMessage(_message) { MimeTypes = new List<string> { "text/plain" } };
             var compaitLogic = new CompareLogic(_config);
             var result = compaitLogic.Compare(expected, actual);
             Assert.IsTrue(result.AreEqual, result.DifferencesString);
@@ -208,10 +209,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         public void FormattedGmailMessage_1lvlPartedMessage_FormattedMessage()
         {
             var expected = _formattedMessage;
-            var actual = new FormattedGmailMessage(_message);
+            var actual = new FormattedGmailMessage(_message) { MimeTypes = new List<string> { "text/plain" } };
             var compaitLogic = new CompareLogic(_config);
             var result = compaitLogic.Compare(expected, actual);
             Assert.IsTrue(result.AreEqual, result.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void FormattedGmailMessage_PartedMessage_FormattedBody()
+        {
+            var actual = new FormattedGmailMessage(_message) {MimeTypes = new List<string> {"text/plain"}};
+            actual.LinesPerPage = 1;
+            var test = actual.FormattedBody;
+            //var compaitLogic = new CompareLogic(_config);
+            //var result = compaitLogic.Compare(expected, actual);
         }
 
         public TestContext TestContext { get; set; }
@@ -224,10 +235,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         private static string _senderAddress = "testaddr@gmail.com";
         private static string _subject = "testSubject";
         private static string _date = "testDate";
-        private static BodyForm _bodyPart1 = new BodyForm("text/plain", Tools.RandomString(2000));
-        private static BodyForm _bodyPart2 = new BodyForm("text/html", Tools.RandomString(2000));
-        private static BodyForm _bodyPart3 = new BodyForm("text/plain", Tools.RandomString(2000));
-        private static BodyForm _bodyPart4 = new BodyForm("text/plain", Tools.RandomString(2));
+        private static BodyForm _bodyPart1 = new BodyForm("text/plain", "part1\r\npart1");
+        private static BodyForm _bodyPart2 = new BodyForm("text/plain", "part2");
+        private static BodyForm _bodyPart3 = new BodyForm("text/plain", "part3\r\npart3\r\npart3\r\n");
+        private static BodyForm _bodyPart4 = new BodyForm("text/plain", "part4\r\n");
         private static ComparisonConfig _config;
 
         private Message _message;
