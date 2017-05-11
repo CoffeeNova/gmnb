@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -160,14 +161,56 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
         /// <returns></returns>
         public static IEnumerable<string> DivideByLength(this string text, int chunkLength)
         {
+            if (chunkLength < 1)
+                throw new ArgumentOutOfRangeException(nameof(chunkLength), "Must equals at least 1");
+
             int chunks = (int)Math.Ceiling(text.Length / (double)chunkLength);
             var devided = Enumerable.Range(0, chunks).Select(i =>
             {
-                if (i == chunks -1)
-                    return text.Substring(i * chunkLength, text.Length - i* chunkLength);
-                return text.Substring(i*chunkLength, chunkLength);
+                if (i == chunks - 1)
+                    return text.Substring(i * chunkLength, text.Length - i * chunkLength);
+                return text.Substring(i * chunkLength, chunkLength);
             });
             return devided;
+        }
+
+        /// <summary>
+        /// Devide string into parts of <paramref name="maxChunkLength"/> length
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="maxChunkLength"></param>
+        /// <param name="minChunkLength"></param>
+        /// <returns></returns>
+
+
+        /// <summary>
+        /// Devide text into parts of <paramref name="linesCount"/> length
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="linesCount"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> DivideByLines(this string text, int linesCount)
+        {
+            if (linesCount < 1)
+                throw new ArgumentOutOfRangeException(nameof(linesCount), "Must equals at least 1");
+
+            var endsWithNewLine = text.EndsWith(Environment.NewLine);
+            var lines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
+            if (endsWithNewLine)
+                lines.RemoveAt(lines.Count - 1);
+            int chunks = (int)Math.Ceiling(lines.Count / (double)linesCount);
+            var dividedList = Enumerable.Range(0, chunks).Select(i =>
+            {
+                var part = lines.Skip(i * linesCount).Take(linesCount);
+                string str = "";
+                foreach (var line in part)
+                    str += line + Environment.NewLine;
+
+                if (i == chunks - 1 && !endsWithNewLine)
+                    return str.Trim(Environment.NewLine.ToCharArray());
+                return str;
+            });
+            return dividedList;
         }
     }
 }

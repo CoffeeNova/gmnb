@@ -45,8 +45,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 DecodeDevidedBody(message.Payload.Parts, _body);
             else if (message.Payload.Body?.Data != null)
                 _body.Add(new BodyForm(message.Payload.MimeType, DecodeBody(message.Payload.Body.Data)));
-
-            MimeTypes = new List<string> {"text/html"};
         }
 
         private static string DecodeBody(string base64EncodedData)
@@ -74,14 +72,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var stringedBody = "";
             foreach (var bodyForm in body)
             {
-                if (bodyForm.MimeType.EqualsAny(MimeTypes?.ToArray()))
+                if (!bodyForm.MimeType.EqualsAny(MimeTypes?.ToArray())) continue;
+
+                if (bodyForm.MimeType == "text/html" && HtmlConvertToPlain)
+                    stringedBody += HtmlConvertToPlainText(bodyForm.Value);
+                else
                     stringedBody += bodyForm.Value;
             }
             if (string.IsNullOrEmpty(stringedBody))
                 return new List<string>();
 
             var formatted = FormatText(stringedBody);
-            return formatted.DivideByLength(PageLength).ToList();
+            return formatted.DivideByLength(LinesPerPage).ToList();
+        }
+
+        private static string HtmlConvertToPlainText(string html)
+        {
+            return HtmlToText.ConvertHtml(html);
+            //return HtmlFilter.ConvertToPlainText(html);
         }
 
         private string FormatText(string text)
@@ -98,10 +106,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private static void ParseInnerText(ref string text)
         {
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(text);
-            text = htmlDoc.DocumentNode.InnerText;
+            //var htmlDoc = new HtmlDocument();
+            //htmlDoc.LoadHtml(text);
+            //text = htmlDoc.DocumentNode.InnerText;
         }
+
+
 
         private static void ReplaceSymbolsWithHtmlEntities(ref string text)
         {
@@ -129,7 +139,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public List<string> LabelIds;
 
-        public int PageLength { get; set; } = 1000;
+        public int LinesPerPage { get; set; } = 30;
 
         private List<BodyForm> _body;
 
@@ -148,7 +158,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public bool MultiPartBody => Body?.Count > 1;
 
-        public List<string> MimeTypes { get; set; }
+        public List<string> MimeTypes { get; set; } = new List<string> { "text/html" };
+
+        public bool HtmlConvertToPlain { get; set; } = true;
     }
 
     public class BodyForm

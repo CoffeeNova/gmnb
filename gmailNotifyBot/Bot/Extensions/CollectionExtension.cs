@@ -16,7 +16,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
         /// <param name="initialList">Разделяемый список</param>
         /// <param name="chunkLength">Длина составных частей</param>
         /// <returns>Список, содержащий в себе части разбитого начального списка</returns>
-        public static IEnumerable<IEnumerable<T>> DivideByLenght<T>(this IEnumerable<T> initialList, int chunkLength)
+        public static IEnumerable<IEnumerable<T>> DivideByLength<T>(this IEnumerable<T> initialList, int chunkLength)
         {
             var enumerable = initialList as IList<T> ?? initialList.ToList();
             int valuesLength = enumerable.Count;
