@@ -13,7 +13,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// Shows reply interface to the user, as if they manually selected the bot‘s message and tapped ’Reply'
         /// </summary>
         [JsonProperty("force_reply", Required = Required.Always)]
-        public bool ForseReply { get; } = true;
+        public bool Reply { get; } = true;
 
         /// <summary>
         /// Optional. Use this parameter if you want to show the keyboard to specific users only. 

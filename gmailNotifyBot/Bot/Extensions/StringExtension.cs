@@ -80,6 +80,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
             return regex.Replace(text, value, 1, 0);
         }
 
+        public static string ReplaceAll(this string text, string pattern, string value)
+        {
+            var regex = new Regex(Regex.Escape(pattern));
+            return regex.Replace(text, value);
+        }
+
+
         public static int ParseNumber(this string str)
         {
             var regex = new Regex(@"-?\d+");

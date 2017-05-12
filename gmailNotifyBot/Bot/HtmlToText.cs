@@ -82,7 +82,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                         textInfo.IsFirstTextOfDocWritten.Value = textInfo.WritePrecedingWhiteSpace = true;
                     }
                     outText.Write(HtmlEntity.DeEntitize(Regex.Replace(html.TrimEnd(), @"\s{2,}", " ")));
-                    if (textInfo.LastCharWasSpace = char.IsWhiteSpace(html[html.Length - 1]))
+                    if (textInfo.LastCharWasSpace == char.IsWhiteSpace(html[html.Length - 1]) || parentName == "a")
                     {
                         outText.Write(' ');
                     }
@@ -129,7 +129,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                                 string href = node.Attributes["href"].Value.Trim();
                                 if (node.InnerText.IndexOf(href, StringComparison.InvariantCultureIgnoreCase) == -1)
                                 {
-                                    endElementString = "<" + href + ">";
+                                    endElementString = $"*lt;a href=\"{href}\"*gt;{node.InnerText}*lt;/a*gt;";
                                 }
                             }
                             isInline = true;
@@ -160,7 +160,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                             }
                             if (node.Attributes.Contains("src"))
                             {
-                                outText.Write('<' + node.Attributes["src"].Value + '>');
+                                //outText.Write('<' + node.Attributes["src"].Value + '>');
                             }
                             isInline = true;
                             break;

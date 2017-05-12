@@ -41,25 +41,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions.Tests
         private static string text6 = "line6";
         private static string text7 = "line7";
 
-        [TestMethod()]
-        public void DivideByLengthTest()
-        {
-            var initText = "aaaaaaaaaaaaa\r\nbbbb\r\nb\r\nbbbbbb\r\nccc\r\ncc\r\nccccccccccccccccccccccc";
-            var expected = new List<string>()
-            {
-                "aaaaaaaaaaaaa",
-                "bbbb\r\nb\r\nbbbbbb",
-                "ccc\r\ncc\r\nccccccccccc",
-                "cccccccccccc"
-            };
-
-            var actual = DivideByLength(initText, 10, 20);
-            //var compareLogic = new CompareLogic();
-            //var result = compareLogic.Compare(expected, actual);
-
-            //Assert.IsTrue(result.AreEqual, result.DifferencesString);
-        }
-
         
     }
 }

@@ -138,9 +138,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         }
 
         [TestMethod()]
-        public void SendMessage_ForseReply_TextMessage()
+        public void SendMessage_ForceReply_TextMessage()
         {
-            var message = "ForseReply";
+            var message = "ForceReply";
             var expected = new TextMessage
             {
                 Chat = _privateChat,
