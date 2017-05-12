@@ -113,7 +113,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
 
 
-        public async Task ShowShortMessageAnswerInlineQuery(string inlineQueryId, List<FormattedGmailMessage> messages, int? offset = null)
+        public async Task ShowShortMessageAnswerInlineQuery(string inlineQueryId, List<FormattedMessage> messages, int? offset = null)
         {
             var inlineQueryResults = new List<InlineQueryResult>();
             foreach (var message in messages)
@@ -140,32 +140,28 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.EditMessageTextAsync("Success", chatId, messageId);
         }
 
-        public async Task ChosenShortMessage(string chatId, FormattedGmailMessage formattedMessage, bool isIgnored)
+        public async Task ChosenShortMessage(string chatId, FormattedMessage formattedMessage, bool isIgnored)
         {
-            var header = HtmlStyledMessageHeader(formattedMessage);
+            var header = formattedMessage.Header;
             var message = header + $"\r\n\r\n {formattedMessage.Snippet}";
             var keyboard = MessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task UpdateMessage(string chatId, int messageId, FormattedGmailMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
+        public async Task UpdateMessage(string chatId, int messageId, FormattedMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
         {
-            var header = HtmlStyledMessageHeader(formattedMessage);
+            var header = formattedMessage.Header;
             var keyboard = MessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
             var displayedMessage = page == 0
                 ? header + $"\r\n\r\n {formattedMessage.Snippet}"
-                : header + $"\r\n\r\n {formattedMessage.FormattedBody[page - 1]}";
+                : header + $"\r\n\r\n {formattedMessage.HtmlBody?[page - 1] ?? formattedMessage.TextBody?[page -1]}";
             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
-        private string HtmlStyledMessageHeader(FormattedGmailMessage message)
-        {
-            return
-                $"From: <b>{message.SenderName}</b>    <i>{message.SenderEmail}</i> \r\n<b>{message.Subject}</b>";
-        }
 
 
-        private InlineKeyboardMarkup MessageKeyboardMarkup(FormattedGmailMessage message, int page, MessageKeyboardState state, bool isIgnored)
+
+        private InlineKeyboardMarkup MessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
         {
             message.NullInspect(nameof(message));
 
@@ -233,7 +229,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 var row = new List<InlineKeyboardButton>();
                 if (message.MultiPartBody)
                 {
-                    if (page < message.FormattedBody?.Count)
+                    var pageCount = message.HtmlBody?.Count ?? message.TextBody?.Count;
+                    if (page < pageCount)
                     {
                         nextPageButton = new InlineKeyboardButton();
                         nextPageButton.Text = $"To Page {page + 1} {Emoji.RightArrow}";

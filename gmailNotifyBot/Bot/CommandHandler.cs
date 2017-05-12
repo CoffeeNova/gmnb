@@ -246,7 +246,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
             var mailInfoResponce = await getMailRequest.ExecuteAsync();
             if (mailInfoResponce == null) return;
-            var formattedMessage = new FormattedGmailMessage(mailInfoResponce);
+            var formattedMessage = new FormattedMessage(mailInfoResponce);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
             await _botActions.ChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
@@ -263,7 +263,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var getMailRequest = service.GmailService.Users.Messages.Get("me", thread.Id);
             var mailInfoResponce = await getMailRequest.ExecuteAsync();
             if (mailInfoResponce == null) return;
-            var formattedMessage = new FormattedGmailMessage(mailInfoResponce);
+            var formattedMessage = new FormattedMessage(mailInfoResponce);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
             await _botActions.ChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
@@ -313,14 +313,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     await _botActions.EmptyLabelMessage(sender.From, labelId, page);
                 return;
             }
-            var formatedMessages = new List<FormattedGmailMessage>();
+            var formatedMessages = new List<FormattedMessage>();
             foreach (var message in listMessagesResponce.Messages.Skip(offset).Take(5))
             {
                 var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
                 getMailRequest.Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Metadata;
                 var mailInfoResponce = await getMailRequest.ExecuteAsync();
                 if (mailInfoResponce == null) continue;
-                formatedMessages.Add(new FormattedGmailMessage(mailInfoResponce));
+                formatedMessages.Add(new FormattedMessage(mailInfoResponce));
             }
 
             await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages, offset + 5);
@@ -553,7 +553,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private async Task HandleCallbackQueryNextPageCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
-            if (formattedMessage.FormattedBody.Count <= callbackData.Page)
+            if (formattedMessage.TextBody.Count <= callbackData.Page)
                 throw new InvalidOperationException("Execution of this method is not permissible in this situation");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
             var newPage = callbackData.Page + 1;
@@ -589,15 +589,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
 
 
-        private async Task<FormattedGmailMessage> GetMessage(string userId, string messageId)
+        private async Task<FormattedMessage> GetMessage(string userId, string messageId)
         {
             var service = SearchServiceByUserId(userId);
             var query = service.GmailService.Users.Messages.Get("me", messageId);
             var messageResponce = await query.ExecuteAsync();
-            return new FormattedGmailMessage(messageResponce);
+            return new FormattedMessage(messageResponce);
         }
 
-        private async Task<FormattedGmailMessage> ModifyMessageLabels(ModifyLabelsAction action, string userId, string messageId, string eTag = null, params string[] labels)
+        private async Task<FormattedMessage> ModifyMessageLabels(ModifyLabelsAction action, string userId, string messageId, string eTag = null, params string[] labels)
         {
             var labelsList = labels.ToList();
             if (action == ModifyLabelsAction.Add)
@@ -605,7 +605,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return await ModifyMessageLabels(userId, messageId, null, labelsList, eTag);
         }
 
-        private async Task<FormattedGmailMessage> ModifyMessageLabels(string userId, string messageId, List<string> addedLabels = null, List<string> removedLabels = null, string eTag = null)
+        private async Task<FormattedMessage> ModifyMessageLabels(string userId, string messageId, List<string> addedLabels = null, List<string> removedLabels = null, string eTag = null)
         {
             var service = SearchServiceByUserId(userId);
             var modifyMessageRequest = new ModifyMessageRequest
@@ -618,7 +618,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var messageResponce = await modifyRequest.ExecuteAsync();
             var getRequest = service.GmailService.Users.Messages.Get("me", messageResponce.Id);
             messageResponce = await getRequest.ExecuteAsync();
-            return new FormattedGmailMessage(messageResponce);
+            return new FormattedMessage(messageResponce);
         }
 
         private UpdatesHandler _updatesHandler;

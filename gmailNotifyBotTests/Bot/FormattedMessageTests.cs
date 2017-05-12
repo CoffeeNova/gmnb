@@ -28,24 +28,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 MaxDifferences = 50,
                 // MembersToIgnore = new List<string> { "MessageId", "Date", "ForwardDate", "UpdateId" }
             };
-            _formattedMessage = new FormattedGmailMessage
-            {
-                Id = _id,
-                ThreadId = _threadId,
-                SenderName = _senderName,
-                SenderEmail = _senderAddress,
-                Body = new List<BodyForm>
-                    {
-                        _bodyPart1,
-                        _bodyPart2,
-                        _bodyPart3,
-                        _bodyPart4
-                    },
-                Date = _date,
-                Snippet = _snippet,
-                Subject = _subject,
-                MimeTypes = new List<string> { "text/plain" }
-            };
+            //_formattedMessage = new FormattedMessage
+            //{
+            //    Id = _id,
+            //    ThreadId = _threadId,
+            //    SenderName = _senderName,
+            //    SenderEmail = _senderAddress,
+            //    Body = new List<BodyForm>
+            //        {
+            //            _bodyPart1,
+            //            _bodyPart2,
+            //            _bodyPart3,
+            //            _bodyPart4
+            //        },
+            //    Date = _date,
+            //    Snippet = _snippet,
+            //    Subject = _subject
+            //};
         }
 
         [TestInitialize]
@@ -125,8 +124,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 };
 
             }
-            if (TestContext.TestName ==nameof(FormattedGmailMessage_1lvlPartedMessage_FormattedMessage) ||
-                TestContext.TestName == nameof(FormattedGmailMessage_PartedMessage_FormattedBody))
+            if (TestContext.TestName ==nameof(FormattedGmailMessage_1lvlPartedMessage_FormattedMessage))
             {
                 _message = new Message
                 {
@@ -199,7 +197,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         public void FormattedGmailMessage_2lvlPartedMessage_FormattedMessage()
         {
             var expected = _formattedMessage;
-            var actual = new FormattedGmailMessage(_message) { MimeTypes = new List<string> { "text/plain" } };
+            var actual = new FormattedMessage(_message);
             var compaitLogic = new CompareLogic(_config);
             var result = compaitLogic.Compare(expected, actual);
             Assert.IsTrue(result.AreEqual, result.DifferencesString);
@@ -209,20 +207,63 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         public void FormattedGmailMessage_1lvlPartedMessage_FormattedMessage()
         {
             var expected = _formattedMessage;
-            var actual = new FormattedGmailMessage(_message) { MimeTypes = new List<string> { "text/plain" } };
+            var actual = new FormattedMessage(_message);
             var compaitLogic = new CompareLogic(_config);
             var result = compaitLogic.Compare(expected, actual);
             Assert.IsTrue(result.AreEqual, result.DifferencesString);
         }
 
         [TestMethod()]
-        public void FormattedGmailMessage_PartedMessage_FormattedBody()
+        public void DivideIntoPagesTest_SimpleText_3linesList()
         {
-            var actual = new FormattedGmailMessage(_message) {MimeTypes = new List<string> {"text/plain"}};
-            actual.LinesPerPage = 1;
-            var test = actual.FormattedBody;
-            //var compaitLogic = new CompareLogic(_config);
-            //var result = compaitLogic.Compare(expected, actual);
+            var text = "aaaaaaaaaabbbbbbbbbbcccccccccc";
+            var expected = new List<string>
+            {
+                "aaaaaaaaaa",
+                "bbbbbbbbbb",
+                "cccccccccc"
+            };
+            var actual = FormattedMessage.DivideIntoPages(text, 5, 10);
+
+            var compaitLogic = new CompareLogic(_config);
+            var result = compaitLogic.Compare(expected, actual);
+            Assert.IsTrue(result.AreEqual, result.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void DivideIntoPagesTest_TextWithNewLines_4linesList()
+        {
+            var text = "0123456\r\n90123456789012345 789";
+            var expected = new List<string>
+            {
+                "0123456",
+                "9012345678",
+                "9012345",
+                "789"
+            };
+            var actual = FormattedMessage.DivideIntoPages(text, 5, 10);
+
+            var compaitLogic = new CompareLogic(_config);
+            var result = compaitLogic.Compare(expected, actual);
+            Assert.IsTrue(result.AreEqual, result.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void DivideIntoPagesTest_TextWithBrackets_4linesList()
+        {
+            var text = "0<2>456\r\n9012345<7890>2345 789";
+            var expected = new List<string>
+            {
+                "0<2>456",
+                "9012345",
+                "<7890>2345",
+                " 789"
+            };
+            var actual = FormattedMessage.DivideIntoPages(text, 5, 10);
+
+            var compaitLogic = new CompareLogic(_config);
+            var result = compaitLogic.Compare(expected, actual);
+            Assert.IsTrue(result.AreEqual, result.DifferencesString);
         }
 
         public TestContext TestContext { get; set; }
@@ -242,6 +283,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         private static ComparisonConfig _config;
 
         private Message _message;
-        private static FormattedGmailMessage _formattedMessage;
+        private static FormattedMessage _formattedMessage;
     }
 }
