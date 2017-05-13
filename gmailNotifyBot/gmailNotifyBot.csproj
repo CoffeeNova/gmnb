@@ -259,6 +259,7 @@
     <Compile Include="Bot\Extensions\ObjectExtension.cs" />
     <Compile Include="Bot\Extensions\StringExtension.cs" />
     <Compile Include="Bot\FormatedMessage.cs" />
+    <Compile Include="Bot\FormattedMessageHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

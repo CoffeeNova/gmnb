@@ -42,7 +42,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 Subject = messagePartHeader.Value;
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
-                Date = messagePartHeader.Value;
+                Date =  DateTime.Parse(messagePartHeader.Value);
             var body = new List<BodyForm>();
             if (message.Payload.Parts != null)
                 DecodeDevidedBody(message.Payload.Parts, body);
@@ -72,164 +72,49 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        private List<string> FormatTextBody(IEnumerable<BodyForm> body)
+        private string HtmlStyledMessageHeader()
         {
-            if (body == null)
-                return null;
-            var textBody = "";
-            foreach (var bodyForm in body)
-                if (bodyForm.MimeType == "text/plain")
-                    textBody += bodyForm.Value;
-
-            if (String.IsNullOrEmpty(textBody))
-                return null;
-
-            var formatted = FormatText(textBody);
-            return DivideIntoPages(formatted, MinSymbolsToBreakPage, MaxSymbolsToBreakPage);
-        }
-
-        private List<string> FormatHtmlBody(IEnumerable<BodyForm> body)
-        {
-            if (body == null)
-                return null;
-            var htmlBody = "";
-            foreach (var bodyForm in body)
-                if (bodyForm.MimeType == "text/html")
-                    htmlBody += HtmlConvertToPlainText(bodyForm.Value);
-
-            if (String.IsNullOrEmpty(htmlBody))
-                return null;
-
-            var formatted = FormatText(htmlBody);
-            return DivideIntoPages(formatted, MinSymbolsToBreakPage, MaxSymbolsToBreakPage);
-        }
-
-        private static string HtmlConvertToPlainText(string text)
-        {
-            return HtmlToText.ConvertHtml(text);
-        }
-
-        private string FormatText(string text)
-        {
-            ParseInnerText(ref text);
-            ReplaceSymbolsWithHtmlEntities(ref text);
-            AddUrlTags(ref text);
-            return text;
-        }
-
-        //private string FormatHtml(string text)
-        //{
-        //    AddUrlTags(ref text);
-        //    ParseInnerText(ref text);
-        //    HtmlConvertToPlainText(ref text);
-        //    ReplaceSymbolsWithHtmlEntities(ref text);
-        //    return text;
-        //}
-
-        private static void AddUrlTags(ref string text)
-        {
-            text = text.Replace("*lt;", "<");
-            text = text.Replace("*gt;", ">");
-        }
-
-        private static void ParseInnerText(ref string text)
-        {
-            //var htmlDoc = new HtmlDocument();
-            //htmlDoc.LoadHtml(text);
-            //text = htmlDoc.DocumentNode.InnerText;
-        }
-
-        /// <summary>
-        /// Divides the text into pages adjusted to telegram message.
-        /// Tries to finish pages by detecting new line or space char in range of <paramref name="minChunkLength"/> to <paramref name="maxChunkLength"/>
-        /// if possible. Also checks if each left bracket (&lt;) has a pair (&gt;). The brackets used in this method indicate html tags.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="minChunkLength"></param>
-        /// <param name="maxChunkLength"></param>
-        /// <returns></returns>
-        public static List<string> DivideIntoPages(string text, int minChunkLength, int maxChunkLength)
-        {
-            if (minChunkLength < 1)
-                throw new ArgumentOutOfRangeException(nameof(maxChunkLength), "Must equals at least 1");
-
-            int floatingLength = 0;
-            int chunks = (int)Math.Ceiling(text.Length / (double)minChunkLength);
-            var devided = Enumerable.Range(0, chunks).Select(i =>
-            {
-                //this inner method checks an integrity of last html tag (<sometag> </sometag>) in content and returns content if last tag is holistic
-                //and increase floatingLength by floatingGain or by index last left bracket
-                var htmlIntegrity = new Func<string, int, string>((content, floatingGain) =>
-                {
-                    int indexAtag;
-                    var indexLeft = content.LastIndexOf('<');
-                    if (indexLeft == -1)
-                    {
-                        floatingLength += floatingGain;
-                        return content;
-                    }
-                    var indexRight = content.LastIndexOf('>');
-                    if (indexRight > indexLeft)
-                    {
-                        if (content[indexLeft + 1] == '/')
-                        {
-                            floatingLength += floatingGain;
-                            return content;
-                        }
-                    }
-
-                    floatingLength += indexLeft;
-                    return content.Substring(0, indexLeft);
-                });
-                if (floatingLength >= text.Length)
-                    return null;
-                if (floatingLength + maxChunkLength > text.Length)
-                {
-                    var subText = text.Substring(floatingLength);
-                    floatingLength = text.Length;
-                    return subText;
-                }
-                var temp = text.Substring(floatingLength, maxChunkLength);
-                string subTemp;
-                var newLineIndex = temp.LastIndexOf(Environment.NewLine, StringComparison.Ordinal);//try to find last line break symbolin pagebreaker range (minChunkLength, maxChunkLength)
-                if (newLineIndex < minChunkLength)                                                 //if we can't
-                {
-                    var emptySymbolIndex = temp.LastIndexOf(' ');//then try to find last space char
-                    if (emptySymbolIndex < minChunkLength) //we couldn't find it
-                    {
-                        return htmlIntegrity(temp, maxChunkLength);
-                    }
-                    subTemp = temp.Substring(0, emptySymbolIndex);
-                    return htmlIntegrity(subTemp, emptySymbolIndex + 1);
-                }
-                subTemp = temp.Substring(0, newLineIndex);
-                return htmlIntegrity(subTemp, newLineIndex + Environment.NewLine.Length);
-            }).ToList();
-            devided.RemoveAll(string.IsNullOrEmpty);
-            return devided;
-        }
-
-        private static void ReplaceSymbolsWithHtmlEntities(ref string text)
-        {
-            text = text.Replace("&", "&amp;");
-            text = text.Replace("<", "&lt;");
-            text = text.Replace(">", "&gt;");
-            //text = text.Replace("\"", "&quot;");
-        }
-
-        private string HtmlStyledMessageHeader(string senderName, string senderEmail, string subject)
-        {
-            if (senderName == null || senderEmail == null || subject == null)
-                return string.Empty;
             return
-                $"From: <b>{senderName}</b>    <i>{senderEmail}</i> \r\n<b>{subject}</b>";
+                $"<b>{SenderName}</b>    {SenderEmail}   <i>{Date}</i> \r\n\r\n<b>{Subject}</b>";
+        }
+
+        private static int SymbolsCounter(int lines)
+        {
+            return SymbolsPerLine * lines;
+        }
+
+        private int CalculatePages()
+        {
+            int? pages;
+            if (IgnoreHtmlParts)
+                pages = TextBody?.Count;
+            else
+                pages = HaveHtmlBody ? HtmlBody?.Count : TextBody?.Count;
+            return pages ?? 0;
+        }
+
+        private List<string> GetDesirableBody()
+        {
+            if (IgnoreHtmlParts)
+                return TextBody;
+            return HtmlBody ?? TextBody;
+        }
+
+        private bool IsSnippetEqualsBody()
+        {
+            if (IgnoreHtmlParts)
+            {
+                if (TextBody.Count > 1) return false;
+                return Equals(TextBody.First(), Snippet);
+            }
+            if (TextBody?.Count > 1 || HtmlBody?.Count > 1)
+                return false;
+            return Equals(TextBody?.First(), Snippet) || Equals(HtmlBody?.First(), Snippet);
         }
 
         private const int SymbolsPerLine = 58;
-        private const int MaxLinePerPage = 25;
-        private const int MinLinePerPage = 25;
-        private const int MinSymbolsToBreakPage = SymbolsPerLine * MinLinePerPage;
-        private const int MaxSymbolsToBreakPage = SymbolsPerLine * MaxLinePerPage;
+        private int MinSymbolsToBreakPage => SymbolsCounter(MinLinePerPage);
+        private int MaxSymbolsToBreakPage => SymbolsCounter(MaxLinePerPage);
 
         public string Id { get; set; }
 
@@ -243,10 +128,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public string Subject { get; set; }
 
-        public string Date { get; set; }
+        public DateTime DateUtc => Date.ToUniversalTime();
+
+        public DateTime Date { get; set; }
 
         public string ETag { get; set; }
 
+        public int MaxLinePerPage { get; set; } = 35;
+        public int MinLinePerPage { get; set; } = 25;
 
         public List<string> LabelIds;
 
@@ -260,8 +149,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             set
             {
                 _body = value;
-                TextBody = FormatTextBody(value);
-                HtmlBody = FormatHtmlBody(value);
+                TextBody = FormattedMessageHelper
+                    .FormatTextBody(value, MinSymbolsToBreakPage, MaxSymbolsToBreakPage)?
+                    .ToList();
+                if (!IgnoreHtmlParts)
+                    HtmlBody = FormattedMessageHelper
+                        .FormatHtmlBody(value, MinSymbolsToBreakPage, MaxSymbolsToBreakPage)?
+                        .ToList();
             }
         }
 
@@ -269,10 +163,29 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public List<string> HtmlBody { get; private set; }
 
-        public string Header => HtmlStyledMessageHeader(SenderName, SenderEmail, Subject);
+        public List<string> DesirableBody => GetDesirableBody();
 
-        public bool MultiPartBody => Body?.Count > 1;
+        public string Header => HtmlStyledMessageHeader();
 
+        public bool HaveHtmlBody => HtmlBody?.Count > 0;
+
+        public bool MultiPageBody => HaveHtmlBody ? HtmlBody?.Count > 1 : TextBody?.Count > 1;
+
+        public int Pages => CalculatePages();
+
+        private bool _ignoreHtmlParts = false;
+
+        public bool IgnoreHtmlParts
+        {
+            get { return _ignoreHtmlParts; }
+            set
+            {
+                _ignoreHtmlParts = value;
+                if (value)
+                    HtmlBody = null;
+            }
+
+        }
         public bool HtmlConvertToPlain { get; set; } = true;
 
         private static IList<string> _mimeTypes = new List<string>
@@ -283,6 +196,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public ReadOnlyCollection<string> MimeTypes { get; } = new ReadOnlyCollection<string>(_mimeTypes);
 
+        public bool SnippetEqualsBody => IsSnippetEqualsBody();
     }
 
     public class BodyForm

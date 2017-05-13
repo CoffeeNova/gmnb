@@ -59,6 +59,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 case HtmlNodeType.Text:
                     // script and style must not be output
                     string parentName = node.ParentNode.Name;
+                    if (parentName == "a")
+                    {
+                        outText.Write(' ');
+                        break;
+                    }
                     if ((parentName == "script") || (parentName == "style"))
                     {
                         break;
@@ -82,7 +87,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                         textInfo.IsFirstTextOfDocWritten.Value = textInfo.WritePrecedingWhiteSpace = true;
                     }
                     outText.Write(HtmlEntity.DeEntitize(Regex.Replace(html.TrimEnd(), @"\s{2,}", " ")));
-                    if (textInfo.LastCharWasSpace == char.IsWhiteSpace(html[html.Length - 1]) || parentName == "a")
+                    if (textInfo.LastCharWasSpace == char.IsWhiteSpace(html[html.Length - 1]))
                     {
                         outText.Write(' ');
                     }
@@ -155,8 +160,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                         case "img": //inline-block in reality
                             if (node.Attributes.Contains("alt"))
                             {
-                                outText.Write('[' + node.Attributes["alt"].Value);
-                                endElementString = "]";
+                               // outText.Write('[' + node.Attributes["alt"].Value);
+                               // endElementString = "]";
                             }
                             if (node.Attributes.Contains("src"))
                             {

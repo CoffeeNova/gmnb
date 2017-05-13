@@ -11,12 +11,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
     {
         public static bool AnyNullOrEmpty(params string[] str)
         {
-            return str.Any(s => string.IsNullOrEmpty(s));
+            return str.Any(s => String.IsNullOrEmpty(s));
         }
 
         public static string RemoveWhiteSpaces(this string str)
         {
-            return Regex.Replace(str, " ", string.Empty);
+            return Regex.Replace(str, " ", String.Empty);
         }
 
         public static string[] RemoveWhiteSpaces(this string[] strArr)
@@ -28,7 +28,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
 
         public static string PathFormatter(this string str)
         {
-            if (string.IsNullOrEmpty(str) || str.Last() == '\\')
+            if (String.IsNullOrEmpty(str) || str.Last() == '\\')
                 return str;
             return str + "\\";
         }
@@ -37,12 +37,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
         {
             if (str == null)
                 throw new ArgumentNullException(nameof(str));
-            if (str == string.Empty)
+            if (str == String.Empty)
                 throw new ArgumentException($"{nameof(str)} must not be empty.");
 
             str.PathFormatter();
             var splittedStr = str.Split('\\');
-            string formattedStr = string.Empty;
+            string formattedStr = String.Empty;
             for (int i = 0; i <= splittedStr.Length - 2; i++)
                 formattedStr += splittedStr[i].PathFormatter();
 
@@ -80,12 +80,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
             return regex.Replace(text, value, 1, 0);
         }
 
-        public static string ReplaceAll(this string text, string pattern, string value)
+        public static string ReplaceFirst(this string text, string pattern, string value, RegexOptions options)
         {
-            var regex = new Regex(Regex.Escape(pattern));
-            return regex.Replace(text, value);
+            var regex = new Regex(Regex.Escape(pattern), options);
+            return regex.Replace(text, value, 1, 0);
         }
-
 
         public static int ParseNumber(this string str)
         {

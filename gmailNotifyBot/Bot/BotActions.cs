@@ -153,13 +153,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var header = formattedMessage.Header;
             var keyboard = MessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
             var displayedMessage = page == 0
-                ? header + $"\r\n\r\n {formattedMessage.Snippet}"
-                : header + $"\r\n\r\n {formattedMessage.HtmlBody?[page - 1] ?? formattedMessage.TextBody?[page -1]}";
+                ? header + $"\r\n\r\n{formattedMessage.Snippet}"
+                : header + $"\r\n\r\n{formattedMessage.DesirableBody[page - 1]}";
             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
-
-
-
 
         private InlineKeyboardMarkup MessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
         {
@@ -205,7 +202,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 : $"{Emoji.RecycleBin} Delete",
                 CallbackData = message.LabelIds.Exists(label => label == "TRASH")
                 ? new CallbackData(generalCallbackData) { Command = Commands.TO_INBOX_COMMAND }
-                : new CallbackData(generalCallbackData) { Command = Commands.DELETE_COMMAND }
+                : new CallbackData(generalCallbackData) { Command = Commands.TO_TRASHCOMMAND }
             };
             var archiveButton = new InlineKeyboardButton
             {
@@ -227,9 +224,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var pageSliderFunc = new Func<List<InlineKeyboardButton>>(() =>
             {
                 var row = new List<InlineKeyboardButton>();
-                if (message.MultiPartBody)
+                if (message.MultiPageBody)
                 {
-                    var pageCount = message.HtmlBody?.Count ?? message.TextBody?.Count;
+                    var pageCount = message.Pages;
                     if (page < pageCount)
                     {
                         nextPageButton = new InlineKeyboardButton();
@@ -254,9 +251,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 if (nextPageButton != null)
                     row.Add(nextPageButton);
                 return row;
-        });
+            });
             string expandButtonCommand = "";
-        string actionsButtonCommand = "";
+            string actionsButtonCommand = "";
             switch (state)
             {
                 case MessageKeyboardState.Minimized:
@@ -266,7 +263,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     expandButtonCommand = Commands.EXPAND_COMMAND;
                     actionsButton.Text = $"{Emoji.TurnedDownArrow} Actions";
                     actionsButtonCommand = Commands.EXPAND_ACTIONS_COMMAND;
-                    firstRow.Add(expandButton);
+                    if (!message.SnippetEqualsBody)
+                        firstRow.Add(expandButton);
                     firstRow.Add(actionsButton);
                     break;
                 #endregion
@@ -277,7 +275,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     actionsButton.Text = $"{Emoji.TurnedDownArrow} Actions";
                     actionsButtonCommand = Commands.EXPAND_ACTIONS_COMMAND;
                     firstRow = pageSliderFunc();
-        secondRow.Add(expandButton);
+                    if (!message.SnippetEqualsBody)
+                        secondRow.Add(expandButton);
                     secondRow.Add(actionsButton);
                     break;
                 #endregion
@@ -287,7 +286,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     expandButtonCommand = Commands.EXPAND_COMMAND;
                     actionsButton.Text = $"{Emoji.TurnedUpArrow} Actions";
                     actionsButtonCommand = Commands.HIDE_ACTIONS_COMMAND;
-                    firstRow.Add(expandButton);
+                    if (!message.SnippetEqualsBody)
+                        firstRow.Add(expandButton);
                     firstRow.Add(actionsButton);
                     secondRow.Add(unreadButton);
                     secondRow.Add(spamButton);
@@ -303,7 +303,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     actionsButton.Text = $"{Emoji.TurnedUpArrow} Actions";
                     actionsButtonCommand = Commands.HIDE_ACTIONS_COMMAND;
                     firstRow = pageSliderFunc();
-        secondRow.Add(expandButton);
+                    if (!message.SnippetEqualsBody)
+                        secondRow.Add(expandButton);
                     secondRow.Add(actionsButton);
                     thirdRow.Add(unreadButton);
                     thirdRow.Add(spamButton);
@@ -313,16 +314,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     break;
                     #endregion
             }
-    expandButton.CallbackData = new CallbackData(generalCallbackData)
-    {
-        Command = expandButtonCommand
+            expandButton.CallbackData = new CallbackData(generalCallbackData)
+            {
+                Command = expandButtonCommand
             };
-    actionsButton.CallbackData = new CallbackData(generalCallbackData)
-    {
-        Command = actionsButtonCommand
+            actionsButton.CallbackData = new CallbackData(generalCallbackData)
+            {
+                Command = actionsButtonCommand
             };
-            if(firstRow.Count > 0)
-            keyboardMarkup.InlineKeyboard.Add(firstRow);
+            if (firstRow.Count > 0)
+                keyboardMarkup.InlineKeyboard.Add(firstRow);
             if (secondRow.Count > 0)
                 keyboardMarkup.InlineKeyboard.Add(secondRow);
             if (thirdRow.Count > 0)
@@ -331,42 +332,42 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
 
 
-private readonly TelegramMethods _telegramMethods;
-private readonly BotSettings _botSettings;
+        private readonly TelegramMethods _telegramMethods;
+        private readonly BotSettings _botSettings;
     }
 
     public enum MessageKeyboardState
-{
-    [EnumMember(Value = "minimized")]
-    Minimized,
-    [EnumMember(Value = "maximized")]
-    Maximized,
-    [EnumMember(Value = "minimizedActions")]
-    MinimizedActions,
-    [EnumMember(Value = "maximizedActions")]
-    MaximizedActions
-}
+    {
+        [EnumMember(Value = "minimized")]
+        Minimized,
+        [EnumMember(Value = "maximized")]
+        Maximized,
+        [EnumMember(Value = "minimizedActions")]
+        MinimizedActions,
+        [EnumMember(Value = "maximizedActions")]
+        MaximizedActions
+    }
 
 
 
-public static class Emoji
-{
-    public const string Denied = "\ud83d\udeab"; //red crossed-out circle
-    public const string DownArrow = "\u2b07\ufe0f"; //white down facing arrow in a blue rectangle
-    public const string DownTriangle = "\ud83d\udd3d"; //white down triangle in a blue rectangle
-    public const string UpTriangle = "\ud83d\udd3c"; //white up triangle in a blue rectangle
-    public const string Dashboard = "\ud83c\udf9b";
-    public const string RightArrow = "\u27a1\ufe0f"; //white right facing arrow in a blue rectangle
-    public const string LeftArrow = "\u2b05\ufe0f"; //white left facing arrow in a blue rectangle
-    public const string TurnedUpArrow = "\u2934\ufe0f"; //while turned up from left arrow in a blue rectange
-    public const string TurnedDownArrow = "\u2935\ufe0f"; //while turned down from left arrow in a blue rectange
-    public const string Eye = "\ud83d\udc41";
-    public const string RedArrowedMail = "\ud83d\udce9"; //envelope with red arrow
-    public const string LovelyLatter = "\ud83d\udc8c"; //envelope with red heart
-    public const string RestrictionSign = "\u26d4\ufe0f"; //red restriction sign
-    public const string RecycleBin = "\ud83d\uddd1";
-    public const string ClosedMailbox = "\ud83d\udcea"; // closed blue mailbox
-    public const string Multifolder = "\ud83d\uddc2";
-}
+    public static class Emoji
+    {
+        public const string Denied = "\ud83d\udeab"; //red crossed-out circle
+        public const string DownArrow = "\u2b07\ufe0f"; //white down facing arrow in a blue rectangle
+        public const string DownTriangle = "\ud83d\udd3d"; //white down triangle in a blue rectangle
+        public const string UpTriangle = "\ud83d\udd3c"; //white up triangle in a blue rectangle
+        public const string Dashboard = "\ud83c\udf9b";
+        public const string RightArrow = "\u27a1\ufe0f"; //white right facing arrow in a blue rectangle
+        public const string LeftArrow = "\u2b05\ufe0f"; //white left facing arrow in a blue rectangle
+        public const string TurnedUpArrow = "\u2934\ufe0f"; //while turned up from left arrow in a blue rectange
+        public const string TurnedDownArrow = "\u2935\ufe0f"; //while turned down from left arrow in a blue rectange
+        public const string Eye = "\ud83d\udc41";
+        public const string RedArrowedMail = "\ud83d\udce9"; //envelope with red arrow
+        public const string LovelyLatter = "\ud83d\udc8c"; //envelope with red heart
+        public const string RestrictionSign = "\u26d4\ufe0f"; //red restriction sign
+        public const string RecycleBin = "\ud83d\uddd1";
+        public const string ClosedMailbox = "\ud83d\udcea"; // closed blue mailbox
+        public const string Multifolder = "\ud83d\uddc2";
+    }
 
 }

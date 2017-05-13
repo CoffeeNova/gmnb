@@ -33,6 +33,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions.Tests
             Assert.IsTrue(result.AreEqual, result.DifferencesString);
         }
 
+
+
         private static string text1 = "line1";
         private static string text2 = "line2";
         private static string text3 = "line3";
