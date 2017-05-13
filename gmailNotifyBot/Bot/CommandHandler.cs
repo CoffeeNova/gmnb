@@ -98,7 +98,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (!callbackQuery.Data.StartsWithAny(Commands.CONNECT_COMMAND, Commands.EXPAND_COMMAND,
                     Commands.HIDE_COMMAND, Commands.EXPAND_ACTIONS_COMMAND, Commands.HIDE_ACTIONS_COMMAND,
                     Commands.TO_READ_COMMAND, Commands.TO_UNREAD_COMMAND, Commands.TO_SPAM_COMMAND,
-                    Commands.REMOVE_SPAM_COMMAND, Commands.NEXTPAGE_COMMAND, Commands.PREVPAGE_COMMAND)) return;
+                    Commands.TO_INBOX_COMMAND, Commands.TO_TRASHCOMMAND, Commands.ARCHIVE_COMMAND,
+                    Commands.UNIGNORE_COMMAND, Commands.IGNORE_COMMAND,
+                     Commands.NEXTPAGE_COMMAND, Commands.PREVPAGE_COMMAND)) return;
 
             LogMaker.Log(Logger,
                 $"{callbackQuery.Data} command received from user with id {(string)callbackQuery.From}", false);
@@ -129,11 +131,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
                 else if (callbackData.Command == Commands.TO_SPAM_COMMAND)
                     await HandleCallbackQueryToSpamCommand(callbackQuery, callbackData);
-
+                //-----------
                 else if (callbackData.Command == Commands.TO_INBOX_COMMAND)
-                    await HandleCallbackQueryRemoveSpamCommand(callbackQuery, callbackData);
+                    await HandleCallbackQueryToInboxCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.DELETE_COMMAND)
+                else if (callbackData.Command == Commands.TO_TRASHCOMMAND)
                     await HandleCallbackQueryToTrashCommand(callbackQuery, callbackData);
 
                 else if (callbackData.Command == Commands.ARCHIVE_COMMAND)
@@ -471,13 +473,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
 
         /// <summary>
-        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.REMOVE_SPAM_COMMAND"/>.
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.TO_INBOX_COMMAND"/>.
         /// This method adds "INBOX" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryRemoveSpamCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQueryToInboxCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "INBOX");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
@@ -486,7 +488,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
 
         /// <summary>
-        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.REMOVE_SPAM_COMMAND"/>.
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.TO_TRASHCOMMAND"/>.
         /// This method adds "TRASH" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="sender"></param>
@@ -501,7 +503,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
 
         /// <summary>
-        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.REMOVE_SPAM_COMMAND"/>.
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.ARCHIVE_COMMAND"/>.
         /// This method removes "INBOX" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="sender"></param>
@@ -553,7 +555,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private async Task HandleCallbackQueryNextPageCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
-            if (formattedMessage.TextBody.Count <= callbackData.Page)
+            if (formattedMessage.Pages <= callbackData.Page)
                 throw new InvalidOperationException("Execution of this method is not permissible in this situation");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
             var newPage = callbackData.Page + 1;

@@ -27,7 +27,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string TO_READ_COMMAND = "/toread";
         public const string TO_SPAM_COMMAND = "/tospam";
         public const string REMOVE_SPAM_COMMAND = "/removespam";
-        public const string DELETE_COMMAND = "/delete";
+        public const string TO_TRASHCOMMAND = "/totrash";
         public const string RESTORE_COMMAND = "/restore";
         public const string TO_INBOX_COMMAND = "/toinbox";
         public const string ARCHIVE_COMMAND = "/archive";

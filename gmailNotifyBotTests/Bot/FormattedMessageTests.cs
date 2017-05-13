@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Tests;
 using KellermanSoftware.CompareNetObjects;
 using Google.Apis.Gmail.v1.Data;
@@ -208,59 +209,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         {
             var expected = _formattedMessage;
             var actual = new FormattedMessage(_message);
-            var compaitLogic = new CompareLogic(_config);
-            var result = compaitLogic.Compare(expected, actual);
-            Assert.IsTrue(result.AreEqual, result.DifferencesString);
-        }
-
-        [TestMethod()]
-        public void DivideIntoPagesTest_SimpleText_3linesList()
-        {
-            var text = "aaaaaaaaaabbbbbbbbbbcccccccccc";
-            var expected = new List<string>
-            {
-                "aaaaaaaaaa",
-                "bbbbbbbbbb",
-                "cccccccccc"
-            };
-            var actual = FormattedMessage.DivideIntoPages(text, 5, 10);
-
-            var compaitLogic = new CompareLogic(_config);
-            var result = compaitLogic.Compare(expected, actual);
-            Assert.IsTrue(result.AreEqual, result.DifferencesString);
-        }
-
-        [TestMethod()]
-        public void DivideIntoPagesTest_TextWithNewLines_4linesList()
-        {
-            var text = "0123456\r\n90123456789012345 789";
-            var expected = new List<string>
-            {
-                "0123456",
-                "9012345678",
-                "9012345",
-                "789"
-            };
-            var actual = FormattedMessage.DivideIntoPages(text, 5, 10);
-
-            var compaitLogic = new CompareLogic(_config);
-            var result = compaitLogic.Compare(expected, actual);
-            Assert.IsTrue(result.AreEqual, result.DifferencesString);
-        }
-
-        [TestMethod()]
-        public void DivideIntoPagesTest_TextWithBrackets_4linesList()
-        {
-            var text = "0<2>456\r\n9012345<7890>2345 789";
-            var expected = new List<string>
-            {
-                "0<2>456",
-                "9012345",
-                "<7890>2345",
-                " 789"
-            };
-            var actual = FormattedMessage.DivideIntoPages(text, 5, 10);
-
             var compaitLogic = new CompareLogic(_config);
             var result = compaitLogic.Compare(expected, actual);
             Assert.IsTrue(result.AreEqual, result.DifferencesString);
