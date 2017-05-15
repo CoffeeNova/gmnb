@@ -7,12 +7,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Exceptions
 {
 
     [Serializable]
-    public class DbDataStroreException : Exception
+    public class DbDataStoreException : Exception
     {
-        public DbDataStroreException() { }
-        public DbDataStroreException(string message) : base(message) { }
-        public DbDataStroreException(string message, Exception inner) : base(message, inner) { }
-        protected DbDataStroreException(
+        public DbDataStoreException() { }
+        public DbDataStoreException(string message) : base(message) { }
+        public DbDataStoreException(string message, Exception inner) : base(message, inner) { }
+        protected DbDataStoreException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }

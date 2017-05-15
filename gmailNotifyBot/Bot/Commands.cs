@@ -33,6 +33,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string ARCHIVE_COMMAND = "/archive";
         public const string IGNORE_COMMAND = "/ignore";
         public const string UNIGNORE_COMMAND = "/unignore";
-        //public const string PROCEED_EDIT_MESSAGE_COMMAND = "Proceed.. Please wait.";
+        public const string START_NOTIFY_COMMAND = "/notifystart";
+        public const string STOP_NOTIFY_COMMAND = "/notifystop";
+        public const string START_WATCH_COMMAND = "/watchstart";
+        public const string STOP_WATCH_COMMAND = "/watchstop";
     }
 }

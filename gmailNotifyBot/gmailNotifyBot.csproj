@@ -226,6 +226,7 @@
     <Compile Include="Bot\ClientSecret.cs" />
     <Compile Include="Bot\CommandHandler.cs" />
     <Compile Include="Bot\Commands.cs" />
+    <Compile Include="Bot\Converters\DateTimeConverter.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\PendingUserModel.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\GmailDbContext.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\UserSettingsModel.cs" />

@@ -8,6 +8,8 @@ using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Attributes;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.TelegramBotApiWrapper.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
@@ -114,7 +116,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public List<Service> ServiceCollection { get; } = new List<Service>();
     }
 
-    public class Service
+    public class Service : ISender
     {
         public Service(UserCredential userCredential, BaseClientService.Initializer initializer)
         {
@@ -125,5 +127,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public GmailService GmailService { get; set; }
         public Oauth2Service Oauth2Service { get; set; }
         public UserCredential UserCredential { get; set; }
+
+        public User From {get;set;}
     }
 }

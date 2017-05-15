@@ -159,7 +159,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<UserSettingsModel> FindUserSettingsrAsync(long userId)
+        public Task<UserSettingsModel> FindUserSettingsAsync(long userId)
         {
             return Task.Run(() => FindUserSettings(userId));
         }
@@ -283,6 +283,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
                 return query.IgnoreList.Any(a => a == address);
             }
+        }
+
+        public void UpdateUserSettingsRecord(UserSettingsModel userSettingsModel)
+        {
+            using (var db = new GmailBotDbContext())
+            {
+                db.UserSettings.Attach(userSettingsModel);
+                db.Entry(userSettingsModel).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
+
+        public Task UpdateUserSettingsRecordAsync(UserSettingsModel userSettingsModel)
+        {
+            return Task.Run(() => UpdateUserSettingsRecord(userSettingsModel));
         }
     }
 }
