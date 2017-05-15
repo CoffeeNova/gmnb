@@ -34,6 +34,8 @@ namespace CoffeeJelly.gmailNotifyBot
 
             LogMaker.NewMessage += LogMaker_NewMessage;
             string botToken = App_LocalResources.Tokens.GmailControlBotToken;
+            var topicName = App_LocalResources.Tokens.TopicName;
+
 #if DEBUG
             string clientSecretStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret_debug);
 #else
@@ -51,7 +53,7 @@ namespace CoffeeJelly.gmailNotifyBot
             var gmailServiceFactory = ServiceFactory.GetInstanse(clientSecret);
             await gmailServiceFactory.RestoreServicesFromStore();
 
-            _commandHandler = CommandHandler.GetInstance(botToken, _updatesHandler, clientSecret);
+            _commandHandler = CommandHandler.GetInstance(botToken, _updatesHandler, clientSecret, topicName);
 
             
             // var labels = service.Users.Watch(new Google.Apis.Gmail.v1.Data.WatchRequest(),mbox)

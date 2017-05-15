@@ -30,7 +30,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
             var userModel = await dbWorker.FindUserAsync(userId);
             if (userModel == null)
-                throw new DbDataStroreException(
+                throw new DbDataStoreException(
                     $"Can't store refreshed data in database. User record with id {userId} is absent in the database.");
 
             JsonConvert.PopulateObject(json, userModel);
