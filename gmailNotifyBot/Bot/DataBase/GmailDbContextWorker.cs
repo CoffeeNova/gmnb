@@ -151,6 +151,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => FindPendingUser(userId));
         }
 
+
         public UserSettingsModel FindUserSettings(long userId)
         {
             using (var db = new GmailBotDbContext())
@@ -194,6 +195,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         public Task<List<UserModel>> GetAllUsersAsync()
         {
             return Task.Run(() => GetAllUsers());
+        }
+
+        public List<UserSettingsModel> GetAllUsersSettings()
+        {
+            using (var db = new GmailBotDbContext())
+            {
+                return db.UserSettings.ToList();
+            }
+        }
+
+        public Task<List<UserSettingsModel>> GetAllUsersSettingsAsync()
+        {
+            return Task.Run(() => GetAllUsersSettings());
         }
 
         public void AddToIgnoreList(long userId, string address)

@@ -18,14 +18,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public UserModel()
         {
-            
+
+        }
+
+        public static implicit operator User(UserModel obj)
+        {
+            return new User
+            {
+                Id = obj.Id,
+                FirstName = obj.FirstName,
+                LastName = obj.LastName,
+                Username = obj.Username
+            };
         }
 
         [JsonIgnore]
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         [JsonIgnore]
-        public long UserId { get; set; }
+        public int UserId { get; set; }
 
         [JsonIgnore]
         public string FirstName { get; set; }
