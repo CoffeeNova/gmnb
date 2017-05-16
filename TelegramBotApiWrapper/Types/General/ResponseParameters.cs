@@ -5,7 +5,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
     /// <summary>
     /// Contains information about why a request was unsuccessfull.
     /// </summary>
-    public class ResponceParameters
+    public class responseParameters
     {
         /// <summary>
         /// Optional. The group has been migrated to a supergroup with the specified identifier.

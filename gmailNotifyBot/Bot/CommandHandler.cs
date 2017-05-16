@@ -103,14 +103,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 exception = ex;
                 await _botActions.AuthorizationErrorMessage(message.Chat);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 exception = ex;
                 throw new NotImplementedException("operation error show to telegram chat as answerCallbackQuery");
             }
             finally
             {
-                if(exception!=null)
+                if (exception != null)
                     LogMaker.Log(Logger, exception,
                     $"An exception has been thrown in processing TextMessage with command {message.Text}");
             }
@@ -211,10 +211,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     labelId = "INBOX";
 
                 var splittedQuery = inlineQuery.Query.Split(' ');
-                var pageStr = splittedQuery.Length > 1 ? splittedQuery[1] : "";
-                int page;
-                page = Int32.TryParse(pageStr, out page) == false ? 1 : page;
-                await HandleShowMessagesInlineQueryCommand(inlineQuery, labelId, page);
+                var queryArg = splittedQuery.Length > 1 ? splittedQuery[1] : "";
+                int page = 1;
+                if (queryArg.StartsWith("p:"))
+                {
+                    page = Int32.TryParse(queryArg.Remove(0, 2), out page) == false ? 1 : page;
+                    queryArg = null;
+                }
+                await HandleShowMessagesInlineQueryCommand(inlineQuery, labelId, page, queryArg);
             }
             catch (ServiceNotFoundException ex)
             {
@@ -263,19 +267,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var service = SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Messages.List("me");
             //query.LabelIds = "INBOX";
-            var listMessagesResponce = await query.ExecuteAsync();
-            if (listMessagesResponce?.Messages == null) return;
+            var listMessagesResponse = await query.ExecuteAsync();
+            if (listMessagesResponse?.Messages == null) return;
 
-            var message = listMessagesResponce.Messages.First();
+            var message = listMessagesResponse.Messages.First();
             if (!string.IsNullOrEmpty(messageId))
-                message = listMessagesResponce.Messages.SingleOrDefault(m => m.Id == messageId);
+                message = listMessagesResponse.Messages.SingleOrDefault(m => m.Id == messageId);
             if (message == null)
                 return;
 
             var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
-            var mailInfoResponce = await getMailRequest.ExecuteAsync();
-            if (mailInfoResponce == null) return;
-            var formattedMessage = new FormattedMessage(mailInfoResponce);
+            var mailInfoResponse = await getMailRequest.ExecuteAsync();
+            if (mailInfoResponse == null) return;
+            var formattedMessage = new FormattedMessage(mailInfoResponse);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
             await _botActions.ChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
@@ -285,22 +289,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var service = SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Threads.List("me");
             query.LabelIds = "INBOX";
-            var listThreadsResponce = await query.ExecuteAsync();
-            if (listThreadsResponce?.Threads == null) return;
+            var listThreadsResponse = await query.ExecuteAsync();
+            if (listThreadsResponse?.Threads == null) return;
 
-            var thread = listThreadsResponce.Threads.First();
+            var thread = listThreadsResponse.Threads.First();
             var getMailRequest = service.GmailService.Users.Messages.Get("me", thread.Id);
-            var mailInfoResponce = await getMailRequest.ExecuteAsync();
-            if (mailInfoResponce == null) return;
-            var formattedMessage = new FormattedMessage(mailInfoResponce);
+            var mailInfoResponse = await getMailRequest.ExecuteAsync();
+            if (mailInfoResponse == null) return;
+            var formattedMessage = new FormattedMessage(mailInfoResponse);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
             await _botActions.ChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
 
-        private  async Task HandleStartNotifyCommand(ISender sender)
+        private async Task HandleStartNotifyCommand(ISender sender)
         {
             var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
-            if(userSettings == null)
+            if (userSettings == null)
                 throw new DbDataStoreException(
                     $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
             userSettings.MailNotification = true;
@@ -335,11 +339,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 TopicName = TopicName
             };
             var query = service.GmailService.Users.Watch(watchRequest, "me");
-            var watchResponce = await query.ExecuteAsync();
-            if (watchResponce.Expiration != null)
-                userSettings.Expiration = watchResponce.Expiration.Value;
-            if (watchResponce.HistoryId != null)
-                userSettings.HistoryId = watchResponce.HistoryId.Value;
+            var watchResponse = await query.ExecuteAsync();
+            if (watchResponse.Expiration != null)
+                userSettings.Expiration = watchResponse.Expiration.Value;
+            if (watchResponse.HistoryId != null)
+                userSettings.HistoryId = watchResponse.HistoryId.Value;
 
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
         }
@@ -354,7 +358,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (!userSettings.MailNotification) return;
 
             var query = service.GmailService.Users.Stop("me");
-            var stopResponce = await query.ExecuteAsync();
+            var stopResponse = await query.ExecuteAsync();
         }
 
         public async Task HandleNewMessageCommand(ISender sender)
@@ -367,39 +371,45 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _botActions.GmailInlineCommandMessage(sender.From);
         }
 
-        private async Task HandleShowMessagesInlineQueryCommand(InlineQuery sender, string labelId, int page = 1)
+        private async Task HandleShowMessagesInlineQueryCommand(InlineQuery sender, string labelId, int page = 1, string searchExpression = null)
         {
             if (page < 1)
                 throw new ArgumentOutOfRangeException(nameof(page), "Must be not lower then 1");
 
-            var service = SearchServiceByUserId(sender.From);
+            const int resultsPerPage = 50;
+            const int messagesInOneResponse = 10;
 
+            int offset;
+            Int32.TryParse(sender.Offset, out offset);
+            if (offset == -1)
+                return;
+            if (offset >= resultsPerPage)
+            {
+                page++;
+                offset = offset - resultsPerPage;
+            }
+
+            var service = SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Messages.List("me");
             if (string.IsNullOrEmpty(labelId))
                 query.IncludeSpamTrash = false;
             else
                 query.LabelIds = labelId;
 
-            query.MaxResults = 50;
-            int offset;
-            Int32.TryParse(sender.Offset, out offset);
-            if (offset >= 50)
-            {
-                page++;
-                offset = offset - 50;
-            }
-            ListMessagesResponse listMessagesResponce = null;
+            query.MaxResults = resultsPerPage;
+
+            ListMessagesResponse listMessagesResponse = null;
             string pageToken = null;
             while (page >= 1)
             {
                 query.PageToken = pageToken;
-                listMessagesResponce = await query.ExecuteAsync();
-                if (string.IsNullOrEmpty(listMessagesResponce.NextPageToken))
+                listMessagesResponse = await query.ExecuteAsync();
+                if (string.IsNullOrEmpty(listMessagesResponse.NextPageToken))
                     break;
-                pageToken = listMessagesResponce.NextPageToken;
+                pageToken = listMessagesResponse.NextPageToken;
                 page--;
             }
-            if (listMessagesResponce?.Messages == null || listMessagesResponce.Messages.Count == 0)
+            if (listMessagesResponse?.Messages == null || listMessagesResponse.Messages.Count == 0)
             {
                 if (string.IsNullOrEmpty(labelId))
                     await _botActions.EmptyAllMessage(sender.From, page);
@@ -408,16 +418,29 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 return;
             }
             var formatedMessages = new List<FormattedMessage>();
-            foreach (var message in listMessagesResponce.Messages.Skip(offset).Take(5))
+            foreach (var message in listMessagesResponse.Messages.Skip(offset).Take(messagesInOneResponse))
             {
                 var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
                 getMailRequest.Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Metadata;
-                var mailInfoResponce = await getMailRequest.ExecuteAsync();
-                if (mailInfoResponce == null) continue;
-                formatedMessages.Add(new FormattedMessage(mailInfoResponce));
+                var mailInfoResponse = await getMailRequest.ExecuteAsync();
+                if (mailInfoResponse == null) continue;
+                var fMessage = new FormattedMessage(mailInfoResponse);
+                if (searchExpression == null)
+                    formatedMessages.Add(fMessage);
+                else if (searchExpression.InceptionOfAny(fMessage.SenderEmail, fMessage.SenderName, fMessage.Subject))
+                    formatedMessages.Add(fMessage);
             }
-
-            await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages, offset + 5);
+            if (searchExpression == null)
+            {
+                if (formatedMessages.Count == messagesInOneResponse)
+                    await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages, offset + messagesInOneResponse);
+                else
+                    await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages, -1); //last response
+            }
+            else
+            {
+                if(formatedMessages.Count == messagesInOneResponse)
+            }
         }
 
         private async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult sender)
@@ -687,8 +710,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             var service = SearchServiceByUserId(userId);
             var query = service.GmailService.Users.Messages.Get("me", messageId);
-            var messageResponce = await query.ExecuteAsync();
-            return new FormattedMessage(messageResponce);
+            var messageResponse = await query.ExecuteAsync();
+            return new FormattedMessage(messageResponse);
         }
 
         private async Task<FormattedMessage> ModifyMessageLabels(ModifyLabelsAction action, string userId, string messageId, string eTag = null, params string[] labels)
@@ -709,10 +732,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 RemoveLabelIds = removedLabels
             };
             var modifyRequest = service.GmailService.Users.Messages.Modify(modifyMessageRequest, "me", messageId);
-            var messageResponce = await modifyRequest.ExecuteAsync();
-            var getRequest = service.GmailService.Users.Messages.Get("me", messageResponce.Id);
-            messageResponce = await getRequest.ExecuteAsync();
-            return new FormattedMessage(messageResponce);
+            var messageResponse = await modifyRequest.ExecuteAsync();
+            var getRequest = service.GmailService.Users.Messages.Get("me", messageResponse.Id);
+            messageResponse = await getRequest.ExecuteAsync();
+            return new FormattedMessage(messageResponse);
         }
 
         private UpdatesHandler _updatesHandler;
