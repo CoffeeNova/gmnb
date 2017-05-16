@@ -158,6 +158,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
+        public async Task SpecifyRecipientMessage(string chatId)
+        {
+            await _telegramMethods.SendMessageAsync(chatId, "Please specify a recipient:");
+        }
+
         private InlineKeyboardMarkup MessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
         {
             message.NullInspect(nameof(message));

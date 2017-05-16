@@ -82,14 +82,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 TokenType = userModel.TokenType,
                 IssuedUtc = userModel.IssuedTimeUtc
             };
-            var credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
+            var credentials = new BotUserCredential(new GoogleAuthorizationCodeFlow(
                     new GoogleAuthorizationCodeFlow.Initializer
                     {
                         ClientSecrets = _clientSecrets,
                         Scopes = UserAccessAttribute.GetScopesValue(userSettingsModel.Access),
                         DataStore = new DbDataStore()
                     }),
-                userModel.UserId.ToString(),
+                userModel,
                 token);
             var serviceInitializer = new Google.Apis.Services.BaseClientService.Initializer
             {
@@ -118,7 +118,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
     public class Service : ISender
     {
-        public Service(UserCredential userCredential, BaseClientService.Initializer initializer)
+        public Service(BotUserCredential userCredential, BaseClientService.Initializer initializer)
         {
             UserCredential = userCredential;
             GmailService = new GmailService(initializer);
@@ -126,8 +126,29 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
         public GmailService GmailService { get; set; }
         public Oauth2Service Oauth2Service { get; set; }
-        public UserCredential UserCredential { get; set; }
+        public BotUserCredential UserCredential { get; set; }
 
-        public User From {get;set;}
+
+        public User From
+        {
+            get
+            {
+                return UserCredential.From;
+            }
+            set
+            {
+            }
+        }
+    }
+
+    public class BotUserCredential : UserCredential
+    {
+        public BotUserCredential(IAuthorizationCodeFlow flow, User user, TokenResponse token) : base(flow, user.Id.ToString(), token)
+        {
+            From = user;
+        }
+
+        public User From { get; }
+
     }
 }

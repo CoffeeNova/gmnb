@@ -57,7 +57,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (!message.Text.StartsWithAny(Commands.TESTNAME_COMMAND, Commands.TESTMESSAGE_COMMAND,
                     Commands.CONNECT_COMMAND, Commands.INBOX_COMMAND, Commands.TESTTHREAD_COMMAND,
                     Commands.START_NOTIFY_COMMAND, Commands.STOP_NOTIFY_COMMAND, Commands.START_WATCH_COMMAND,
-                    Commands.STOP_WATCH_COMMAND)) return;
+                    Commands.STOP_WATCH_COMMAND, Commands.NEW_MESSAGE_COMMAND)) return;
             Exception exception = null;
 
             LogMaker.Log(Logger, $"{message.Text} command received from user with id {(string)message.From}", false);
@@ -68,8 +68,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 else if (message.Text.StartsWith(Commands.TESTMESSAGE_COMMAND))
                 {
                     var splittedtext = message.Text.Split(' ');
-                    var messageID = splittedtext.Length > 1 ? splittedtext[1] : "";
-                    await HandleTestMessageCommand(message, messageID);
+                    var messageId = splittedtext.Length > 1 ? splittedtext[1] : "";
+                    await HandleTestMessageCommand(message, messageId);
                 }
                 else if (message.Text.StartsWith(Commands.CONNECT_COMMAND))
                     await _authorizer.SendAuthorizeLink(message);
@@ -85,6 +85,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     await HandleStartWatchCommand(message);
                 else if (message.Text.StartsWith(Commands.STOP_WATCH_COMMAND))
                     await HandleStopWatchCommand(message);
+                else if (message.Text.StartsWith(Commands.NEW_MESSAGE_COMMAND))
+                    await HandleNewMessageCommand(message);
             }
             catch (ServiceNotFoundException ex)
             {
@@ -104,7 +106,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             catch (Exception ex) 
             {
                 exception = ex;
-                throw new NotImplementedException("operation error show to telegram chat");
+                throw new NotImplementedException("operation error show to telegram chat as answerCallbackQuery");
             }
             finally
             {
@@ -352,7 +354,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (!userSettings.MailNotification) return;
 
             var query = service.GmailService.Users.Stop("me");
-            var stopREsponce = await query.ExecuteAsync();
+            var stopResponce = await query.ExecuteAsync();
+        }
+
+        public async Task HandleNewMessageCommand(ISender sender)
+        {
+            //await _botActions.
         }
 
         private async Task HandleGetInboxMessagesCommand(Message sender)
