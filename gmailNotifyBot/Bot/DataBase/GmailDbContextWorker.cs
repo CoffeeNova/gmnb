@@ -165,7 +165,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => FindUserSettings(userId));
         }
 
-        public UserSettingsModel AddNewUserSettings(long userId, string access)
+        public UserSettingsModel AddNewUserSettings(int userId, string access)
         {
             access.NullInspect(nameof(access));
 
@@ -177,7 +177,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<UserSettingsModel> AddNewUserSettingsAsync(long userId, string access)
+        public Task<UserSettingsModel> AddNewUserSettingsAsync(int userId, string access)
         {
             access.NullInspect(nameof(access));
 

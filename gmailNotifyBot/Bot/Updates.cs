@@ -102,14 +102,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         /// </summary>
         public event BotUpdatesEventHandler UpdatesArrivedEvent;
 
-        private const int MaxDelayServerResponce = 2000;
+        private const int MaxDelayServerResponse = 2000;
 
         private static readonly Semaphore DownloadBotRequestsSemaphore = new Semaphore(1, 1);
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static System.Timers.Timer RequestMonitorTimer { get; } = new System.Timers.Timer
         {
-            Interval = MaxDelayServerResponce,
+            Interval = MaxDelayServerResponse,
             AutoReset = true
         };
 

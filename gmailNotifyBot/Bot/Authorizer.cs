@@ -105,7 +105,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
                     var byteResult = await webClient.UploadValuesTaskAsync(GoogleOAuthTokenEndpoint, "POST", parameters);
                     var strResult = webClient.Encoding.GetString(byteResult);
-                    throw new NotImplementedException("define responce status code, must be 200 and return true.");
+                    throw new NotImplementedException("define response status code, must be 200 and return true.");
                     if (true)
                     {
                         userModel.RefreshToken = "";
@@ -163,7 +163,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private void Authorizer_AuthorizeRequestEvent(string code, string state, string error)
         {
 
-            long id;
+            int id;
             string access;
             if (!RestoreState(state, out id, out access))
                 return;
@@ -226,7 +226,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
 #pragma warning enable 4014
 
-        private static bool RestoreState(string state, out long id, out string access)
+        private static bool RestoreState(string state, out int id, out string access)
         {
             id = 0;
             access = "";
@@ -238,7 +238,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     var str = Base64.Decode(state);
                     var splittedStr = str.Split(',');
 
-                    value = long.TryParse(splittedStr.First(), out id);
+                    value = int.TryParse(splittedStr.First(), out id);
                     access = splittedStr.Last();
                 }
                 catch (FormatException ex)

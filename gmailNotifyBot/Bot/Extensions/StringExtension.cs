@@ -145,18 +145,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
 
         public static bool StartsWithAny(this string str, params string[] patterns)
         {
-            foreach (string pattern in patterns)
-                if (str.StartsWith(pattern))
-                    return true;
-            return false;
+            return patterns.Any(str.StartsWith);
         }
 
         public static bool StartsWithAny(this string str, StringComparison comparisonType, params string[] patterns)
         {
-            foreach (string pattern in patterns)
-                if (str.StartsWith(pattern, comparisonType))
-                    return true;
-            return false;
+            return patterns.Any(pattern => str.StartsWith(pattern, comparisonType));
+        }
+
+        public static bool InceptionOf(this string str, string value)
+        {
+            return value.StartsWith(str);
+        }
+
+        public static bool InceptionOfAny(this string str, params string[] patterns)
+        {
+            return patterns.Any(str.InceptionOf);
         }
 
         /// <summary>

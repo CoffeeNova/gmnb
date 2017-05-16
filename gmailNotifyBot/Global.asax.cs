@@ -64,7 +64,7 @@ namespace CoffeeJelly.gmailNotifyBot
             botServices.ForEach(async s =>
             {
                 await _commandHandler.HandleStartWatchCommand(s);
-                //probably i need to do a delay here to avoid responce ddos to my server
+                //probably i need to do a delay here to avoid response ddos to my server
             });
             //start timer which would be update push notification watch for users which expiration time approaches the end
             _pushNotificationWatchTimer = new Timer(state =>
