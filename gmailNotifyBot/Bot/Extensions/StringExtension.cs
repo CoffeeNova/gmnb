@@ -153,14 +153,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
             return patterns.Any(pattern => str.StartsWith(pattern, comparisonType));
         }
 
-        public static bool InceptionOf(this string str, string value)
+        public static bool InceptionOf(this string str, string value, StringComparison comparisonType = 0)
         {
-            return value.StartsWith(str);
+            return value.StartsWith(str, comparisonType);
         }
 
-        public static bool InceptionOfAny(this string str, params string[] patterns)
+        public static bool InceptionOfAny(this string str, StringComparison comparisonType = 0, params string[] patterns)
         {
-            return patterns.Any(str.InceptionOf);
+            return patterns.Any(pattern => str.InceptionOf(pattern, comparisonType));
         }
 
         /// <summary>

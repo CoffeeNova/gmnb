@@ -25,7 +25,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         {
             return new User
             {
-                Id = obj.Id,
+                Id = obj.UserId,
                 FirstName = obj.FirstName,
                 LastName = obj.LastName,
                 Username = obj.Username
