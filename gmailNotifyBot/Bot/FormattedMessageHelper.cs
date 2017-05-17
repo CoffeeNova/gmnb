@@ -168,5 +168,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             text = Regex.Replace(text, $"^\\s+$[{Environment.NewLine}]+", Environment.NewLine, RegexOptions.Multiline);
         }
+
     }
 }

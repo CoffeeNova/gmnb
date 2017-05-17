@@ -210,7 +210,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 if (inlineQuery.Query.StartsWith(Commands.INBOX_INLINE_QUERY_COMMAND))
                     labelId = "INBOX";
 
-                var splittedQuery = inlineQuery.Query.Split(' ');
+                var splittedQuery = inlineQuery.Query.Split(" ".ToCharArray(), 2);
                 var queryArg = splittedQuery.Length > 1 ? splittedQuery[1] : "";
                 int page = 1;
                 if (queryArg.StartsWith("p:"))
@@ -397,17 +397,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 query.LabelIds = labelId;
 
             query.MaxResults = resultsPerPage;
+            query.Q = searchExpression;
 
-            ListMessagesResponse listMessagesResponse = null;
+        ListMessagesResponse listMessagesResponse = null;
             string pageToken = null;
-            while (page >= 1)
+            int tempPage = page;
+            while (tempPage >= 1)
             {
                 query.PageToken = pageToken;
                 listMessagesResponse = await query.ExecuteAsync();
                 if (string.IsNullOrEmpty(listMessagesResponse.NextPageToken))
                     break;
                 pageToken = listMessagesResponse.NextPageToken;
-                page--;
+                tempPage--;
             }
             if (listMessagesResponse?.Messages == null || listMessagesResponse.Messages.Count == 0)
             {
@@ -425,22 +427,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 var mailInfoResponse = await getMailRequest.ExecuteAsync();
                 if (mailInfoResponse == null) continue;
                 var fMessage = new FormattedMessage(mailInfoResponse);
-                if (searchExpression == null)
-                    formatedMessages.Add(fMessage);
-                else if (searchExpression.InceptionOfAny(fMessage.SenderEmail, fMessage.SenderName, fMessage.Subject))
                     formatedMessages.Add(fMessage);
             }
-            if (searchExpression == null)
-            {
                 if (formatedMessages.Count == messagesInOneResponse)
                     await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages, offset + messagesInOneResponse);
                 else
                     await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages, -1); //last response
-            }
-            else
-            {
-                if(formatedMessages.Count == messagesInOneResponse)
-            }
         }
 
         private async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult sender)

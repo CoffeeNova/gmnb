@@ -33,7 +33,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
             if (messagePartHeader != null)
             {
-                SenderEmail = messagePartHeader.Value?.GetBetweenFirst('<', '>');
+                SenderEmail = messagePartHeader.Value?.GetBetweenFirst('<', '>') ;
                 SenderName = messagePartHeader.Value?.ReplaceFirst($" <{SenderEmail}>", "");
             }
 
@@ -42,7 +42,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 Subject = messagePartHeader.Value;
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
-                Date =  DateTime.Parse(messagePartHeader.Value);
+                Date =  DateTime.Parse(Regex.Replace(messagePartHeader.Value, @"\s\(\D{3}\)", string.Empty));
             var body = new List<BodyForm>();
             if (message.Payload.Parts != null)
                 DecodeDevidedBody(message.Payload.Parts, body);
@@ -115,6 +115,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private const int SymbolsPerLine = 58;
         private int MinSymbolsToBreakPage => SymbolsCounter(MinLinePerPage);
         private int MaxSymbolsToBreakPage => SymbolsCounter(MaxLinePerPage);
+        private string _senderName;
+        private string _senderEmail;
 
         public string Id { get; set; }
 
@@ -122,9 +124,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public string Snippet { get; set; }
 
-        public string SenderName { get; set; }
+        public string SenderName
+        {
+            get { return _senderName; }
+            set
+            {
+                _senderName = !string.IsNullOrEmpty(value) 
+                    ? value 
+                    : "noname";
+            }
+        }
 
-        public string SenderEmail { get; set; }
+        public string SenderEmail
+        {
+            get { return _senderEmail; }
+            set
+            {
+                _senderEmail = !string.IsNullOrEmpty(value)
+                    ? value
+                    : "unknown";
+            }
+        }
 
         public string Subject { get; set; }
 

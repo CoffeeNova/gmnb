@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
@@ -118,11 +119,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var inlineQueryResults = new List<InlineQueryResult>();
             foreach (var message in messages)
             {
+                var date = message.Date.Date == DateTime.Now.Date
+                    ? message.Date.ToString("HH:mm")
+                    : message.Date.ToString("dd.MM.yy");
                 inlineQueryResults.Add(new InlineQueryResultArticle
                 {
                     Id = message.Id,
-                    Title = $"From: {message.SenderName} <{message.Date}> /r/n {message.Subject}",
-                    Description = message.Snippet,
+                    Title = ShortMessageTitleFormatter(message.SenderName, message.SenderEmail, date),
+                    Description = message.Subject,
                     InputMessageContent = new InputTextMessageContent
                     {
                         MessageText = "Message:"
@@ -135,6 +139,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
         }
 
+        private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
+        {
+            const int maxLine = 44;
+
+            var builder = new StringBuilder(maxLine);
+            builder.Append(date);
+            builder.Append(' ');
+            builder.Append(senderName);
+            if (maxLine - builder.Length > senderEmail.Length + 2)
+                builder.Append($" /{senderEmail}/");
+            return builder.ToString();
+        }
+
         public async Task EditProceedMessage(string chatId, string messageId)
         {
             await _telegramMethods.EditMessageTextAsync("Success", chatId, messageId);
@@ -144,14 +161,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             var header = formattedMessage.Header;
             var message = header + $"\r\n\r\n {formattedMessage.Snippet}";
-            var keyboard = MessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
+            var keyboard = RecievedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
         public async Task UpdateMessage(string chatId, int messageId, FormattedMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
         {
             var header = formattedMessage.Header;
-            var keyboard = MessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
+            var keyboard = RecievedMessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
             var displayedMessage = page == 0
                 ? header + $"\r\n\r\n{formattedMessage.Snippet}"
                 : header + $"\r\n\r\n{formattedMessage.DesirableBody[page - 1]}";
@@ -160,10 +177,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public async Task SpecifyRecipientMessage(string chatId)
         {
-            await _telegramMethods.SendMessageAsync(chatId, "Please specify a recipient:");
+            var keyboard = NewMessageKeyboardMarkup();
+            await _telegramMethods.SendMessageAsync(chatId, $"{Emoji.BoyAndGirl} Please specify the recipients, a subject and the content of the email: " +
+                                                            $"\r\n{Emoji.InfoSign} For multiple recipients use comma separator.");
         }
 
-        private InlineKeyboardMarkup MessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
+        private InlineKeyboardMarkup NewMessageKeyboardMarkup()
+        {
+            var keyboardMarkup = new InlineKeyboardMarkup { InlineKeyboard = new List<List<InlineKeyboardButton>>() };
+            var firstRow = new List<InlineKeyboardButton>();
+            var recipientsButton = new InlineKeyboardButton
+            {
+                Text ="",
+                SwitchInlineQueryCurrentChat = 
+            }
+        }
+
+        private InlineKeyboardMarkup RecievedMessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
         {
             message.NullInspect(nameof(message));
 
@@ -373,6 +403,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string RecycleBin = "\ud83d\uddd1";
         public const string ClosedMailbox = "\ud83d\udcea"; // closed blue mailbox
         public const string Multifolder = "\ud83d\uddc2";
+        public const string BoyAndGirl = "\ud83d\udebb";
+        public const string InfoSign = "\u2139\ufe0f";
     }
 
 }
