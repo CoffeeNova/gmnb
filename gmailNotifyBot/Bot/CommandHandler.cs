@@ -54,7 +54,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             if (message?.Text == null)
                 throw new ArgumentNullException(nameof(message));
-            if (!message.Text.StartsWithAny(Commands.TESTNAME_COMMAND, Commands.TESTMESSAGE_COMMAND,
+            if (!message.Text.StartsWithAny(StringComparison.CurrentCultureIgnoreCase,
+                    Commands.TESTNAME_COMMAND, Commands.TESTMESSAGE_COMMAND,
                     Commands.CONNECT_COMMAND, Commands.INBOX_COMMAND, Commands.TESTTHREAD_COMMAND,
                     Commands.START_NOTIFY_COMMAND, Commands.STOP_NOTIFY_COMMAND, Commands.START_WATCH_COMMAND,
                     Commands.STOP_WATCH_COMMAND, Commands.NEW_MESSAGE_COMMAND)) return;
@@ -71,21 +72,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     var messageId = splittedtext.Length > 1 ? splittedtext[1] : "";
                     await HandleTestMessageCommand(message, messageId);
                 }
-                else if (message.Text.StartsWith(Commands.CONNECT_COMMAND))
+                else if (message.Text.StartsWith(Commands.CONNECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await _authorizer.SendAuthorizeLink(message);
-                else if (message.Text.StartsWith(Commands.INBOX_COMMAND))
+                else if (message.Text.StartsWith(Commands.INBOX_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleGetInboxMessagesCommand(message);
-                else if (message.Text.StartsWith(Commands.TESTTHREAD_COMMAND))
+                else if (message.Text.StartsWith(Commands.TESTTHREAD_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleTestThreadCommand(message);
-                else if (message.Text.StartsWith(Commands.START_NOTIFY_COMMAND))
+                else if (message.Text.StartsWith(Commands.START_NOTIFY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleStartNotifyCommand(message);
-                else if (message.Text.StartsWith(Commands.STOP_NOTIFY_COMMAND))
+                else if (message.Text.StartsWith(Commands.STOP_NOTIFY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleStopNotifyCommand(message);
-                else if (message.Text.StartsWith(Commands.START_WATCH_COMMAND))
+                else if (message.Text.StartsWith(Commands.START_WATCH_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleStartWatchCommand(message);
-                else if (message.Text.StartsWith(Commands.STOP_WATCH_COMMAND))
+                else if (message.Text.StartsWith(Commands.STOP_WATCH_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleStopWatchCommand(message);
-                else if (message.Text.StartsWith(Commands.NEW_MESSAGE_COMMAND))
+                else if (message.Text.StartsWith(Commands.NEW_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleNewMessageCommand(message);
             }
             catch (ServiceNotFoundException ex)
@@ -122,12 +123,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (callbackQuery?.Data == null)
                 throw new ArgumentNullException(nameof(callbackQuery));
 
-            if (!callbackQuery.Data.StartsWithAny(Commands.CONNECT_COMMAND, Commands.EXPAND_COMMAND,
+            if (!callbackQuery.Data.StartsWithAny(StringComparison.CurrentCultureIgnoreCase,
+                    Commands.CONNECT_COMMAND, Commands.EXPAND_COMMAND,
                     Commands.HIDE_COMMAND, Commands.EXPAND_ACTIONS_COMMAND, Commands.HIDE_ACTIONS_COMMAND,
                     Commands.TO_READ_COMMAND, Commands.TO_UNREAD_COMMAND, Commands.TO_SPAM_COMMAND,
                     Commands.TO_INBOX_COMMAND, Commands.TO_TRASHCOMMAND, Commands.ARCHIVE_COMMAND,
-                    Commands.UNIGNORE_COMMAND, Commands.IGNORE_COMMAND,
-                     Commands.NEXTPAGE_COMMAND, Commands.PREVPAGE_COMMAND)) return;
+                    Commands.UNIGNORE_COMMAND, Commands.IGNORE_COMMAND, Commands.NEXTPAGE_COMMAND,
+                      Commands.PREVPAGE_COMMAND, Commands.ADD_SUBJECT_COMMAND)) return;
 
             LogMaker.Log(Logger,
                 $"{callbackQuery.Data} command received from user with id {(string)callbackQuery.From}", false);
@@ -135,50 +137,53 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             {
                 var callbackData = new CallbackData(callbackQuery.Data);
 
-                if (callbackData.Command == Commands.CONNECT_COMMAND)
+                if (callbackData.Command.Equals(Commands.CONNECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await _authorizer.SendAuthorizeLink(callbackQuery);
 
-                else if (callbackData.Command == Commands.EXPAND_COMMAND)
+                else if (callbackData.Command.Equals(Commands.EXPAND_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryExpandCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.HIDE_COMMAND)
+                else if (callbackData.Command.Equals(Commands.HIDE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryHideCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.EXPAND_ACTIONS_COMMAND)
+                else if (callbackData.Command.Equals(Commands.EXPAND_ACTIONS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryExpandActionsCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.HIDE_ACTIONS_COMMAND)
+                else if (callbackData.Command.Equals(Commands.HIDE_ACTIONS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryHideActionsCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.TO_READ_COMMAND)
+                else if (callbackData.Command.Equals(Commands.TO_READ_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryToReadCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.TO_UNREAD_COMMAND)
+                else if (callbackData.Command.Equals(Commands.TO_UNREAD_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryToUnReadCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.TO_SPAM_COMMAND)
+                else if (callbackData.Command.Equals(Commands.TO_SPAM_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryToSpamCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.TO_INBOX_COMMAND)
+                else if (callbackData.Command.Equals(Commands.TO_INBOX_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryToInboxCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.TO_TRASHCOMMAND)
+                else if (callbackData.Command.Equals(Commands.TO_TRASHCOMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryToTrashCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.ARCHIVE_COMMAND)
+                else if (callbackData.Command.Equals(Commands.ARCHIVE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryArchiveCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.UNIGNORE_COMMAND)
+                else if (callbackData.Command.Equals(Commands.UNIGNORE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryUnignoreCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.IGNORE_COMMAND)
+                else if (callbackData.Command.Equals(Commands.IGNORE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryIgnoreCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.NEXTPAGE_COMMAND)
+                else if (callbackData.Command.Equals(Commands.NEXTPAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryNextPageCommand(callbackQuery, callbackData);
 
-                else if (callbackData.Command == Commands.PREVPAGE_COMMAND)
+                else if (callbackData.Command.Equals(Commands.PREVPAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQueryPrevPageCommand(callbackQuery, callbackData);
+
+                else if (callbackData.Command.Equals(Commands.ADD_SUBJECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                    await HandleAddSubjectCommand(callbackQuery, callbackData);
             }
             catch (AuthorizeException ex)
             {
@@ -201,24 +206,35 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (inlineQuery?.Query == null)
                 throw new ArgumentNullException(nameof(inlineQuery));
 
-            if (!inlineQuery.Query.StartsWithAny(Commands.INBOX_INLINE_QUERY_COMMAND, Commands.ALL_INLINE_QUERY_COMMAND)) return;
+            if (!inlineQuery.Query.StartsWithAny(StringComparison.CurrentCultureIgnoreCase,
+                Commands.INBOX_INLINE_QUERY_COMMAND, Commands.ALL_INLINE_QUERY_COMMAND)) return;
 
             LogMaker.Log(Logger, $"{inlineQuery.Query} command received from user with id {(string)inlineQuery.From}", false);
             try
             {
-                var labelId = "";
-                if (inlineQuery.Query.StartsWith(Commands.INBOX_INLINE_QUERY_COMMAND))
-                    labelId = "INBOX";
-
                 var splittedQuery = inlineQuery.Query.Split(" ".ToCharArray(), 2);
-                var queryArg = splittedQuery.Length > 1 ? splittedQuery[1] : "";
-                int page = 1;
-                if (queryArg.StartsWith("p:"))
+                var queryArguments = splittedQuery.Length > 1 ? splittedQuery[1] : "";
+
+                if (inlineQuery.Query.StartsWithAny(StringComparison.CurrentCultureIgnoreCase,
+                    Commands.INBOX_INLINE_QUERY_COMMAND, Commands.ALL_INLINE_QUERY_COMMAND))
                 {
-                    page = Int32.TryParse(queryArg.Remove(0, 2), out page) == false ? 1 : page;
-                    queryArg = null;
+                    var labelId = "";
+                    if (inlineQuery.Query.StartsWith(Commands.INBOX_INLINE_QUERY_COMMAND))
+                        labelId = "INBOX";
+
+                    int page = 1;
+                    if (queryArguments.StartsWith("p:"))
+                    {
+                        page = Int32.TryParse(queryArguments.Remove(0, 2), out page) == false ? 1 : page;
+                        queryArguments = null;
+                    }
+                    await HandleShowMessagesInlineQueryCommand(inlineQuery, labelId, page, queryArguments);
                 }
-                await HandleShowMessagesInlineQueryCommand(inlineQuery, labelId, page, queryArg);
+                else if (inlineQuery.Query.StartsWith(Commands.RECIPIENTS_INLINE_QUERY_COMMAND,
+                    StringComparison.CurrentCultureIgnoreCase))
+                {
+                    await HandleShowContactsInlineQueryCommand(inlineQuery);
+                }
             }
             catch (ServiceNotFoundException ex)
             {
@@ -371,16 +387,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _botActions.GmailInlineCommandMessage(sender.From);
         }
 
-        private async Task HandleShowMessagesInlineQueryCommand(InlineQuery sender, string labelId, int page = 1, string searchExpression = null)
+        private async Task HandleShowMessagesInlineQueryCommand(InlineQuery inlineQuery, string labelId, int page = 1, string searchExpression = null)
         {
-            if (page < 1)
-                throw new ArgumentOutOfRangeException(nameof(page), "Must be not lower then 1");
-
-            const int resultsPerPage = 50;
-            const int messagesInOneResponse = 10;
-
+            var resultsPerPage = 50;
+            var messagesInOneResponse = 10;
             int offset;
-            Int32.TryParse(sender.Offset, out offset);
+            Int32.TryParse(inlineQuery.Offset, out offset);
             if (offset == -1)
                 return;
             if (offset >= resultsPerPage)
@@ -388,51 +400,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 page++;
                 offset = offset - resultsPerPage;
             }
-
-            var service = SearchServiceByUserId(sender.From);
-            var query = service.GmailService.Users.Messages.List("me");
-            if (string.IsNullOrEmpty(labelId))
-                query.IncludeSpamTrash = false;
+            var formatedMessages = await GetMessages(inlineQuery, offset, labelId, page, searchExpression, resultsPerPage, messagesInOneResponse);
+            if (formatedMessages.Count == 0) return;
+            if (formatedMessages.Count == messagesInOneResponse)
+                await _botActions.ShowShortMessageAnswerInlineQuery(inlineQuery.Id, formatedMessages, offset + messagesInOneResponse);
             else
-                query.LabelIds = labelId;
-
-            query.MaxResults = resultsPerPage;
-            query.Q = searchExpression;
-
-        ListMessagesResponse listMessagesResponse = null;
-            string pageToken = null;
-            int tempPage = page;
-            while (tempPage >= 1)
-            {
-                query.PageToken = pageToken;
-                listMessagesResponse = await query.ExecuteAsync();
-                if (string.IsNullOrEmpty(listMessagesResponse.NextPageToken))
-                    break;
-                pageToken = listMessagesResponse.NextPageToken;
-                tempPage--;
-            }
-            if (listMessagesResponse?.Messages == null || listMessagesResponse.Messages.Count == 0)
-            {
-                if (string.IsNullOrEmpty(labelId))
-                    await _botActions.EmptyAllMessage(sender.From, page);
-                else
-                    await _botActions.EmptyLabelMessage(sender.From, labelId, page);
-                return;
-            }
-            var formatedMessages = new List<FormattedMessage>();
-            foreach (var message in listMessagesResponse.Messages.Skip(offset).Take(messagesInOneResponse))
-            {
-                var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
-                getMailRequest.Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Metadata;
-                var mailInfoResponse = await getMailRequest.ExecuteAsync();
-                if (mailInfoResponse == null) continue;
-                var fMessage = new FormattedMessage(mailInfoResponse);
-                    formatedMessages.Add(fMessage);
-            }
-                if (formatedMessages.Count == messagesInOneResponse)
-                    await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages, offset + messagesInOneResponse);
-                else
-                    await _botActions.ShowShortMessageAnswerInlineQuery(sender.Id, formatedMessages, -1); //last response
+                await _botActions.ShowShortMessageAnswerInlineQuery(inlineQuery.Id, formatedMessages); //last response
         }
 
         private async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult sender)
@@ -686,6 +659,82 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
             var newPage = callbackData.Page - 1;
             await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage, callbackData.MessageKeyboardState, isIgnored);
+        }
+
+        private async Task HandleShowContactsInlineQueryCommand(InlineQuery inlineQuery, int page = 1, string searchExpression = null)
+        {
+            var resultsPerPage = 50;
+            var messagesInOneResponse = 10;
+            int offset;
+            Int32.TryParse(inlineQuery.Offset, out offset);
+            if (offset == -1)
+                return;
+            if (offset >= resultsPerPage)
+            {
+                page++;
+                offset = offset - resultsPerPage;
+            }
+            var formatedMessages = await GetMessages(inlineQuery, offset, "SENT", page, searchExpression, resultsPerPage, messagesInOneResponse);
+            if (formatedMessages.Count == 0) return;
+            var uniqueContacts = formatedMessages.Unique(m => m.SenderEmail).ToList();
+            if (uniqueContacts.Count == messagesInOneResponse)
+                await _botActions.ShowContactsAnswerInlineQuery(inlineQuery.Id, uniqueContacts, offset + messagesInOneResponse);
+            else
+                await _botActions.ShowContactsAnswerInlineQuery(inlineQuery.Id, uniqueContacts); //last response
+        }
+
+        private async Task HandleAddSubjectCommand(CallbackQuery sender, CallbackData callbackData)
+        {
+
+        }
+
+        private async Task<List<FormattedMessage>> GetMessages(ISender sender, int offset, string labelId = null, int page = 1,
+                                                    string searchExpression = null, int resultsPerPage = 50, int messagesInOneResponse = 10)
+        {
+            if (page < 1)
+                throw new ArgumentOutOfRangeException(nameof(page), "Must be not lower then 1");
+
+            var formatedMessages = new List<FormattedMessage>();
+            var service = SearchServiceByUserId(sender.From);
+            var query = service.GmailService.Users.Messages.List("me");
+            if (string.IsNullOrEmpty(labelId))
+                query.IncludeSpamTrash = false;
+            else
+                query.LabelIds = labelId;
+
+            query.MaxResults = resultsPerPage;
+            query.Q = searchExpression;
+
+            ListMessagesResponse listMessagesResponse = null;
+            string pageToken = null;
+            int tempPage = page;
+            while (tempPage >= 1)
+            {
+                query.PageToken = pageToken;
+                listMessagesResponse = await query.ExecuteAsync();
+                if (string.IsNullOrEmpty(listMessagesResponse.NextPageToken))
+                    break;
+                pageToken = listMessagesResponse.NextPageToken;
+                tempPage--;
+            }
+            if (listMessagesResponse?.Messages == null || listMessagesResponse.Messages.Count == 0)
+            {
+                if (string.IsNullOrEmpty(labelId))
+                    await _botActions.EmptyAllMessage(sender.From, page);
+                else
+                    await _botActions.EmptyLabelMessage(sender.From, labelId, page);
+                return formatedMessages;
+            }
+            foreach (var message in listMessagesResponse.Messages.Skip(offset).Take(messagesInOneResponse))
+            {
+                var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
+                getMailRequest.Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Metadata;
+                var mailInfoResponse = await getMailRequest.ExecuteAsync();
+                if (mailInfoResponse == null) continue;
+                var fMessage = new FormattedMessage(mailInfoResponse);
+                formatedMessages.Add(fMessage);
+            }
+            return formatedMessages;
         }
 
         private Service SearchServiceByUserId(string userId)
