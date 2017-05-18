@@ -299,6 +299,8 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <EmbeddedResource Include="App_LocalResources\client_secret.json" />
     <EmbeddedResource Include="App_LocalResources\client_secret_debug.json" />
+    <None Include="Properties\PublishProfiles\gmailcontrolbot - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\gmailcontrolbot - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
