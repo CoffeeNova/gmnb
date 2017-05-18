@@ -10,6 +10,5 @@ namespace CoffeeJelly.TelegramBotApiWrapper
     {
         public const int MESSAGE_TEXT_MAX_LENGTH = 4096;
         public const int MESSAGE_TEXT_MIN_LENGTH = 0;
-        public const string BOT_NAME = "gmailnotifybot";
     }
 }
