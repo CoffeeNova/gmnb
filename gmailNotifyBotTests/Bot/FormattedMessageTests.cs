@@ -29,23 +29,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                 MaxDifferences = 50,
                 // MembersToIgnore = new List<string> { "MessageId", "Date", "ForwardDate", "UpdateId" }
             };
-            //_formattedMessage = new FormattedMessage
-            //{
-            //    Id = _id,
-            //    ThreadId = _threadId,
-            //    SenderName = _senderName,
-            //    SenderEmail = _senderAddress,
-            //    Body = new List<BodyForm>
-            //        {
-            //            _bodyPart1,
-            //            _bodyPart2,
-            //            _bodyPart3,
-            //            _bodyPart4
-            //        },
-            //    Date = _date,
-            //    Snippet = _snippet,
-            //    Subject = _subject
-            //};
+            _formattedMessage = new FormattedMessage
+            {
+                Id = _id,
+                ThreadId = _threadId,
+                SenderName = _senderName,
+                SenderEmail = _senderAddress,
+                Body = new List<BodyForm>
+                    {
+                        _bodyPart1,
+                        _bodyPart2,
+                        _bodyPart3,
+                        _bodyPart4
+                    },
+                Date = DateTime.Parse(_date),
+                Snippet = _snippet,
+                Subject = _subject
+            };
         }
 
         [TestInitialize]
@@ -223,7 +223,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         private static string _senderName = "testSender";
         private static string _senderAddress = "testaddr@gmail.com";
         private static string _subject = "testSubject";
-        private static string _date = "testDate";
+        private static string _date = "Mon, 1 May 2017 18:30:55 +0300";
         private static BodyForm _bodyPart1 = new BodyForm("text/plain", "part1\r\npart1");
         private static BodyForm _bodyPart2 = new BodyForm("text/plain", "part2");
         private static BodyForm _bodyPart3 = new BodyForm("text/plain", "part3\r\npart3\r\npart3\r\n");

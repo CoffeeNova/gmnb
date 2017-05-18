@@ -59,6 +59,6 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         }
 
         private static string _documentFileName = "AutoUpdate.zip";
-        private static string _documentUri = "http://www.icecubesservice.com/TestDownloadDoc.pdf.zip/at_download/file";
+        private static string _documentUri = "https://ssl.gstatic.com/s2/profiles/images/silhouette48.png";
     }
 }
