@@ -421,7 +421,7 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
-  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <Import Project="..\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
   <Target Name="BeforeBuild">
     <Version VersionFile="Properties\version.txt" Major="1" Minor="0" BuildType="Automatic" StartDate="02/27/2017" RevisionType="BuildIncrement">
       <Output TaskParameter="Major" PropertyName="Major" />
