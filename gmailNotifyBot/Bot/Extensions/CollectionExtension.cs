@@ -43,7 +43,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
 
         public static IEnumerable<TSource> Unique<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            HashSet<TKey> seenKeys = new HashSet<TKey>();
+            var seenKeys = new HashSet<TKey>();
             foreach (TSource element in source)
             {
                 if (seenKeys.Add(keySelector(element)))
@@ -52,7 +52,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
                 }
             }
         }
-
     }
 
     public class SemiNumericComparer : IComparer<string>

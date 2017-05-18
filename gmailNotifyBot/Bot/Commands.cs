@@ -39,5 +39,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string STOP_WATCH_COMMAND = "/watchstop";
         public const string ADD_SUBJECT_COMMAND = "/addsubject";
         public const string ADD_TEXT_MESSAGE_COMMAND = "/addtextmessage";
+        public const string RECIPIENTS_INLINE_QUERY_COMMAND = "recipients:";
+        public const string CC_RECIPIENTS_MESSAGE_COMMAND = "/ccrecipients";
+        public const string BCC_RECIPIENTS_MESSAGE_COMMAND = "/bccrecipients";
     }
 }

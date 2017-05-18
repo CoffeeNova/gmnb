@@ -182,10 +182,33 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await
                 _telegramMethods.SendMessageAsync(chatId,
                     $"{Emoji.New} Please specify the <b>recipients</b>, a <b>subject</b> and the <b>content</b> of the email: " +
-                    $"\r\n{Emoji.InfoSign} You can use inline request, just type in the chat:" +
-                    $"\r\n<i>@{Constants.BOT_NAME} new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
+                    $"\r\n{Emoji.InfoSign} You can use quick command, just type in the chat:" +
+                    $"\r\n<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
                     $"\r\nand press Enter to quick send the email." +
                     $"\r\n{Emoji.InfoSign} For multiple recipients use comma separator.", ParseMode.Html, false, false, null, keyboard);
+        }
+
+        public async Task ShowContactsAnswerInlineQuery(string inlineQueryId, List<FormattedMessage> messages, int? offset = null)
+        {
+            var inlineQueryResults = new List<InlineQueryResult>();
+            foreach (var message in messages)
+            {
+                inlineQueryResults.Add(new InlineQueryResultArticle
+                { 
+                    Id = message.Id,
+                    Title = message.SenderEmail,
+                    Description = message.SenderName,
+                    InputMessageContent = new InputTextMessageContent
+                    {
+                        MessageText = $"Recipient added:\r\n{message.SenderName} <{message.SenderEmail}>"
+                    },
+                    ThumbUrl = @"https://ssl.gstatic.com/s2/profiles/images/silhouette48.png"
+                });
+            }
+            if (!offset.HasValue)
+                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true);
+            else
+                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
         }
 
         private InlineKeyboardMarkup NewMessageKeyboardMarkup()
@@ -194,7 +217,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var recipientsButton = new InlineKeyboardButton
             {
                 Text = $"{Emoji.BoyAndGirl}Add Recipients",
-                SwitchInlineQueryCurrentChat = "Recipients:"
+                SwitchInlineQueryCurrentChat = Commands.RECIPIENTS_INLINE_QUERY_COMMAND
             };
             var subjectButton = new InlineKeyboardButton
             {
@@ -206,10 +229,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             };
             var messageButton = new InlineKeyboardButton
             {
-                Text = $"{Emoji.M} Message",
+                Text = $"{Emoji.M}Message",
                 CallbackData = new CallbackData
                 {
                     Command = Commands.ADD_TEXT_MESSAGE_COMMAND
+                }
+            };
+            var ccButtons = new InlineKeyboardButton
+            {
+                Text = $"{Emoji.BoyAndGirl}CC Recipients",
+                CallbackData = new CallbackData
+                {
+                    Command = Commands.CC_RECIPIENTS_MESSAGE_COMMAND
+                }
+            };
+            var bccButtons = new InlineKeyboardButton
+            {
+                Text = $"{Emoji.MaleFemaleShadows}BCC Recipients",
+                CallbackData = new CallbackData
+                {
+                    Command = Commands.BCC_RECIPIENTS_MESSAGE_COMMAND
                 }
             };
             var firstRow = new List<InlineKeyboardButton>
@@ -218,9 +257,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 subjectButton,
                 messageButton
             };
+            var secondRow = new List<InlineKeyboardButton>
+            {
+                ccButtons,
+                bccButtons
+            };
             keyboardMarkup.InlineKeyboard.Add(firstRow);
+            keyboardMarkup.InlineKeyboard.Add(secondRow);
             return keyboardMarkup;
         }
+
+
 
         private InlineKeyboardMarkup RecievedMessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
         {
@@ -437,6 +484,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string New = "\ud83c\udd95"; //blue new
         public const string AbcLowerCase = "\ud83d\udd24";
         public const string M = "\u24c2\ufe0f"; //white M letter in the blue background
+        public const string MaleFemaleShadows = "\ud83d\udc65";
     }
 
 }
