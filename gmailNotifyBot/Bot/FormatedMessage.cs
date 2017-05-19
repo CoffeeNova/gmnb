@@ -33,16 +33,57 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
             if (messagePartHeader != null)
             {
-                SenderEmail = messagePartHeader.Value?.GetBetweenFirst('<', '>') ;
+                SenderEmail = messagePartHeader.Value?.GetBetweenFirst('<', '>');
                 SenderName = messagePartHeader.Value?.ReplaceFirst($" <{SenderEmail}>", "");
-            }
 
+            }
+            messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "To");
+            if (!string.IsNullOrEmpty(messagePartHeader?.Value))
+            {
+                if (!messagePartHeader.Value.StartsWith("undisclosed-recipients"))
+                {
+                    var spl = messagePartHeader.Value.Split(Separator1, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    To = new List<Recipient>(spl.Select(r =>
+                    {
+                        var recipient = new Recipient
+                        {
+                            Email = r.GetBetweenFirst('<', '>'),
+                            Name = r.Split(Separator2, StringSplitOptions.RemoveEmptyEntries).First()
+                        };
+                        return recipient;
+                    }));
+                }
+            }
+            messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Bcc");
+            if (messagePartHeader != null)
+            {
+                //var value = messagePartHeader.Value.GetBetweenFirst('<', '>');
+                Bcc = new Recipient
+                {sad
+                    Email = messagePartHeader.Value.GetBetweenFirst('<', '>'),
+                    Name = messagePartHeader.Value.Split(Separator2, StringSplitOptions.RemoveEmptyEntries).First()
+                };
+            }
+            messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Cc");
+            if (!string.IsNullOrEmpty(messagePartHeader?.Value))
+            {
+                var spl = messagePartHeader.Value.Split(Separator1, StringSplitOptions.RemoveEmptyEntries).ToList();
+                Cc = new List<Recipient>(spl.Select(r =>
+                {
+                    var recipient = new Recipient
+                    {
+                        Email = r.GetBetweenFirst('<', '>'),
+                        Name = r.Split(Separator2, StringSplitOptions.RemoveEmptyEntries).First()
+                    };
+                    return recipient;
+                }));
+            }
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Subject");
             if (messagePartHeader != null)
                 Subject = messagePartHeader.Value;
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
-                Date =  DateTime.Parse(Regex.Replace(messagePartHeader.Value, @"\s\(\D{3}\)", string.Empty));
+                Date = DateTime.Parse(Regex.Replace(messagePartHeader.Value, @"\s\(\D{3}\)", string.Empty));
             var body = new List<BodyForm>();
             if (message.Payload.Parts != null)
                 DecodeDevidedBody(message.Payload.Parts, body);
@@ -117,6 +158,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private int MaxSymbolsToBreakPage => SymbolsCounter(MaxLinePerPage);
         private string _senderName;
         private string _senderEmail;
+        private static readonly string[] Separator1 = { ", " };
+        private static readonly string[] Separator2 = { " <" };
 
         public string Id { get; set; }
 
@@ -129,8 +172,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             get { return _senderName; }
             set
             {
-                _senderName = !string.IsNullOrEmpty(value) 
-                    ? value 
+                _senderName = !string.IsNullOrEmpty(value)
+                    ? value
                     : "noname";
             }
         }
@@ -145,6 +188,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     : "unknown";
             }
         }
+
+        public List<Recipient> To { get; set; }
+
+        public List<Recipient> Cc { get; set; }
+
+        public Recipient Bcc { get; set; }
 
         public string Subject { get; set; }
 
@@ -219,7 +268,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public bool SnippetEqualsBody => IsSnippetEqualsBody();
     }
 
-    public class BodyForm
+    internal class BodyForm
     {
         public BodyForm(string mimeType, string value)
         {
@@ -230,5 +279,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public string MimeType { get; }
 
         public string Value { get; }
+    }
+
+    internal class Recipient
+    {
+        public string Email { get; set; }
+        public string Name { get; set; }
     }
 }

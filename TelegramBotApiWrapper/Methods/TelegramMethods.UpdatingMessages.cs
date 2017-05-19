@@ -16,7 +16,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
     {
         [TelegramMethod("editMessageText")]
         public TextMessage EditMessageText(string newText, string chatId = null, string messageId = null, string inlineMessageId = null,
-                                                    ParseMode? parseMode = null, bool? disableWebPagePreview = null, InlineKeyboardMarkup replyMarkup = null)
+                                                    ParseMode? parseMode = null, bool? disableWebPagePreview = null, IMarkup replyMarkup = null)
         {
             newText.NullInspect(nameof(newText));
             if (!newText.Length.InRange(Constants.MESSAGE_TEXT_MIN_LENGTH, Constants.MESSAGE_TEXT_MAX_LENGTH))
@@ -67,7 +67,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
         [TelegramMethod("editMessageText")]
         public Task<TextMessage> EditMessageTextAsync(string newText, string chatId = null, string messageId = null,
                         string inlineMessageId = null, ParseMode? parseMode = null, bool? disabeleWebPagePreview = null,
-                        InlineKeyboardMarkup replyMarkup = null, CancellationToken cancellationToken = default(CancellationToken))
+                        IMarkup replyMarkup = null, CancellationToken cancellationToken = default(CancellationToken))
 
         {
             return

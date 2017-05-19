@@ -16,6 +16,7 @@ using CoffeeJelly.gmailNotifyBot.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls;
 
 namespace CoffeeJelly.gmailNotifyBot
 {
@@ -30,55 +31,55 @@ namespace CoffeeJelly.gmailNotifyBot
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-//            var botSettings = BotSettings.GetInstance();
-//#pragma warning disable 618
-//            botSettings.Username = System.Configuration.ConfigurationSettings.AppSettings["Username"];
-//#pragma warning restore 618
+            var botSettings = BotSettings.GetInstance();
+#pragma warning disable 618
+            botSettings.Username = System.Configuration.ConfigurationSettings.AppSettings["Username"];
+#pragma warning restore 618
 
-//            LogMaker.NewMessage += LogMaker_NewMessage;
-//            string botToken = App_LocalResources.Tokens.GmailControlBotToken;
-//            var topicName = App_LocalResources.Tokens.TopicName;
+            LogMaker.NewMessage += LogMaker_NewMessage;
+            string botToken = App_LocalResources.Tokens.GmailControlBotToken;
+            var topicName = App_LocalResources.Tokens.TopicName;
 
-//#if DEBUG
-//            string clientSecretStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret_debug);
-//#else
-//            string clientSecretStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret);
-//#endif
+#if DEBUG
+            string clientSecretStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret_debug);
+#else
+            string clientSecretStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret);
+#endif
 
-//            var clienSecretJtoken = JsonConvert.DeserializeObject<JToken>(clientSecretStr);
-//            var clientSecret = JsonConvert.DeserializeObject<Secrets>(clienSecretJtoken["web"].ToString());
+            var clienSecretJtoken = JsonConvert.DeserializeObject<JToken>(clientSecretStr);
+            var clientSecret = JsonConvert.DeserializeObject<Secrets>(clienSecretJtoken["web"].ToString());
 
-//            _updates = Updates.GetInstance(botToken);
-//            _updates.UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
-//            _updatesHandler = new UpdatesHandler();
-//            _authorizer = Authorizer.GetInstance(botToken, _updatesHandler, clientSecret);
+            _updates = Updates.GetInstance(botToken);
+            _updates.UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
+            _updatesHandler = new UpdatesHandler();
+            _authorizer = Authorizer.GetInstance(botToken, _updatesHandler, clientSecret);
 
-//            //generate ServiceCollection for all gmail control bot users
-//            var gmailServiceFactory = ServiceFactory.GetInstanse(clientSecret);
-//            await gmailServiceFactory.RestoreServicesFromStore();
+            //generate ServiceCollection for all gmail control bot users
+            var gmailServiceFactory = ServiceFactory.GetInstanse(clientSecret);
+            await gmailServiceFactory.RestoreServicesFromStore();
 
-//            _commandHandler = CommandHandler.GetInstance(botToken, _updatesHandler, clientSecret, topicName);
+            _commandHandler = CommandHandler.GetInstance(botToken, _updatesHandler, clientSecret, topicName);
 
-//            var botServices = gmailServiceFactory.ServiceCollection;
-//            //restart push notification watches for all gmail control bot users
-//            botServices.ForEach(async s =>
-//            {
-//                await _commandHandler.HandleStartWatchCommand(s);
-//                //probably i need to do a delay here to avoid response ddos to my server
-//            });
-//            //start timer which would be update push notification watch for users which expiration time approaches the end
-//            _pushNotificationWatchTimer = new Timer(state =>
-//            {
-//                var userSettings = gmailDbContextWorker.GetAllUsersSettings();
-//                userSettings.ForEach(us =>
-//                {
-//                    var difference = DateTime.UtcNow.Difference(us.Expiration);
-//                    if (difference.TotalHours >= 2) return;
-//                    var service = botServices.FirstOrDefault(s => s.From == us.UserId);
-//                    if (service == null) return;
-//                    _commandHandler.HandleStartWatchCommand(service).Wait();
-//                });
-//            }, null, _updatePeriod, _updatePeriod);
+            var botServices = gmailServiceFactory.ServiceCollection;
+            //restart push notification watches for all gmail control bot users
+            botServices.ForEach(async s =>
+            {
+                await _commandHandler.HandleStartWatchCommand(s);
+                //probably i need to do a delay here to avoid response ddos to my server
+            });
+            //start timer which would be update push notification watch for users which expiration time approaches the end
+            _pushNotificationWatchTimer = new Timer(state =>
+            {
+                var userSettings = gmailDbContextWorker.GetAllUsersSettings();
+                userSettings.ForEach(us =>
+                {
+                    var difference = DateTime.UtcNow.Difference(us.Expiration);
+                    if (difference.TotalHours >= 2) return;
+                    var service = botServices.FirstOrDefault(s => s.From == us.UserId);
+                    if (service == null) return;
+                    _commandHandler.HandleStartWatchCommand(service).Wait();
+                });
+            }, null, _updatePeriod, _updatePeriod);
         }
 
         private void LogMaker_NewMessage(NLog.Logger logger, string message, DateTime time, bool isError)
