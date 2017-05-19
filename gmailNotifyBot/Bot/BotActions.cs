@@ -158,7 +158,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.EditMessageTextAsync("Success", chatId, messageId);
         }
 
-        public async Task ChosenShortMessage(string chatId, FormattedMessage formattedMessage, bool isIgnored)
+        public async Task ShowChosenShortMessage(string chatId, FormattedMessage formattedMessage, bool isIgnored)
         {
             var header = formattedMessage.Header;
             var message = header + $"\r\n\r\n {formattedMessage.Snippet}";
@@ -176,31 +176,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
-        public async Task SpecifyRecipientMessage(string chatId)
+        public async Task SpecifyNewMailMessage(string chatId)
         {
-            var keyboard = NewMessageKeyboardMarkup();
-            await
-                _telegramMethods.SendMessageAsync(chatId,
-                    $"{Emoji.New} Please specify the <b>recipients</b>, a <b>subject</b> and the <b>content</b> of the email: " +
-                    $"\r\n{Emoji.InfoSign} You can use quick command, just type in the chat:" +
-                    $"\r\n<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
-                    $"\r\nand press Enter to quick send the email." +
-                    $"\r\n{Emoji.InfoSign} For multiple recipients use comma separator.", ParseMode.Html, false, false, null, keyboard);
+            var keyboard = NewMessageInlineKeyboardMarkup();
+            await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task ShowContactsAnswerInlineQuery(string inlineQueryId, List<FormattedMessage> messages, int? offset = null)
+
+
+        public async Task ShowContactsAnswerInlineQuery(string inlineQueryId, IEnumerable<Recipient> contacts, int? offset = null)
         {
             var inlineQueryResults = new List<InlineQueryResult>();
-            foreach (var message in messages)
+            foreach (var contact in contacts)
             {
                 inlineQueryResults.Add(new InlineQueryResultArticle
-                { 
-                    Id = message.Id,
-                    Title = message.SenderEmail,
-                    Description = message.SenderName,
+                {
+                    Id = contact.Email,
+                    Title = contact.Email,
+                    Description = contact.Name,
                     InputMessageContent = new InputTextMessageContent
                     {
-                        MessageText = $"Recipient added:\r\n{message.SenderName} <{message.SenderEmail}>"
+                        MessageText = $"Recipient added:\r\n{contact.Name} <{contact.Email}>"
                     },
                     ThumbUrl = @"https://ssl.gstatic.com/s2/profiles/images/silhouette48.png"
                 });
@@ -211,7 +207,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
         }
 
-        private InlineKeyboardMarkup NewMessageKeyboardMarkup()
+
+        public async Task UpdateNewMailMessage(string chatId, int messageId, List<string> recipients, bool isIgnored)
+        {
+            var keyboard = NewMessageInlineKeyboardMarkup();
+            await _telegramMethods.EditMessageTextAsync(_newMessageText, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
+        }
+
+        private ReplyKeyboardMarkup RecipientsReplyKeyboardMarkup(string recepient)
+        {
+            var keyboardMarkup = new ReplyKeyboardMarkup {Keyboard = new List<List<KeyboardButton>>()};
+            var testButton = new KeyboardButton
+            {
+                Text = "TEST BUTTON"
+            };
+            var firstRow = new List<KeyboardButton> {testButton};
+            keyboardMarkup.Keyboard.Add(firstRow);
+
+            return keyboardMarkup;
+        }
+
+        private InlineKeyboardMarkup NewMessageInlineKeyboardMarkup()
         {
             var keyboardMarkup = new InlineKeyboardMarkup { InlineKeyboard = new List<List<InlineKeyboardButton>>() };
             var recipientsButton = new InlineKeyboardButton
@@ -445,6 +461,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private readonly TelegramMethods _telegramMethods;
         private readonly BotSettings _botSettings;
+        private readonly string _newMessageText =
+                        $"{Emoji.New} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: " +
+                        $"\r\n{Emoji.InfoSign} You can use quick command, just type in the chat:" +
+                        $"\r\n<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
+                        $"\r\nand press Enter to quick send the email." +
+                        $"\r\n{Emoji.InfoSign} For multiple recipients use comma separator.";
     }
 
     public enum MessageKeyboardState

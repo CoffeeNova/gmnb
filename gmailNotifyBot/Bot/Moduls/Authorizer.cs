@@ -12,10 +12,9 @@ using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NLog;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 {
     public sealed class Authorizer
     {

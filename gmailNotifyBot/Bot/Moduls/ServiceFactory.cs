@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Attributes;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
@@ -16,11 +13,9 @@ using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Oauth2.v2;
 using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using Microsoft.Owin.Security.Twitter.Messages;
 using NLog;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 {
     public sealed class ServiceFactory
     {

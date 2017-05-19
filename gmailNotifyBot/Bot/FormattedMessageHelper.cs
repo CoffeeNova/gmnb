@@ -9,7 +9,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
-    public static class FormattedMessageHelper
+    internal static class FormattedMessageHelper
     {
         public static IEnumerable<string> FormatTextBody(IEnumerable<BodyForm> body, int min, int max)
         {
