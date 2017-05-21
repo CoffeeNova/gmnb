@@ -90,6 +90,7 @@
     <Compile Include="Bot\FormattedMessageTests.cs" />
     <Compile Include="Bot\GoogleAuthTests.cs" />
     <Compile Include="Bot\FormattedMessageHelperTests.cs" />
+    <Compile Include="Controllers\PushControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>

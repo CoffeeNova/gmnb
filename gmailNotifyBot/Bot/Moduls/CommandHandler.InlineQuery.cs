@@ -110,7 +110,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         {
             var messageId = sender.ResultId;
             var formattedMessage = await GetMessage(sender.From, messageId);
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
             await _botActions.ShowChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
 

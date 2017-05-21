@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Attributes;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using Google.Apis.Auth.OAuth2;
@@ -32,7 +33,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return Instance;
         }
 
-        public async Task RestoreServicesFromStore()
+        public async Task RestoreServicesFromRepository()
         {
             var gmailDbContextWorker = new GmailDbContextWorker();
             var users = await gmailDbContextWorker.GetAllUsersAsync();
@@ -55,7 +56,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
                 });
             });
-
         }
 
         private ServiceFactory(Secrets secrets)

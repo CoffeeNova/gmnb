@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
@@ -65,12 +66,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             catch (AuthorizeException ex)
             {
                 exception = ex;
-                await _botActions.AuthorizationErrorMessage(message.Chat);
+                await _botActions.AuthorizationErrorMessage(message.From);
             }
             catch (Exception ex)
             {
                 exception = ex;
-                throw new NotImplementedException("operation error show to telegram chat as answerCallbackQuery");
+#if DEBUG
+                Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
+#endif
             }
             finally
             {
@@ -106,7 +109,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             var mailInfoResponse = await getMailRequest.ExecuteAsync();
             if (mailInfoResponse == null) return;
             var formattedMessage = new FormattedMessage(mailInfoResponse);
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
             await _botActions.ShowChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
 
@@ -123,7 +126,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             var mailInfoResponse = await getMailRequest.ExecuteAsync();
             if (mailInfoResponse == null) return;
             var formattedMessage = new FormattedMessage(mailInfoResponse);
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
             await _botActions.ShowChosenShortMessage(sender.From, formattedMessage, isIgnored);
         }
 

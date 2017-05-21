@@ -38,6 +38,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         [JsonIgnore]
         public int UserId { get; set; }
 
+        [JsonProperty("user_id")]
+        public string GoogleUserId { get; set; }
+
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
+        [JsonProperty("email_verified")]
+        public bool EmailVerified { get; set; }
+
         [JsonIgnore]
         public string FirstName { get; set; }
 
@@ -47,14 +56,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         [JsonIgnore]
         public string Username { get; set; }
 
+        [JsonProperty("id_token")]
+        public string IdToken { get; set; }
+
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }
 
-        //[JsonIgnore]
-        //public DateTime ReceivingTimeUtc { get; set; }
-
         [JsonProperty("IssuedUtc")]
-        //[NotMapped]
         public DateTime IssuedTimeUtc { get; set; }
 
         [JsonProperty("expires_in")]

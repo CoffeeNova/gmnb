@@ -1,0 +1,11 @@
+{
+  "message": {
+    "data": "eyJlbWFpbEFkZHJlc3MiOiJkbm0ubm92YUBnbWFpbC5jb20iLCJoaXN0b3J5SWQiOjI1NDgxM30=",
+    "attributes": { },
+    "message_id": "125079188399153",
+    "messageId": "125079188399153",
+    "publish_time": "2017-05-20T18:21:11.210Z",
+    "publishTime": "2017-05-20T18:21:11.210Z"
+  },
+  "subscription": "projects/gmnb-159307/subscriptions/gmnbSubs"
+}

@@ -78,12 +78,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             catch (AuthorizeException ex)
             {
                 LogMaker.Log(Logger, ex);
-                await _botActions.AuthorizationErrorMessage(callbackQuery.Message.Chat);
+                await _botActions.AuthorizationErrorMessage(callbackQuery.Message.From);
             }
             catch (ServiceNotFoundException ex)
             {
                 LogMaker.Log(Logger, ex);
-                await _botActions.WrongCredentialsMessage(callbackQuery.Message.Chat);
+                await _botActions.WrongCredentialsMessage(callbackQuery.Message.From);
             }
             catch (Exception ex)
             {
@@ -106,12 +106,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new ArgumentException("Must be a Minimized or MinimizedAction state.", nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
             var newState = callbackData.MessageKeyboardState == MessageKeyboardState.Minimized
                 ? MessageKeyboardState.Maximized
                 : MessageKeyboardState.MaximizedActions;
             var newPage = 1;
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage, newState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, newPage, newState, isIgnored);
         }
 
         /// <summary>
@@ -129,12 +129,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new ArgumentException("Must be a Maximized or MaximizedAction state.", nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
             var newState = callbackData.MessageKeyboardState == MessageKeyboardState.Maximized
                 ? MessageKeyboardState.Minimized
                 : MessageKeyboardState.MinimizedActions;
             var newPage = 0;
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage, newState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, newPage, newState, isIgnored);
 
         }
 
@@ -153,11 +153,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new ArgumentException("Must be a Minimized or Maximized state.", nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Remove, sender.From, callbackData.MessageId, callbackData.Etag, "UNREAD");
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
             var newState = callbackData.MessageKeyboardState == MessageKeyboardState.Minimized
                 ? MessageKeyboardState.MinimizedActions
                 : MessageKeyboardState.MaximizedActions;
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, newState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, newState, isIgnored);
         }
 
         /// <summary>
@@ -175,11 +175,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new ArgumentException("Must be a MinimizedActions or MaximizedActions state.", nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
             var newState = callbackData.MessageKeyboardState == MessageKeyboardState.MinimizedActions
                 ? MessageKeyboardState.Minimized
                 : MessageKeyboardState.Maximized;
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, newState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, newState, isIgnored);
         }
 
         /// <summary>
@@ -192,9 +192,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task HandleCallbackQueryToReadCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Remove, sender.From, callbackData.MessageId, callbackData.Etag, "UNREAD");
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
         }
 
         /// <summary>
@@ -207,9 +207,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task HandleCallbackQueryToUnReadCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "UNREAD");
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
         }
 
         /// <summary>
@@ -222,9 +222,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task HandleCallbackQueryToSpamCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "SPAM");
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
         }
 
         /// <summary>
@@ -237,9 +237,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task HandleCallbackQueryToInboxCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "INBOX");
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
         }
 
         /// <summary>
@@ -252,9 +252,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task HandleCallbackQueryToTrashCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "TRASH");
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
         }
 
         /// <summary>
@@ -267,9 +267,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task HandleCallbackQueryArchiveCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Remove, sender.From, callbackData.MessageId, callbackData.Etag, "INBOX");
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, isIgnored);
         }
 
         /// <summary>
@@ -282,8 +282,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task HandleCallbackQueryUnignoreCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
-            await _dbWorker.RemoveFromIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, false);
+            await _dbWorker.RemoveFromIgnoreListAsync(sender.From, formattedMessage.From.Email);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, false);
         }
 
         /// <summary>
@@ -296,8 +296,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task HandleCallbackQueryIgnoreCommand(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
-            await _dbWorker.AddToIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, false);
+            await _dbWorker.AddToIgnoreListAsync(sender.From, formattedMessage.From.Email);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, callbackData.Page, callbackData.MessageKeyboardState, false);
         }
 
         /// <summary>
@@ -312,10 +312,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
             if (formattedMessage.Pages <= callbackData.Page)
                 throw new InvalidOperationException("Execution of this method is not permissible in this situation");
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
             var newPage = callbackData.Page + 1;
             await
-                _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage,
+                _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, newPage,
                     callbackData.MessageKeyboardState, isIgnored);
         }
 
@@ -331,9 +331,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
             if (callbackData.Page < 2)
                 throw new InvalidOperationException("Execution of this method is not permissible in this situation");
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.SenderEmail);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
             var newPage = callbackData.Page - 1;
-            await _botActions.UpdateMessage(sender.Message.Chat, sender.Message.MessageId, formattedMessage, newPage, callbackData.MessageKeyboardState, isIgnored);
+            await _botActions.UpdateMessage(sender.Message.From, sender.Message.MessageId, formattedMessage, newPage, callbackData.MessageKeyboardState, isIgnored);
         }
 
         private async Task HandleAddSubjectCommand(CallbackQuery sender, CallbackData callbackData)

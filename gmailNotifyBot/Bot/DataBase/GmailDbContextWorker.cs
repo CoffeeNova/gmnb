@@ -12,7 +12,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 {
     public class GmailDbContextWorker
     {
-        public UserModel FindUser(long userId)
+        public UserModel FindUser(int userId)
         {
             using (var db = new GmailBotDbContext())
             {
@@ -20,9 +20,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<UserModel> FindUserAsync(long userId)
+        public Task<UserModel> FindUserAsync(int userId)
         {
             return Task.Run(() => FindUser(userId));
+        }
+
+        public UserModel FindUserByEmail(string email)
+        {
+            using (var db = new GmailBotDbContext())
+            {
+                return db.Users.FirstOrDefault(u => u.Email == email);
+            }
+        }
+
+        public Task<UserModel> FindUserByEmailAsync(string email)
+        {
+            return Task.Run(() => FindUserByEmail(email));
         }
 
         public UserModel AddNewUser(User user)
@@ -79,7 +92,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => RemoveUserRecord(model));
         }
 
-        public PendingUserModel Queue(long userId)
+        public PendingUserModel Queue(int userId)
         {
             using (var db = new GmailBotDbContext())
             {
@@ -93,7 +106,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<PendingUserModel> QueueAsync(long userId)
+        public Task<PendingUserModel> QueueAsync(int userId)
         {
             return Task.Run(() => Queue(userId));
         }
@@ -119,7 +132,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => RemoveFromQueue(model));
         }
 
-        public PendingUserModel UpdateRecordJoinTime(long id, DateTime time)
+        public PendingUserModel UpdateRecordJoinTime(int id, DateTime time)
         {
             using (var db = new GmailBotDbContext())
             {
@@ -133,12 +146,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<PendingUserModel> UpdateRecordJoinTimeAsync(long id, DateTime time)
+        public Task<PendingUserModel> UpdateRecordJoinTimeAsync(int id, DateTime time)
         {
             return Task.Run(() => UpdateRecordJoinTime(id, time));
         }
 
-        public PendingUserModel FindPendingUser(long userId)
+        public PendingUserModel FindPendingUser(int userId)
         {
             using (var db = new GmailBotDbContext())
             {
@@ -146,13 +159,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<PendingUserModel> FindPendingUserAsync(long userId)
+        public Task<PendingUserModel> FindPendingUserAsync(int userId)
         {
             return Task.Run(() => FindPendingUser(userId));
         }
 
 
-        public UserSettingsModel FindUserSettings(long userId)
+        public UserSettingsModel FindUserSettings(int userId)
         {
             using (var db = new GmailBotDbContext())
             {
@@ -160,7 +173,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<UserSettingsModel> FindUserSettingsAsync(long userId)
+        public Task<UserSettingsModel> FindUserSettingsAsync(int userId)
         {
             return Task.Run(() => FindUserSettings(userId));
         }
@@ -182,6 +195,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             access.NullInspect(nameof(access));
 
             return Task.Run(() => AddNewUserSettings(userId, access));
+        }
+
+        public void RemoveUserSettingsRecord(UserSettingsModel model)
+        {
+            model.NullInspect(nameof(model));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var entry = db.Entry(model);
+                if (entry.State == EntityState.Detached)
+                    db.UserSettings.Attach(model);
+                db.UserSettings.Remove(model);
+                db.SaveChanges();
+            }
+        }
+
+        public Task RemoveUserSettingsRecordAsync(UserSettingsModel model)
+        {
+            model.NullInspect(nameof(model));
+            return Task.Run(() => RemoveUserSettingsRecord(model));
         }
 
         public List<UserModel> GetAllUsers()
@@ -210,7 +243,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => GetAllUsersSettings());
         }
 
-        public void AddToIgnoreList(long userId, string address)
+        public void AddToIgnoreList(int userId, string address)
         {
             address.NullInspect(nameof(address));
 
@@ -224,7 +257,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public async Task AddToIgnoreListAsync(long userId, string address)
+        public async Task AddToIgnoreListAsync(int userId, string address)
         {
             address.NullInspect(nameof(address));
 
@@ -238,12 +271,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task AddToIgnoreListAsyncTest(long userId, string address)
+        public Task AddToIgnoreListAsyncTest(int userId, string address)
         {
             return Task.Run(() => AddToIgnoreList(userId, address));
         }
 
-        public void RemoveFromIgnoreList(long userId, string address)
+        public void RemoveFromIgnoreList(int userId, string address)
         {
             address.NullInspect(nameof(address));
 
@@ -258,7 +291,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public async Task RemoveFromIgnoreListAsync(long userId, string address)
+        public async Task RemoveFromIgnoreListAsync(int userId, string address)
         {
             address.NullInspect(nameof(address));
 
@@ -273,7 +306,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public bool IsPresentInIgnoreList(long userId, string address)
+        public bool IsPresentInIgnoreList(int userId, string address)
         {
             address.NullInspect(nameof(address));
 
@@ -286,7 +319,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public async Task<bool> IsPresentInIgnoreListAsync(long userId, string address)
+        public async Task<bool> IsPresentInIgnoreListAsync(int userId, string address)
         {
             address.NullInspect(nameof(address));
 

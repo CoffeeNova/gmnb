@@ -20,17 +20,18 @@ namespace CoffeeJelly.gmailNotifyBot
         {
             DateTime currentDate = DateTime.Now;
             logger.Error(ex);
-            NewMessage?.Invoke(logger, ex.Message, currentDate, true);
+            NewMessage?.Invoke(logger, ex.Message, currentDate, true, ex.StackTrace);
         }
 
         public static void Log(Logger logger, Exception ex, string message)
         {
             DateTime currentDate = DateTime.Now;
             logger.Error(ex, message);
-            NewMessage?.Invoke(logger, ex.Message, currentDate, true);
+            
+            NewMessage?.Invoke(logger, ex.Message, currentDate, true, ex.StackTrace);
         }
 
-        public delegate void MessageDelegate(Logger logger, string message, DateTime time, bool isError);
+        public delegate void MessageDelegate(Logger logger, string message, DateTime time, bool isError, string stackTrace=null);
         public static event MessageDelegate NewMessage;
     }
 }

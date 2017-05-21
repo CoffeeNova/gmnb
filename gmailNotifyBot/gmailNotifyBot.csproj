@@ -223,7 +223,7 @@
     <Compile Include="Bot\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
     <Compile Include="Bot\CallbackClasses.cs" />
-    <Compile Include="Bot\ClientSecret.cs" />
+    <Compile Include="Bot\Types\ClientSecret.cs" />
     <Compile Include="Bot\Moduls\CommandHandler.CallbackQuery.cs" />
     <Compile Include="Bot\Moduls\CommandHandler.InlineQuery.cs" />
     <Compile Include="Bot\Moduls\CommandHandler.Message.cs" />
@@ -250,6 +250,7 @@
     <Compile Include="Bot\Extensions\EnumExtension.cs" />
     <Compile Include="Bot\Extensions\GeneralExtensions.cs" />
     <Compile Include="Bot\GoogleAuth.cs" />
+    <Compile Include="Bot\Moduls\BotInitializer.cs" />
     <Compile Include="Bot\Moduls\ServiceFactory.cs" />
     <Compile Include="Bot\HtmlToText.cs" />
     <Compile Include="Bot\test.cs" />
@@ -265,13 +266,17 @@
     <Compile Include="Bot\Extensions\StringExtension.cs" />
     <Compile Include="Bot\FormatedMessage.cs" />
     <Compile Include="Bot\FormattedMessageHelper.cs" />
+    <Compile Include="Controllers\PushController.cs" />
+    <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="LogMaker.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Bot\Types\GoogleNotifyMessage.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\TestModel.cs" />
     <Compile Include="Models\UserDbInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\VersionInfo.cs" />
@@ -302,6 +307,7 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <EmbeddedResource Include="App_LocalResources\client_secret.json" />
     <EmbeddedResource Include="App_LocalResources\client_secret_debug.json" />
+    <Compile Include="Bot\Moduls\CommandHandler.Notify.cs" />
     <None Include="Properties\PublishProfiles\gmailcontrolbot - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\gmailcontrolbot - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />
@@ -364,6 +370,8 @@
     <Content Include="Views\OAuth\Index.cshtml" />
     <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
+    <Content Include="Views\Version\Index.cshtml" />
+    <Content Include="Views\Push\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

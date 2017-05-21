@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using Google.Apis.Gmail.v1.Data;
-using HtmlAgilityPack;
 
 [assembly: InternalsVisibleTo("gmailNotifyBotTests")]
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
+    using Helper = FormattedMessageHelper;
     internal sealed class FormattedMessage
     {
         public FormattedMessage()
@@ -31,52 +30,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             ETag = message.ETag;
             LabelIds = message.LabelIds == null ? null : new List<string>(message.LabelIds);
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
-            if (messagePartHeader != null)
-            {
-                SenderEmail = messagePartHeader.Value?.GetBetweenFirst('<', '>');
-                SenderName = messagePartHeader.Value?.ReplaceFirst($" <{SenderEmail}>", "");
+            if (!string.IsNullOrEmpty(messagePartHeader?.Value))
+                From = Helper.ParseUserInfo(messagePartHeader.Value);
 
-            }
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "To");
             if (!string.IsNullOrEmpty(messagePartHeader?.Value))
             {
                 if (!messagePartHeader.Value.StartsWith("undisclosed-recipients"))
                 {
-                    var spl = messagePartHeader.Value.Split(Separator1, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    To = new List<Recipient>(spl.Select(r =>
-                    {
-                        var recipient = new Recipient
-                        {
-                            Email = r.GetBetweenFirst('<', '>'),
-                            Name = r.Split(Separator2, StringSplitOptions.RemoveEmptyEntries).First()
-                        };
-                        return recipient;
-                    }));
+                    var userInfoList = messagePartHeader.Value.Split(Separator, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    To = new List<UserInfo>(userInfoList.Select(Helper.ParseUserInfo));
                 }
             }
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Bcc");
             if (messagePartHeader != null)
-            {
-                //var value = messagePartHeader.Value.GetBetweenFirst('<', '>');
-                Bcc = new Recipient
-                {sad
-                    Email = messagePartHeader.Value.GetBetweenFirst('<', '>'),
-                    Name = messagePartHeader.Value.Split(Separator2, StringSplitOptions.RemoveEmptyEntries).First()
-                };
-            }
+                Bcc = Helper.ParseUserInfo(messagePartHeader.Value);
+
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Cc");
             if (!string.IsNullOrEmpty(messagePartHeader?.Value))
             {
-                var spl = messagePartHeader.Value.Split(Separator1, StringSplitOptions.RemoveEmptyEntries).ToList();
-                Cc = new List<Recipient>(spl.Select(r =>
-                {
-                    var recipient = new Recipient
-                    {
-                        Email = r.GetBetweenFirst('<', '>'),
-                        Name = r.Split(Separator2, StringSplitOptions.RemoveEmptyEntries).First()
-                    };
-                    return recipient;
-                }));
+                var userInfoList = messagePartHeader.Value.Split(Separator, StringSplitOptions.RemoveEmptyEntries).ToList();
+                Cc = new List<UserInfo>(userInfoList.Select(Helper.ParseUserInfo));
             }
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Subject");
             if (messagePartHeader != null)
@@ -115,8 +89,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private string HtmlStyledMessageHeader()
         {
+            if (string.IsNullOrEmpty(From.Name))
+                return $"<b>{From.Email}</b>    <i>{Date}</i> \r\n\r\n<b>{Subject}</b>";
             return
-                $"<b>{SenderName}</b>    {SenderEmail}   <i>{Date}</i> \r\n\r\n<b>{Subject}</b>";
+                $"<b>{From.Name}</b>    {From.Email}   <i>{Date}</i> \r\n\r\n<b>{Subject}</b>";
         }
 
         private static int SymbolsCounter(int lines)
@@ -158,8 +134,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private int MaxSymbolsToBreakPage => SymbolsCounter(MaxLinePerPage);
         private string _senderName;
         private string _senderEmail;
-        private static readonly string[] Separator1 = { ", " };
-        private static readonly string[] Separator2 = { " <" };
+        private static readonly string[] Separator = { ", " };
 
         public string Id { get; set; }
 
@@ -167,33 +142,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public string Snippet { get; set; }
 
-        public string SenderName
-        {
-            get { return _senderName; }
-            set
-            {
-                _senderName = !string.IsNullOrEmpty(value)
-                    ? value
-                    : "noname";
-            }
-        }
+        public UserInfo From { get; set; }
 
-        public string SenderEmail
-        {
-            get { return _senderEmail; }
-            set
-            {
-                _senderEmail = !string.IsNullOrEmpty(value)
-                    ? value
-                    : "unknown";
-            }
-        }
+        public List<UserInfo> To { get; set; }
 
-        public List<Recipient> To { get; set; }
+        public List<UserInfo> Cc { get; set; }
 
-        public List<Recipient> Cc { get; set; }
-
-        public Recipient Bcc { get; set; }
+        public UserInfo Bcc { get; set; }
 
         public string Subject { get; set; }
 
@@ -218,11 +173,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             set
             {
                 _body = value;
-                TextBody = FormattedMessageHelper
+                TextBody = Helper
                     .FormatTextBody(value, MinSymbolsToBreakPage, MaxSymbolsToBreakPage)?
                     .ToList();
                 if (!IgnoreHtmlParts)
-                    HtmlBody = FormattedMessageHelper
+                    HtmlBody = Helper
                         .FormatHtmlBody(value, MinSymbolsToBreakPage, MaxSymbolsToBreakPage)?
                         .ToList();
             }
@@ -281,7 +236,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public string Value { get; }
     }
 
-    internal class Recipient
+    internal class UserInfo
     {
         public string Email { get; set; }
         public string Name { get; set; }

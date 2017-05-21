@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
 using CoffeeJelly.TelegramBotApiWrapper.Converters;
+using Newtonsoft.Json;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot
+namespace CoffeeJelly.gmailNotifyBot.Bot.Types
 {
     public class Secrets
     {

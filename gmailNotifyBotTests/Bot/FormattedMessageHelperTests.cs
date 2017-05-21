@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CoffeeJelly.gmailNotifyBot.Bot;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CoffeeJelly.gmailNotifyBot;
 using System;
 using System.Collections.Generic;
@@ -60,6 +61,36 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             };
             var actual = Helper.DivideIntoPages(text, 5, 20);
 
+            var compaitLogic = new CompareLogic();
+            var result = compaitLogic.Compare(expected, actual);
+            Assert.IsTrue(result.AreEqual, result.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void ParseUserInfo_NamePlusEmailString_UserInfo()
+        {
+            var value = "\"testname\" <testEmail>";
+            var expected = new UserInfo
+            {
+                Email = "testEmail",
+                Name = "\"testname\""
+            };
+            var actual = Helper.ParseUserInfo(value);
+            var compaitLogic = new CompareLogic();
+            var result = compaitLogic.Compare(expected, actual);
+            Assert.IsTrue(result.AreEqual, result.DifferencesString);
+        }
+
+        [TestMethod()]
+        public void ParseUserInfo_EmailString_UserInfo()
+        {
+            var value = "testEmail";
+            var expected = new UserInfo
+            {
+                Email = "testEmail",
+                Name = ""
+            };
+            var actual = Helper.ParseUserInfo(value);
             var compaitLogic = new CompareLogic();
             var result = compaitLogic.Compare(expected, actual);
             Assert.IsTrue(result.AreEqual, result.DifferencesString);

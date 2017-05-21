@@ -33,8 +33,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             {
                 Id = _id,
                 ThreadId = _threadId,
-                SenderName = _senderName,
-                SenderEmail = _senderAddress,
+                From = new UserInfo {Email = _senderEmail, Name = _senderName},
                 Body = new List<BodyForm>
                     {
                         _bodyPart1,
@@ -221,7 +220,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         private static string _snippet = "testSnippet";
         private static string _sender = "testSender <testaddr@gmail.com>";
         private static string _senderName = "testSender";
-        private static string _senderAddress = "testaddr@gmail.com";
+        private static string _senderEmail = "testaddr@gmail.com";
         private static string _subject = "testSubject";
         private static string _date = "Mon, 1 May 2017 18:30:55 +0300";
         private static BodyForm _bodyPart1 = new BodyForm("text/plain", "part1\r\npart1");

@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls;
 using CoffeeJelly.TelegramBotApiWrapper;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
@@ -19,9 +20,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
     {
         public BotActions(string token)
         {
-            _botSettings = BotSettings.Instance;
-            Debug.Assert(_botSettings != null && _botSettings.AllSettingsAreSet(),
-                "Set all properties at BotSettings class.");
             _telegramMethods = new TelegramMethods(token);
         }
 
@@ -111,7 +109,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public async Task GmailInlineCommandMessage(string userId)
         {
-            await _telegramMethods.SendMessageAsync(userId, $"@{_botSettings.Username} Inbox:");
+            await _telegramMethods.SendMessageAsync(userId, $"@{Settings.Username} Inbox:");
         }
 
 
@@ -126,7 +124,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 inlineQueryResults.Add(new InlineQueryResultArticle
                 {
                     Id = message.Id,
-                    Title = ShortMessageTitleFormatter(message.SenderName, message.SenderEmail, date),
+                    Title = ShortMessageTitleFormatter(message.From.Name, message.From.Email, date),
                     Description = message.Subject,
                     InputMessageContent = new InputTextMessageContent
                     {
@@ -184,7 +182,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
 
 
-        public async Task ShowContactsAnswerInlineQuery(string inlineQueryId, IEnumerable<Recipient> contacts, int? offset = null)
+        public async Task ShowContactsAnswerInlineQuery(string inlineQueryId, IEnumerable<UserInfo> contacts, int? offset = null)
         {
             var inlineQueryResults = new List<InlineQueryResult>();
             foreach (var contact in contacts)
@@ -460,13 +458,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
 
         private readonly TelegramMethods _telegramMethods;
-        private readonly BotSettings _botSettings;
         private readonly string _newMessageText =
                         $"{Emoji.New} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: " +
                         $"\r\n{Emoji.InfoSign} You can use quick command, just type in the chat:" +
                         $"\r\n<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
                         $"\r\nand press Enter to quick send the email." +
                         $"\r\n{Emoji.InfoSign} For multiple recipients use comma separator.";
+
+        private BotSettings Settings = BotInitializer.Instance.BotSettings;
     }
 
     public enum MessageKeyboardState

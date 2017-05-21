@@ -34,26 +34,6 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
             return null;
         }
 
-        private async Task WriteParamsToTestFileAsync(List<string> parametrs)
-        {
-            
-            //var path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\"));
-            var path = HttpRuntime.AppDomainAppPath;
-            var fileName = "testAuth.txt";
-            using (var fs = new FileStream(path.PathFormatter() + fileName, FileMode.Append, FileAccess.Write))
-            {
-                byte[] info = null;
-                foreach (var line in parametrs)
-                {
-                    info = new UTF8Encoding(true).GetBytes(line + "\r\n");
-                }
-                if (info != null)
-                {
-                    await fs.WriteAsync(info, 0, info.Length);
-                    
-                }
 
-            }
-        }
     }
 }

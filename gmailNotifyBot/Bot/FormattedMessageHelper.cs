@@ -121,6 +121,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return devided;
         }
 
+        public static UserInfo ParseUserInfo(string value)
+        {
+            value.NullInspect(nameof(value));
+            var info = new UserInfo();
+            var parseEmail = value.GetBetweenFirst('<', '>');
+            if (parseEmail == string.Empty)
+            {
+                info.Email = value;
+                info.Name = string.Empty;
+            }
+            else
+            {
+                info.Email = parseEmail;
+                info.Name = value.ReplaceFirst($" <{parseEmail}>", "");
+            }
+            return info;
+        }
+
         private static string HtmlConvertToPlainText(string text)
         {
             return HtmlToText.ConvertHtml(text);

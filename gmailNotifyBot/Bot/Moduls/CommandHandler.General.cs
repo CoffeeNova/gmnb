@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
@@ -103,7 +104,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return service;
         }
 
-
         private async Task<FormattedMessage> GetMessage(string userId, string messageId)
         {
             var service = SearchServiceByUserId(userId);
@@ -135,9 +135,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             messageResponse = await getRequest.ExecuteAsync();
             return new FormattedMessage(messageResponse);
         }
-        private List<Recipient> GetUniqueContactsFromMessageList(List<FormattedMessage> messages)
+        private List<UserInfo> GetUniqueContactsFromMessageList(List<FormattedMessage> messages)
         {
-            var recipients = new List<Recipient>();
+            var recipients = new List<UserInfo>();
             messages.ForEach(message =>
             {
                 message.To.ForEach(t => recipients.Add(t));

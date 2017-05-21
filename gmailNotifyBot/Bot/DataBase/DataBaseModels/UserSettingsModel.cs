@@ -28,10 +28,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
     public static class UserAccess
     {
-        [UserAccess(@"https://mail.google.com/", @"https://www.googleapis.com/auth/gmail.compose", @"https://www.googleapis.com/auth/userinfo.profile")]
+        [UserAccess(@"https://mail.google.com/", @"https://www.googleapis.com/auth/gmail.compose", @"https://www.googleapis.com/auth/userinfo.email")]
         public static readonly string Full = "full";
 
-        [UserAccess(@"https://www.googleapis.com/auth/gmail.labels", @"https://www.googleapis.com/auth/userinfo.profile")]
+        [UserAccess(@"https://www.googleapis.com/auth/gmail.labels", @"https://www.googleapis.com/auth/userinfo.email")]
         public static readonly string Notify = "notify";
     }
 }

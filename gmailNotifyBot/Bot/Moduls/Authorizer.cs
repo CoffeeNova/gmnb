@@ -10,6 +10,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Newtonsoft.Json;
 using NLog;
@@ -34,8 +35,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             {
                 lock (_locker)
                 {
-                    if (Instance == null)
-                        Instance = new Authorizer(token, updatesHandler, clientSecret);
+                    Instance = new Authorizer(token, updatesHandler, clientSecret);
                 }
             }
             return Instance;
@@ -75,15 +75,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     {"grant_type", "refresh_token"}
                 };
 
-                using (var webClient = new WebClient())
-                {
-                    webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
-                    var byteResult = await webClient.UploadValuesTaskAsync(GoogleOAuthTokenEndpoint, "POST", parameters);
-                    var strResult = webClient.Encoding.GetString(byteResult);
-
-                    JsonConvert.PopulateObject(strResult, userModel);
-                    TokenRefreshed?.Invoke(userModel);
-                }
+                var response = await UploadUrlQueryAsync(parameters, GoogleOAuthTokenEndpoint);
+                JsonConvert.PopulateObject(response, userModel);
+                TokenRefreshed?.Invoke(userModel);
             }
             catch (WebException ex)
             {
@@ -95,23 +89,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         {
             try
             {
-                var parameters = userModel.RefreshToken != null 
-                    ? new NameValueCollection { { "token", userModel.RefreshToken } } 
+                var parameters = userModel.RefreshToken != null
+                    ? new NameValueCollection { { "token", userModel.RefreshToken } }
                     : new NameValueCollection { { "token", userModel.AccessToken } };
 
-                using (var webClient = new WebClient())
+                var response = UploadUrlQuery(parameters, GoogleOAuthTokenEndpoint);
+                throw new NotImplementedException("define response status code, must be 200 and return true.");
+                if (true)
                 {
-                    webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
-                    var byteResult = await webClient.UploadValuesTaskAsync(GoogleOAuthTokenEndpoint, "POST", parameters);
-                    var strResult = webClient.Encoding.GetString(byteResult);
-                    throw new NotImplementedException("define response status code, must be 200 and return true.");
-                    if (true)
-                    {
-                        userModel.RefreshToken = "";
-                        userModel.AccessToken = "";
-                        TokenRevorkedEvent?.Invoke(userModel);
-                    }
+                    userModel.RefreshToken = "";
+                    userModel.AccessToken = "";
+                    TokenRevorkedEvent?.Invoke(userModel);
                 }
+               
             }
             catch (Exception ex)
             {
@@ -154,6 +144,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         private bool CheckUserAuthorization(UserModel userModel)
         {
+            //at this point bot should ask user "You are autorized as {his email}. Do you want to authorize one more account?"
             Debug.Assert(false, $"{nameof(CheckUserAuthorization)} is not impemented yet.");
             return false;
         }
@@ -204,7 +195,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 }
                 userModel = gmailDbContextWorker.FindUser(id);
                 ExchangeCodeForToken(code, userModel);
-                
+                GetTokenInfo(userModel);
                 gmailDbContextWorker.UpdateUserRecord(userModel);
 
                 var userSettings = gmailDbContextWorker.FindUserSettings(id) ??
@@ -240,7 +231,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     value = int.TryParse(splittedStr.First(), out id);
                     access = splittedStr.Last();
                 }
-                catch (FormatException ex)
+                catch (Exception)
                 {
                     value = false;
                 }
@@ -266,17 +257,51 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
             try
             {
-                using (var webClient = new WebClient())
-                {
-                    webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
-                    var byteResult = webClient.UploadValues(GoogleOAuthTokenEndpoint, "POST", parameters);
-                    var strResult = webClient.Encoding.GetString(byteResult);
-                    JsonConvert.PopulateObject(strResult, userModel);
-                }
+                var response = UploadUrlQuery(parameters, GoogleOAuthTokenEndpoint);
+                JsonConvert.PopulateObject(response, userModel);
             }
             catch (WebException ex)
             {
                 throw new ExchangeException("Failure when exchanging code for token, perhaps bad request.", ex);
+            }
+        }
+
+        private void GetTokenInfo(UserModel userModel)
+        {
+            userModel.NullInspect(nameof(userModel));
+
+            var parameters = new NameValueCollection
+            {
+                {"id_token", userModel.IdToken }
+            };
+            try
+            {
+                var response = UploadUrlQuery(parameters, GoogleOAuthTokenInfoEndpoint);
+                JsonConvert.PopulateObject(response, userModel);
+            }
+            catch (WebException ex)
+            {
+                throw new ExchangeException("Error while trying to get token info, perhaps bad request.", ex);
+            }
+        }
+
+        private string UploadUrlQuery(NameValueCollection parameters, string url)
+        {
+            using (var webClient = new WebClient())
+            {
+                webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
+                var byteResult = webClient.UploadValues(url, "POST", parameters);
+                return webClient.Encoding.GetString(byteResult);
+            }
+        }
+
+        private async Task<string> UploadUrlQueryAsync(NameValueCollection parameters, string url)
+        {
+            using (var webClient = new WebClient())
+            {
+                webClient.Headers.Add(HttpRequestHeader.ContentType, @"application/x-www-form-urlencoded");
+                var byteResult = await webClient.UploadValuesTaskAsync(url, "POST", parameters);
+                return webClient.Encoding.GetString(byteResult);
             }
         }
 
@@ -299,6 +324,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private static readonly string GoogleOAuthCodeEndpoint = @"https://accounts.google.com/o/oauth2/auth?";
         private static readonly string GoogleOAuthTokenEndpoint = @"https://www.googleapis.com/oauth2/v4/token";
         private static readonly string GoogleOAuthRevokeTokenEndpoint = @"https://accounts.google.com/o/oauth2/revoke";
+        private static readonly string GoogleOAuthTokenInfoEndpoint = @"https://www.googleapis.com/oauth2/v1/tokeninfo";
         private static readonly object _locker = new object();
         private const int MaxPendingMinutes = 5;
         private readonly BotActions _botMessages;
