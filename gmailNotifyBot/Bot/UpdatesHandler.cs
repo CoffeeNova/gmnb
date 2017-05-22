@@ -9,7 +9,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
     /// <summary>
     /// This class acts as a subscriber <see cref="Updates.UpdatesArrivedEvent"/>.
     /// Recognizes Telegram's messages and forms them as <see cref="Message"/> objects.
-    /// Triggers self events depending on the message type recieved.
+    /// Triggers self events depending on the message type received.
     /// </summary>
     public class UpdatesHandler
     {

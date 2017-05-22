@@ -65,11 +65,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (chosenInlineResult.ResultId == null)
                 throw new ArgumentNullException(nameof(chosenInlineResult), $"{nameof(chosenInlineResult.ResultId)} must not be a null.");
 
-            var logCommandRecieved = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)chosenInlineResult.From}", false));
+            var logCommandReceived = new Action<string>(command => LogMaker.Log(Logger, $"{command} command received from user with id {(string)chosenInlineResult.From}", false));
             if (chosenInlineResult.Query.EqualsAny(Commands.INBOX_INLINE_QUERY_COMMAND, Commands.ALL_INLINE_QUERY_COMMAND,
                 Commands.RECIPIENTS_INLINE_QUERY_COMMAND))
             {
-                logCommandRecieved(chosenInlineResult.Query);
+                logCommandReceived(chosenInlineResult.Query);
                 try
                 {
                     if (chosenInlineResult.Query.EqualsAny(Commands.INBOX_INLINE_QUERY_COMMAND, Commands.ALL_INLINE_QUERY_COMMAND))

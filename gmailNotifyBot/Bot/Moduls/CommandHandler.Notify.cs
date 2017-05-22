@@ -31,7 +31,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     result = false;
                 else
                 {
-                    LogMaker.Log(Logger, $"Recieved push notification from account {decodedData.Email} with historyId={decodedData.HistoryId}.", false);
+                    LogMaker.Log(Logger, $"Received push notification from account {decodedData.Email} with historyId={decodedData.HistoryId}.", false);
                     UserSettingsModel userSettings = null;
                     try
                     {

@@ -83,7 +83,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public async Task AuthorizationSuccessfulMessage(string userId)
         {
             await
-                _telegramMethods.SendMessageAsync(userId, "Authorization successful! Now you can recieve notifications about new emails and use other functions!");
+                _telegramMethods.SendMessageAsync(userId, "Authorization successful! Now you can receive notifications about new emails and use other functions!");
         }
 
         public async Task AuthorizationErrorMessage(string userId)
@@ -160,7 +160,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"\r\n\r\n {formattedMessage.Snippet}";
-            var keyboard = RecievedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
+            var keyboard = ReceivedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
@@ -168,14 +168,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"\r\n\r\n {formattedMessage.Snippet}";
-            var keyboard = RecievedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
+            var keyboard = ReceivedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
             _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
         public async Task UpdateMessage(string chatId, int messageId, FormattedMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
         {
             var header = formattedMessage.Header;
-            var keyboard = RecievedMessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
+            var keyboard = ReceivedMessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
             var displayedMessage = page == 0
                 ? Emoji.ClosedEmailEnvelop + header + $"\r\n\r\n{formattedMessage.Snippet}"
                 : Emoji.RedArrowedEnvelope + header + $"\r\n\r\n{formattedMessage.DesirableBody[page - 1]}";
@@ -293,7 +293,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
 
 
-        private InlineKeyboardMarkup RecievedMessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
+        private InlineKeyboardMarkup ReceivedMessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
         {
             message.NullInspect(nameof(message));
 
