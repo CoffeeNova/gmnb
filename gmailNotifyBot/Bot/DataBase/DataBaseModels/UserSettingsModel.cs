@@ -15,7 +15,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public bool MailNotification { get; set; } = true;
 
-        public ulong HistoryId { get; set; }
+        public long HistoryId { get; set; }
 
         public long Expiration { get; set; }
 

@@ -7,6 +7,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
+using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Message = CoffeeJelly.TelegramBotApiWrapper.Types.Messages.Message;
 
@@ -47,9 +48,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 else if (message.Text.StartsWith(Commands.STOP_NOTIFY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleStopNotifyCommand(message);
                 else if (message.Text.StartsWith(Commands.START_WATCH_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleStartWatchCommand(message);
+                    await HandleStartWatchCommandAsync(message);
                 else if (message.Text.StartsWith(Commands.STOP_WATCH_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleStopWatchCommand(message);
+                    await HandleStopWatchCommandAsync(message);
                 else if (message.Text.StartsWith(Commands.NEW_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleNewMessageCommand(message);
             }
@@ -110,7 +111,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (mailInfoResponse == null) return;
             var formattedMessage = new FormattedMessage(mailInfoResponse);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
-            await _botActions.ShowChosenShortMessage(sender.From, formattedMessage, isIgnored);
+            await _botActions.ShowShortMessageAsync(sender.From, formattedMessage, isIgnored);
         }
 
         private async Task HandleTestThreadCommand(ISender sender)
@@ -127,7 +128,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (mailInfoResponse == null) return;
             var formattedMessage = new FormattedMessage(mailInfoResponse);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
-            await _botActions.ShowChosenShortMessage(sender.From, formattedMessage, isIgnored);
+            await _botActions.ShowShortMessageAsync(sender.From, formattedMessage, isIgnored);
         }
 
         private async Task HandleStartNotifyCommand(ISender sender)
@@ -138,7 +139,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
             userSettings.MailNotification = true;
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
-            await HandleStartWatchCommand(sender);
+            await HandleStartWatchCommandAsync(sender);
             //message to chat about start notification
         }
         private async Task HandleStopNotifyCommand(ISender sender)
@@ -148,12 +149,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new DbDataStoreException(
                     $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
-            await HandleStopWatchCommand(sender);
+            await HandleStopWatchCommandAsync(sender);
             userSettings.MailNotification = false;
             //message to chat about stop notification
         }
 
-        public async Task HandleStartWatchCommand(ISender sender)
+        public async Task HandleStartWatchCommandAsync(ISender sender)
         {
             var service = SearchServiceByUserId(sender.From);
             var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
@@ -172,12 +173,37 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (watchResponse.Expiration != null)
                 userSettings.Expiration = watchResponse.Expiration.Value;
             if (watchResponse.HistoryId != null)
-                userSettings.HistoryId = watchResponse.HistoryId.Value;
+                userSettings.HistoryId = Convert.ToInt64(watchResponse.HistoryId.Value);
 
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
         }
 
-        public async Task HandleStopWatchCommand(ISender sender)
+        public void HandleStartWatchCommand(ISender sender)
+        {
+            var service = SearchServiceByUserId(sender.From);
+            var userSettings = _dbWorker.FindUserSettings(sender.From);
+            if (userSettings == null)
+                throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
+            if (!userSettings.MailNotification) return;
+
+            var watchRequest = new WatchRequest
+            {
+                LabelIds = new List<string> { "INBOX" },
+                TopicName = TopicName
+            };
+            var query = service.GmailService.Users.Watch(watchRequest, "me");
+            var watchResponse = query.Execute();
+            if (watchResponse.Expiration != null)
+                userSettings.Expiration = watchResponse.Expiration.Value;
+            if (watchResponse.HistoryId != null)
+                userSettings.HistoryId = Convert.ToInt64(watchResponse.HistoryId.Value);
+
+            _dbWorker.UpdateUserSettingsRecord(userSettings);
+        }
+
+
+        public async Task HandleStopWatchCommandAsync(ISender sender)
         {
             var service = SearchServiceByUserId(sender.From);
             var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);

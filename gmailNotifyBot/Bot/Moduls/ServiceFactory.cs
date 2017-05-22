@@ -33,7 +33,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return Instance;
         }
 
-        public async Task RestoreServicesFromRepository()
+        public async Task RestoreServicesFromRepositoryAsync()
         {
             var gmailDbContextWorker = new GmailDbContextWorker();
             var users = await gmailDbContextWorker.GetAllUsersAsync();
@@ -48,7 +48,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     {
                         Instance_AuthorizationRegistredEvent(userModel, userSettingsModel);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         gmailDbContextWorker.RemoveUserRecord(userModel);
                         LogMaker.Log(Logger, ex);
@@ -58,13 +58,35 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             });
         }
 
+
+        public void RestoreServicesFromRepository()
+        {
+            var gmailDbContextWorker = new GmailDbContextWorker();
+            var users = gmailDbContextWorker.GetAllUsers();
+
+            users?.ForEach(userModel =>
+            {
+                var userSettingsModel = gmailDbContextWorker.FindUserSettings(userModel.UserId);
+                try
+                {
+                    Instance_AuthorizationRegistredEvent(userModel, userSettingsModel);
+                }
+                catch (Exception ex)
+                {
+                    gmailDbContextWorker.RemoveUserRecord(userModel);
+                    LogMaker.Log(Logger, ex);
+                }
+
+            });
+        }
+
         private ServiceFactory(Secrets secrets)
         {
             _clientSecrets = new ClientSecrets { ClientId = secrets.ClientId, ClientSecret = secrets.Secret };
             Authorizer.Instance.AuthorizationRegistredEvent += Instance_AuthorizationRegistredEvent;
         }
 
-        private  void Instance_AuthorizationRegistredEvent(UserModel userModel, UserSettingsModel userSettingsModel)
+        private void Instance_AuthorizationRegistredEvent(UserModel userModel, UserSettingsModel userSettingsModel)
         {
             if (ServiceExists(userModel.UserId.ToString()))
                 return;

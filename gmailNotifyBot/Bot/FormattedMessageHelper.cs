@@ -23,7 +23,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (String.IsNullOrEmpty(textBody))
                 return null;
 
-            var formatted = FormatText(textBody);
+            var formatted = FormatTextToHtmlParseMode(textBody);
             return DivideIntoPages(formatted, min, max);
         }
 
@@ -39,7 +39,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (String.IsNullOrEmpty(htmlBody))
                 return null;
 
-            var formatted = FormatText(htmlBody);
+            var formatted = FormatTextToHtmlParseMode(htmlBody);
             return DivideIntoPages(formatted, min, max);
         }
 
@@ -144,7 +144,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return HtmlToText.ConvertHtml(text);
         }
 
-        private static string FormatText(string text)
+        public static string FormatTextToHtmlParseMode(string text)
         {
             ParseInnerText(ref text);
             ReplaceSymbolsWithHtmlEntities(ref text);
@@ -161,6 +161,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         //    ReplaceSymbolsWithHtmlEntities(ref text);
         //    return text;
         //}
+
 
         private static void AddUrlTags(ref string text)
         {

@@ -22,11 +22,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public FormattedMessage(Message message)
         {
             if (message?.Payload == null)
-                throw new FormattedGmailMessageException($"{nameof(message.Payload)}");
+                throw new FormattedGmailMessageException($"{nameof(message.Payload)} must be not null.");
 
             Id = message.Id;
             ThreadId = message.ThreadId;
-            Snippet = message.Snippet;
+            Snippet = Helper.FormatTextToHtmlParseMode(message.Snippet);
             ETag = message.ETag;
             LabelIds = message.LabelIds == null ? null : new List<string>(message.LabelIds);
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
@@ -62,16 +62,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (message.Payload.Parts != null)
                 DecodeDevidedBody(message.Payload.Parts, body);
             else if (message.Payload.Body?.Data != null)
-                body.Add(new BodyForm(message.Payload.MimeType, DecodeBody(message.Payload.Body.Data)));
+                body.Add(new BodyForm(message.Payload.MimeType, Base64.DecodeUrl(message.Payload.Body.Data)));
 
             Body = body;
-        }
-
-        private static string DecodeBody(string base64EncodedData)
-        {
-            base64EncodedData = base64EncodedData.Replace('-', '+');
-            base64EncodedData = base64EncodedData.Replace('_', '/');
-            return Base64.Decode(base64EncodedData);
         }
 
         private void DecodeDevidedBody(IList<MessagePart> parts, List<BodyForm> decodedBody)
@@ -83,16 +76,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 if (part.Parts != null)
                     DecodeDevidedBody(part.Parts, decodedBody);
                 else if (part.Body?.Data != null)
-                    decodedBody.Add(new BodyForm(part.MimeType, DecodeBody(part.Body.Data)));
+                    decodedBody.Add(new BodyForm(part.MimeType, Base64.DecodeUrl(part.Body.Data)));
             }
         }
 
         private string HtmlStyledMessageHeader()
         {
-            if (string.IsNullOrEmpty(From.Name))
-                return $"<b>{From.Email}</b>    <i>{Date}</i> \r\n\r\n<b>{Subject}</b>";
-            return
-                $"<b>{From.Name}</b>    {From.Email}   <i>{Date}</i> \r\n\r\n<b>{Subject}</b>";
+            var date = Date.Date == DateTime.Now.Date ? Date.ToString("HH:mm") : Date.ToString("dd.MM.yy");
+                
+            var header = string.IsNullOrEmpty(From.Name) 
+                ? $"*lt;b*gt;{From.Email}*lt;/b*gt;    *lt;i*gt;{date}*lt;/i*gt; \r\n\r\n*lt;b*gt{Subject}*lt;/b*gt;" 
+                : $"*lt;b*gt;{From.Name}*lt;/b*gt;    '{From.Email}'  *lt;i*gt;{date}*lt;/i*gt; \r\n\r\n*lt;b*gt;{Subject}*lt;/b*gt;";
+            return Helper.FormatTextToHtmlParseMode(header);
         }
 
         private static int SymbolsCounter(int lines)

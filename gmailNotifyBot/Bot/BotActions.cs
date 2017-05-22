@@ -156,12 +156,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.EditMessageTextAsync("Success", chatId, messageId);
         }
 
-        public async Task ShowChosenShortMessage(string chatId, FormattedMessage formattedMessage, bool isIgnored)
+        public async Task ShowShortMessageAsync(string chatId, FormattedMessage formattedMessage, bool isIgnored)
         {
             var header = formattedMessage.Header;
-            var message = header + $"\r\n\r\n {formattedMessage.Snippet}";
+            var message = Emoji.ClosedEmailEnvelop + header + $"\r\n\r\n {formattedMessage.Snippet}";
             var keyboard = RecievedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
+        }
+
+        public void ShowShortMessage(string chatId, FormattedMessage formattedMessage, bool isIgnored)
+        {
+            var header = formattedMessage.Header;
+            var message = Emoji.ClosedEmailEnvelop + header + $"\r\n\r\n {formattedMessage.Snippet}";
+            var keyboard = RecievedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
+            _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
         public async Task UpdateMessage(string chatId, int messageId, FormattedMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
@@ -169,8 +177,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var header = formattedMessage.Header;
             var keyboard = RecievedMessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
             var displayedMessage = page == 0
-                ? header + $"\r\n\r\n{formattedMessage.Snippet}"
-                : header + $"\r\n\r\n{formattedMessage.DesirableBody[page - 1]}";
+                ? Emoji.ClosedEmailEnvelop + header + $"\r\n\r\n{formattedMessage.Snippet}"
+                : Emoji.RedArrowedEnvelope + header + $"\r\n\r\n{formattedMessage.DesirableBody[page - 1]}";
             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
@@ -196,7 +204,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     {
                         MessageText = $"Recipient added:\r\n{contact.Name} <{contact.Email}>"
                     },
-                    ThumbUrl = @"https://ssl.gstatic.com/s2/profiles/images/silhouette48.png"
+                    ThumbUrl = @"https://ssl.gstatic.com/s2/profiles/images/silhouette48.png",
+                    ThumbHeight=40,
+                    ThumbWidth=40
                 });
             }
             if (!offset.HasValue)
@@ -306,7 +316,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             {
                 Text = message.LabelIds.Exists(label => label == "UNREAD")
                 ? $"{Emoji.Eye} To Read"
-                : $"{Emoji.RedArrowedMail} To Unread",
+                : $"{Emoji.RedArrowedEnvelope} To Unread",
                 CallbackData = message.LabelIds.Exists(label => label == "UNREAD")
                 ? new CallbackData(generalCallbackData) { Command = Commands.TO_READ_COMMAND }
                 : new CallbackData(generalCallbackData) { Command = Commands.TO_UNREAD_COMMAND }
@@ -314,7 +324,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var spamButton = new InlineKeyboardButton
             {
                 Text = message.LabelIds.Exists(label => label == "SPAM")
-                ? $"{Emoji.LovelyLatter} Not Spam"
+                ? $"{Emoji.HeartEnvelope} Not Spam"
                 : $"{Emoji.RestrictionSign} Spam",
                 CallbackData = message.LabelIds.Exists(label => label == "SPAM")
                 ? new CallbackData(generalCallbackData) { Command = Commands.TO_INBOX_COMMAND }
@@ -494,8 +504,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string TurnedUpArrow = "\u2934\ufe0f"; //while turned up from left arrow in a blue rectange
         public const string TurnedDownArrow = "\u2935\ufe0f"; //while turned down from left arrow in a blue rectange
         public const string Eye = "\ud83d\udc41";
-        public const string RedArrowedMail = "\ud83d\udce9"; //envelope with red arrow
-        public const string LovelyLatter = "\ud83d\udc8c"; //envelope with red heart
+        public const string RedArrowedEnvelope = "\ud83d\udce9"; //envelope with red arrow
+        public const string HeartEnvelope = "\ud83d\udc8c"; //envelope with red heart
         public const string RestrictionSign = "\u26d4\ufe0f"; //red restriction sign
         public const string RecycleBin = "\ud83d\uddd1";
         public const string ClosedMailbox = "\ud83d\udcea"; // closed blue mailbox
@@ -506,6 +516,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string AbcLowerCase = "\ud83d\udd24";
         public const string M = "\u24c2\ufe0f"; //white M letter in the blue background
         public const string MaleFemaleShadows = "\ud83d\udc65";
+        public const string ClosedEmailEnvelop = "\ud83d\udce7"; // closed Email
     }
 
 }

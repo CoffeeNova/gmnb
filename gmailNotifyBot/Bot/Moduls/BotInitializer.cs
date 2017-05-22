@@ -63,7 +63,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new InvalidOperationException($"{nameof(BotSettings.ClientSecrets)} property must be specified");
             ServiceFactory = ServiceFactory.GetInstanse(BotSettings.ClientSecrets);
             //generate ServiceCollection for all gmail control bot users
-            ServiceFactory.RestoreServicesFromRepository().Wait();
+            ServiceFactory.RestoreServicesFromRepository();
         }
 
         public void InitializeCommandHandler()
@@ -88,7 +88,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 Task.Delay(delay).Wait();
                 ServiceFactory?.ServiceCollection.ForEach(async s =>
                 {
-                    await CommandHandler.HandleStartWatchCommand(s);
+                    await CommandHandler.HandleStartWatchCommandAsync(s);
                     //probably i need to do a delay here to avoid response ddos to my server
                 });
             });
@@ -108,7 +108,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     if (difference.TotalHours >= 2) return;
                     var service = ServiceFactory?.ServiceCollection.FirstOrDefault(s => s.From == us.UserId);
                     if (service == null) return;
-                    CommandHandler?.HandleStartWatchCommand(service).Wait();
+                    CommandHandler?.HandleStartWatchCommand(service);
                 });
             }, null, updatePeriod, updatePeriod);
         }

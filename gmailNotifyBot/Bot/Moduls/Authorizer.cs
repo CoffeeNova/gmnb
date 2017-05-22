@@ -152,7 +152,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 #pragma warning disable 4014
         private void Authorizer_AuthorizeRequestEvent(string code, string state, string error)
         {
-
             int id;
             string access;
             if (!RestoreState(state, out id, out access))

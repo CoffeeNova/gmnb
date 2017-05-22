@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Newtonsoft.Json;
 using Google.Apis.Gmail.v1;
+using Google.Apis.Gmail.v1.Data;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 {
@@ -15,58 +20,66 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         {
             bool result = true;
             if (message?.Message == null)
-            {
                 result = false;
-                LogMaker.Log(Logger, "message?.Message==null", false);
-            }
             else if (message.Subscription != BotInitializer.Instance.BotSettings.Subscription)
-            {
                 result = false;
-                LogMaker.Log(Logger, "message.Subscription", false);
-            }
 
             if (result)
             {
-                var decodedData = DecodeMessageData(message.Message.Data);
+                var decodedData = JsonConvert.DeserializeObject<EncodedMessageData>(Base64.DecodeUrl(message.Message.Data));
                 if (decodedData == null)
-                {
                     result = false;
-                    LogMaker.Log(Logger, $"encodedData, data:{message.Message.Data}", false);
-                }
                 else
                 {
                     LogMaker.Log(Logger, $"Recieved push notification from account {decodedData.Email} with historyId={decodedData.HistoryId}.", false);
+                    UserSettingsModel userSettings = null;
                     try
                     {
                         var userModel = _dbWorker.FindUserByEmail(decodedData.Email);
-                        var userSettings = _dbWorker.FindUserSettings(userModel.UserId);
+                        if (userModel == null)
+                            throw new DbDataStoreException(
+                                $"Can't find user data in database. User record with email {decodedData.Email} is absent in the database.");
+                        userSettings = _dbWorker.FindUserSettings(userModel.UserId);
+                        if (userSettings == null)
+                            throw new DbDataStoreException(
+                                $"Can't find user settings data in database. User record with id {userModel.UserId} is absent in the database.");
                         var service = SearchServiceByUserId(userModel.UserId.ToString());
                         var query = service.GmailService.Users.History.List("me");
                         query.HistoryTypes = UsersResource.HistoryResource.ListRequest.HistoryTypesEnum.MessageAdded;
                         query.LabelId = "INBOX";
-                        query.StartHistoryId = userSettings.HistoryId;
+                        query.StartHistoryId = 1; //Convert.ToUInt64(userSettings.HistoryId);
                         var listRequest = query.Execute();
-                        if (listRequest.HistoryId != null)
+                        var historyList = listRequest.History?.ToList();
+                        if (historyList != null)
                         {
-                            userSettings.HistoryId = ulong.Parse(decodedData.HistoryId);
-                            _dbWorker.UpdateUserSettingsRecord(userSettings);
+                            var addedMessageCollection =
+                                historyList.FindAll(h => h.MessagesAdded != null)
+                                    .SelectMany(m => m.MessagesAdded)
+                                    .ToList();
+
+                            foreach (var addedMessage in addedMessageCollection)
+                            {
+                                var getRequest = service.GmailService.Users.Messages.Get("me", addedMessage.Message.Id);
+                                var messageResponse = getRequest.Execute();
+                                var formattedMessage = new FormattedMessage(messageResponse);
+                                var isIgnored = _dbWorker.IsPresentInIgnoreList(userModel.UserId,
+                                    formattedMessage.From.Email);
+                                _botActions.ShowShortMessage(userModel.UserId.ToString(), formattedMessage,
+                                    isIgnored);
+                            }
                         }
-                        var historyList = listRequest.History;
-                        if (historyList == null) 
-                            LogMaker.Log(Logger, "historyList==null", false);
-                        var newMessages = historyList.First().MessagesAdded;
-                        if (newMessages == null)
-                            LogMaker.Log(Logger, "newMessages==null", false);
-                        var newMessage = newMessages.First()?.Message;
-                        if (newMessage == null)
-                            LogMaker.Log(Logger, "newMessage==null", false);
-                        var formattedMessage = new FormattedMessage(newMessage);
-                        var isIgnored = _dbWorker.IsPresentInIgnoreList(userModel.UserId, formattedMessage.From.Email);
-                        _botActions.ShowChosenShortMessage(userModel.UserId.ToString(), formattedMessage, isIgnored).Wait();
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) 
                     {
                         LogMaker.Log(Logger, ex);
+                    }
+                    finally
+                    {
+                        if (userSettings != null)
+                        {
+                            userSettings.HistoryId = long.Parse(decodedData.HistoryId);
+                            _dbWorker.UpdateUserSettingsRecord(userSettings);
+                        }
                     }
                 }
             }
@@ -76,20 +89,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return result;
         }
 
-        private EncodedMessageData DecodeMessageData(string text)
+        private void Instance_AuthorizationRegistredEvent(UserModel userModel, UserSettingsModel userSettingsModel)
         {
-            try
-            {
-                text = text.Replace('-', '+');
-                text = text.Replace('_', '/');
-                var encodedJson = Base64.Decode(text);
-                var encodedData = JsonConvert.DeserializeObject<EncodedMessageData>(encodedJson);
-                return encodedData;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            var service = ServiceFactory.Instance?.ServiceCollection.FirstOrDefault(s => s.From == userModel.UserId);
+            if (service == null) return;
+
+            HandleStartWatchCommand(service);
         }
     }
 }

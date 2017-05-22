@@ -31,6 +31,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             _updatesHandler.TelegramCallbackQueryEvent += _updatesHandler_TelegramCallbackQueryEvent;
             _updatesHandler.TelegramInlineQueryEvent += _updatesHandler_TelegramInlineQueryEvent;
             _updatesHandler.TelegramChosenInlineEvent += _updatesHandler_TelegramChosenInlineEvent;
+            Authorizer.Instance.AuthorizationRegistredEvent += Instance_AuthorizationRegistredEvent;
         }
 
         public static CommandHandler GetInstance(string token, UpdatesHandler updatesHandler, Secrets clientSecret, string topicName)
@@ -107,8 +108,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task<FormattedMessage> GetMessage(string userId, string messageId)
         {
             var service = SearchServiceByUserId(userId);
-            var query = service.GmailService.Users.Messages.Get("me", messageId);
-            var messageResponse = await query.ExecuteAsync();
+            var getRequest = service.GmailService.Users.Messages.Get("me", messageId);
+            var messageResponse = await getRequest.ExecuteAsync();
             return new FormattedMessage(messageResponse);
         }
 
@@ -135,14 +136,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             messageResponse = await getRequest.ExecuteAsync();
             return new FormattedMessage(messageResponse);
         }
+
         private List<UserInfo> GetUniqueContactsFromMessageList(List<FormattedMessage> messages)
         {
             var recipients = new List<UserInfo>();
             messages.ForEach(message =>
             {
-                message.To.ForEach(t => recipients.Add(t));
-                message.Cc.ForEach(t => recipients.Add(t));
-                recipients.Add(message.Bcc);
+                message.To?.ForEach(t => recipients.Add(t));
+                message.Cc?.ForEach(t => recipients.Add(t));
+                if (message.Bcc != null)
+                    recipients.Add(message.Bcc);
             });
             return recipients.Unique(r => r.Email).ToList();
         }
