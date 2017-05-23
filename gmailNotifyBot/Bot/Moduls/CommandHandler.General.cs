@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
@@ -150,6 +151,49 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return recipients.Unique(r => r.Email).ToList();
         }
 
+        private async Task<FormattedMessage> GetDraft(string userId, string draftId)
+        {
+            var service = SearchServiceByUserId(userId);
+            var getRequest = service.GmailService.Users.Drafts.Get("me", draftId);
+            var draftResponce = await getRequest.ExecuteAsync();
+            if (draftResponce == null) return null;
+            return new FormattedMessage(draftResponce.Message);
+        }
+
+        //private Draft CreateDraftBody()
+        //{
+            
+        //}
+
+        private async Task<FormattedMessage> CreateDraft(string userId, string draftId, Draft body, Stream stream = null, string contentType = null)
+        {
+            if (contentType != null && stream == null)
+                throw new ArgumentNullException(nameof(stream),
+                    $"{nameof(stream)} must be not null if you specified a {nameof(contentType)} parameter");
+
+            var service = SearchServiceByUserId(userId);
+
+            body = new Draft()
+            {
+                Message = new Message()
+                {
+                    Payload = new MessagePart() { }
+                }
+
+            };
+            
+            var getRequest2 = service.GmailService.Users.Drafts.Create(body, "me");
+
+            //dynamic getRequest;
+            //if (contentType == null)
+            //   var getRequest2 = service.GmailService.Users.Drafts.Create(body, "me");
+            //else
+            var getRequest3 = service.GmailService.Users.Drafts.Create(body, "me", stream, contentType);
+
+           // getRequest3.
+           //var draftResponce = await getRequest.ExecuteAsync();
+            return new FormattedMessage(draftResponce.Message);
+        }
 
         private UpdatesHandler _updatesHandler;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

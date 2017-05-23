@@ -137,9 +137,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         private async Task HandleShowContactsChosenInlineResult(ChosenInlineResult sender)
         {
+
             var formattedMessage = await GetMessage(sender.From, sender.ResultId);
             //await _botActions.UpdateNewMailMessage(sender.From, se);
         }
+
     }
 
 

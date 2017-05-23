@@ -21,7 +21,6 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
         public FileResult Silhouette48()
         {
             var filePath = Server.MapPath("~/Content/Images/silhouette48.jpg");
-            TestModel.WriteRandomShitToFile(filePath, "Path.txt");
             string fileType = "image/jpeg";
             string fileName = "silhouette48.jpg";
             return File(filePath, fileType, fileName);

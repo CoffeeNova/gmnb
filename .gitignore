@@ -9,7 +9,6 @@
 *.publishsettings
 *.user
 *.pubxml
-other/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
