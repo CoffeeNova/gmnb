@@ -44,7 +44,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult
         /// Url of the thumbnail for the result.
         /// </summary>
         ///<remarks>Optional.</remarks>
-        [JsonProperty("thumb_nail")]
+        [JsonProperty("thumb_url")]
         public string ThumbUrl { get; set; }
 
         /// <summary>
