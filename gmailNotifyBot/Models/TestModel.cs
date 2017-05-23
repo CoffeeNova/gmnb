@@ -54,5 +54,16 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 fs.Write(info, 0, info.Length);
             }
         }
+
+        public static void WriteRandomShitToFile(string shit, string fileName)
+        {
+            var path = HttpRuntime.AppDomainAppPath;
+            using (var fs = new FileStream(path.PathFormatter() + fileName, FileMode.Append, FileAccess.Write))
+            {
+                byte[] info = null;
+                info = new UTF8Encoding(true).GetBytes(shit);
+                fs.Write(info, 0, info.Length);
+            }
+        }
     }
 }

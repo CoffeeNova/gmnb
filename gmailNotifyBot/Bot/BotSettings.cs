@@ -19,10 +19,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public Secrets ClientSecrets { get; set; }
 
-        public string Username { get; set; }
+        public string BotName { get; set; }
 
         public string Topic { get; set; }
 
         public string Subscription { get; set; }
+
+        public string ImagesPath { get; set; }
+
+        public string DomainName { get; set; }
     }
 }

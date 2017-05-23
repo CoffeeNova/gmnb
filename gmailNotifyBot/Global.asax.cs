@@ -16,6 +16,8 @@ using CoffeeJelly.gmailNotifyBot.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using System.Net;
+using System.Reflection;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
@@ -23,6 +25,12 @@ namespace CoffeeJelly.gmailNotifyBot
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        public void Session_Start(Object source, EventArgs e)
+        {
+            
+        }
+
+
         protected void Application_Start()
         {
             Database.SetInitializer(new UserDbInitializer());
@@ -40,17 +48,19 @@ namespace CoffeeJelly.gmailNotifyBot
 #else
             string clientSecretsStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret);
 #endif
+ 
             var clienSecretsJtoken = JsonConvert.DeserializeObject<JToken>(clientSecretsStr);
             var clientSecrets = JsonConvert.DeserializeObject<Secrets>(clienSecretsJtoken["web"].ToString());
             var botSettings = new BotSettings
             {
-                Username = System.Configuration.ConfigurationSettings.AppSettings["Username"],
+                BotName = System.Configuration.ConfigurationSettings.AppSettings["Botname"],
                 Token = App_LocalResources.Tokens.GmailControlBotToken,
                 Topic = App_LocalResources.Tokens.TopicName,
                 ClientSecrets = clientSecrets,
-                Subscription = App_LocalResources.Tokens.Subscription
+                Subscription = App_LocalResources.Tokens.Subscription,
+                ImagesPath = System.Configuration.ConfigurationSettings.AppSettings["ImagesPath"],
+                DomainName = App_LocalResources.Tokens.DomainName
             };
-
             _botInitializer = BotInitializer.GetInstance(botSettings);
             _botInitializer.InitializeUpdates();
             _botInitializer.InitializeUpdatesHandler();

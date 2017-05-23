@@ -259,6 +259,7 @@
     <Compile Include="Bot\IUpdates.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ImagesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OAuthController.cs" />
     <Compile Include="Bot\Extensions\BoolExtension.cs" />
@@ -288,6 +289,9 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\silhouette48.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -376,6 +380,8 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Extensions\" />
+    <Folder Include="Resources\" />
+    <Folder Include="Views\Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

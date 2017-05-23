@@ -21,6 +21,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public BotActions(string token)
         {
             _telegramMethods = new TelegramMethods(token);
+#if DEBUG
+            _contactsThumbUrl = @"https://pbs.twimg.com/media/DAf2gvDXcAAxk0w.jpg";
+#else
+            //_contactsThumbUrl = $@"https://{Settings.DomainName}/{Settings.ImagesPath}silhouette48.jpg";
+            _contactsThumbUrl = $@"https://{Settings.DomainName}/Images/Silhouette48";
+#endif
         }
 
         public async Task WrongCredentialsMessage(string userId)
@@ -109,7 +115,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public async Task GmailInlineCommandMessage(string userId)
         {
-            await _telegramMethods.SendMessageAsync(userId, $"@{Settings.Username} Inbox:");
+            await _telegramMethods.SendMessageAsync(userId, $"@{Settings.BotName} Inbox:");
         }
 
 
@@ -204,9 +210,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     {
                         MessageText = $"Recipient added:\r\n{contact.Name} <{contact.Email}>"
                     },
-                    ThumbUrl = @"https://ssl.gstatic.com/s2/profiles/images/silhouette48.png",
-                    ThumbHeight=40,
-                    ThumbWidth=40
+                    ThumbUrl = _contactsThumbUrl,
+                    ThumbHeight=48,
+                    ThumbWidth=48
                 });
             }
             if (!offset.HasValue)
@@ -476,6 +482,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                         $"\r\n{Emoji.InfoSign} For multiple recipients use comma separator.";
 
         private BotSettings Settings = BotInitializer.Instance.BotSettings;
+        private string _contactsThumbUrl;
     }
 
     public enum MessageKeyboardState
