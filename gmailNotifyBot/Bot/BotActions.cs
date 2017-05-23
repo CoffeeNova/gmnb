@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
@@ -309,6 +310,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var thirdRow = new List<InlineKeyboardButton>();
             var expandButton = new InlineKeyboardButton();
             var actionsButton = new InlineKeyboardButton();
+            var attachmentsButton = new InlineKeyboardButton();
             var generalCallbackData = new CallbackData
             {
                 MessageId = message.Id,
@@ -407,6 +409,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     if (!message.SnippetEqualsBody)
                         firstRow.Add(expandButton);
                     firstRow.Add(actionsButton);
+                    if (message.HasAttachments)
+                        firstRow.Add(attachmentsButton);
                     break;
                 #endregion
                 case MessageKeyboardState.Maximized:
@@ -419,6 +423,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     if (!message.SnippetEqualsBody)
                         secondRow.Add(expandButton);
                     secondRow.Add(actionsButton);
+                    if (message.HasAttachments)
+                        secondRow.Add(attachmentsButton);
                     break;
                 #endregion
                 case MessageKeyboardState.MinimizedActions:
@@ -430,6 +436,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     if (!message.SnippetEqualsBody)
                         firstRow.Add(expandButton);
                     firstRow.Add(actionsButton);
+                    if (message.HasAttachments)
+                        firstRow.Add(attachmentsButton);
                     secondRow.Add(unreadButton);
                     secondRow.Add(spamButton);
                     secondRow.Add(trashButton);
@@ -447,6 +455,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     if (!message.SnippetEqualsBody)
                         secondRow.Add(expandButton);
                     secondRow.Add(actionsButton);
+                    if (message.HasAttachments)
+                        secondRow.Add(attachmentsButton);
                     thirdRow.Add(unreadButton);
                     thirdRow.Add(spamButton);
                     thirdRow.Add(trashButton);
@@ -462,6 +472,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             actionsButton.CallbackData = new CallbackData(generalCallbackData)
             {
                 Command = actionsButtonCommand
+            };
+            attachmentsButton.CallbackData = new CallbackData(generalCallbackData)
+            {
+                Command = Commands.GET_ATTACHMENTS_COMMAND,
+                Attachments = message.AttachmentIds.ToList()
             };
             if (firstRow.Count > 0)
                 keyboardMarkup.InlineKeyboard.Add(firstRow);

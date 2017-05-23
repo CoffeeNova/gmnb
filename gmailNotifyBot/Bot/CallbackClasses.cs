@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using MsgPack.Serialization;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
@@ -10,9 +14,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
     {
         string Command { get; set; }
     }
-    
 
-    public class CallbackData  : ICallbackCommand
+
+    [Serializable]
+    public class CallbackData : ICallbackCommand
     {
         public CallbackData()
         {
@@ -20,22 +25,30 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
         public CallbackData(CallbackData callbackData)
         {
+            AttachProperties(callbackData);
+        }
+
+        public void AttachProperties(CallbackData callbackData)
+        {
             Command = callbackData.Command;
             MessageId = callbackData.MessageId;
             Page = callbackData.Page;
             MessageKeyboardState = callbackData.MessageKeyboardState;
             Etag = callbackData.Etag;
+            Attachments = callbackData.Attachments;
         }
 
         public CallbackData(string serializedCallbackData)
         {
             try
             {
-                var splitted = serializedCallbackData.Split(SEPARATOR);
-                Command = splitted[0];
-                MessageId = splitted[1];
-                Page = Int32.Parse(splitted[2]);
-                MessageKeyboardState = splitted[3].ToEnum<MessageKeyboardState>();
+                var buffer = Base64.DecodeToBytesUrl(serializedCallbackData);
+                using (var ms = new MemoryStream(buffer))
+                {
+                    var serializer = MessagePackSerializer.Get<CallbackData>();
+                    var data = serializer.Unpack(ms);
+                    AttachProperties(data);
+                }
             }
             catch
             {
@@ -52,14 +65,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public MessageKeyboardState MessageKeyboardState { get; set; } = MessageKeyboardState.Minimized;
 
-        public string Etag { get; set; }
+        public string Etag { get; set; } = "";
 
-        protected const char SEPARATOR = ':';
+        public List<AttachmentInfo> Attachments { get; set; }
 
         public static implicit operator string(CallbackData obj)
         {
-            return $"{obj.Command}{SEPARATOR}{obj.MessageId}{SEPARATOR}{obj.Page}{SEPARATOR}{obj.MessageKeyboardState.ToEnumString()}";
+            using (var ms = new MemoryStream())
+            {
+                var serializer = MessagePackSerializer.Get<CallbackData>();
+                serializer.Pack(ms, obj);
+                return Base64.EncodeUrl(ms.ToArray());
+            }
         }
-
     }
 }

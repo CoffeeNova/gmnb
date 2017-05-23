@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using Google.Apis.Gmail.v1.Data;
 
 [assembly: InternalsVisibleTo("gmailNotifyBotTests")]
@@ -58,9 +60,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
                 Date = DateTime.Parse(Regex.Replace(messagePartHeader.Value, @"\s\(\D{3}\)", string.Empty));
+
             var body = new List<BodyForm>();
             if (message.Payload.Parts != null)
+            {
                 DecodeDevidedBody(message.Payload.Parts, body);
+                AttachmentIds = GetAttachmentsIds(message.Payload.Parts);
+            }
             else if (message.Payload.Body?.Data != null)
                 body.Add(new BodyForm(message.Payload.MimeType, Base64.DecodeUrl(message.Payload.Body.Data)));
 
@@ -78,6 +84,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 else if (part.Body?.Data != null)
                     decodedBody.Add(new BodyForm(part.MimeType, Base64.DecodeUrl(part.Body.Data)));
             }
+        }
+
+        private IReadOnlyList<AttachmentInfo> GetAttachmentsIds(IList<MessagePart> parts)
+        {
+            var ids = new List<AttachmentInfo>();
+            foreach (var part in parts)
+            {
+                if (string.IsNullOrEmpty(part.Filename))
+                    ids.Add(new AttachmentInfo
+                    {
+                        Id = part.Body.AttachmentId,
+                        FileName = part.Filename,
+                        MimeType = part.MimeType
+                    });
+            }
+            return ids;
         }
 
         private string HtmlStyledMessageHeader()
@@ -105,7 +127,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return pages ?? 0;
         }
 
-        private List<string> GetDesirableBody()
+        private IReadOnlyList<string> GetDesirableBody()
         {
             if (IgnoreHtmlParts)
                 return TextBody;
@@ -158,8 +180,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public List<string> LabelIds;
 
-        private List<BodyForm> _body;
-        public List<BodyForm> Body
+        private IReadOnlyList<BodyForm> _body;
+        public IReadOnlyList<BodyForm> Body 
         {
             get
             {
@@ -173,16 +195,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     .ToList();
                 if (!IgnoreHtmlParts)
                     HtmlBody = Helper
-                        .FormatHtmlBody(value, MinSymbolsToBreakPage, MaxSymbolsToBreakPage)?
-                        .ToList();
+                        .FormatHtmlBody(value, MinSymbolsToBreakPage, MaxSymbolsToBreakPage)?.ToList();
+
             }
         }
 
-        public List<string> TextBody { get; private set; }
+        public IReadOnlyList<string> TextBody { get; private set; }
 
-        public List<string> HtmlBody { get; private set; }
+        public IReadOnlyList<string> HtmlBody { get; private set; }
 
-        public List<string> DesirableBody => GetDesirableBody();
+        public IReadOnlyList<string> DesirableBody => GetDesirableBody();
+
+        public IReadOnlyList<AttachmentInfo> AttachmentIds;
 
         public string Header => HtmlStyledMessageHeader();
 
@@ -207,6 +231,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
         public bool HtmlConvertToPlain { get; set; } = true;
 
+        public bool HasAttachments => AttachmentIds?.Count > 0;
+
         private static IList<string> _mimeTypes = new List<string>
         {
             "text/plain",
@@ -229,11 +255,5 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public string MimeType { get; }
 
         public string Value { get; }
-    }
-
-    internal class UserInfo
-    {
-        public string Email { get; set; }
-        public string Name { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.gmailNotifyBot.Tests;
 using KellermanSoftware.CompareNetObjects;
 using Google.Apis.Gmail.v1.Data;

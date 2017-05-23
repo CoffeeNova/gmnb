@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {

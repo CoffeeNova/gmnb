@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
@@ -19,7 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     Commands.TO_READ_COMMAND, Commands.TO_UNREAD_COMMAND, Commands.TO_SPAM_COMMAND,
                     Commands.TO_INBOX_COMMAND, Commands.TO_TRASHCOMMAND, Commands.ARCHIVE_COMMAND,
                     Commands.UNIGNORE_COMMAND, Commands.IGNORE_COMMAND, Commands.NEXTPAGE_COMMAND,
-                      Commands.PREVPAGE_COMMAND, Commands.ADD_SUBJECT_COMMAND)) return;
+                    Commands.PREVPAGE_COMMAND, Commands.ADD_SUBJECT_COMMAND, Commands.GET_ATTACHMENTS_COMMAND)) return;
 
             LogMaker.Log(Logger,
                 $"{callbackQuery.Data} command received from user with id {(string)callbackQuery.From}", false);
@@ -31,49 +33,52 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     await _authorizer.SendAuthorizeLink(callbackQuery);
 
                 else if (callbackData.Command.Equals(Commands.EXPAND_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryExpandCommand(callbackQuery, callbackData);
+                    await HandleCallbackQExpand(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.HIDE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryHideCommand(callbackQuery, callbackData);
+                    await HandleCallbackQHide(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.EXPAND_ACTIONS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryExpandActionsCommand(callbackQuery, callbackData);
+                    await HandleCallbackQExpandActions(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.HIDE_ACTIONS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryHideActionsCommand(callbackQuery, callbackData);
+                    await HandleCallbackQHideActions(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.TO_READ_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryToReadCommand(callbackQuery, callbackData);
+                    await HandleCallbackQToRead(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.TO_UNREAD_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryToUnReadCommand(callbackQuery, callbackData);
+                    await HandleCallbackQToUnRead(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.TO_SPAM_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryToSpamCommand(callbackQuery, callbackData);
+                    await HandleCallbackQToSpam(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.TO_INBOX_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryToInboxCommand(callbackQuery, callbackData);
+                    await HandleCallbackQToInbox(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.TO_TRASHCOMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryToTrashCommand(callbackQuery, callbackData);
+                    await HandleCallbackQToTrash(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.ARCHIVE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryArchiveCommand(callbackQuery, callbackData);
+                    await HandleCallbackQArchive(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.UNIGNORE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryUnignoreCommand(callbackQuery, callbackData);
+                    await HandleCallbackQUnignore(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.IGNORE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryIgnoreCommand(callbackQuery, callbackData);
+                    await HandleCallbackQIgnore(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.NEXTPAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryNextPageCommand(callbackQuery, callbackData);
+                    await HandleCallbackQNextPage(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.PREVPAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleCallbackQueryPrevPageCommand(callbackQuery, callbackData);
+                    await HandleCallbackQPrevPage(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.ADD_SUBJECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleAddSubjectCommand(callbackQuery, callbackData);
+                    await HandleCallbackQAddSubject(callbackQuery, callbackData);
+
+                else if(callbackData.Command.Equals(Commands.GET_ATTACHMENTS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                    await HandleCallbackQGetAttachments(callbackQuery, callbackData);
             }
             catch (AuthorizeException ex)
             {
@@ -100,7 +105,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryExpandCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQExpand(CallbackQuery sender, CallbackData callbackData)
         {
             if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.Maximized, MessageKeyboardState.MaximizedActions))
                 throw new ArgumentException("Must be a Minimized or MinimizedAction state.", nameof(callbackData.MessageKeyboardState));
@@ -123,7 +128,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryHideCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQHide(CallbackQuery sender, CallbackData callbackData)
         {
             if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.Minimized, MessageKeyboardState.MinimizedActions))
                 throw new ArgumentException("Must be a Maximized or MaximizedAction state.", nameof(callbackData.MessageKeyboardState));
@@ -147,7 +152,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryExpandActionsCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQExpandActions(CallbackQuery sender, CallbackData callbackData)
         {
             if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.MinimizedActions, MessageKeyboardState.MaximizedActions))
                 throw new ArgumentException("Must be a Minimized or Maximized state.", nameof(callbackData.MessageKeyboardState));
@@ -169,7 +174,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryHideActionsCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQHideActions(CallbackQuery sender, CallbackData callbackData)
         {
             if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.Minimized, MessageKeyboardState.Maximized))
                 throw new ArgumentException("Must be a MinimizedActions or MaximizedActions state.", nameof(callbackData.MessageKeyboardState));
@@ -189,7 +194,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryToReadCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQToRead(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Remove, sender.From, callbackData.MessageId, callbackData.Etag, "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
@@ -204,7 +209,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryToUnReadCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQToUnRead(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
@@ -219,7 +224,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryToSpamCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQToSpam(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "SPAM");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
@@ -234,7 +239,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryToInboxCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQToInbox(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "INBOX");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
@@ -249,7 +254,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryToTrashCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQToTrash(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Add, sender.From, callbackData.MessageId, callbackData.Etag, "TRASH");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
@@ -264,7 +269,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryArchiveCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQArchive(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await ModifyMessageLabels(ModifyLabelsAction.Remove, sender.From, callbackData.MessageId, callbackData.Etag, "INBOX");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
@@ -279,7 +284,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryUnignoreCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQUnignore(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
             await _dbWorker.RemoveFromIgnoreListAsync(sender.From, formattedMessage.From.Email);
@@ -293,7 +298,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryIgnoreCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQIgnore(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
             await _dbWorker.AddToIgnoreListAsync(sender.From, formattedMessage.From.Email);
@@ -307,7 +312,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryNextPageCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQNextPage(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
             if (formattedMessage.Pages <= callbackData.Page)
@@ -326,7 +331,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         /// <param name="sender"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        private async Task HandleCallbackQueryPrevPageCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQPrevPage(CallbackQuery sender, CallbackData callbackData)
         {
             var formattedMessage = await GetMessage(sender.From, callbackData.MessageId);
             if (callbackData.Page < 2)
@@ -336,11 +341,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             await _botActions.UpdateMessage(sender.From, sender.Message.MessageId, formattedMessage, newPage, callbackData.MessageKeyboardState, isIgnored);
         }
 
-        private async Task HandleAddSubjectCommand(CallbackQuery sender, CallbackData callbackData)
+        private async Task HandleCallbackQAddSubject(CallbackQuery sender, CallbackData callbackData)
         {
 
         }
 
+        private async Task HandleCallbackQGetAttachments(CallbackQuery sender, CallbackData callbackData)
+        {
+            var service = SearchServiceByUserId(sender.From);
+            var dataList = new List<AttachmentInfo>();
+            foreach (var attachmentId in callbackData.Attachments)
+            {
+                var request = service.GmailService.Users.Messages.Attachments.Get("me", callbackData.MessageId,
+                    attachmentId.Id);
+                var partBody = await request.ExecuteAsync();
+                attachmentId.Data = Base64.DecodeUrlToBytes(partBody.Data);
+
+                dataList.Add(attachmentId);
+            }
+            
+        }
 
     }
 

@@ -42,5 +42,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string RECIPIENTS_INLINE_QUERY_COMMAND = "recipients:";
         public const string CC_RECIPIENTS_MESSAGE_COMMAND = "/ccrecipients";
         public const string BCC_RECIPIENTS_MESSAGE_COMMAND = "/bccrecipients";
+        public const string GET_ATTACHMENTS_COMMAND = "/getattachments";
     }
 }

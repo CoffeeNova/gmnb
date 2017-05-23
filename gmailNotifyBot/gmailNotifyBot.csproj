@@ -85,6 +85,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MsgPack, Version=0.8.0.0, Culture=neutral, PublicKeyToken=a2625990d5dc0167, processorArchitecture=MSIL">
+      <HintPath>..\packages\MsgPack.Cli.0.8.1\lib\net46\MsgPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -254,6 +258,8 @@
     <Compile Include="Bot\Moduls\ServiceFactory.cs" />
     <Compile Include="Bot\HtmlToText.cs" />
     <Compile Include="Bot\test.cs" />
+    <Compile Include="Bot\Types\FileInfo.cs" />
+    <Compile Include="Bot\Types\UserInfo.cs" />
     <Compile Include="Bot\Updates.cs" />
     <Compile Include="Bot\UpdatesHandler.cs" />
     <Compile Include="Bot\IUpdates.cs" />

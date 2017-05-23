@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using KellermanSoftware.CompareNetObjects;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Tests

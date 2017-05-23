@@ -33,5 +33,48 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return Decode(base64EncodedData);
         }
 
+        public static byte[] EncodeToBytes(string plainText)
+        {
+            return System.Text.Encoding.UTF8.GetBytes(plainText);
+        }
+
+        public static byte[] DecodeToBytes(string base64EncodedData)
+        {
+            return System.Convert.FromBase64String(base64EncodedData);
+        }
+
+        public static byte[] EncodeUrlToBytes(string plainText)
+        {
+            plainText = plainText.Replace('+', '-');
+            plainText = plainText.Replace('/', '_');
+            return EncodeToBytes(plainText);
+        }
+
+        public static byte[] DecodeUrlToBytes(string base64EncodedData)
+        {
+            base64EncodedData = base64EncodedData.Replace('-', '+');
+            base64EncodedData = base64EncodedData.Replace('_', '/');
+            return DecodeToBytes(base64EncodedData);
+        }
+
+        public static string Encode(byte[] bytes)
+        {
+            return System.Convert.ToBase64String(bytes);
+        }
+
+        public static string EncodeUrl(byte[] bytes)
+        {
+            var encoded = Encode(bytes);
+            encoded = encoded.Replace('+', '-');
+            encoded = encoded.Replace('/', '_');
+            return encoded;
+        }
+
+        public static byte[] DecodeToBytesUrl(string base64EncodedData)
+        {
+            base64EncodedData = base64EncodedData.Replace('-', '+');
+            base64EncodedData = base64EncodedData.Replace('_', '/');
+            return System.Convert.FromBase64String(base64EncodedData);
+        }
     }
 }
