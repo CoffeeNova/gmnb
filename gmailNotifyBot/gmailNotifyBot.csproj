@@ -226,7 +226,7 @@
     <Compile Include="Bot\Base64.cs" />
     <Compile Include="Bot\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
-    <Compile Include="Bot\CallbackClasses.cs" />
+    <Compile Include="Bot\CallbackData.cs" />
     <Compile Include="Bot\Types\ClientSecret.cs" />
     <Compile Include="Bot\Moduls\CommandHandler.CallbackQuery.cs" />
     <Compile Include="Bot\Moduls\CommandHandler.InlineQuery.cs" />
@@ -258,7 +258,7 @@
     <Compile Include="Bot\Moduls\ServiceFactory.cs" />
     <Compile Include="Bot\HtmlToText.cs" />
     <Compile Include="Bot\test.cs" />
-    <Compile Include="Bot\Types\FileInfo.cs" />
+    <Compile Include="Bot\Types\AttachmentInfo.cs" />
     <Compile Include="Bot\Types\UserInfo.cs" />
     <Compile Include="Bot\Updates.cs" />
     <Compile Include="Bot\UpdatesHandler.cs" />
