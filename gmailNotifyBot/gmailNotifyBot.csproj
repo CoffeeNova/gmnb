@@ -223,6 +223,7 @@
     <Compile Include="Bot\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
     <Compile Include="Bot\CallbackData.cs" />
+    <Compile Include="Bot\MessageInlineKeyboardMarkup.cs" />
     <Compile Include="Bot\Types\ClientSecret.cs" />
     <Compile Include="Bot\Moduls\CommandHandler.CallbackQuery.cs" />
     <Compile Include="Bot\Moduls\CommandHandler.InlineQuery.cs" />

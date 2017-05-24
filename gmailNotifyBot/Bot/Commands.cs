@@ -27,7 +27,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string TO_READ_COMMAND = "/toread";
         public const string TO_SPAM_COMMAND = "/tospam";
         public const string REMOVE_SPAM_COMMAND = "/removespam";
-        public const string TO_TRASHCOMMAND = "/totrash";
+        public const string TO_TRASH_COMMAND = "/totrash";
         public const string RESTORE_COMMAND = "/restore";
         public const string TO_INBOX_COMMAND = "/toinbox";
         public const string ARCHIVE_COMMAND = "/archive";
@@ -42,6 +42,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string RECIPIENTS_INLINE_QUERY_COMMAND = "recipients:";
         public const string CC_RECIPIENTS_MESSAGE_COMMAND = "/ccrecipients";
         public const string BCC_RECIPIENTS_MESSAGE_COMMAND = "/bccrecipients";
-        public const string GET_ATTACHMENTS_COMMAND = "/getattachments";
+        public const string SHOW_ATTACHMENTS_COMMAND = "/showattachments";
+        public const string HIDE_ATTACHMENTS_COMMAND = "/hideattachments";
+        public const string GET_ATTACHMENT_COMMAND = "/getattacment:";
     }
 }

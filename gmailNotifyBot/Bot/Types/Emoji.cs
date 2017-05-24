@@ -30,6 +30,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Types
         public const string M = "\u24c2\ufe0f"; //white M letter in the blue background
         public const string MaleFemaleShadows = "\ud83d\udc65";
         public const string ClosedEmailEnvelop = "\ud83d\udce7"; // closed Email
-        public const string OpenFileFilder = "\ud83d\udcc2";
+        public const string OpenFileFolder = "\ud83d\udcc2";
+        public const string ClosedFileFolder = "\ud83d\udcc1";
     }
 }

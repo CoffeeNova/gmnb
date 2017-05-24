@@ -19,9 +19,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     Commands.CONNECT_COMMAND, Commands.EXPAND_COMMAND,
                     Commands.HIDE_COMMAND, Commands.EXPAND_ACTIONS_COMMAND, Commands.HIDE_ACTIONS_COMMAND,
                     Commands.TO_READ_COMMAND, Commands.TO_UNREAD_COMMAND, Commands.TO_SPAM_COMMAND,
-                    Commands.TO_INBOX_COMMAND, Commands.TO_TRASHCOMMAND, Commands.ARCHIVE_COMMAND,
+                    Commands.TO_INBOX_COMMAND, Commands.TO_TRASH_COMMAND, Commands.ARCHIVE_COMMAND,
                     Commands.UNIGNORE_COMMAND, Commands.IGNORE_COMMAND, Commands.NEXTPAGE_COMMAND,
-                    Commands.PREVPAGE_COMMAND, Commands.ADD_SUBJECT_COMMAND, Commands.GET_ATTACHMENTS_COMMAND)) return;
+                    Commands.PREVPAGE_COMMAND, Commands.ADD_SUBJECT_COMMAND, Commands.SHOW_ATTACHMENTS_COMMAND)) return;
 
             LogMaker.Log(Logger,
                 $"{callbackQuery.Data} command received from user with id {(string)callbackQuery.From}", false);
@@ -56,7 +56,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 else if (callbackData.Command.Equals(Commands.TO_INBOX_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQToInbox(callbackQuery, callbackData);
 
-                else if (callbackData.Command.Equals(Commands.TO_TRASHCOMMAND, StringComparison.CurrentCultureIgnoreCase))
+                else if (callbackData.Command.Equals(Commands.TO_TRASH_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQToTrash(callbackQuery, callbackData);
 
                 else if (callbackData.Command.Equals(Commands.ARCHIVE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
@@ -77,7 +77,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 else if (callbackData.Command.Equals(Commands.ADD_SUBJECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQAddSubject(callbackQuery, callbackData);
 
-                else if(callbackData.Command.Equals(Commands.GET_ATTACHMENTS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                else if(callbackData.Command.Equals(Commands.SHOW_ATTACHMENTS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                     await HandleCallbackQGetAttachments(callbackQuery, callbackData);
             }
             catch (AuthorizeException ex)
@@ -248,7 +248,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         }
 
         /// <summary>
-        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.TO_TRASHCOMMAND"/>.
+        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.TO_TRASH_COMMAND"/>.
         /// This method adds "TRASH" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="sender"></param>

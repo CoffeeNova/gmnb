@@ -167,7 +167,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = ReceivedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
+            var keyboard = new MessageInlineKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized,
+                isIgnored);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
@@ -175,14 +176,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = ReceivedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
+            var keyboard = new MessageInlineKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
             _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
         public async Task UpdateMessage(string chatId, int messageId, FormattedMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
         {
             var header = formattedMessage.Header;
-            var keyboard = ReceivedMessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
+            var keyboard = new MessageInlineKeyboardMarkup(formattedMessage, page, state, isIgnored);
             var displayedMessage = page == 0
                 ? Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
                 : Emoji.RedArrowedEnvelope + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
@@ -330,196 +331,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return new InlineKeyboardMarkup { InlineKeyboard = inlineKeyboard };
         }
 
-        private InlineKeyboardMarkup ReceivedMessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
-        {
-            message.NullInspect(nameof(message));
-
-            var firstRow = new List<InlineKeyboardButton>();
-            var secondRow = new List<InlineKeyboardButton>();
-            var thirdRow = new List<InlineKeyboardButton>();
-            var expandButton = new InlineKeyboardButton();
-            var actionsButton = new InlineKeyboardButton();
-            var generalCallbackData = new CallbackData
-            {
-                MessageId = message.Id,
-                Page = page,
-                MessageKeyboardState = state,
-            };
-            var attachmentsButton = new InlineKeyboardButton
-            {
-                Text = $"{Emoji.OpenFileFilder}Attachments",
-                CallbackData = new CallbackData(generalCallbackData)
-                {
-                    Command = Commands.GET_ATTACHMENTS_COMMAND,
-                }
-            };
-            InlineKeyboardButton nextPageButton = null;
-            InlineKeyboardButton prevPageButton = null;
-            var unreadButton = new InlineKeyboardButton
-            {
-                Text = message.LabelIds.Exists(label => label == "UNREAD")
-                ? $"{Emoji.Eye} To Read"
-                : $"{Emoji.RedArrowedEnvelope} To Unread",
-                CallbackData = message.LabelIds.Exists(label => label == "UNREAD")
-                ? new CallbackData(generalCallbackData) { Command = Commands.TO_READ_COMMAND }
-                : new CallbackData(generalCallbackData) { Command = Commands.TO_UNREAD_COMMAND }
-            };
-            var spamButton = new InlineKeyboardButton
-            {
-                Text = message.LabelIds.Exists(label => label == "SPAM")
-                ? $"{Emoji.HeartEnvelope} Not Spam"
-                : $"{Emoji.RestrictionSign} Spam",
-                CallbackData = message.LabelIds.Exists(label => label == "SPAM")
-                ? new CallbackData(generalCallbackData) { Command = Commands.TO_INBOX_COMMAND }
-                : new CallbackData(generalCallbackData) { Command = Commands.TO_SPAM_COMMAND }
-            };
-            var trashButton = new InlineKeyboardButton
-            {
-                Text = message.LabelIds.Exists(label => label == "TRASH")
-                ? $"{Emoji.ClosedMailbox} Restore"
-                : $"{Emoji.RecycleBin} Delete",
-                CallbackData = message.LabelIds.Exists(label => label == "TRASH")
-                ? new CallbackData(generalCallbackData) { Command = Commands.TO_INBOX_COMMAND }
-                : new CallbackData(generalCallbackData) { Command = Commands.TO_TRASHCOMMAND }
-            };
-            var archiveButton = new InlineKeyboardButton
-            {
-                Text = message.LabelIds.Exists(label => label == "INBOX")
-                ? $"{Emoji.Multifolder} To Archive"
-                : $"{Emoji.ClosedMailbox} To Inbox",
-                CallbackData = message.LabelIds.Exists(label => label == "INBOX")
-                ? new CallbackData(generalCallbackData) { Command = Commands.ARCHIVE_COMMAND }
-                : new CallbackData(generalCallbackData) { Command = Commands.TO_INBOX_COMMAND }
-            };
-            var notifyButton = new InlineKeyboardButton
-            {
-                Text = isIgnored ? "Unignore" : "Ignore",
-                CallbackData = isIgnored
-                ? new CallbackData(generalCallbackData) { Command = Commands.UNIGNORE_COMMAND }
-                : new CallbackData(generalCallbackData) { Command = Commands.IGNORE_COMMAND }
-            };
-
-            var pageSliderFunc = new Func<List<InlineKeyboardButton>>(() =>
-            {
-                var row = new List<InlineKeyboardButton>();
-                if (message.MultiPageBody)
-                {
-                    var pageCount = message.Pages;
-                    if (page < pageCount)
-                    {
-                        nextPageButton = new InlineKeyboardButton();
-                        nextPageButton.Text = $"To Page {page + 1} {Emoji.RightArrow}";
-                        nextPageButton.CallbackData = new CallbackData(generalCallbackData)
-                        {
-                            Command = Commands.NEXTPAGE_COMMAND
-                        };
-                    }
-                }
-                if (page > 1)
-                {
-                    prevPageButton = new InlineKeyboardButton();
-                    prevPageButton.Text = $"{Emoji.LeftArrow} To Page {page - 1}";
-                    prevPageButton.CallbackData = new CallbackData(generalCallbackData)
-                    {
-                        Command = Commands.PREVPAGE_COMMAND
-                    };
-                }
-                if (prevPageButton != null)
-                    row.Add(prevPageButton);
-                if (nextPageButton != null)
-                    row.Add(nextPageButton);
-                return row;
-            });
-            string expandButtonCommand = "";
-            string actionsButtonCommand = "";
-            switch (state)
-            {
-                case MessageKeyboardState.Minimized:
-                    #region minimized
-
-                    expandButton.Text = $"{Emoji.DownTriangle} Expand";
-                    expandButtonCommand = Commands.EXPAND_COMMAND;
-                    actionsButton.Text = $"{Emoji.TurnedDownArrow} Actions";
-                    actionsButtonCommand = Commands.EXPAND_ACTIONS_COMMAND;
-                    if (!message.SnippetEqualsBody)
-                        firstRow.Add(expandButton);
-                    firstRow.Add(actionsButton);
-                    if (message.HasAttachments)
-                        firstRow.Add(attachmentsButton);
-                    break;
-                #endregion
-                case MessageKeyboardState.Maximized:
-                    #region maximized
-                    expandButton.Text = $"{Emoji.UpTriangle} Hide";
-                    expandButtonCommand = Commands.HIDE_COMMAND;
-                    actionsButton.Text = $"{Emoji.TurnedDownArrow} Actions";
-                    actionsButtonCommand = Commands.EXPAND_ACTIONS_COMMAND;
-                    firstRow = pageSliderFunc();
-                    if (!message.SnippetEqualsBody)
-                        secondRow.Add(expandButton);
-                    secondRow.Add(actionsButton);
-                    if (message.HasAttachments)
-                        secondRow.Add(attachmentsButton);
-                    break;
-                #endregion
-                case MessageKeyboardState.MinimizedActions:
-                    #region minimazedActions
-                    expandButton.Text = $"{Emoji.DownTriangle} Expand";
-                    expandButtonCommand = Commands.EXPAND_COMMAND;
-                    actionsButton.Text = $"{Emoji.TurnedUpArrow} Actions";
-                    actionsButtonCommand = Commands.HIDE_ACTIONS_COMMAND;
-                    if (!message.SnippetEqualsBody)
-                        firstRow.Add(expandButton);
-                    firstRow.Add(actionsButton);
-                    if (message.HasAttachments)
-                        firstRow.Add(attachmentsButton);
-                    secondRow.Add(unreadButton);
-                    secondRow.Add(spamButton);
-                    secondRow.Add(trashButton);
-                    secondRow.Add(archiveButton);
-                    secondRow.Add(notifyButton);
-                    break;
-                #endregion
-                case MessageKeyboardState.MaximizedActions:
-                    #region maximizedActions
-                    expandButton.Text = $"{Emoji.UpTriangle} Hide";
-                    expandButtonCommand = Commands.HIDE_COMMAND;
-                    actionsButton.Text = $"{Emoji.TurnedUpArrow} Actions";
-                    actionsButtonCommand = Commands.HIDE_ACTIONS_COMMAND;
-                    firstRow = pageSliderFunc();
-                    if (!message.SnippetEqualsBody)
-                        secondRow.Add(expandButton);
-                    secondRow.Add(actionsButton);
-                    if (message.HasAttachments)
-                        secondRow.Add(attachmentsButton);
-                    thirdRow.Add(unreadButton);
-                    thirdRow.Add(spamButton);
-                    thirdRow.Add(trashButton);
-                    thirdRow.Add(archiveButton);
-                    thirdRow.Add(notifyButton);
-                    break;
-                    #endregion
-            }
-            expandButton.CallbackData = new CallbackData(generalCallbackData)
-            {
-                Command = expandButtonCommand
-            };
-            actionsButton.CallbackData = new CallbackData(generalCallbackData)
-            {
-                Command = actionsButtonCommand
-            };
-            var inlineKeyboard = new List<List<InlineKeyboardButton>>();
-            if (firstRow.Count > 0)
-                inlineKeyboard.Add(firstRow);
-            if (secondRow.Count > 0)
-                inlineKeyboard.Add(secondRow);
-            if (thirdRow.Count > 0)
-                inlineKeyboard.Add(thirdRow);
-
-            return new InlineKeyboardMarkup { InlineKeyboard = inlineKeyboard };
-        }
-
-
         private readonly TelegramMethods _telegramMethods;
         private readonly string _newMessageText =
                         $"{Emoji.New} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: " +
@@ -541,6 +352,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         [EnumMember(Value = "minimizedActions")]
         MinimizedActions,
         [EnumMember(Value = "maximizedActions")]
-        MaximizedActions
+        MaximizedActions,
+        [EnumMember(Value = "attachments")]
+        Attachments
     }
 }
