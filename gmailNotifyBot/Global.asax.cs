@@ -78,9 +78,9 @@ namespace CoffeeJelly.gmailNotifyBot
         {
             Debug.WriteLine($"{logger.Name} log message: {message}");
 #if !DEBUG
-            TestModel.WriteLogToFile($"{time}   {logger.Name} log message: {message}\r\n{stackTrace}\r\n");
+            TestModel.WriteLogToFile($"{time}   {logger.Name} log message: {message}{Environment.NewLine}{stackTrace}{Environment.NewLine}");
             if (stackTrace != null)
-                TestModel.WriteLogToFile($"{stackTrace}\r\n");
+                TestModel.WriteLogToFile($"{stackTrace}{Environment.NewLine}");
 #endif
         }
 

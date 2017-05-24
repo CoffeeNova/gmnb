@@ -65,7 +65,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (message.Payload.Parts != null)
             {
                 DecodeDevidedBody(message.Payload.Parts, body);
-                AttachmentIds = GetAttachmentsIds(message.Payload.Parts);
+                Attachments = GetAttachments(message.Payload.Parts);
             }
             else if (message.Payload.Body?.Data != null)
                 body.Add(new BodyForm(message.Payload.MimeType, Base64.DecodeUrl(message.Payload.Body.Data)));
@@ -86,12 +86,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             }
         }
 
-        private IReadOnlyList<AttachmentInfo> GetAttachmentsIds(IList<MessagePart> parts)
+        private IReadOnlyList<AttachmentInfo> GetAttachments(IList<MessagePart> parts)
         {
             var ids = new List<AttachmentInfo>();
             foreach (var part in parts)
             {
-                if (string.IsNullOrEmpty(part.Filename))
+                if (!string.IsNullOrEmpty(part.Filename))
                     ids.Add(new AttachmentInfo
                     {
                         Id = part.Body.AttachmentId,
@@ -107,8 +107,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var date = Date.Date == DateTime.Now.Date ? Date.ToString("HH:mm") : Date.ToString("dd.MM.yy");
                 
             var header = string.IsNullOrEmpty(From.Name) 
-                ? $"*lt;b*gt;{From.Email}*lt;/b*gt;    *lt;i*gt;{date}*lt;/i*gt; \r\n\r\n*lt;b*gt{Subject}*lt;/b*gt;" 
-                : $"*lt;b*gt;{From.Name}*lt;/b*gt;    '{From.Email}'  *lt;i*gt;{date}*lt;/i*gt; \r\n\r\n*lt;b*gt;{Subject}*lt;/b*gt;";
+                ? $"*lt;b*gt;{From.Email}*lt;/b*gt;    *lt;i*gt;{date}*lt;/i*gt; {Environment.NewLine}{Environment.NewLine}*lt;b*gt{Subject}*lt;/b*gt;" 
+                : $"*lt;b*gt;{From.Name}*lt;/b*gt;    '{From.Email}'  *lt;i*gt;{date}*lt;/i*gt; {Environment.NewLine}{Environment.NewLine}*lt;b*gt;{Subject}*lt;/b*gt;";
             return Helper.FormatTextToHtmlParseMode(header);
         }
 
@@ -206,7 +206,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public IReadOnlyList<string> DesirableBody => GetDesirableBody();
 
-        public IReadOnlyList<AttachmentInfo> AttachmentIds;
+        public IReadOnlyList<AttachmentInfo> Attachments;
 
         public string Header => HtmlStyledMessageHeader();
 
@@ -231,7 +231,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         }
         public bool HtmlConvertToPlain { get; set; } = true;
 
-        public bool HasAttachments => AttachmentIds?.Count > 0;
+        public bool HasAttachments => Attachments?.Count > 0;
 
         private static IList<string> _mimeTypes = new List<string>
         {

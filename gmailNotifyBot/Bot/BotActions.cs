@@ -166,7 +166,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public async Task ShowShortMessageAsync(string chatId, FormattedMessage formattedMessage, bool isIgnored)
         {
             var header = formattedMessage.Header;
-            var message = Emoji.ClosedEmailEnvelop + header + $"\r\n\r\n {formattedMessage.Snippet}";
+            var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
             var keyboard = ReceivedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
@@ -174,7 +174,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public void ShowShortMessage(string chatId, FormattedMessage formattedMessage, bool isIgnored)
         {
             var header = formattedMessage.Header;
-            var message = Emoji.ClosedEmailEnvelop + header + $"\r\n\r\n {formattedMessage.Snippet}";
+            var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
             var keyboard = ReceivedMessageKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
             _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
@@ -184,8 +184,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var header = formattedMessage.Header;
             var keyboard = ReceivedMessageKeyboardMarkup(formattedMessage, page, state, isIgnored);
             var displayedMessage = page == 0
-                ? Emoji.ClosedEmailEnvelop + header + $"\r\n\r\n{formattedMessage.Snippet}"
-                : Emoji.RedArrowedEnvelope + header + $"\r\n\r\n{formattedMessage.DesirableBody[page - 1]}";
+                ? Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
+                : Emoji.RedArrowedEnvelope + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
@@ -195,7 +195,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
         }
 
+        public async Task SendAttachmentsListMessage(string chatId, FormattedMessage formattedMessage)
+        {
+            formattedMessage.NullInspect(nameof(formattedMessage));
+            if (!formattedMessage.HasAttachments)
+                throw new InvalidOperationException($"{nameof(formattedMessage.HasAttachments)} property must equals true to avoid this exception.");
 
+            var keyboard = AttachmentsReplyKeyboardMarkup(formattedMessage);
+            var messageTextBuilder = new StringBuilder($"Files attached to this message:{Environment.NewLine}");
+            formattedMessage.Attachments.IndexEach((a, i) =>
+            {
+                messageTextBuilder.AppendLine($"{i + 1}. {a.FileName}");
+            });
+            messageTextBuilder.AppendLine();
+            messageTextBuilder.Append("Please select a file by number to download it:");
+            await _telegramMethods.SendMessageAsync(chatId, messageTextBuilder.ToString(), null, false, false, null, keyboard);
+        }
 
         public async Task ShowContactsAnswerInlineQuery(string inlineQueryId, IEnumerable<UserInfo> contacts, int? offset = null)
         {
@@ -209,11 +224,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                     Description = contact.Name,
                     InputMessageContent = new InputTextMessageContent
                     {
-                        MessageText = $"Recipient added:\r\n{contact.Name} <{contact.Email}>"
+                        MessageText = $"Recipient added:{Environment.NewLine}{contact.Name} <{contact.Email}>"
                     },
                     ThumbUrl = _contactsThumbUrl,
-                    ThumbHeight=48,
-                    ThumbWidth=48
+                    ThumbHeight = 48,
+                    ThumbWidth = 48
                 });
             }
             if (!offset.HasValue)
@@ -231,20 +246,37 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private ReplyKeyboardMarkup RecipientsReplyKeyboardMarkup(string recepient)
         {
-            var keyboardMarkup = new ReplyKeyboardMarkup {Keyboard = new List<List<KeyboardButton>>()};
+            var keyboardMarkup = new ReplyKeyboardMarkup();
             var testButton = new KeyboardButton
             {
                 Text = "TEST BUTTON"
             };
-            var firstRow = new List<KeyboardButton> {testButton};
-            keyboardMarkup.Keyboard.Add(firstRow);
+            var firstRow = new List<KeyboardButton> { testButton };
+            var keyboard = new List<List<KeyboardButton>> { firstRow };
+            keyboardMarkup.Keyboard = keyboard;
 
             return keyboardMarkup;
         }
 
+        private ReplyKeyboardMarkup AttachmentsReplyKeyboardMarkup(FormattedMessage message)
+        {
+            var closeButton = new KeyboardButton
+            {
+                Text = "Close"
+            };
+            var keyboardButtons = new List<KeyboardButton>();
+            message.Attachments.IndexEach((a, i) =>
+            {
+                keyboardButtons.Add(new KeyboardButton {Text = i + 1.ToString()});
+            });
+            var keyboard = keyboardButtons.DivideByLength(5).ToList();
+            keyboard.Add(new List<KeyboardButton> { closeButton });
+
+            return new ReplyKeyboardMarkup { Keyboard = keyboard , ResizeKeyboard = true};
+        }
+
         private InlineKeyboardMarkup NewMessageInlineKeyboardMarkup()
         {
-            var keyboardMarkup = new InlineKeyboardMarkup { InlineKeyboard = new List<List<InlineKeyboardButton>>() };
             var recipientsButton = new InlineKeyboardButton
             {
                 Text = $"{Emoji.BoyAndGirl}Add Recipients",
@@ -293,30 +325,33 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 ccButtons,
                 bccButtons
             };
-            keyboardMarkup.InlineKeyboard.Add(firstRow);
-            keyboardMarkup.InlineKeyboard.Add(secondRow);
-            return keyboardMarkup;
+            var inlineKeyboard = new List<List<InlineKeyboardButton>> { firstRow, secondRow };
+
+            return new InlineKeyboardMarkup { InlineKeyboard = inlineKeyboard };
         }
-
-
 
         private InlineKeyboardMarkup ReceivedMessageKeyboardMarkup(FormattedMessage message, int page, MessageKeyboardState state, bool isIgnored)
         {
             message.NullInspect(nameof(message));
 
-            var keyboardMarkup = new InlineKeyboardMarkup { InlineKeyboard = new List<List<InlineKeyboardButton>>() };
             var firstRow = new List<InlineKeyboardButton>();
             var secondRow = new List<InlineKeyboardButton>();
             var thirdRow = new List<InlineKeyboardButton>();
             var expandButton = new InlineKeyboardButton();
             var actionsButton = new InlineKeyboardButton();
-            var attachmentsButton = new InlineKeyboardButton();
             var generalCallbackData = new CallbackData
             {
                 MessageId = message.Id,
                 Page = page,
                 MessageKeyboardState = state,
-                Etag = message.ETag
+            };
+            var attachmentsButton = new InlineKeyboardButton
+            {
+                Text = $"{Emoji.OpenFileFilder}Attachments",
+                CallbackData = new CallbackData(generalCallbackData)
+                {
+                    Command = Commands.GET_ATTACHMENTS_COMMAND,
+                }
             };
             InlineKeyboardButton nextPageButton = null;
             InlineKeyboardButton prevPageButton = null;
@@ -473,28 +508,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             {
                 Command = actionsButtonCommand
             };
-            attachmentsButton.CallbackData = new CallbackData(generalCallbackData)
-            {
-                Command = Commands.GET_ATTACHMENTS_COMMAND,
-                Attachments = message.AttachmentIds.ToList()
-            };
+            var inlineKeyboard = new List<List<InlineKeyboardButton>>();
             if (firstRow.Count > 0)
-                keyboardMarkup.InlineKeyboard.Add(firstRow);
+                inlineKeyboard.Add(firstRow);
             if (secondRow.Count > 0)
-                keyboardMarkup.InlineKeyboard.Add(secondRow);
+                inlineKeyboard.Add(secondRow);
             if (thirdRow.Count > 0)
-                keyboardMarkup.InlineKeyboard.Add(thirdRow);
-            return keyboardMarkup;
+                inlineKeyboard.Add(thirdRow);
+
+            return new InlineKeyboardMarkup { InlineKeyboard = inlineKeyboard };
         }
 
 
         private readonly TelegramMethods _telegramMethods;
         private readonly string _newMessageText =
                         $"{Emoji.New} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: " +
-                        $"\r\n{Emoji.InfoSign} You can use quick command, just type in the chat:" +
-                        $"\r\n<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
-                        $"\r\nand press Enter to quick send the email." +
-                        $"\r\n{Emoji.InfoSign} For multiple recipients use comma separator.";
+                        $"{Environment.NewLine}{Emoji.InfoSign} You can use quick command, just type in the chat:" +
+                        $"{Environment.NewLine}<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
+                        $"{Environment.NewLine}and press Enter to quick send the email." +
+                        $"{Environment.NewLine}{Emoji.InfoSign} For multiple recipients use comma separator.";
 
         private BotSettings Settings = BotInitializer.Instance.BotSettings;
         private string _contactsThumbUrl;
@@ -511,34 +543,4 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         [EnumMember(Value = "maximizedActions")]
         MaximizedActions
     }
-
-
-
-    public static class Emoji
-    {
-        public const string Denied = "\ud83d\udeab"; //red crossed-out circle
-        public const string DownArrow = "\u2b07\ufe0f"; //white down facing arrow in a blue rectangle
-        public const string DownTriangle = "\ud83d\udd3d"; //white down triangle in a blue rectangle
-        public const string UpTriangle = "\ud83d\udd3c"; //white up triangle in a blue rectangle
-        public const string Dashboard = "\ud83c\udf9b";
-        public const string RightArrow = "\u27a1\ufe0f"; //white right facing arrow in a blue rectangle
-        public const string LeftArrow = "\u2b05\ufe0f"; //white left facing arrow in a blue rectangle
-        public const string TurnedUpArrow = "\u2934\ufe0f"; //while turned up from left arrow in a blue rectange
-        public const string TurnedDownArrow = "\u2935\ufe0f"; //while turned down from left arrow in a blue rectange
-        public const string Eye = "\ud83d\udc41";
-        public const string RedArrowedEnvelope = "\ud83d\udce9"; //envelope with red arrow
-        public const string HeartEnvelope = "\ud83d\udc8c"; //envelope with red heart
-        public const string RestrictionSign = "\u26d4\ufe0f"; //red restriction sign
-        public const string RecycleBin = "\ud83d\uddd1";
-        public const string ClosedMailbox = "\ud83d\udcea"; // closed blue mailbox
-        public const string Multifolder = "\ud83d\uddc2";
-        public const string BoyAndGirl = "\ud83d\udebb";
-        public const string InfoSign = "\u2139\ufe0f";
-        public const string New = "\ud83c\udd95"; //blue new
-        public const string AbcLowerCase = "\ud83d\udd24";
-        public const string M = "\u24c2\ufe0f"; //white M letter in the blue background
-        public const string MaleFemaleShadows = "\ud83d\udc65";
-        public const string ClosedEmailEnvelop = "\ud83d\udce7"; // closed Email
-    }
-
 }

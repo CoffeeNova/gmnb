@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Ionic.Zlib;
 
 namespace CoffeeJelly.gmailNotifyBot
 {
@@ -138,6 +139,6 @@ namespace CoffeeJelly.gmailNotifyBot
             }
             return result;
         }
-   }
+    }
 
 }

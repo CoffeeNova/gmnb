@@ -224,10 +224,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         private static string _senderEmail = "testaddr@gmail.com";
         private static string _subject = "testSubject";
         private static string _date = "Mon, 1 May 2017 18:30:55 +0300";
-        private static BodyForm _bodyPart1 = new BodyForm("text/plain", "part1\r\npart1");
-        private static BodyForm _bodyPart2 = new BodyForm("text/plain", "part2");
-        private static BodyForm _bodyPart3 = new BodyForm("text/plain", "part3\r\npart3\r\npart3\r\n");
-        private static BodyForm _bodyPart4 = new BodyForm("text/plain", "part4\r\n");
+        private static BodyForm _bodyPart1 = new BodyForm("text/plain", $"part1{Environment.NewLine}part1");
+        private static BodyForm _bodyPart2 = new BodyForm("text/plain", $"part2");
+        private static BodyForm _bodyPart3 = new BodyForm("text/plain", $"part3{Environment.NewLine}part3{Environment.NewLine}part3{Environment.NewLine}");
+        private static BodyForm _bodyPart4 = new BodyForm("text/plain", $"part4{Environment.NewLine}");
         private static ComparisonConfig _config;
 
         private Message _message;

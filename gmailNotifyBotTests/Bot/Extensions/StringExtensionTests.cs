@@ -20,11 +20,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions.Tests
         {
             var expected = new List<string>
             {
-                $"{text1}\r\n{text2}\r\n{text3}\r\n",
-                $"{text4}\r\n{text5}\r\n{text6}\r\n",
-                $"{text7}\r\n"
+                $"{text1}{Environment.NewLine}{text2}{Environment.NewLine}{text3}{Environment.NewLine}",
+                $"{text4}{Environment.NewLine}{text5}{Environment.NewLine}{text6}{Environment.NewLine}",
+                $"{text7}{Environment.NewLine}"
             };
-            var text = $"{text1}\r\n{text2}\r\n{text3}\r\n{text4}\r\n{text5}\r\n{text6}\r\n{text7}\r\n";
+            var text = $"{text1}{Environment.NewLine}{text2}{Environment.NewLine}{text3}{Environment.NewLine}{text4}{Environment.NewLine}{text5}{Environment.NewLine}{text6}{Environment.NewLine}{text7}{Environment.NewLine}";
             var actual = text.DivideByLines(3).ToList();
 
             var compareLogic = new CompareLogic();

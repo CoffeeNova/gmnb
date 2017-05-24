@@ -24,7 +24,7 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                     byte[] info = null;
                     info =
                         new UTF8Encoding(true).GetBytes(
-                            $"data: {message.Message.Data}\r\nmessageId: {message.Message.MessageId}\r\nsubscription: {message.Subscription}\r\n");
+                            $"data: {message.Message.Data}{Environment.NewLine}messageId: {message.Message.MessageId}{Environment.NewLine}subscription: {message.Subscription}{Environment.NewLine}");
                     //info = new UTF8Encoding(true).GetBytes("test");
                     fs.Write(info, 0, info.Length);
                 }

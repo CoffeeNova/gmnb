@@ -35,7 +35,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
         [TestMethod()]
         public void DivideIntoPagesTest_TextWithNewLines_4linesList()
         {
-            var text = "0123456\r\n90123456789012345 789";
+            var text = $"0123456{Environment.NewLine}90123456789012345 789";
             var expected = new List<string>
             {
                 "0123456",

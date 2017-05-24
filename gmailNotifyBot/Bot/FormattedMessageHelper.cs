@@ -7,6 +7,7 @@ using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using HtmlAgilityPack;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
@@ -140,14 +141,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return info;
         }
 
-        private static string HtmlConvertToPlainText(string text)
+        public static string HtmlConvertToPlainText(string text)
         {
             return HtmlToText.ConvertHtml(text);
         }
 
         public static string FormatTextToHtmlParseMode(string text)
         {
-            ParseInnerText(ref text);
+            text = HtmlEntity.DeEntitize(text);
             ReplaceSymbolsWithHtmlEntities(ref text);
             AddUrlTags(ref text);
             RemoveExtraBlankLines(ref text);
@@ -170,13 +171,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             text = text.Replace("*gt;", ">");
         }
 
-        private static void ParseInnerText(ref string text)
-        {
-            //var htmlDoc = new HtmlDocument();
-            //htmlDoc.LoadHtml(text);
-            //text = htmlDoc.DocumentNode.InnerText;
-        }
-
+        //this one for telegram rules (https://core.telegram.org/bots/api#formatting-options)
         private static void ReplaceSymbolsWithHtmlEntities(ref string text)
         {
             text = text.Replace("&", "&amp;");

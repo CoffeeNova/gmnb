@@ -24,7 +24,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Types
         [JsonProperty("client_secret")]
         public string Secret { get; set; }
 
-        [JsonConverter(typeof(ArrayToListConverter<string>))]
+        [JsonConverter(typeof(ArrayToIEnumerableConverter<string>))]
         [JsonProperty("redirect_uris")]
         public List<string> RedirectUris { get; set; }
     }

@@ -117,19 +117,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                         case "p": // stylistic - adjust as you tend to use
                             if (textInfo.IsFirstTextOfDocWritten)
                             {
-                                outText.Write("\r\n");
+                                outText.Write($"{Environment.NewLine}");
                             }
-                            endElementString = "\r\n";
+                            endElementString = $"{Environment.NewLine}";
                             isInline = false;
                             break;
                         case "br":
-                            outText.Write("\r\n");
+                            outText.Write($"{Environment.NewLine}");
                             skip = true;
                             textInfo.WritePrecedingWhiteSpace = false;
                             isInline = true;
                             break;
                         case "a":
-                            if (node.Attributes.Contains("href"))
+                            if (node.Attributes.Contains("href") && !string.IsNullOrEmpty(node.InnerText))
                             {
                                 string href = node.Attributes["href"].Value.Trim();
                                 if (node.InnerText.IndexOf(href, StringComparison.InvariantCultureIgnoreCase) == -1)
@@ -142,11 +142,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                         case "li":
                             if (textInfo.ListIndex > 0)
                             {
-                                outText.Write("\r\n{0}.\t", textInfo.ListIndex++);
+                                outText.Write($"{Environment.NewLine}{0}.\t", textInfo.ListIndex++);
                             }
                             else
                             {
-                                outText.Write("\r\n*\t"); //using '*' as bullet char, with tab after, but whatever you want eg "\t->", if utf-8 0x2022
+                                outText.Write($"{Environment.NewLine}*\t"); //using '*' as bullet char, with tab after, but whatever you want eg "\t->", if utf-8 0x2022
                             }
                             isInline = false;
                             break;
@@ -154,7 +154,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                             listIndex = 1;
                             goto case "ul";
                         case "ul": //not handling nested lists any differently at this stage - that is getting close to rendering problems
-                            endElementString = "\r\n";
+                            endElementString = $"{Environment.NewLine}";
                             isInline = false;
                             break;
                         case "img": //inline-block in reality
