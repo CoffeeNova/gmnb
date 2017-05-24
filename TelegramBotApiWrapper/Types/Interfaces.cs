@@ -57,7 +57,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types
         /// Special entities like usernames, URLs, bot commands, etc. that appear in the text.
         /// </summary>
         [JsonProperty("entities")]
-        List<MessageEntity> Entities { get; set; }
+        IEnumerable<MessageEntity> Entities { get; set; }
 
     }
 
@@ -111,7 +111,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types
         /// Available sizes of the photo.
         /// </summary>
         [JsonProperty("photo")]
-        List<PhotoSize> Photo { get; set; }
+        IEnumerable<PhotoSize> Photo { get; set; }
 
         /// <summary>
         /// Caption for the photo.

@@ -18,8 +18,8 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// <summary>
         /// Requested profile pictures (in up to 4 sizes each).
         /// </summary>
-        [JsonConverter(typeof(ArrayToListConverter<List<PhotoSize>>))]
+        [JsonConverter(typeof(ArrayToIEnumerableConverter<List<PhotoSize>>))]
         [JsonProperty("photos", Required = Required.Always)]
-        public List<List<PhotoSize>> Photos { get; set; }
+        public IEnumerable<IEnumerable<PhotoSize>> Photos { get; set; }
     }
 }

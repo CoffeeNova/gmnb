@@ -13,9 +13,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// <summary>
         /// List of button rows, each represented by an List of KeyboardButton objects
         /// </summary>
-        [JsonConverter(typeof(ArrayToListConverter<List<KeyboardButton>>))]
+        [JsonConverter(typeof(ArrayToIEnumerableConverter<IEnumerable<KeyboardButton>>))]
         [JsonProperty("keyboard", Required = Required.Always)]
-        public List<List<KeyboardButton>> Keyboard { get; set; }
+        public IEnumerable<IEnumerable<KeyboardButton>> Keyboard { get; set; }
 
         /// <summary>
         /// Optional. Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons). 

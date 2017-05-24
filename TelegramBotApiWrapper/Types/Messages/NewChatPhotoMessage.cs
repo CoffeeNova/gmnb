@@ -14,8 +14,8 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.Messages
         /// Available sizes of the new chat photo.
         /// </summary>
         /// <remarks>Optional.</remarks>
-        [JsonConverter(typeof(ArrayToListConverter<PhotoSize>))]
+        [JsonConverter(typeof(ArrayToIEnumerableConverter<PhotoSize>))]
         [JsonProperty("new_chat_photo")]
-        public List<PhotoSize> NewChatPhoto { get; set; }
+        public IEnumerable<PhotoSize> NewChatPhoto { get; set; }
     }
 }

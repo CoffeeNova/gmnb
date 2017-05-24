@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramBotApiWrapper.Converters
 {
-    public class ArrayToListConverter<T> : JsonConverter
+    public class ArrayToIEnumerableConverter<T> : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -22,7 +22,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Converters
                     value = new List<T> {instance};
                     break;
                 case JsonToken.StartArray:
-                    value = serializer.Deserialize<List<T>>(reader);
+                    value = serializer.Deserialize<IEnumerable<T>>(reader);
                     break;
                 default:
                     value = null;

@@ -12,8 +12,8 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// <summary>
         /// Array of button rows, each represented by an Array of InlineKeyboardButton objects.
         /// </summary>
-        [JsonConverter(typeof(ArrayToListConverter<List<InlineKeyboardButton>>))]
+        [JsonConverter(typeof(ArrayToIEnumerableConverter<List<InlineKeyboardButton>>))]
         [JsonProperty("inline_keyboard", Required = Required.Always)]
-        public List<List<InlineKeyboardButton>> InlineKeyboard { get; set; }
+        public IEnumerable<IEnumerable<InlineKeyboardButton>> InlineKeyboard { get; set; }
     }
 }

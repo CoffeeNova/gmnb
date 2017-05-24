@@ -51,7 +51,7 @@
     <Compile Include="Attributes\TelegramMethodAttribute.cs" />
     <Compile Include="Attributes\UpdateAttribute.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Converters\ArrayToListConverter.cs" />
+    <Compile Include="Converters\ArrayToIEnumerableConverter.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\MessageConverter.cs" />
     <Compile Include="Exceptions\TelegramFileDownloadException.cs" />

@@ -26,9 +26,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// <summary>
         /// Photo that will be displayed in the game message in chats.
         /// </summary>
-        [JsonConverter(typeof(ArrayToListConverter<PhotoSize>))]
+        [JsonConverter(typeof(ArrayToIEnumerableConverter<PhotoSize>))]
         [JsonProperty("photo", Required = Required.Always)]
-        public List<PhotoSize> Photo { get; set; }
+        public IEnumerable<PhotoSize> Photo { get; set; }
 
         private string _text;
 
@@ -54,9 +54,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// Special entities that appear in text, such as usernames, URLs, bot commands, etc.
         /// </summary>
         /// <remarks>Optional.</remarks>
-        [JsonConverter(typeof(ArrayToListConverter<MessageEntity>))]
+        [JsonConverter(typeof(ArrayToIEnumerableConverter<MessageEntity>))]
         [JsonProperty("text_entities")]
-        public List<MessageEntity> TextEntities { get; set; }
+        public IEnumerable<MessageEntity> TextEntities { get; set; }
 
         /// <summary>
         /// Animation that will be displayed in the game message in chats.

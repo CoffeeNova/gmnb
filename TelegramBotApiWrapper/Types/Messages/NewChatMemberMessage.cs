@@ -29,8 +29,8 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.Messages
         /// Information about members, which been added to the group.
         /// </summary>
         /// <remarks>Optional.</remarks>
-        [JsonConverter(typeof(ArrayToListConverter<User>))]
+        [JsonConverter(typeof(ArrayToIEnumerableConverter<User>))]
         [JsonProperty("new_chat_members")]
-        public List<User> NewChatMembers { get; set; }
+        public IEnumerable<User> NewChatMembers { get; set; }
     }
 }

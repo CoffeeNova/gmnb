@@ -32,9 +32,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.Messages
         /// Special entities like usernames, URLs, bot commands, etc. that appear in the text.
         /// </summary>
         /// <remarks>Optional.</remarks>
-        [JsonConverter(typeof(ArrayToListConverter<MessageEntity>))]
+        [JsonConverter(typeof(ArrayToIEnumerableConverter<MessageEntity>))]
         [JsonProperty("entities")]
-        public List<MessageEntity> Entities { get; set; }
+        public IEnumerable<MessageEntity> Entities { get; set; }
 
         /// <summary>
         /// Optional. For replies, the original message. 
