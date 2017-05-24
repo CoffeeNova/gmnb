@@ -1,6 +1,7 @@
 ﻿using CoffeeJelly.TelegramBotApiWrapper.Converters;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
+using CoffeeJelly.TelegramBotApiWrapper.Types.Payments;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
@@ -73,5 +74,17 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// <remarks>Optional.</remarks>
         [JsonProperty("callback_query")]
         public CallbackQuery CallbackQuery { get; set; }
+
+        /// <summary>
+        /// Optional. New incoming shipping query. Only for invoices with flexible price
+        /// </summary>
+        [JsonProperty("shipping_query")]
+        public ShippingQuery ShippingQuery { get; set; }
+
+        /// <summary>
+        /// Optional. New incoming pre-checkout query. Contains full information about checkout.
+        /// </summary>
+        [JsonProperty("pre_checkout_query")]
+        public PreCheckoutQuery PreCheckoutQuery { get; set; }
     }
 }

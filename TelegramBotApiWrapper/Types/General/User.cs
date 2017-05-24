@@ -52,5 +52,11 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// <remarks>Optional.</remarks>
         [JsonProperty("username")]
         public string Username { get; set; }
+
+        /// <summary>
+        /// Optional. IETF language tag of the user's language.
+        /// </summary>
+        [JsonProperty("language_code")]
+        public string LanguageCode { get; set; }
     }
 }

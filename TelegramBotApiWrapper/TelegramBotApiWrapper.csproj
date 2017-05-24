@@ -77,6 +77,14 @@
     <Compile Include="Types\General\Animation.cs" />
     <Compile Include="Types\General\Audio.cs" />
     <Compile Include="Types\General\CallbackGame.cs" />
+    <Compile Include="Types\Payments\Invoice.cs" />
+    <Compile Include="Types\Payments\LabeledPrice.cs" />
+    <Compile Include="Types\Payments\ShippingAddress.cs" />
+    <Compile Include="Types\Payments\PreCheckoutQuery.cs" />
+    <Compile Include="Types\Payments\OrderInfo.cs" />
+    <Compile Include="Types\Payments\ShippingOption.cs" />
+    <Compile Include="Types\Payments\SuccessfulPayment.cs" />
+    <Compile Include="Types\Payments\ShippingQuery.cs" />
     <Compile Include="Types\General\CallbackQuery.cs" />
     <Compile Include="Types\General\Chat.cs" />
     <Compile Include="Types\General\ChatMember.cs" />
