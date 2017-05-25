@@ -5,9 +5,9 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
-    internal class MazimizedActionsKeyboard : MaximizedKeyboard
+    internal class MaximizedActionsKeyboard : MaximizedKeyboard
     {
-        public MazimizedActionsKeyboard(FormattedMessage message, int page, bool isIgnored) : base(message, page)
+        public MaximizedActionsKeyboard(FormattedMessage message, int page, bool isIgnored) : base(message, page)
         {
             IsIgnored = isIgnored;
             InitButtons();

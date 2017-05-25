@@ -169,8 +169,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = new Keyboard(formattedMessage, 0, MessageKeyboardState.Minimized,
-                isIgnored);
+            var factory = new DKeyboardFactory();
+            var keyboard = factory.CreateKeyboard(formattedMessage);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
@@ -180,7 +180,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = new Keyboard(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
+            var factory = new DKeyboardFactory();
+            var keyboard = factory.CreateKeyboard(formattedMessage);
             _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
