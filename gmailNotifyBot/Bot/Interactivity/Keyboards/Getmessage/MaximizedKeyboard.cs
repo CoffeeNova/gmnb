@@ -6,12 +6,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
     internal class MaximizedKeyboard : Keyboard
     {
-        public MaximizedKeyboard(FormattedMessage message, int page) : base(message, page)
+        internal MaximizedKeyboard(FormattedMessage message) : base(message)
         {
-            InitButtons();
         }
 
-        private void InitButtons()
+        protected override void ButtonsInitializer()
         {
             ExpandButton = InitButton(ExpandButtonCaption, ExpandButtonCommand);
             ActionsButton = InitButton(ActionButtonCaption, ActionsButtonCommand);
@@ -22,9 +21,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
         {
-            FirstRow = PageSliderRow();
-            SecondRow = new List<InlineKeyboardButton> { ExpandButton, ActionsButton, AttachmentsButton };
-            var inlineKeyboard = new List<List<InlineKeyboardButton>> { FirstRow };
+            SliderRow = PageSliderRow();
+            MainRow = new List<InlineKeyboardButton>();
+            if (ExpandButton != null)
+                MainRow.Add(ExpandButton);
+            if (ActionsButton != null)
+                MainRow.Add(ActionsButton);
+            if (Message.HasAttachments)
+                MainRow.Add(AttachmentsButton);
+
+            var inlineKeyboard = new List<List<InlineKeyboardButton>> { SliderRow, MainRow };
             return inlineKeyboard;
         }
 
@@ -32,8 +38,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         protected InlineKeyboardButton ActionsButton { get; set; }
         protected InlineKeyboardButton AttachmentsButton { get; set; }
 
-        protected List<InlineKeyboardButton> FirstRow;
-        protected List<InlineKeyboardButton> SecondRow;
+        protected List<InlineKeyboardButton> SliderRow;
+        protected List<InlineKeyboardButton> MainRow;
 
         private string ExpandButtonCaption => MainButtonCaption.Hide;
         private string ActionButtonCaption => MainButtonCaption.Actions;

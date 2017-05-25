@@ -8,12 +8,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
     internal class AttachmentsKeyboard : Keyboard
     {
-        public AttachmentsKeyboard(FormattedMessage message, int page) : base(message, page)
+        internal AttachmentsKeyboard(FormattedMessage message) : base(message)
         {
-            InitButtons();
         }
 
-        private void InitButtons()
+        protected override void ButtonsInitializer()
         {
             CloseButton = new InlineKeyboardButton
             {
@@ -38,7 +37,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             FirstRow.Add(CloseButton);
         }
 
-        protected override MessageKeyboardState State => MessageKeyboardState.Minimized;
+        protected override MessageKeyboardState State => MessageKeyboardState.Attachments;
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
         {

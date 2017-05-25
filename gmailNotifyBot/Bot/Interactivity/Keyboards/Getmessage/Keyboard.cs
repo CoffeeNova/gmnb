@@ -7,12 +7,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
     internal abstract class Keyboard : InlineKeyboardMarkup
     {
-        internal Keyboard(FormattedMessage message, int page = 0)
+        protected Keyboard(FormattedMessage message)
         {
             message.NullInspect(nameof(message));
-
             Message = message;
-            Page = page;
+            
         }
 
         public void CreateInlineKeyboard()
@@ -23,12 +22,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 Page = Page,
                 MessageKeyboardState = State
             };
+            ButtonsInitializer();
             base.InlineKeyboard = DefineInlineKeyboard();
-
         }
 
+        /// <summary>
+        /// This method fires before when called <see cref="CreateInlineKeyboard"/> and should be used to initialize keyboard buttons.
+        /// </summary>
+        protected abstract void ButtonsInitializer();
         protected abstract IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="callbackCommand"></param>
+        /// <returns>Do not use virtual members from constructor!</returns>
         protected virtual InlineKeyboardButton InitButton(string text, string callbackCommand)
         {
             return new InlineKeyboardButton
@@ -78,6 +87,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         protected readonly FormattedMessage Message;
         protected CallbackData GeneralCallbackData;
         protected abstract MessageKeyboardState State { get; }
-        protected int Page;
+        public int Page { get; set; }
+        public bool IsIgnored { get; set; }
     }
 }

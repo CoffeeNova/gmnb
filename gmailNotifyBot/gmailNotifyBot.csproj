@@ -230,9 +230,7 @@
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MaximizedKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\AttachmentsKeyboard.cs" />
     <Compile Include="Bot\Types\Labels.cs" />
-    <Compile Include="Bot\Interactivity\MessageKeyboard - Copy.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\Keyboard.cs" />
-    <Compile Include="Bot\Interactivity\MessageKeyboardFactory.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MinimizedKeyboard.cs" />
     <Compile Include="Bot\Types\ClientSecret.cs" />
     <Compile Include="Bot\Moduls\CommandHandler.CallbackQuery.cs" />

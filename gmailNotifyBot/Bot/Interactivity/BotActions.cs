@@ -116,7 +116,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         public async Task GmailInlineCommandMessage(string userId)
         {
-            await _telegramMethods.SendMessageAsync(userId, $"@{Settings.BotName} Inbox:");
+            await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Inbox:");
         }
 
 
@@ -163,34 +163,34 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.EditMessageTextAsync("Success", chatId, messageId);
         }
 
-        public async Task ShowShortMessageAsync(string chatId, FormattedMessage formattedMessage, bool isIgnored)
+        public async Task ShowShortMessageAsync(string chatId, FormattedMessage formattedMessage)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
 
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var factory = new DKeyboardFactory();
-            var keyboard = factory.CreateKeyboard(formattedMessage);
+            var keyboard = _keyboadrFactory.CreateKeyboard(MessageKeyboardState.Minimized, formattedMessage);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public void ShowShortMessage(string chatId, FormattedMessage formattedMessage, bool isIgnored)
+        public void ShowShortMessage(string chatId, FormattedMessage formattedMessage)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
 
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var factory = new DKeyboardFactory();
-            var keyboard = factory.CreateKeyboard(formattedMessage);
+            var keyboard = _keyboadrFactory.CreateKeyboard(MessageKeyboardState.Minimized, formattedMessage);
             _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task UpdateMessage(string chatId, int messageId, FormattedMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
+        public async Task UpdateMessage(string chatId, int messageId, MessageKeyboardState state, FormattedMessage formattedMessage, int page = 0, bool isIgnored = false)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
 
             var header = formattedMessage.Header;
-            var keyboard = new Keyboard(formattedMessage, page, state, isIgnored);
+            var keyboard = _keyboadrFactory.CreateKeyboard(state, formattedMessage);
+            keyboard.Page = page;
+            keyboard.IsIgnored = isIgnored;
             var displayedMessage = page == 0
                 ? Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
                 : Emoji.RedArrowedEnvelope + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
@@ -203,13 +203,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task SendAttachmentsListMessage(string chatId, int messageId, FormattedMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
+        public async Task SendAttachmentsListMessage(string chatId, int messageId, FormattedMessage formattedMessage, MessageKeyboardState state, int page=0)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
             if (!formattedMessage.HasAttachments)
                 throw new InvalidOperationException($"{nameof(formattedMessage.HasAttachments)} property must equals true to avoid this exception.");
 
-            var keyboard = new Keyboard(formattedMessage, page, state, isIgnored);
+            var keyboard = _keyboadrFactory.CreateKeyboard(state, formattedMessage);
+            keyboard.Page = page;
 
             var messageTextBuilder = new StringBuilder($"Files attached to this message:{Environment.NewLine}");
             formattedMessage.Attachments.IndexEach((a, i) =>
@@ -218,7 +219,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             });
             messageTextBuilder.AppendLine();
             messageTextBuilder.Append("Please select a file by number to download it:");
-            await _telegramMethods.SendMessageAsync(chatId, messageTextBuilder.ToString(), null, false, false, null, keyboard);
+            await _telegramMethods.EditMessageTextAsync(messageTextBuilder.ToString(), chatId, messageId.ToString(), null, null, null, keyboard);
         }
 
         public async Task ShowContactsAnswerInlineQuery(string inlineQueryId, IEnumerable<UserInfo> contacts, int? offset = null)
@@ -347,8 +348,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                         $"{Environment.NewLine}and press Enter to quick send the email." +
                         $"{Environment.NewLine}{Emoji.InfoSign} For multiple recipients use comma separator.";
 
-        private BotSettings Settings = BotInitializer.Instance.BotSettings;
-        private string _contactsThumbUrl;
+        private readonly BotSettings _settings = BotInitializer.Instance.BotSettings;
+        private readonly string _contactsThumbUrl;
+        private readonly KeyboardFactory _keyboadrFactory = new KeyboardFactory();
     }
 
     public enum MessageKeyboardState

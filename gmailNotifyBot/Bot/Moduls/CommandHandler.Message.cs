@@ -110,8 +110,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             var mailInfoResponse = await getMailRequest.ExecuteAsync();
             if (mailInfoResponse == null) return;
             var formattedMessage = new FormattedMessage(mailInfoResponse);
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
-            await _botActions.ShowShortMessageAsync(sender.From, formattedMessage, isIgnored);
+            await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
         }
 
         private async Task HandleTestThreadCommand(ISender sender)
@@ -127,8 +126,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             var mailInfoResponse = await getMailRequest.ExecuteAsync();
             if (mailInfoResponse == null) return;
             var formattedMessage = new FormattedMessage(mailInfoResponse);
-            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, formattedMessage.From.Email);
-            await _botActions.ShowShortMessageAsync(sender.From, formattedMessage, isIgnored);
+            await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
         }
 
         private async Task HandleStartNotifyCommand(ISender sender)

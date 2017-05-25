@@ -62,10 +62,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                                 var getRequest = service.GmailService.Users.Messages.Get("me", addedMessage.Message.Id);
                                 var messageResponse = getRequest.Execute();
                                 var formattedMessage = new FormattedMessage(messageResponse);
-                                var isIgnored = _dbWorker.IsPresentInIgnoreList(userModel.UserId,
-                                    formattedMessage.From.Email);
-                                _botActions.ShowShortMessage(userModel.UserId.ToString(), formattedMessage,
-                                    isIgnored);
+                                _botActions.ShowShortMessage(userModel.UserId.ToString(), formattedMessage);
                             }
                         }
                     }

@@ -18,6 +18,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         }
         public CallbackData(CallbackData callbackData)
         {
+            callbackData.NullInspect(nameof(callbackData));
             AttachProperties(callbackData);
         }
 
@@ -52,7 +53,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         public int Page { get; set; }
 
-        public MessageKeyboardState MessageKeyboardState { get; set; } = this.MessageKeyboardState.Minimized;
+        public MessageKeyboardState MessageKeyboardState { get; set; } = MessageKeyboardState.Minimized;
 
         protected const char SEPARATOR = ':';
 

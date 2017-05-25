@@ -6,12 +6,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
     internal class MinimizedKeyboard : Keyboard
     {
-        public MinimizedKeyboard(FormattedMessage message) : base(message)
+        internal MinimizedKeyboard(FormattedMessage message) : base(message)
         {
-            InitButtons();
+
         }
 
-        private void InitButtons()
+        protected override void ButtonsInitializer()
         {
             ExpandButton = InitButton(ExpandButtonCaption, ExpandButtonCommand);
             ActionsButton = InitButton(ActionButtonCaption, ActionsButtonCommand);
@@ -22,8 +22,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
         {
-            FirstRow = new List<InlineKeyboardButton> { ExpandButton, ActionsButton, AttachmentsButton };
-            var inlineKeyboard = new List<List<InlineKeyboardButton>> { FirstRow };
+            MainRow = new List<InlineKeyboardButton>();
+            if (ExpandButton != null)
+                MainRow.Add(ExpandButton);
+            if (ActionsButton != null)
+                MainRow.Add(ActionsButton);
+            if (Message.HasAttachments && AttachmentsButton != null)
+                MainRow.Add(AttachmentsButton);
+            var inlineKeyboard = new List<List<InlineKeyboardButton>> { MainRow };
             return inlineKeyboard;
         }
 
@@ -31,7 +37,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         protected InlineKeyboardButton ActionsButton { get; set; }
         protected InlineKeyboardButton AttachmentsButton { get; set; }
 
-        protected List<InlineKeyboardButton> FirstRow;
+        protected List<InlineKeyboardButton> MainRow;
 
         private static string ExpandButtonCaption => MainButtonCaption.Expand;
         private static string ActionButtonCaption => MainButtonCaption.Actions;

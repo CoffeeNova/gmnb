@@ -7,14 +7,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
     internal class MaximizedActionsKeyboard : MaximizedKeyboard
     {
-        public MaximizedActionsKeyboard(FormattedMessage message, int page, bool isIgnored) : base(message, page)
+        internal MaximizedActionsKeyboard(FormattedMessage message) : base(message)
         {
-            IsIgnored = isIgnored;
-            InitButtons();
         }
 
-        private void InitButtons()
+        protected override void ButtonsInitializer()
         {
+            base.ButtonsInitializer();
             ExpandButton = InitButton(ExpandButtonCaption, ExpandButtonCommand);
             ActionsButton = InitButton(ActionsButtonCaption, ActionsButtonCommand);
             UnreadButton = Message.LabelIds.Exists(l => l == Label.Unread) 
@@ -36,13 +35,28 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
         {
-            ThirdRow = new List<InlineKeyboardButton> { UnreadButton, SpamButton, TrashButton, ArchiveButton, NotifyButton };
+            ActionsRow = new List<InlineKeyboardButton>();
+            FillActionsRow();
             var inlineKeyboard = base.DefineInlineKeyboard().ToList();
-            inlineKeyboard.Add(ThirdRow);
+            inlineKeyboard.Add(ActionsRow);
             return inlineKeyboard;
         }
 
-        protected override MessageKeyboardState State => MessageKeyboardState.MinimizedActions;
+        private void FillActionsRow()
+        {
+            if (UnreadButton != null)
+                ActionsRow.Add(UnreadButton);
+            if (SpamButton != null)
+                ActionsRow.Add(SpamButton);
+            if (TrashButton != null)
+                ActionsRow.Add(TrashButton);
+            if (ArchiveButton != null)
+                ActionsRow.Add(ArchiveButton);
+            if (NotifyButton != null)
+                ActionsRow.Add(NotifyButton);
+        }
+
+        protected override MessageKeyboardState State => MessageKeyboardState.MaximizedActions;
 
         protected virtual InlineKeyboardButton UnreadButton { get; set; }
         protected virtual InlineKeyboardButton SpamButton { get; set; }
@@ -50,8 +64,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         protected virtual InlineKeyboardButton ArchiveButton { get; set; }
         protected virtual InlineKeyboardButton NotifyButton { get; set; }
 
-        protected List<InlineKeyboardButton> ThirdRow = new List<InlineKeyboardButton>();
-        protected bool IsIgnored { get; set; }
+        protected List<InlineKeyboardButton> ActionsRow = new List<InlineKeyboardButton>();
 
         private static string ExpandButtonCaption => MainButtonCaption.Hide;
 
