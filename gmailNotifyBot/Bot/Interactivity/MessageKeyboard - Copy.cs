@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot
+namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 {
     internal class MessageInlineKeyboardMarkup : InlineKeyboardMarkup
     {
@@ -25,6 +23,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 Page = page,
                 MessageKeyboardState = state,
             };
+
             SetMainButtonsState();
             base.InlineKeyboard = CreateInlineKeyboard();
         }
@@ -80,11 +79,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                                                  string expandCommand, string actionsCommand, string attachCommand)
         {
             ExpandButton.Text = expandCaption;
-            _expandButtonCommand = expandCommand;
+            ExpandButton.CallbackData = new CallbackData(_generalCallbackData)
+            {
+                Command = expandCommand
+            };
             ActionsButton.Text = actionsCaption;
-            _actionsButtonCommand = actionsCommand;
+            ActionsButton.CallbackData = new CallbackData(_generalCallbackData)
+            {
+                Command = actionsCommand
+            };
             AttachmentsButton.Text = attachCaption;
-            _attachmentsButtonCommand = attachCommand;
+            AttachmentsButton.CallbackData = new CallbackData(_generalCallbackData)
+            {
+                Command = attachCommand
+            };
         }
 
         private void DefineMinimizedRow()
@@ -237,30 +245,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             };
         }
 
-        private InlineKeyboardButton InitMainButton(ref string buttonCommand)
-        {
-            return new InlineKeyboardButton
-            {
-                CallbackData = new CallbackData(_generalCallbackData)
-                {
-                    Command = buttonCommand
-                }
-            };
-        }
-
-
         private readonly FormattedMessage _message;
         private readonly CallbackData _generalCallbackData;
         private readonly MessageKeyboardState _state;
         private readonly bool _isIgnored;
-        private string _expandButtonCommand;
-        private string _actionsButtonCommand;
-        private string _attachmentsButtonCommand;
         private int _page;
         private IEnumerable<IEnumerable<InlineKeyboardButton>> _atachmentsKeyboard;
 
 
-        public InlineKeyboardMarkup InlineKeyboardMarkup { get; private set; } 
+        public InlineKeyboardMarkup InlineKeyboardMarkup { get; private set; }
 
         private InlineKeyboardButton UnreadButton =>
                 InitActionButton(Labels.Unread, ActionButtonCaption.ToRead, ActionButtonCaption.ToUnread,
@@ -283,9 +276,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 Commands.IGNORE_COMMAND);
 
 
-        private InlineKeyboardButton ExpandButton => InitMainButton(ref _expandButtonCommand);
-        private InlineKeyboardButton ActionsButton => InitMainButton(ref _actionsButtonCommand);
-        private InlineKeyboardButton AttachmentsButton => InitMainButton(ref _attachmentsButtonCommand);
+        private InlineKeyboardButton ExpandButton { get; } = new InlineKeyboardButton();
+        private InlineKeyboardButton ActionsButton { get; } = new InlineKeyboardButton();
+        private InlineKeyboardButton AttachmentsButton { get; } = new InlineKeyboardButton();
 
         private InlineKeyboardButton NextPageButton { get; set; }
         private InlineKeyboardButton PrevPageButton { get; set; }
@@ -302,7 +295,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             public static string Inbox => "INBOX";
         }
 
-        internal static class ActionButtonCaption
+        internal static class ActionButtsonCaption
         {
             public static string ToRead => $"{Emoji.Eye} To Read";
             public static string ToUnread => $"{Emoji.RedArrowedEnvelope} To Unread";

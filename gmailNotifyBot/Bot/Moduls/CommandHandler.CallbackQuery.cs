@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
@@ -348,10 +349,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         private async Task HandleCallbackQGetAttachments(CallbackQuery sender, CallbackData callbackData)
         {
-            var service = SearchServiceByUserId(sender.From);
             var message = await GetMessage(sender.From, callbackData.MessageId);
+            var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(sender.From, message.From.Email);
 
-            await _botActions.SendAttachmentsListMessage(sender.From, message);
+            await _botActions.SendAttachmentsListMessage(sender.From, sender.Message.MessageId, message, callbackData.Page,
+                    callbackData.MessageKeyboardState, isIgnored);
+
             //foreach (var attachment in message.Attachments)
             //{
             //    var request = service.GmailService.Users.Messages.Attachments.Get("me", callbackData.MessageId,

@@ -1,7 +1,7 @@
 ﻿using System;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot
+namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 {
     public interface ICallbackCommand
     {
@@ -52,7 +52,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public int Page { get; set; }
 
-        public MessageKeyboardState MessageKeyboardState { get; set; } = MessageKeyboardState.Minimized;
+        public MessageKeyboardState MessageKeyboardState { get; set; } = this.MessageKeyboardState.Minimized;
 
         protected const char SEPARATOR = ':';
 

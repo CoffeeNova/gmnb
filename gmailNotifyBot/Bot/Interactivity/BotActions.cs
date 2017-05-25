@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
-using CoffeeJelly.TelegramBotApiWrapper;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InputMessageContent;
 using TelegramMethods = CoffeeJelly.TelegramBotApiWrapper.Methods.TelegramMethods;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot
+namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 {
     internal class BotActions
     {
@@ -165,25 +165,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public async Task ShowShortMessageAsync(string chatId, FormattedMessage formattedMessage, bool isIgnored)
         {
+            formattedMessage.NullInspect(nameof(formattedMessage));
+
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = new MessageInlineKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized,
+            var keyboard = new Keyboard(formattedMessage, 0, MessageKeyboardState.Minimized,
                 isIgnored);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
         public void ShowShortMessage(string chatId, FormattedMessage formattedMessage, bool isIgnored)
         {
+            formattedMessage.NullInspect(nameof(formattedMessage));
+
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = new MessageInlineKeyboardMarkup(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
+            var keyboard = new Keyboard(formattedMessage, 0, MessageKeyboardState.Minimized, isIgnored);
             _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
         public async Task UpdateMessage(string chatId, int messageId, FormattedMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
         {
+            formattedMessage.NullInspect(nameof(formattedMessage));
+
             var header = formattedMessage.Header;
-            var keyboard = new MessageInlineKeyboardMarkup(formattedMessage, page, state, isIgnored);
+            var keyboard = new Keyboard(formattedMessage, page, state, isIgnored);
             var displayedMessage = page == 0
                 ? Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
                 : Emoji.RedArrowedEnvelope + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
@@ -196,13 +202,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task SendAttachmentsListMessage(string chatId, FormattedMessage formattedMessage)
+        public async Task SendAttachmentsListMessage(string chatId, int messageId, FormattedMessage formattedMessage, int page, MessageKeyboardState state, bool isIgnored)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
             if (!formattedMessage.HasAttachments)
                 throw new InvalidOperationException($"{nameof(formattedMessage.HasAttachments)} property must equals true to avoid this exception.");
 
-            var keyboard = AttachmentsReplyKeyboardMarkup(formattedMessage);
+            var keyboard = new Keyboard(formattedMessage, page, state, isIgnored);
+
             var messageTextBuilder = new StringBuilder($"Files attached to this message:{Environment.NewLine}");
             formattedMessage.Attachments.IndexEach((a, i) =>
             {

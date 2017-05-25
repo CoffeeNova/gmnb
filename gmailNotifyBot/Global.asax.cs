@@ -67,10 +67,10 @@ namespace CoffeeJelly.gmailNotifyBot
             _botInitializer.InitializeAuthotizer();
             _botInitializer.InitializeServiceFactory();
             _botInitializer.InitializeCommandHandler();
-            //#if !DEBUG
+            #if !DEBUG
             _botInitializer.InitializePushNotificationWatchesAsync(initializeDelay);
             _botInitializer.InitializePushNotificationWatchTimer(_updatePeriod);
-            //#endif
+            #endif
 #pragma warning restore 618
         }
 
