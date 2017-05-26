@@ -12,18 +12,17 @@ using NLog;
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
 {
     using Query = TelegramBotApiWrapper.Types.InlineQuery;
-    public class InlineQueryHandler
+    public partial class InlineQueryHandler
     {
         public InlineQueryHandler()
         {
-
             _dbWorker = new GmailDbContextWorker();
             _botActions = new BotActions(BotInitializer.Instance.BotSettings.Token);
             InitRules();
-            BotInitializer.Instance.UpdatesHandler.TelegramInlineQueryEvent += Handle;
+            BotInitializer.Instance.UpdatesHandler.TelegramInlineQueryEvent += HandleInlineQuery;
         }
 
-        public async void Handle(Query query)
+        public async void HandleInlineQuery(Query query)
         {
             if (query?.Query == null)
                 throw new ArgumentNullException(nameof(query));

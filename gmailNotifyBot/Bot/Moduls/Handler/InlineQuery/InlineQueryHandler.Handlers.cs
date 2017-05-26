@@ -56,23 +56,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
                 await _botActions.ShowContactsAnswerInlineQuery(query.Id, uniqueContacts); //last response
         }
 
-	    private string CutArguments(Query query)
-	    {
-            var splittedQuery = query.Query.Split(" ".ToCharArray(), 2);
-	        var queryArguments = splittedQuery.Length > 1 ? splittedQuery[1] : "";
-	        return queryArguments;
-	    }
 
-	    private int CutPageFromArguments(ref string queryArguments)
-	    {
-            int page = 1;
-            if (queryArguments.StartsWith("p:"))
-            {
-                page = Int32.TryParse(queryArguments.Remove(0, 2), out page) == false ? 1 : page;
-                queryArguments = null;
-            }
-	        return page;
-	    }
 
         private async Task<List<FormattedMessage>> GetMessages(ISender sender, int offset, string labelId = null, int page = 1,
 		string searchExpression = null, int resultsPerPage = 50, int messagesInOneResponse = 10)

@@ -11,6 +11,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
     internal delegate Task HandleInlineQueryCommand(Query query);
     internal interface IInlineQueryHandlerRules
     {
-        HandleInlineQueryCommand Handle(Query query);
+        HandleInlineQueryCommand Handle(InlineQueryHandler handler);
     }
 }

@@ -232,12 +232,18 @@
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\AttachmentsKeyboard.cs" />
     <Compile Include="Bot\Moduls\Handler\CallbackQuery\ICallbackQueryHandlerRules.cs" />
     <Compile Include="Bot\Moduls\Handler\CallbackQuery\CallbackQueryHandler.cs" />
+    <Compile Include="Bot\Moduls\Handler\CallbackQuery\CallbackQueryHandler.Handlers.cs" />
+    <Compile Include="Bot\Moduls\Handler\CallbackQuery\CallbackQueryHandlerRules.cs" />
     <Compile Include="Bot\Moduls\Handler\ICommandHandler.cs" />
+    <Compile Include="Bot\Moduls\Handler\InlineQuery\IInlineQueryHandlerRules.cs" />
+    <Compile Include="Bot\Moduls\Handler\InlineQuery\InlineQueryHandler.cs" />
+    <Compile Include="Bot\Moduls\Handler\InlineQuery\InlineQuryHandlerRules.cs" />
     <Compile Include="Bot\Moduls\Handler\Message\IMessageHandlerRules.cs" />
     <Compile Include="Bot\Moduls\Handler\Message\MessageHandler.cs" />
     <Compile Include="Bot\Moduls\Handler\Message\MessageHandler.Handlers.cs" />
     <Compile Include="Bot\Moduls\Handler\Message\MessageHandlerRules.cs" />
     <Compile Include="Bot\Moduls\Handler\Methods.cs" />
+    <Compile Include="Bot\Types\Enums.cs" />
     <Compile Include="Bot\Types\Labels.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\Keyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MinimizedKeyboard.cs" />
@@ -332,6 +338,7 @@
     <EmbeddedResource Include="App_LocalResources\client_secret.json" />
     <EmbeddedResource Include="App_LocalResources\client_secret_debug.json" />
     <Compile Include="Bot\Moduls\CommandHandler.Notify.cs" />
+    <Compile Include="Bot\Moduls\Handler\InlineQuery\InlineQueryHandler.Handlers.cs" />
     <None Include="Properties\PublishProfiles\gmailcontrolbot - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\gmailcontrolbot - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />
