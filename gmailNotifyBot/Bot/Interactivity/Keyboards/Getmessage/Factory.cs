@@ -7,12 +7,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
     internal interface IKeyboardFactory
     {
-        Keyboard CreateKeyboard(MessageKeyboardState state, FormattedMessage message);
+        Keyboard CreateKeyboard(MessageKeyboardState state, FormattedMessage message, int page, bool isIgnored);
     }
 
     internal class KeyboardFactory : IKeyboardFactory
     {
-        public Keyboard CreateKeyboard(MessageKeyboardState state, FormattedMessage message)
+        public Keyboard CreateKeyboard(MessageKeyboardState state, FormattedMessage message, int page=0, bool isIgnored=false)
         {
             Keyboard keyboard;
             switch (state)
@@ -35,6 +35,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 default:
                     return null;
             }
+            keyboard.Page = page;
+            keyboard.IsIgnored = isIgnored;
             keyboard.CreateInlineKeyboard();
             return keyboard;
         }

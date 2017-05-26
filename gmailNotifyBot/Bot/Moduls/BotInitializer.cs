@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using Google.Apis.Auth.OAuth2;
 using NLog;
@@ -80,6 +82,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             CommandHandler = CommandHandler.GetInstance(BotSettings.Token, UpdatesHandler, BotSettings.ClientSecrets, BotSettings.Topic);
         }
 
+        public void InitializeMessageHandler()
+        {
+            MessageHandler = new MessageHandler();
+        }
+
         //restart push notification watches for all gmail control bot users
         public void InitializePushNotificationWatchesAsync(int delay)
         {
@@ -134,6 +141,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         public ServiceFactory ServiceFactory { get; set; }
 
         public CommandHandler CommandHandler { get; set; }
+
+        public MessageHandler MessageHandler { get; set; }
 
         public Timer PushNotificationWatchTimer { get; private set; }
 

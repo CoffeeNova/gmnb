@@ -7,5 +7,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Types
         public static string Spam => "SPAM";
         public static string Trash => "TRASH";
         public static string Inbox => "INBOX";
+        public static string Sent => "SENT";
     }
 }

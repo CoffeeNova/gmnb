@@ -1,100 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
-using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
-using Message = CoffeeJelly.TelegramBotApiWrapper.Types.Messages.Message;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message
 {
-    public sealed partial class CommandHandler
+    public partial class MessageHandler
     {
-        private async void _updatesHandler_TelegramTextMessageEvent(TextMessage message)
+        public async Task HandleTestMessageCommand(ISender sender)
         {
-            if (message?.Text == null)
-                throw new ArgumentNullException(nameof(message));
-            if (!message.Text.StartsWithAny(StringComparison.CurrentCultureIgnoreCase,
-                    Commands.TESTNAME_COMMAND, Commands.TESTMESSAGE_COMMAND,
-                    Commands.CONNECT_COMMAND, Commands.INBOX_COMMAND, Commands.TESTTHREAD_COMMAND,
-                    Commands.START_NOTIFY_COMMAND, Commands.STOP_NOTIFY_COMMAND, Commands.START_WATCH_COMMAND,
-                    Commands.STOP_WATCH_COMMAND, Commands.NEW_MESSAGE_COMMAND)) return;
-            Exception exception = null;
+            sender.NullInspect(nameof(sender));
 
-            LogMaker.Log(Logger, $"{message.Text} command received from user with id {(string)message.From}", false);
-            try
+            string messageId = "";
+            if (sender.GetType() == typeof(TextMessage))
             {
-                if (message.Text.StartsWith(Commands.TESTNAME_COMMAND))
-                    await HandleTestNameCommand(message);
-                else if (message.Text.StartsWith(Commands.TESTMESSAGE_COMMAND))                    
-                    await HandleTestMessageCommand(message);
+                // ReSharper disable once PossibleNullReferenceException
+                var splittedtext = (sender as TextMessage).Text.Split(' ');
+                messageId = splittedtext.Length > 1 ? splittedtext[1] : "";
+            }
 
-                else if (message.Text.StartsWith(Commands.CONNECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await _authorizer.SendAuthorizeLink(message);
-                else if (message.Text.StartsWith(Commands.INBOX_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleGetInboxMessagesCommand(message);
-                else if (message.Text.StartsWith(Commands.TESTTHREAD_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleTestThreadCommand(message);
-                else if (message.Text.StartsWith(Commands.START_NOTIFY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleStartNotifyCommand(message);
-                else if (message.Text.StartsWith(Commands.STOP_NOTIFY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleStopNotifyCommand(message);
-                else if (message.Text.StartsWith(Commands.START_WATCH_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleStartWatchCommandAsync(message);
-                else if (message.Text.StartsWith(Commands.STOP_WATCH_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleStopWatchCommandAsync(message);
-                else if (message.Text.StartsWith(Commands.NEW_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                    await HandleNewMessageCommand(message);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                exception = ex;
-                await _botActions.WrongCredentialsMessage(message.From);
-            }
-            catch (DbDataStoreException ex)
-            {
-                exception = ex;
-                await _botActions.WrongCredentialsMessage(message.From);
-            }
-            catch (AuthorizeException ex)
-            {
-                exception = ex;
-                await _botActions.AuthorizationErrorMessage(message.From);
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-#if DEBUG
-                Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
-#endif
-            }
-            finally
-            {
-                if (exception != null)
-                    LogMaker.Log(Logger, exception,
-                    $"An exception has been thrown in processing TextMessage with command {message.Text}");
-            }
-        }
-
-        private async Task HandleTestNameCommand(ISender sender)
-        {
-            var service = SearchServiceByUserId(sender.From);
-            var query = service.Oauth2Service.Userinfo.Get();
-            var userinfo = await query.ExecuteAsync();
-            await _botActions.EmailAddressMessage(sender.From, userinfo.Name);
-        }
-
-        public async Task HandleTestMessageCommand(TextMessage sender)
-        {
-            var splittedtext = sender.Text.Split(' ');
-            var messageId = splittedtext.Length > 1 ? splittedtext[1] : "";
-
-            var service = SearchServiceByUserId(sender.From);
+            var service = Methods.SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Messages.List("me");
             //query.LabelIds = "INBOX";
             var listMessagesResponse = await query.ExecuteAsync();
@@ -113,9 +44,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
         }
 
-        private async Task HandleTestThreadCommand(ISender sender)
+        public async Task HandleTestNameCommand(ISender sender)
         {
-            var service = SearchServiceByUserId(sender.From);
+            var service = Methods.SearchServiceByUserId(sender.From);
+            var query = service.Oauth2Service.Userinfo.Get();
+            var userinfo = await query.ExecuteAsync();
+            await _botActions.EmailAddressMessage(sender.From, userinfo.Name);
+        }
+
+        public async Task HandleTestThreadCommand(ISender sender)
+        {
+            var service = Methods.SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Threads.List("me");
             query.LabelIds = "INBOX";
             var listThreadsResponse = await query.ExecuteAsync();
@@ -129,7 +68,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
         }
 
-        private async Task HandleStartNotifyCommand(ISender sender)
+        public async Task HandleStartNotifyCommand(ISender sender)
         {
             var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
             if (userSettings == null)
@@ -140,7 +79,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             await HandleStartWatchCommandAsync(sender);
             //message to chat about start notification
         }
-        private async Task HandleStopNotifyCommand(ISender sender)
+
+        public async Task HandleStopNotifyCommand(ISender sender)
         {
             var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
             if (userSettings == null)
@@ -154,7 +94,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         public async Task HandleStartWatchCommandAsync(ISender sender)
         {
-            var service = SearchServiceByUserId(sender.From);
+            var service = Methods.SearchServiceByUserId(sender.From);
             var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
             if (userSettings == null)
                 throw new DbDataStoreException(
@@ -164,7 +104,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             var watchRequest = new WatchRequest
             {
                 LabelIds = new List<string> { "INBOX" },
-                TopicName = TopicName
+                TopicName = BotInitializer.Instance.BotSettings.Topic
             };
             var query = service.GmailService.Users.Watch(watchRequest, "me");
             var watchResponse = await query.ExecuteAsync();
@@ -178,7 +118,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         public void HandleStartWatchCommand(ISender sender)
         {
-            var service = SearchServiceByUserId(sender.From);
+            var service = Methods.SearchServiceByUserId(sender.From);
             var userSettings = _dbWorker.FindUserSettings(sender.From);
             if (userSettings == null)
                 throw new DbDataStoreException(
@@ -188,7 +128,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             var watchRequest = new WatchRequest
             {
                 LabelIds = new List<string> { "INBOX" },
-                TopicName = TopicName
+                TopicName = BotInitializer.Instance.BotSettings.Topic
             };
             var query = service.GmailService.Users.Watch(watchRequest, "me");
             var watchResponse = query.Execute();
@@ -203,7 +143,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         public async Task HandleStopWatchCommandAsync(ISender sender)
         {
-            var service = SearchServiceByUserId(sender.From);
+            var service = Methods.SearchServiceByUserId(sender.From);
             var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
             if (userSettings == null)
                 throw new DbDataStoreException(
@@ -223,7 +163,5 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         {
             await _botActions.GmailInlineCommandMessage(sender.From);
         }
-
     }
-
 }

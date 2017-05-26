@@ -7,6 +7,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Google.Apis.Gmail.v1;
@@ -23,13 +24,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             clientSecret.NullInspect(nameof(clientSecret));
 
             _botActions = new BotActions(token);
-
             _authorizer = Authorizer.GetInstance(token, updatesHandler, clientSecret);
             _updatesHandler = updatesHandler;
             ClientSecret = clientSecret;
             TopicName = topicName;
             _dbWorker = new GmailDbContextWorker();
-            _updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
+
+            
+            //_updatesHandler.TelegramTextMessageEvent += _updatesHandler_TelegramTextMessageEvent;
+
+            
+
             _updatesHandler.TelegramCallbackQueryEvent += _updatesHandler_TelegramCallbackQueryEvent;
             _updatesHandler.TelegramInlineQueryEvent += _updatesHandler_TelegramInlineQueryEvent;
             _updatesHandler.TelegramChosenInlineEvent += _updatesHandler_TelegramChosenInlineEvent;
@@ -202,6 +207,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private BotActions _botActions;
         private Authorizer _authorizer;
         private GmailDbContextWorker _dbWorker;
+        private MessageHandler _messageHandler;
 
         public static CommandHandler Instance { get; private set; }
 

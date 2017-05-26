@@ -355,13 +355,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async Task HandleCallbackQGetAttachments(CallbackQuery sender, CallbackData callbackData)
         {
             var message = await GetMessage(sender.From, callbackData.MessageId);
-            await _botActions.SendAttachmentsListMessage(sender.From, sender.Message.MessageId, message, callbackData.MessageKeyboardState, 
-                callbackData.Page);
+            var newState = MessageKeyboardState.Attachments;
+            await _botActions.SendAttachmentsListMessage(sender.From, sender.Message.MessageId, message, newState);
         }
 
         private async Task HandleCallbackQHideAttachments(CallbackQuery sender, CallbackData callbackData)
         {
-            
+            var message = await GetMessage(sender.From, callbackData.MessageId);
+            var newState = MessageKeyboardState.Minimized;
+            await _botActions.SendAttachmentsListMessage(sender.From, sender.Message.MessageId, message, newState);
         }
     }
 

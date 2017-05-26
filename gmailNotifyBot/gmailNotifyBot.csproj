@@ -220,6 +220,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Bot\Attributes\ScopesAttribute.cs" />
     <Compile Include="Bot\Base64.cs" />
+    <Compile Include="Bot\Exceptions\CommandHandlerException.cs" />
     <Compile Include="Bot\Interactivity\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
     <Compile Include="Bot\Interactivity\CallbackData.cs" />
@@ -229,6 +230,14 @@
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MinimizedActionsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MaximizedKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\AttachmentsKeyboard.cs" />
+    <Compile Include="Bot\Moduls\Handler\CallbackQuery\ICallbackQueryHandlerRules.cs" />
+    <Compile Include="Bot\Moduls\Handler\CallbackQuery\CallbackQueryHandler.cs" />
+    <Compile Include="Bot\Moduls\Handler\ICommandHandler.cs" />
+    <Compile Include="Bot\Moduls\Handler\Message\IMessageHandlerRules.cs" />
+    <Compile Include="Bot\Moduls\Handler\Message\MessageHandler.cs" />
+    <Compile Include="Bot\Moduls\Handler\Message\MessageHandler.Handlers.cs" />
+    <Compile Include="Bot\Moduls\Handler\Message\MessageHandlerRules.cs" />
+    <Compile Include="Bot\Moduls\Handler\Methods.cs" />
     <Compile Include="Bot\Types\Labels.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\Keyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MinimizedKeyboard.cs" />
@@ -244,7 +253,6 @@
     <Compile Include="Bot\DataBase\DataBaseModels\UserSettingsModel.cs" />
     <Compile Include="Bot\DbDataStore.cs" />
     <Compile Include="Bot\Exceptions\AuthorizeException.cs" />
-    <Compile Include="Bot\Exceptions\CommandHandlerException.cs" />
     <Compile Include="Bot\Exceptions\DbDataStroreException.cs" />
     <Compile Include="Bot\Exceptions\FormattedGmailMessageException.cs" />
     <Compile Include="Bot\Exceptions\RevokeTokenException.cs" />

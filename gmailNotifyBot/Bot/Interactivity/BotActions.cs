@@ -188,9 +188,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             formattedMessage.NullInspect(nameof(formattedMessage));
 
             var header = formattedMessage.Header;
-            var keyboard = _keyboadrFactory.CreateKeyboard(state, formattedMessage);
-            keyboard.Page = page;
-            keyboard.IsIgnored = isIgnored;
+            var keyboard = _keyboadrFactory.CreateKeyboard(state, formattedMessage, page, isIgnored);
             var displayedMessage = page == 0
                 ? Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
                 : Emoji.RedArrowedEnvelope + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
@@ -209,9 +207,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             if (!formattedMessage.HasAttachments)
                 throw new InvalidOperationException($"{nameof(formattedMessage.HasAttachments)} property must equals true to avoid this exception.");
 
-            var keyboard = _keyboadrFactory.CreateKeyboard(state, formattedMessage);
-            keyboard.Page = page;
-
+            var keyboard = _keyboadrFactory.CreateKeyboard(state, formattedMessage, page);
             var messageTextBuilder = new StringBuilder($"Files attached to this message:{Environment.NewLine}");
             formattedMessage.Attachments.IndexEach((a, i) =>
             {
