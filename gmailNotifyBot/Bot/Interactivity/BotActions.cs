@@ -104,14 +104,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(userId, emailAddress);
         }
 
-        public async Task EmptyLabelMessage(string userId, string labelId, int page)
+        public async Task EmptyLabelMessage(string userId, string labelId)
         {
-            await _telegramMethods.SendMessageAsync(userId, $"{Emoji.Denied}  There is no messages in your {labelId} on page {page}.");
+            await _telegramMethods.SendMessageAsync(userId, $"{Emoji.Denied}  You do not have messages left in your {labelId}.");
         }
 
-        public async Task EmptyAllMessage(string userId, int page)
+        public async Task EmptyAllMessage(string userId)
         {
-            await _telegramMethods.SendMessageAsync(userId, $"{Emoji.Denied}  There is no messages in All Mail on page {page}.");
+            await _telegramMethods.SendMessageAsync(userId, $"{Emoji.Denied}  You do not have any messages left.");
         }
 
         public async Task GmailInlineCommandMessage(string userId)

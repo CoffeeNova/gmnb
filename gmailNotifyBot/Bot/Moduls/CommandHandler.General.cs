@@ -86,9 +86,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (listMessagesResponse?.Messages == null || listMessagesResponse.Messages.Count == 0)
             {
                 if (string.IsNullOrEmpty(labelId))
-                    await _botActions.EmptyAllMessage(sender.From, page);
+                    await _botActions.EmptyAllMessage(sender.From);
                 else
-                    await _botActions.EmptyLabelMessage(sender.From, labelId, page);
+                    await _botActions.EmptyLabelMessage(sender.From, labelId);
                 return formattedMessages;
             }
             foreach (var message in listMessagesResponse.Messages.Skip(offset).Take(messagesInOneResponse))

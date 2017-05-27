@@ -86,21 +86,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         }
 
         /// <summary>
-        /// This method is used to define f user send 'p:' parameter as argument.
-        /// If true - returns page number, otherwise it means that <paramref name="queryArguments"/> is a search expression,
-        /// and returned as is (returned page number equals 1 for this situation).
+        /// This method is used to define if user send 's:' parameter as argument.
+        /// If true - returns the number of messages to skip, otherwise it means that <paramref name="queryArguments"/> is a search expression,
+        /// and returned as is (returned skip number equals 0 for this situation).
         /// </summary>
         /// <param name="queryArguments">Some string, defined as <see cref="InlineQuery"/> cutted part (can be carried out by <see cref="CutArguments"/> method)</param>
         /// <returns></returns>
         public static int ArgumentAssigment(ref string queryArguments)
         {
-            int page = 1;
-            if (queryArguments.StartsWith("p:"))
+            int skipMessages = 0;
+            if (queryArguments.StartsWith("s:"))
             {
-                page = Int32.TryParse(queryArguments.Remove(0, 2), out page) == false ? 1 : page;
+                skipMessages = Int32.TryParse(queryArguments.Remove(0, 2), out skipMessages) == false ? 0 : skipMessages;
                 queryArguments = null;
             }
-            return page;
+            return skipMessages;
         }
     }
 }
