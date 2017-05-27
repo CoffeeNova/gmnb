@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using Google.Apis.Gmail.v1.Data;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 {
     public partial class MessageHandler
     {
@@ -94,6 +93,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message
 
         public async Task HandleStartWatchCommandAsync(ISender sender)
         {
+            if (string.IsNullOrEmpty(BotInitializer.Instance?.BotSettings?.Topic))
+                throw new CommandHandlerException($"{nameof(BotInitializer.Instance.BotSettings.Token)} must be not null or empty.");
+
             var service = Methods.SearchServiceByUserId(sender.From);
             var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
             if (userSettings == null)
@@ -118,6 +120,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message
 
         public void HandleStartWatchCommand(ISender sender)
         {
+            if (string.IsNullOrEmpty(BotInitializer.Instance?.BotSettings?.Topic))
+                throw new CommandHandlerException($"{nameof(BotInitializer.Instance.BotSettings.Token)} must be not null or empty.");
+
             var service = Methods.SearchServiceByUserId(sender.From);
             var userSettings = _dbWorker.FindUserSettings(sender.From);
             if (userSettings == null)

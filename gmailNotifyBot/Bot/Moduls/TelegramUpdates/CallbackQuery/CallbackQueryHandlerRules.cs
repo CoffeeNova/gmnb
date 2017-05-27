@@ -1,7 +1,7 @@
 ﻿using System;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.CallbackQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 {
     internal class SendAuthorizeLinkRule : ICallbackQueryHandlerRules
     {

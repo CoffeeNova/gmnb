@@ -2,7 +2,7 @@
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 {
     internal delegate Task HandleMessageCommand(ISender sender);
 

@@ -2,20 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
 {
-	using Query = TelegramBotApiWrapper.Types.InlineQuery;
+    using Query = TelegramBotApiWrapper.Types.InlineQuery;
 
     public partial class InlineQueryHandler
-	{
-        private async Task HandleShowMessagesInlineQueryCommand(Query query, string labelId, int page = 1, string searchExpression = null)
+    {
+        public async Task HandleShowMessagesInlineQueryCommand(Query query, string labelId = null, int page = 1, string searchExpression = null)
         {
-            var resultsPerPage = 50;
+            var resultsPerPage = 10;
             var messagesInOneResponse = 10;
 
             int offset;
@@ -35,7 +34,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
                 await _botActions.ShowShortMessageAnswerInlineQuery(query.Id, formatedMessages); //last response
         }
 
-        private async Task HandleShowContactsInlineQueryCommand(Query query, int page = 1, string searchExpression = null)
+        //label should be "SEND" to get user's contacts
+        public async Task HandleShowContactsInlineQueryCommand(Query query, string labelId = null, int page = 1, string searchExpression = null)
         {
             var resultsPerPage = 50;
             var messagesInOneResponse = 10;
@@ -48,7 +48,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
                 page++;
                 offset = offset - resultsPerPage;
             }
-            var formatedMessages = await GetMessages(query, offset, Types.Label.Sent, page, searchExpression, resultsPerPage, messagesInOneResponse);
+            var formatedMessages = await GetMessages(query, offset, labelId, page, searchExpression, resultsPerPage, messagesInOneResponse);
             var uniqueContacts = Methods.GetUniqueContactsFromMessageList(formatedMessages);
             if (uniqueContacts.Count == messagesInOneResponse)
                 await _botActions.ShowContactsAnswerInlineQuery(query.Id, uniqueContacts, offset + messagesInOneResponse);
@@ -59,7 +59,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
 
 
         private async Task<List<FormattedMessage>> GetMessages(ISender sender, int offset, string labelId = null, int page = 1,
-		string searchExpression = null, int resultsPerPage = 50, int messagesInOneResponse = 10)
+        string searchExpression = null, int resultsPerPage = 50, int messagesInOneResponse = 10)
         {
             if (page < 1)
                 throw new ArgumentOutOfRangeException(nameof(page), "Must be not lower then 1");

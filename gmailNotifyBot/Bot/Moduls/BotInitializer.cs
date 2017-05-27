@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResult;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using Google.Apis.Auth.OAuth2;
 using NLog;
@@ -84,7 +87,50 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         public void InitializeMessageHandler()
         {
-            MessageHandler = new MessageHandler();
+            if (string.IsNullOrEmpty(BotSettings.Token))
+                throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
+            if (UpdatesHandler == null)
+                throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
+            MessageHandler = new MessageHandler(BotSettings.Token, UpdatesHandler);
+        }
+
+        public void InitializeCallbackQueryHandler()
+        {
+            if (string.IsNullOrEmpty(BotSettings.Token))
+                throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
+            if (UpdatesHandler == null)
+                throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
+            CallbackQueryHandler = new CallbackQueryHandler(BotSettings.Token, UpdatesHandler);
+        }
+
+        public void InitializeInlineQueryHandler()
+        {
+            if (string.IsNullOrEmpty(BotSettings.Token))
+                throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
+            if (UpdatesHandler == null)
+                throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
+            InlineQueryHandler = new InlineQueryHandler(BotSettings.Token, UpdatesHandler);
+        }
+
+        public void InitializeChosenInlineResultHandler()
+        {
+            if (string.IsNullOrEmpty(BotSettings.Token))
+                throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
+            if (UpdatesHandler == null)
+                throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
+            ChosenInlineResultHandler = new ChosenInlineResultHandler(UpdatesHandler);
+        }
+
+        public void InitializeNotifyHandler()
+        {
+            if (string.IsNullOrEmpty(BotSettings.Token))
+                throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
+            if (UpdatesHandler == null)
+                throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
+            if (Authorizer == null)
+                throw new InvalidOperationException($"{nameof(Authorizer)} property must be initialized first.");
+
+            NotifyHandler = new NotifyHandler(BotSettings.Token, MessageHandler, Authorizer);
         }
 
         //restart push notification watches for all gmail control bot users
@@ -143,6 +189,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         public CommandHandler CommandHandler { get; set; }
 
         public MessageHandler MessageHandler { get; set; }
+
+        public CallbackQueryHandler CallbackQueryHandler { get; set; }
+
+        public InlineQueryHandler InlineQueryHandler { get; set; }
+
+        public ChosenInlineResultHandler ChosenInlineResultHandler { get; set; }
+
+        public NotifyHandler NotifyHandler { get; set; }
 
         public Timer PushNotificationWatchTimer { get; private set; }
 

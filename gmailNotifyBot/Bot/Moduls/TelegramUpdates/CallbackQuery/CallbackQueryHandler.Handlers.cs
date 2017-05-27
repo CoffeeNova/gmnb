@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
-using CoffeeJelly.gmailNotifyBot.Bot.Types;
-using CoffeeJelly.TelegramBotApiWrapper.Types;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
-using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
-using Google.Apis.Gmail.v1.Data;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.CallbackQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 {
     using Query = TelegramBotApiWrapper.Types.General.CallbackQuery;
     public partial class CallbackQueryHandler

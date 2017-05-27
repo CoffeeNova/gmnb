@@ -16,7 +16,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Newtonsoft.Json;
 using NLog;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
 {
     public sealed class Authorizer
     {

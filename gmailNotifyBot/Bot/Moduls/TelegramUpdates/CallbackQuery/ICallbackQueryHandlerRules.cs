@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
-using CoffeeJelly.TelegramBotApiWrapper.Types;
 
-
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.CallbackQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 {
     using Query = TelegramBotApiWrapper.Types.General.CallbackQuery;
     internal delegate Task HandleCallbackQueryCommand(Query sender);

@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Web;
-using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.CallbackQuery;
 using NLog;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
 {
     using Query = TelegramBotApiWrapper.Types.InlineQuery;
     public partial class InlineQueryHandler
     {
-        public InlineQueryHandler()
+        public InlineQueryHandler(string token, UpdatesHandler updatesHandler)
         {
-            _dbWorker = new GmailDbContextWorker();
-            _botActions = new BotActions(BotInitializer.Instance.BotSettings.Token);
+            token.NullInspect(nameof(token));
+            updatesHandler.NullInspect(nameof(updatesHandler));
+
+            _botActions = new BotActions(token);
             InitRules();
-            BotInitializer.Instance.UpdatesHandler.TelegramInlineQueryEvent += HandleInlineQuery;
+            updatesHandler.TelegramInlineQueryEvent += HandleInlineQuery;
         }
 
         public async void HandleInlineQuery(Query query)
@@ -29,14 +28,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
 
             foreach (var rule in _rules)
             {
-                var rate = rule.Handle(this);
-                if (rate == null) continue;
+                var del = rule.Handle(query, this);
+                if (del == null) continue;
 
                 Exception exception = null;
                 LogMaker.Log(Logger, $"{query.Query} command received from user with id {query.From}", false);
                 try
                 {
-                    await rate.Invoke(query);
+                    await del.Invoke();
                 }
                 catch (ServiceNotFoundException ex)
                 {
@@ -63,12 +62,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.InlineQuery
 
         private void InitRules()
         {
-            _rules.Add();
+            _rules.Add(new ShowInboxMessagesRule());
+            _rules.Add(new ShowAllMessagesRule());
         }
 
         private readonly List<IInlineQueryHandlerRules> _rules = new List<IInlineQueryHandlerRules>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly GmailDbContextWorker _dbWorker;
     }
 }

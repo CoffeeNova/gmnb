@@ -7,7 +7,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Google.Apis.Gmail.v1;
@@ -207,7 +207,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private BotActions _botActions;
         private Authorizer _authorizer;
         private GmailDbContextWorker _dbWorker;
-        private MessageHandler _messageHandler;
+       // private MessageHandler _messageHandler;
 
         public static CommandHandler Instance { get; private set; }
 

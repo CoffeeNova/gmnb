@@ -1,9 +1,7 @@
 ﻿using System;
-using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 {
     internal class TestMessageRule : IMessageHandlerRules
     {

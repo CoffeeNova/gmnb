@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.Message;
-using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using NLog;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.CallbackQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 {
     using Query = TelegramBotApiWrapper.Types.General.CallbackQuery;
 
@@ -18,25 +17,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.Handler.CallbackQuery
     /// <remarks>Implemented using the rules pattern.</remarks>
     public partial class CallbackQueryHandler
     {
-        public CallbackQueryHandler()
+        public CallbackQueryHandler(string token, UpdatesHandler updatesHandler)
         {
-            if (BotInitializer.Instance == null)
-                throw new CommandHandlerException($"Initialize exception. {nameof(BotInitializer)} must be initialized.");
-            if (BotInitializer.Instance.BotSettings == null)
-                throw new CommandHandlerException($"Initialize exception. {nameof(BotInitializer.BotSettings)} must be initialized.");
-            if (BotInitializer.Instance.UpdatesHandler == null)
-                throw new CommandHandlerException($"Initialize exception. {nameof(BotInitializer.UpdatesHandler)} must be initialized.");
-            if (BotInitializer.Instance.UpdatesHandler == null)
-                throw new CommandHandlerException($"Initialize exception. {nameof(BotInitializer.UpdatesHandler)} must be initialized.");
-            if(string.IsNullOrEmpty(BotInitializer.Instance.BotSettings.Token))
-                throw new CommandHandlerException($"Initialize exception. {nameof(BotInitializer.Instance.BotSettings.Token)} must be not null or empty.");
-            if (string.IsNullOrEmpty(BotInitializer.Instance.BotSettings.Topic))
-                throw new CommandHandlerException($"Initialize exception. {nameof(BotInitializer.Instance.BotSettings.Topic)} must be not null or empty.");
+            token.NullInspect(nameof(token));
+            updatesHandler.NullInspect(nameof(updatesHandler));
 
             _dbWorker = new GmailDbContextWorker();
-            _botActions = new BotActions(BotInitializer.Instance.BotSettings.Token);
+            _botActions = new BotActions(token);
             InitRules();
-            BotInitializer.Instance.UpdatesHandler.TelegramCallbackQueryEvent += Handle;
+            updatesHandler.TelegramCallbackQueryEvent += Handle;
 
         }
 
