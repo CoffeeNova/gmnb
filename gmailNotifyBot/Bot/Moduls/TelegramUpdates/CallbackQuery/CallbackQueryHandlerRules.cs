@@ -195,13 +195,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         }
     }
 
-    internal class GetAttachmentsRule : ICallbackQueryHandlerRules
+    internal class ShowAttachmentsRule : ICallbackQueryHandlerRules
     {
         public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
         {
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQGetAttachments(sender, data);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQShowAttachments(sender, data);
 
-            if (data.Command.Equals(Commands.GET_ATTACHMENT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(Commands.SHOW_ATTACHMENTS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -218,4 +218,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             return null;
         }
     }
+
+
+    internal class GetAttachmentRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQGetAttachment(sender, data);
+
+            if (data.Command.StartsWith(Commands.GET_ATTACHMENT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
+
 }

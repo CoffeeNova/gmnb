@@ -59,7 +59,9 @@ namespace CoffeeJelly.gmailNotifyBot
                 ClientSecrets = clientSecrets,
                 Subscription = App_LocalResources.Tokens.Subscription,
                 ImagesPath = System.Configuration.ConfigurationSettings.AppSettings["ImagesPath"],
-                DomainName = App_LocalResources.Tokens.DomainName
+                DomainName = App_LocalResources.Tokens.DomainName,
+                AttachmentsTempFolder = Path.Combine(HttpRuntime.AppDomainAppPath, System.Configuration.ConfigurationSettings.AppSettings["AttachmentsTemp"]),
+                MaxAttachmentSize = int.Parse(System.Configuration.ConfigurationSettings.AppSettings["MaxAttachmentSize"])
             };
             _botInitializer = BotInitializer.GetInstance(botSettings);
             _botInitializer.InitializeUpdates();

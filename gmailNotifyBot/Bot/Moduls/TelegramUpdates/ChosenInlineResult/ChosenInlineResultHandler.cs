@@ -12,11 +12,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
     using QueryResult = TelegramBotApiWrapper.Types.InlineQueryResult;
     public partial class ChosenInlineResultHandler
     {
-        public ChosenInlineResultHandler(UpdatesHandler updatesHandler)
+        public ChosenInlineResultHandler()
         {
-            updatesHandler.NullInspect(nameof(updatesHandler));
-            InitRules();
-            updatesHandler.TelegramChosenInlineEvent += HandleChosenInlineResult;
+            try
+            {
+                InitRules();
+                BotInitializer.Instance.UpdatesHandler.TelegramChosenInlineEvent += HandleChosenInlineResult;
+            }
+            catch (Exception ex)
+            {
+                throw new TypeInitializationException(nameof(ChosenInlineResultHandler), ex);
+            }
         }
 
         public async void HandleChosenInlineResult(QueryResult.ChosenInlineResult result)
@@ -66,6 +72,5 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
         private readonly List<IChosenInlineResultHandlerRules> _rules = new List<IChosenInlineResultHandlerRules>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly GmailDbContextWorker _dbWorker;
     }
 }

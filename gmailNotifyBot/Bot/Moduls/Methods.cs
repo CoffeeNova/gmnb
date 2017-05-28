@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
@@ -101,6 +102,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 queryArguments = null;
             }
             return skipMessages;
+        }
+
+        public static async Task<byte[]> GetAttachment(Service service, string messageId, AttachmentInfo info)
+        {
+            var query = service.GmailService.Users.Messages.Attachments.Get("me", messageId, info.Id);
+            var attachPart = await query.ExecuteAsync();
+            return Base64.DecodeUrlToBytes(attachPart.Data);
+        }
+
+        public static async Task WriteAttachmentToTemp(string fullname, byte[] buffer)
+        {
+            using (var fs = new FileStream(fullname, FileMode.Create, FileAccess.Write))
+            {
+                await fs.WriteAsync(buffer, 0, buffer.Length);
+                await fs.FlushAsync();
+            }
         }
     }
 }

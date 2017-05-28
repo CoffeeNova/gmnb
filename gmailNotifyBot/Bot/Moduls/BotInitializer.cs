@@ -100,7 +100,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
             if (UpdatesHandler == null)
                 throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
-            CallbackQueryHandler = new CallbackQueryHandler(BotSettings.Token, UpdatesHandler);
+            CallbackQueryHandler = new CallbackQueryHandler();
         }
 
         public void InitializeInlineQueryHandler()
@@ -109,7 +109,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
             if (UpdatesHandler == null)
                 throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
-            InlineQueryHandler = new InlineQueryHandler(BotSettings.Token, UpdatesHandler);
+            InlineQueryHandler = new InlineQueryHandler();
         }
 
         public void InitializeChosenInlineResultHandler()
@@ -118,7 +118,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
             if (UpdatesHandler == null)
                 throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
-            ChosenInlineResultHandler = new ChosenInlineResultHandler(UpdatesHandler);
+            ChosenInlineResultHandler = new ChosenInlineResultHandler();
         }
 
         public void InitializeNotifyHandler()
@@ -130,7 +130,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (Authorizer == null)
                 throw new InvalidOperationException($"{nameof(Authorizer)} property must be initialized first.");
 
-            NotifyHandler = new NotifyHandler(BotSettings.Token, MessageHandler, Authorizer);
+            NotifyHandler = new NotifyHandler();
         }
 
         //restart push notification watches for all gmail control bot users

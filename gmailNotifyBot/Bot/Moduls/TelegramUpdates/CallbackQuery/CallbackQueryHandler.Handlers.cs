@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
-using CoffeeJelly.TelegramBotApiWrapper.Types.General;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 {
@@ -19,10 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <returns></returns>
         public async Task HandleCallbackQAuthorize(Query query)
         {
-            var authorizer = BotInitializer.Instance?.Authorizer;
-            if (authorizer == null)
-                throw new AuthorizeException();
-            await authorizer.SendAuthorizeLink(query);
+            await _authorizer.SendAuthorizeLink(query);
         }
 
         /// <summary>
@@ -275,7 +274,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
         }
 
-        public async Task HandleCallbackQGetAttachments(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQShowAttachments(Query query, CallbackData callbackData)
         {
             var message = await Methods.GetMessage(query.From, callbackData.MessageId);
             var newState = MessageKeyboardState.Attachments;
@@ -286,7 +285,33 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         {
             var message = await Methods.GetMessage(query.From, callbackData.MessageId);
             var newState = MessageKeyboardState.Minimized;
-            await _botActions.SendAttachmentsListMessage(query.From, query.Message.MessageId, message, newState);
+            await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, message);
         }
+
+        public async Task HandleCallbackQGetAttachment(Query query, CallbackData callbackData)
+        {
+            var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
+            var attachmentInfo = new List<AttachmentInfo>(formattedMessage.Attachments)[callbackData.AttachmentIndex];
+            var service = Methods.SearchServiceByUserId(query.From);
+            var attachment = await Methods.GetAttachment(service, callbackData.MessageId, attachmentInfo);
+            if (attachment.Length > _botSettings.MaxAttachmentSize)
+                throw new NotImplementedException("should be _botAction.SendErrorAboutMaxAttachmentSizeToChat");
+
+            var attachFullName = Path.Combine(_botSettings.AttachmentsTempFolder, attachmentInfo.FileName);
+            try
+            {
+                await Methods.WriteAttachmentToTemp(attachFullName, attachment);
+                await _botActions.SendAttachmentToChat(query.From, attachFullName, attachmentInfo.FileName);
+            }
+            finally
+            {
+                var fInfo = new FileInfo(attachFullName);
+                if (fInfo.Exists)
+                    await fInfo.DeleteAsync();
+            }
+            //var newState = MessageKeyboardState.Minimized;
+            //await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, message);
+        }
+
     }
 }

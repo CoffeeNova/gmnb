@@ -16,16 +16,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
     //this modul should be initialized after MessageHandler and Authorizer
     public class NotifyHandler
     {
-        public NotifyHandler(string token, MessageHandler messageHandler, Authorizer authorizer)
+        public NotifyHandler()
         {
-            token.NullInspect(nameof(token));
-            messageHandler.NullInspect(nameof(messageHandler));
-            authorizer.NullInspect(nameof(authorizer));
+            try
+            {
+                _botSettings = BotInitializer.Instance.BotSettings;
+                _botActions = new BotActions(_botSettings.Token);
+                _messageHandler = BotInitializer.Instance.MessageHandler;
+                _dbWorker = new GmailDbContextWorker();
+                var authorizer = BotInitializer.Instance.Authorizer;
+                authorizer.AuthorizationRegistredEvent += Instance_AuthorizationRegistredEvent;
+            }
+            catch (Exception ex)
+            {
+                throw new TypeInitializationException(nameof(NotifyHandler), ex);
+            }
 
-            _dbWorker = new GmailDbContextWorker();
-            _botActions = new BotActions(token);
-            MessageHandler = messageHandler;
-            authorizer.AuthorizationRegistredEvent += Instance_AuthorizationRegistredEvent;
+            
         }
         public bool HandleGoogleNotifyMessage(GoogleNotifyMessage message)
         {
@@ -104,7 +111,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                 var service = Methods.SearchServiceByUserId(userModel.UserId.ToString());
                 if (service == null) return;
 
-                MessageHandler.HandleStartWatchCommand(service);
+                _messageHandler.HandleStartWatchCommand(service);
             }
             catch (Exception ex)
             {
@@ -113,8 +120,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
         }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private GmailDbContextWorker _dbWorker;
-        private BotActions _botActions;
-        private readonly MessageHandler MessageHandler;
+        private readonly  GmailDbContextWorker _dbWorker;
+        private readonly BotActions _botActions;
+        private readonly MessageHandler _messageHandler;
+        private readonly BotSettings _botSettings;
     }
 }

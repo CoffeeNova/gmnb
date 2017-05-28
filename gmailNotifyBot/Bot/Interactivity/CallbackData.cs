@@ -28,6 +28,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             MessageId = callbackData.MessageId;
             Page = callbackData.Page;
             MessageKeyboardState = callbackData.MessageKeyboardState;
+            AttachmentIndex = callbackData.AttachmentIndex;
         }
 
         public CallbackData(string serializedCallbackData)
@@ -39,6 +40,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 MessageId = splitted[1];
                 Page = Int32.Parse(splitted[2]);
                 MessageKeyboardState = splitted[3].ToEnum<MessageKeyboardState>();
+                AttachmentIndex = Int32.Parse(splitted[4]);
             }
             catch
             {
@@ -53,13 +55,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         public int Page { get; set; }
 
+        public int AttachmentIndex { get; set; }
+
         public MessageKeyboardState MessageKeyboardState { get; set; } = MessageKeyboardState.Minimized;
 
         protected const char SEPARATOR = ':';
 
         public static implicit operator string(CallbackData obj)
         {
-            return $"{obj.Command}{SEPARATOR}{obj.MessageId}{SEPARATOR}{obj.Page}{SEPARATOR}{obj.MessageKeyboardState.ToEnumString()}";
+            return $"{obj.Command}{SEPARATOR}{obj.MessageId}{SEPARATOR}{obj.Page}{SEPARATOR}{obj.MessageKeyboardState.ToEnumString()}{SEPARATOR}{obj.AttachmentIndex}";
         }
     }
 }

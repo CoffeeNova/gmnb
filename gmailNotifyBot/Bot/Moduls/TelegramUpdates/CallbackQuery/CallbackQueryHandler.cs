@@ -5,6 +5,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
@@ -17,16 +18,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
     /// <remarks>Implemented using the rules pattern.</remarks>
     public partial class CallbackQueryHandler
     {
-        public CallbackQueryHandler(string token, UpdatesHandler updatesHandler)
+        public CallbackQueryHandler()
         {
-            token.NullInspect(nameof(token));
-            updatesHandler.NullInspect(nameof(updatesHandler));
-
-            _dbWorker = new GmailDbContextWorker();
-            _botActions = new BotActions(token);
-            InitRules();
-            updatesHandler.TelegramCallbackQueryEvent += Handle;
-
+            try
+            {
+                _authorizer = BotInitializer.Instance.Authorizer;
+                _botSettings = BotInitializer.Instance.BotSettings;
+                _botActions = new BotActions(_botSettings.Token);
+                _dbWorker = new GmailDbContextWorker();
+                InitRules();
+                BotInitializer.Instance.UpdatesHandler.TelegramCallbackQueryEvent += Handle;
+            }
+            catch(Exception ex)
+            {
+                throw new TypeInitializationException(nameof(CallbackQueryHandler), ex);
+            }
         }
 
         public async void Handle(Query query)
@@ -93,8 +99,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             _rules.Add(new NextPageRule());
             _rules.Add(new PrevPageRule());
             _rules.Add(new AddSubjectRule());
-            _rules.Add(new GetAttachmentsRule());
+            _rules.Add(new ShowAttachmentsRule());
             _rules.Add(new HideAttachmentsRule());
+            _rules.Add(new GetAttachmentRule());
         }
 
        
@@ -102,6 +109,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly GmailDbContextWorker _dbWorker;
+        private readonly BotSettings _botSettings;
+        private readonly Authorizer _authorizer;
     }
 
 }

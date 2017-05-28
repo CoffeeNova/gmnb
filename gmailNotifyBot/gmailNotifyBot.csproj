@@ -221,6 +221,7 @@
     <Compile Include="Bot\Attributes\ScopesAttribute.cs" />
     <Compile Include="Bot\Base64.cs" />
     <Compile Include="Bot\Exceptions\CommandHandlerException.cs" />
+    <Compile Include="Bot\Extensions\FileExtension.cs" />
     <Compile Include="Bot\Interactivity\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
     <Compile Include="Bot\Interactivity\CallbackData.cs" />
@@ -248,6 +249,7 @@
     <Compile Include="Bot\Moduls\TelegramUpdates\Message\MessageHandler.Handlers.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\Message\MessageHandlerRules.cs" />
     <Compile Include="Bot\Moduls\Methods.cs" />
+    <Compile Include="Bot\Tools.cs" />
     <Compile Include="Bot\Types\Enums.cs" />
     <Compile Include="Bot\Types\Labels.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\Keyboard.cs" />
@@ -487,4 +489,7 @@
     <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\VersionInfo.cs" AssemblyVersion="$(Major).$(Minor)" AssemblyFileVersion="$(Major).$(Minor).$(Build).$(Revision)" />
   </Target>
   <Import Project="..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>if not exist "$(ProjectDir)\Temp\Attachments" mkdir "$(ProjectDir)\Temp\Attachments"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

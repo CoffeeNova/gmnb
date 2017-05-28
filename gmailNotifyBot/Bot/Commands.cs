@@ -44,6 +44,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string BCC_RECIPIENTS_MESSAGE_COMMAND = "/bccrecipients";
         public const string SHOW_ATTACHMENTS_COMMAND = "/showattachments";
         public const string HIDE_ATTACHMENTS_COMMAND = "/hideattachments";
-        public const string GET_ATTACHMENT_COMMAND = "/getattacment:";
+        public const string GET_ATTACHMENT_COMMAND = "/getattacment";
     }
 }

@@ -11,14 +11,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
     using Query = TelegramBotApiWrapper.Types.InlineQuery;
     public partial class InlineQueryHandler
     {
-        public InlineQueryHandler(string token, UpdatesHandler updatesHandler)
+        public InlineQueryHandler()
         {
-            token.NullInspect(nameof(token));
-            updatesHandler.NullInspect(nameof(updatesHandler));
-
-            _botActions = new BotActions(token);
-            InitRules();
-            updatesHandler.TelegramInlineQueryEvent += HandleInlineQuery;
+            try
+            {
+                _botSettings = BotInitializer.Instance.BotSettings;
+                _botActions = new BotActions(_botSettings.Token);
+                InitRules();
+                BotInitializer.Instance.UpdatesHandler.TelegramInlineQueryEvent += HandleInlineQuery;
+            }
+            catch (Exception ex)
+            {
+                throw new TypeInitializationException(nameof(InlineQueryHandler), ex);
+            }
         }
 
         public async void HandleInlineQuery(Query query)
@@ -70,5 +75,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
         private readonly List<IInlineQueryHandlerRules> _rules = new List<IInlineQueryHandlerRules>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly BotSettings _botSettings;
     }
 }

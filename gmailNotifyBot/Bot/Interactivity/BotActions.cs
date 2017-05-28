@@ -21,6 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
     {
         public BotActions(string token)
         {
+            token.NullInspect(nameof(token));
             _telegramMethods = new TelegramMethods(token);
 #if DEBUG
             _contactsThumbUrl = @"https://pbs.twimg.com/media/DAf2gvDXcAAxk0w.jpg";
@@ -248,6 +249,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         {
             var keyboard = NewMessageInlineKeyboardMarkup();
             await _telegramMethods.EditMessageTextAsync(_newMessageText, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
+        }
+
+        public async Task SendAttachmentToChat(string chatId, string fullFileName, string caption)
+        {
+            await _telegramMethods.SendDocument(chatId, fullFileName, caption);
         }
 
         private ReplyKeyboardMarkup RecipientsReplyKeyboardMarkup(string recepient)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Reflection;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
@@ -28,5 +25,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public string ImagesPath { get; set; }
 
         public string DomainName { get; set; }
+
+        public string AttachmentsTempFolder { get; set; }
+
+        public int MaxAttachmentSize { get; set; }
     }
 }
