@@ -13,5 +13,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
         {
             return Task.Run(() => fi.Delete());
         }
+
+        public static Task DeleteAsync(this DirectoryInfo di)
+        {
+            return Task.Run(() => di.Delete());
+        }
+
+        public static Task DeleteAsync(this DirectoryInfo di, bool recursive)
+        {
+            return Task.Run(() => di.Delete(recursive));
+        }
     }
 }

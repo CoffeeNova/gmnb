@@ -15,8 +15,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
 
         public async Task HandleShowContactsChosenInlineResult(QueryResult.ChosenInlineResult sender)
         {
-
             var formattedMessage = await Methods.GetMessage(sender.From, sender.ResultId);
+            CreateDraft
             //await _botActions.UpdateNewMailMessage(sender.From, se);
         }
     }

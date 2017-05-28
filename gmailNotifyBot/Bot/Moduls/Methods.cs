@@ -8,6 +8,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Google.Apis.Gmail.v1.Data;
+using MimeKit;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 {
@@ -70,15 +71,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return recipients.Unique(r => r.Email).ToList();
         }
 
-        public static async Task<FormattedMessage> GetDraft(string userId, string draftId)
-        {
-            var service = SearchServiceByUserId(userId);
-            var getRequest = service.GmailService.Users.Drafts.Get("me", draftId);
-            var draftResponce = await getRequest.ExecuteAsync();
-            if (draftResponce == null) return null;
-            return new FormattedMessage(draftResponce.Message);
-        }
-
         public static string CutArguments(TelegramBotApiWrapper.Types.InlineQuery query)
         {
             var splittedQuery = query.Query.Split(" ".ToCharArray(), 2);
@@ -118,6 +110,40 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 await fs.WriteAsync(buffer, 0, buffer.Length);
                 await fs.FlushAsync();
             }
+        }
+
+        public static void CreateDirectory(string dirName)
+        {
+            var dirInfo = new DirectoryInfo(dirName);
+            dirInfo.Create();
+        }
+
+        public static async Task<FormattedMessage> GetDraft(string userId, string draftId)
+        {
+            var service = SearchServiceByUserId(userId);
+            var getRequest = service.GmailService.Users.Drafts.Get("me", draftId);
+            var draftResponce = await getRequest.ExecuteAsync();
+            if (draftResponce == null) return null;
+            return new FormattedMessage(draftResponce.Message);
+        }
+
+        public static async Task<FormattedMessage> CreateDraft(Draft body, string userId)
+        {
+            var service = SearchServiceByUserId(userId);
+            var getRequest = service.GmailService.Users.Drafts.Create(body, "me");
+            var draftResponce = await getRequest.ExecuteAsync();
+            if (draftResponce == null) return null;
+            return new FormattedMessage(draftResponce.Message);
+        }
+
+        //i use mimekit here :/
+        public static Draft CreateDraftBody()
+        {
+            //var message = new Message();
+            //message.Raw = "";
+            //var mime = MimeMessage.Load()
+            //mime.Body.
+
         }
     }
 }

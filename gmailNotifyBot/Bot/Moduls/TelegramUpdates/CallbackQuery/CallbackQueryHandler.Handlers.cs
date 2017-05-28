@@ -253,7 +253,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         }
 
         /// <summary>
-        /// Handles <see cref="CallbackQuery"/> <see cref="Commands.NEXTPAGE_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="Commands.NEXTPAGE_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/> where Page property decreased by 1.
         /// </summary>
         /// <param name="query"></param>
@@ -274,6 +274,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
         }
 
+        /// <summary>
+        /// Handles <see cref="Query"/> <see cref="Commands.SHOW_ATTACHMENTS_COMMAND"/>.
+        /// This method calls <see cref="BotActions.SendAttachmentsListMessage"/> method for message with <paramref name="callbackData"/> where <see cref="CallbackData.MessageKeyboardState"/>
+        /// equals <see cref="MessageKeyboardState.Attachments"/>.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
         public async Task HandleCallbackQShowAttachments(Query query, CallbackData callbackData)
         {
             var message = await Methods.GetMessage(query.From, callbackData.MessageId);
@@ -281,6 +289,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             await _botActions.SendAttachmentsListMessage(query.From, query.Message.MessageId, message, newState);
         }
 
+        /// <summary>
+        /// Handles <see cref="Query"/> <see cref="Commands.HIDE_ATTACHMENTS_COMMAND"/>.
+        /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/> where <see cref="CallbackData.MessageKeyboardState"/>
+        /// equals <see cref="MessageKeyboardState.Minimized"/> (restores the original state).
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
         public async Task HandleCallbackQHideAttachments(Query query, CallbackData callbackData)
         {
             var message = await Methods.GetMessage(query.From, callbackData.MessageId);
@@ -288,6 +304,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, message);
         }
 
+        /// <summary>
+        /// Handles <see cref="Query"/> <see cref="Commands.GET_ATTACHMENT_COMMAND"/>.
+        /// Downloads from gmail server attachment defined in <paramref name="callbackData"/> to temp folder and send in to telegram recipient by 
+        /// <see cref="BotActions.SendAttachmentToChat"/> method.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="callbackData"></param>
+        /// <returns></returns>
         public async Task HandleCallbackQGetAttachment(Query query, CallbackData callbackData)
         {
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
@@ -297,20 +321,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             if (attachment.Length > _botSettings.MaxAttachmentSize)
                 throw new NotImplementedException("should be _botAction.SendErrorAboutMaxAttachmentSizeToChat");
 
-            var attachFullName = Path.Combine(_botSettings.AttachmentsTempFolder, attachmentInfo.FileName);
+            string randomFolder = Tools.RandomString(8);
+            var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
+            var attachFullName = Path.Combine(tempDirName, attachmentInfo.FileName);
             try
             {
+                Methods.CreateDirectory(tempDirName);
                 await Methods.WriteAttachmentToTemp(attachFullName, attachment);
                 await _botActions.SendAttachmentToChat(query.From, attachFullName, attachmentInfo.FileName);
             }
             finally
             {
-                var fInfo = new FileInfo(attachFullName);
-                if (fInfo.Exists)
-                    await fInfo.DeleteAsync();
+                var dInfo = new DirectoryInfo(tempDirName);
+                if (dInfo.Exists)
+                    await dInfo.DeleteAsync(true);
             }
-            //var newState = MessageKeyboardState.Minimized;
-            //await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, message);
         }
 
     }
