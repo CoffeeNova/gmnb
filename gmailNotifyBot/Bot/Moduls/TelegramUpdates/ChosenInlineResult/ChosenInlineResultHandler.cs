@@ -16,6 +16,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
         {
             try
             {
+                _botActions = new BotActions(BotInitializer.Instance.BotSettings.Token);
                 InitRules();
                 BotInitializer.Instance.UpdatesHandler.TelegramChosenInlineEvent += HandleChosenInlineResult;
             }
@@ -66,7 +67,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
 
         private void InitRules()
         {
-            
+            _rules.Add(new GetInboxMessagesRule());
+            _rules.Add(new GetAllMessagesRule());
+            _rules.Add(new ShowContactsRule());
         }
 
         private readonly List<IChosenInlineResultHandlerRules> _rules = new List<IChosenInlineResultHandlerRules>();
