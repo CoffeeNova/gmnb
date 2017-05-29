@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
-using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
-    internal class AttachmentsKeyboard : Keyboard
+    internal class AttachmentsKeyboard : GetKeyboard
     {
         internal AttachmentsKeyboard(FormattedMessage message) : base(message)
         {

@@ -1,20 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
-    internal abstract class Keyboard : InlineKeyboardMarkup
+    internal abstract class GetKeyboard : Keyboard
     {
-        protected Keyboard(FormattedMessage message)
+        protected GetKeyboard(FormattedMessage message)
         {
             message.NullInspect(nameof(message));
             Message = message;
-            
         }
 
-        public void CreateInlineKeyboard()
+        public override void CreateInlineKeyboard()
         {
             GeneralCallbackData = new GetCallbackData
             {
@@ -24,30 +26,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             };
             ButtonsInitializer();
             base.InlineKeyboard = DefineInlineKeyboard();
-        }
-
-        /// <summary>
-        /// This method fires before when called <see cref="CreateInlineKeyboard"/> and should be used to initialize keyboard buttons.
-        /// </summary>
-        protected abstract void ButtonsInitializer();
-        protected abstract IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="callbackCommand"></param>
-        /// <returns>Do not use virtual members from constructor!</returns>
-        protected virtual InlineKeyboardButton InitButton(string text, string callbackCommand)
-        {
-            return new InlineKeyboardButton
-            {
-                Text = text,
-                CallbackData = new GetCallbackData(GeneralCallbackData)
-                {
-                    Command = callbackCommand
-                }
-            };
         }
 
         protected List<InlineKeyboardButton> PageSliderRow()
@@ -82,6 +60,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             if (nextPageButton != null)
                 row.Add(nextPageButton);
             return row;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="callbackCommand"></param>
+        /// <returns>Do not use virtual members from constructor!</returns>
+        protected virtual InlineKeyboardButton InitButton(string text, string callbackCommand)
+        {
+            return new InlineKeyboardButton
+            {
+                Text = text,
+                CallbackData = new GetCallbackData(GeneralCallbackData)
+                {
+                    Command = callbackCommand
+                }
+            };
         }
 
         protected readonly FormattedMessage Message;

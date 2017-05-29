@@ -4,7 +4,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
-    internal class MaximizedKeyboard : Keyboard
+    internal class MaximizedKeyboard : GetKeyboard
     {
         internal MaximizedKeyboard(FormattedMessage message) : base(message)
         {

@@ -237,11 +237,16 @@
     <Compile Include="Bot\Interactivity\ICallbackData.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\ButtonCaption.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\Factory.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Getmessage\GetKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MaximizedActionsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\GetKeyboardState.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MinimizedActionsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MaximizedKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\AttachmentsKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\ButtonCapton.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\Factory.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\InitKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\SendKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\SendKeyboardState.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\SendCallbackData.cs" />
     <Compile Include="Bot\Moduls\GoogleRequests\NotifyHandler.cs" />
@@ -264,7 +269,7 @@
     <Compile Include="Bot\Tools.cs" />
     <Compile Include="Bot\Types\Enums.cs" />
     <Compile Include="Bot\Types\Labels.cs" />
-    <Compile Include="Bot\Interactivity\Keyboards\Getmessage\Keyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Keyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MinimizedKeyboard.cs" />
     <Compile Include="Bot\Types\ClientSecret.cs" />
     <Compile Include="Bot\Commands.cs" />

@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
+﻿
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
-    internal interface IKeyboardFactory
+    internal interface IGetKeyboardFactory
     {
-        Keyboard CreateKeyboard(GetKeyboardState state, FormattedMessage message, int page, bool isIgnored);
+        GetKeyboard CreateKeyboard(GetKeyboardState state, FormattedMessage message, int page, bool isIgnored);
     }
 
-    internal class KeyboardFactory : IKeyboardFactory
+    internal class GetKeyboardFactory : IGetKeyboardFactory
     {
-        public Keyboard CreateKeyboard(GetKeyboardState state, FormattedMessage message, int page=0, bool isIgnored=false)
+        public GetKeyboard CreateKeyboard(GetKeyboardState state, FormattedMessage message, int page=0, bool isIgnored=false)
         {
-            Keyboard keyboard;
+            GetKeyboard keyboard;
             switch (state)
             {
                 case GetKeyboardState.Minimized:

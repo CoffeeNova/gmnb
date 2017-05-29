@@ -161,7 +161,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 
         public async Task HandleNewMessageCommand(ISender sender)
         {
-            await _botActions.SpecifyNewMailMessage(sender.From);
+            await _botActions.SpecifyNewMailMessage(sender.From, Interactivity.Keyboards.Sendmessage.SendKeyboardState.Init);
         }
 
         public async Task HandleGetInboxMessagesCommand(ISender sender)

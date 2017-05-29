@@ -40,7 +40,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
         {
             HandleChosenInlineResultCommand del = async () =>
             {
-                await handler.HandleShowContactsChosenInlineResult(result);
+                await handler.HandleSetToChosenInlineResult(result);
             };
 
             if (result.Query.StartsWith(Commands.RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))

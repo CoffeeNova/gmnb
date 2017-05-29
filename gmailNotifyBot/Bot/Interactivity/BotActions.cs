@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
@@ -170,7 +171,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = _keyboadrFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage);
+            var keyboard = _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
@@ -180,7 +181,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = _keyboadrFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage);
+            var keyboard = _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage);
             _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
@@ -189,17 +190,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             formattedMessage.NullInspect(nameof(formattedMessage));
 
             var header = formattedMessage.Header;
-            var keyboard = _keyboadrFactory.CreateKeyboard(state, formattedMessage, page, isIgnored);
+            var keyboard = _getKeyboardFactory.CreateKeyboard(state, formattedMessage, page, isIgnored);
             var displayedMessage = page == 0
                 ? Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
                 : Emoji.RedArrowedEnvelope + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
-        }
-
-        public async Task SpecifyNewMailMessage(string chatId)
-        {
-            var keyboard = NewMessageInlineKeyboardMarkup();
-            await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
         }
 
         public async Task SendAttachmentsListMessage(string chatId, int messageId, FormattedMessage formattedMessage, GetKeyboardState state, int page=0)
@@ -208,7 +203,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             if (!formattedMessage.HasAttachments)
                 throw new InvalidOperationException($"{nameof(formattedMessage.HasAttachments)} property must equals true to avoid this exception.");
 
-            var keyboard = _keyboadrFactory.CreateKeyboard(state, formattedMessage, page);
+            var keyboard = _getKeyboardFactory.CreateKeyboard(state, formattedMessage, page);
             var messageTextBuilder = new StringBuilder($"Files attached to this message:{Environment.NewLine}");
             formattedMessage.Attachments.IndexEach((a, i) =>
             {
@@ -243,12 +238,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             else
                 await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
         }
-
-
-        public async Task UpdateNewMailMessage(string chatId, int messageId, List<string> recipients, bool isIgnored)
+        public async Task SpecifyNewMailMessage(string chatId, SendKeyboardState state)
         {
-            var keyboard = NewMessageInlineKeyboardMarkup();
-            await _telegramMethods.EditMessageTextAsync(_newMessageText, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
+            var keyboard = _sendKeyboardFactory.CreateKeyboard(state);
+            await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
+        }
+
+        public async Task UpdateNewMailMessage(string chatId, int messageId, FormattedMessage draft)
+        {
+            //var keyboard = _sendKeybsoadrFactory.CreateKeyboard(state, draft);
+            //await _telegramMethods.EditMessageTextAsync(_newMessageText, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
         public async Task SendAttachmentToChat(string chatId, string fullFileName, string caption)
@@ -268,23 +267,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             keyboardMarkup.Keyboard = keyboard;
 
             return keyboardMarkup;
-        }
-
-        private ReplyKeyboardMarkup AttachmentsReplyKeyboardMarkup(FormattedMessage message)
-        {
-            var closeButton = new KeyboardButton
-            {
-                Text = "Close"
-            };
-            var keyboardButtons = new List<KeyboardButton>();
-            message.Attachments.IndexEach((a, i) =>
-            {
-                keyboardButtons.Add(new KeyboardButton {Text = i + 1.ToString()});
-            });
-            var keyboard = keyboardButtons.DivideByLength(5).ToList();
-            keyboard.Add(new List<KeyboardButton> { closeButton });
-
-            return new ReplyKeyboardMarkup { Keyboard = keyboard , ResizeKeyboard = true};
         }
 
         private InlineKeyboardMarkup NewMessageInlineKeyboardMarkup()
@@ -352,6 +334,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         private readonly BotSettings _settings = BotInitializer.Instance.BotSettings;
         private readonly string _contactsThumbUrl;
-        private readonly KeyboardFactory _keyboadrFactory = new KeyboardFactory();
+        private readonly GetKeyboardFactory _getKeyboardFactory = new GetKeyboardFactory();
+        private readonly SendKeyboardFactory _sendKeyboardFactory = new SendKeyboardFactory();
     }
 }
