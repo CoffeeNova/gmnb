@@ -36,7 +36,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var button = new InlineKeyboardButton
             {
                 Text = "Reauthorize",
-                CallbackData = new CallbackData
+                CallbackData = new GetCallbackData
                 {
                     Command = Commands.CONNECT_COMMAND
                 }
@@ -170,7 +170,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = _keyboadrFactory.CreateKeyboard(MessageKeyboardState.Minimized, formattedMessage);
+            var keyboard = _keyboadrFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
@@ -180,11 +180,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
             var header = formattedMessage.Header;
             var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = _keyboadrFactory.CreateKeyboard(MessageKeyboardState.Minimized, formattedMessage);
+            var keyboard = _keyboadrFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage);
             _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task UpdateMessage(string chatId, int messageId, MessageKeyboardState state, FormattedMessage formattedMessage, int page = 0, bool isIgnored = false)
+        public async Task UpdateMessage(string chatId, int messageId, GetKeyboardState state, FormattedMessage formattedMessage, int page = 0, bool isIgnored = false)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
 
@@ -202,7 +202,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task SendAttachmentsListMessage(string chatId, int messageId, FormattedMessage formattedMessage, MessageKeyboardState state, int page=0)
+        public async Task SendAttachmentsListMessage(string chatId, int messageId, FormattedMessage formattedMessage, GetKeyboardState state, int page=0)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
             if (!formattedMessage.HasAttachments)
@@ -297,7 +297,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var subjectButton = new InlineKeyboardButton
             {
                 Text = $"{Emoji.AbcLowerCase}Subject",
-                CallbackData = new CallbackData
+                CallbackData = new GetCallbackData
                 {
                     Command = Commands.ADD_SUBJECT_COMMAND
                 }
@@ -305,7 +305,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var messageButton = new InlineKeyboardButton
             {
                 Text = $"{Emoji.M}Message",
-                CallbackData = new CallbackData
+                CallbackData = new GetCallbackData
                 {
                     Command = Commands.ADD_TEXT_MESSAGE_COMMAND
                 }
@@ -313,7 +313,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var ccButtons = new InlineKeyboardButton
             {
                 Text = $"{Emoji.BoyAndGirl}CC Recipients",
-                CallbackData = new CallbackData
+                CallbackData = new GetCallbackData
                 {
                     Command = Commands.CC_RECIPIENTS_MESSAGE_COMMAND
                 }
@@ -321,7 +321,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var bccButtons = new InlineKeyboardButton
             {
                 Text = $"{Emoji.MaleFemaleShadows}BCC Recipients",
-                CallbackData = new CallbackData
+                CallbackData = new GetCallbackData
                 {
                     Command = Commands.BCC_RECIPIENTS_MESSAGE_COMMAND
                 }
@@ -353,19 +353,5 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         private readonly BotSettings _settings = BotInitializer.Instance.BotSettings;
         private readonly string _contactsThumbUrl;
         private readonly KeyboardFactory _keyboadrFactory = new KeyboardFactory();
-    }
-
-    public enum MessageKeyboardState
-    {
-        [EnumMember(Value = "minimized")]
-        Minimized,
-        [EnumMember(Value = "maximized")]
-        Maximized,
-        [EnumMember(Value = "minimizedActions")]
-        MinimizedActions,
-        [EnumMember(Value = "maximizedActions")]
-        MaximizedActions,
-        [EnumMember(Value = "attachments")]
-        Attachments
     }
 }

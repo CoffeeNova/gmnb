@@ -233,13 +233,17 @@
     <Compile Include="Bot\Extensions\FileExtension.cs" />
     <Compile Include="Bot\Interactivity\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
-    <Compile Include="Bot\Interactivity\CallbackData.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\GetCallbackData.cs" />
+    <Compile Include="Bot\Interactivity\ICallbackData.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\ButtonCaption.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\Factory.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MaximizedActionsKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Getmessage\GetKeyboardState.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MinimizedActionsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MaximizedKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\AttachmentsKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\SendKeyboardState.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\SendCallbackData.cs" />
     <Compile Include="Bot\Moduls\GoogleRequests\NotifyHandler.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\CallbackQuery\ICallbackQueryHandlerRules.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\CallbackQuery\CallbackQueryHandler.cs" />
@@ -249,7 +253,6 @@
     <Compile Include="Bot\Moduls\TelegramUpdates\ChosenInlineResult\ChosenInlineResultHandler.Handlers.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\ChosenInlineResult\IChosenInlineResultHandlerRules.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\ChosenInlineResult\ChosenInlineResultHandlerRules.cs" />
-    <Compile Include="Bot\Moduls\TelegramUpdates\ICommandHandler.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\InlineQuery\IInlineQueryHandlerRules.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\InlineQuery\InlineQueryHandler.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\InlineQuery\InlineQueryHandlerRules.cs" />
@@ -264,10 +267,6 @@
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\Keyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MinimizedKeyboard.cs" />
     <Compile Include="Bot\Types\ClientSecret.cs" />
-    <Compile Include="Bot\Moduls\CommandHandler.CallbackQuery.cs" />
-    <Compile Include="Bot\Moduls\CommandHandler.InlineQuery.cs" />
-    <Compile Include="Bot\Moduls\CommandHandler.Message.cs" />
-    <Compile Include="Bot\Moduls\CommandHandler.General.cs" />
     <Compile Include="Bot\Commands.cs" />
     <Compile Include="Bot\Converters\DateTimeConverter.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\PendingUserModel.cs" />
@@ -353,7 +352,6 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <EmbeddedResource Include="App_LocalResources\client_secret.json" />
     <EmbeddedResource Include="App_LocalResources\client_secret_debug.json" />
-    <Compile Include="Bot\Moduls\CommandHandler.Notify.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\InlineQuery\InlineQueryHandler.Handlers.cs" />
     <None Include="Properties\PublishProfiles\gmailcontrolbot - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\gmailcontrolbot - Web Deploy.pubxml" />

@@ -68,7 +68,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 Attachments = GetAttachments(message.Payload.Parts);
             }
             else if (message.Payload.Body?.Data != null)
-                body.Add(new BodyForm(message.Payload.MimeType, Base64.DecodeUrl(message.Payload.Body.Data)));
+                body.Add(new BodyForm(message.Payload.MimeType, Base64.DecodeUrlSafe(message.Payload.Body.Data)));
 
             Body = body;
         }
@@ -82,7 +82,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 if (part.Parts != null)
                     DecodeDevidedBody(part.Parts, decodedBody);
                 else if (part.Body?.Data != null)
-                    decodedBody.Add(new BodyForm(part.MimeType, Base64.DecodeUrl(part.Body.Data)));
+                    decodedBody.Add(new BodyForm(part.MimeType, Base64.DecodeUrlSafe(part.Body.Data)));
             }
         }
 

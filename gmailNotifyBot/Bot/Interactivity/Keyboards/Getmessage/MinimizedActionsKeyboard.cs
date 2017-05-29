@@ -56,7 +56,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 ActionsRow.Add(NotifyButton);
         }
 
-        protected override MessageKeyboardState State => MessageKeyboardState.MinimizedActions;
+        protected override GetKeyboardState State => GetKeyboardState.MinimizedActions;
 
         protected virtual InlineKeyboardButton UnreadButton { get; set; }
         protected virtual InlineKeyboardButton SpamButton { get; set; }

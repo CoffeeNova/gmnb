@@ -5,6 +5,8 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using NLog;
 
@@ -40,7 +42,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             if (query?.Data == null)
                 throw new ArgumentNullException(nameof(query));
 
-            var data = new CallbackData(query.Data);
+            var data = new GetCallbackData(query.Data);
 
             foreach (var rule in _rules)
             {

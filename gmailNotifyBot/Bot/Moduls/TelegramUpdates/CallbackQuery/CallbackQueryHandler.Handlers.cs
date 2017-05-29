@@ -7,10 +7,14 @@ using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 {
     using Query = TelegramBotApiWrapper.Types.General.CallbackQuery;
+    using Google = Google.Apis.Gmail.v1.Data;
     public partial class CallbackQueryHandler
     {
         /// <summary>
@@ -27,22 +31,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <summary>
         /// Handles <see cref="Query"/> <see cref="Commands.EXPAND_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
-        ///  which <see cref="CallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Maximized"/> or 
+        ///  which <see cref="GetCallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Maximized"/> or 
         /// <see langword="MessageKeyboardState.MaximizedActions"/> which updates it to the 1st page.
         /// </summary>
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQExpand(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQExpand(Query query, GetCallbackData callbackData)
         {
-            if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.Maximized, MessageKeyboardState.MaximizedActions))
+            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.Maximized, GetKeyboardState.MaximizedActions))
                 throw new ArgumentException("Must be a Minimized or MinimizedAction state.", nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
-            var newState = callbackData.MessageKeyboardState == MessageKeyboardState.Minimized
-                ? MessageKeyboardState.Maximized
-                : MessageKeyboardState.MaximizedActions;
+            var newState = callbackData.MessageKeyboardState == GetKeyboardState.Minimized
+                ? GetKeyboardState.Maximized
+                : GetKeyboardState.MaximizedActions;
             var newPage = 1;
             await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, newPage, isIgnored);
         }
@@ -50,22 +54,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <summary>
         /// Handles <see cref="Query"/> <see cref="Commands.HIDE_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
-        /// which <see cref="CallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Minimized"/> or 
+        /// which <see cref="GetCallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Minimized"/> or 
         /// <see langword="MessageKeyboardState.MinimizedActions"/> which updates it to the 0 page.
         /// </summary>
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQHide(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQHide(Query query, GetCallbackData callbackData)
         {
-            if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.Minimized, MessageKeyboardState.MinimizedActions))
+            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.Minimized, GetKeyboardState.MinimizedActions))
                 throw new ArgumentException("Must be a Maximized or MaximizedAction state.", nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
-            var newState = callbackData.MessageKeyboardState == MessageKeyboardState.Maximized
-                ? MessageKeyboardState.Minimized
-                : MessageKeyboardState.MinimizedActions;
+            var newState = callbackData.MessageKeyboardState == GetKeyboardState.Maximized
+                ? GetKeyboardState.Minimized
+                : GetKeyboardState.MinimizedActions;
             var newPage = 0;
             await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, newPage, isIgnored);
 
@@ -74,44 +78,44 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <summary>
         /// Handles <see cref="Query"/> <see cref="Commands.EXPAND_ACTIONS_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
-        /// which <see cref="CallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.MinimizedActions"/> or 
-        /// <see langword="MessageKeyboardState.MaximizedActions"/> which updates it on the set <see cref="CallbackData.Page"/>.
+        /// which <see cref="GetCallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.MinimizedActions"/> or 
+        /// <see langword="MessageKeyboardState.MaximizedActions"/> which updates it on the set <see cref="GetCallbackData.Page"/>.
         /// </summary>
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQExpandActions(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQExpandActions(Query query, GetCallbackData callbackData)
         {
-            if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.MinimizedActions, MessageKeyboardState.MaximizedActions))
+            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.MinimizedActions, GetKeyboardState.MaximizedActions))
                 throw new ArgumentException("Must be a Minimized or Maximized state.", nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null, "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
-            var newState = callbackData.MessageKeyboardState == MessageKeyboardState.Minimized
-                ? MessageKeyboardState.MinimizedActions
-                : MessageKeyboardState.MaximizedActions;
+            var newState = callbackData.MessageKeyboardState == GetKeyboardState.Minimized
+                ? GetKeyboardState.MinimizedActions
+                : GetKeyboardState.MaximizedActions;
             await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, callbackData.Page, isIgnored);
         }
 
         /// <summary>
         /// Handles <see cref="Query"/> <see cref="Commands.HIDE_ACTIONS_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
-        /// which <see cref="CallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Minimized"/> or 
-        /// <see langword="MessageKeyboardState.Maximized"/> which updates it on the set <see cref="CallbackData.Page"/>.
+        /// which <see cref="GetCallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Minimized"/> or 
+        /// <see langword="MessageKeyboardState.Maximized"/> which updates it on the set <see cref="GetCallbackData.Page"/>.
         /// </summary>
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQHideActions(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQHideActions(Query query, GetCallbackData callbackData)
         {
-            if (callbackData.MessageKeyboardState.EqualsAny(MessageKeyboardState.Minimized, MessageKeyboardState.Maximized))
+            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.Minimized, GetKeyboardState.Maximized))
                 throw new ArgumentException("Must be a MinimizedActions or MaximizedActions state.", nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
-            var newState = callbackData.MessageKeyboardState == MessageKeyboardState.MinimizedActions
-                ? MessageKeyboardState.Minimized
-                : MessageKeyboardState.Maximized;
+            var newState = callbackData.MessageKeyboardState == GetKeyboardState.MinimizedActions
+                ? GetKeyboardState.Minimized
+                : GetKeyboardState.Maximized;
             await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, callbackData.Page, isIgnored);
         }
 
@@ -122,7 +126,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQToRead(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQToRead(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null, "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -137,7 +141,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQToUnRead(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQToUnRead(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -152,7 +156,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQToSpam(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQToSpam(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "SPAM");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -167,7 +171,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQToInbox(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQToInbox(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "INBOX");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -182,7 +186,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQToTrash(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQToTrash(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "TRASH");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -197,7 +201,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQArchive(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQArchive(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null, "INBOX");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -212,7 +216,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQUnignore(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQUnignore(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             await _dbWorker.RemoveFromIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -226,7 +230,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQIgnore(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQIgnore(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             await _dbWorker.AddToIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -240,7 +244,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQNextPage(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQNextPage(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             if (formattedMessage.Pages <= callbackData.Page)
@@ -259,7 +263,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQPrevPage(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQPrevPage(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             if (callbackData.Page < 2)
@@ -269,38 +273,33 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, newPage, isIgnored);
         }
 
-        public async Task HandleCallbackQAddSubject(Query query, CallbackData callbackData)
-        {
-
-        }
-
         /// <summary>
         /// Handles <see cref="Query"/> <see cref="Commands.SHOW_ATTACHMENTS_COMMAND"/>.
-        /// This method calls <see cref="BotActions.SendAttachmentsListMessage"/> method for message with <paramref name="callbackData"/> where <see cref="CallbackData.MessageKeyboardState"/>
-        /// equals <see cref="MessageKeyboardState.Attachments"/>.
+        /// This method calls <see cref="BotActions.SendAttachmentsListMessage"/> method for message with <paramref name="callbackData"/> where <see cref="GetCallbackData.MessageKeyboardState"/>
+        /// equals <see cref="GetKeyboardState.Attachments"/>.
         /// </summary>
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQShowAttachments(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQShowAttachments(Query query, GetCallbackData callbackData)
         {
             var message = await Methods.GetMessage(query.From, callbackData.MessageId);
-            var newState = MessageKeyboardState.Attachments;
+            var newState = GetKeyboardState.Attachments;
             await _botActions.SendAttachmentsListMessage(query.From, query.Message.MessageId, message, newState);
         }
 
         /// <summary>
         /// Handles <see cref="Query"/> <see cref="Commands.HIDE_ATTACHMENTS_COMMAND"/>.
-        /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/> where <see cref="CallbackData.MessageKeyboardState"/>
-        /// equals <see cref="MessageKeyboardState.Minimized"/> (restores the original state).
+        /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/> where <see cref="GetCallbackData.MessageKeyboardState"/>
+        /// equals <see cref="GetKeyboardState.Minimized"/> (restores the original state).
         /// </summary>
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQHideAttachments(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQHideAttachments(Query query, GetCallbackData callbackData)
         {
             var message = await Methods.GetMessage(query.From, callbackData.MessageId);
-            var newState = MessageKeyboardState.Minimized;
+            var newState = GetKeyboardState.Minimized;
             await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, message);
         }
 
@@ -312,7 +311,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQGetAttachment(Query query, CallbackData callbackData)
+        public async Task HandleCallbackQGetAttachment(Query query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             var attachmentInfo = new List<AttachmentInfo>(formattedMessage.Attachments)[callbackData.AttachmentIndex];
@@ -337,6 +336,5 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
                     await dInfo.DeleteAsync(true);
             }
         }
-
     }
 }

@@ -16,7 +16,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 
         public void CreateInlineKeyboard()
         {
-            GeneralCallbackData = new CallbackData
+            GeneralCallbackData = new GetCallbackData
             {
                 MessageId = Message.Id,
                 Page = Page,
@@ -43,7 +43,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             return new InlineKeyboardButton
             {
                 Text = text,
-                CallbackData = new CallbackData(GeneralCallbackData)
+                CallbackData = new GetCallbackData(GeneralCallbackData)
                 {
                     Command = callbackCommand
                 }
@@ -62,7 +62,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 {
                     nextPageButton = new InlineKeyboardButton();
                     nextPageButton.Text = $"To Page {Page + 1} {Emoji.RightArrow}";
-                    nextPageButton.CallbackData = new CallbackData(GeneralCallbackData)
+                    nextPageButton.CallbackData = new GetCallbackData(GeneralCallbackData)
                     {
                         Command = Commands.NEXTPAGE_COMMAND
                     };
@@ -72,7 +72,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             {
                 prevPageButton = new InlineKeyboardButton();
                 prevPageButton.Text = $"{Emoji.LeftArrow} To Page {Page - 1}";
-                prevPageButton.CallbackData = new CallbackData(GeneralCallbackData)
+                prevPageButton.CallbackData = new GetCallbackData(GeneralCallbackData)
                 {
                     Command = Commands.PREVPAGE_COMMAND
                 };
@@ -85,8 +85,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         }
 
         protected readonly FormattedMessage Message;
-        protected CallbackData GeneralCallbackData;
-        protected abstract MessageKeyboardState State { get; }
+        protected GetCallbackData GeneralCallbackData;
+        protected abstract GetKeyboardState State { get; }
         public int Page { get; set; }
         public bool IsIgnored { get; set; }
     }

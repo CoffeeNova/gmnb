@@ -7,29 +7,29 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
 {
     internal interface IKeyboardFactory
     {
-        Keyboard CreateKeyboard(MessageKeyboardState state, FormattedMessage message, int page, bool isIgnored);
+        Keyboard CreateKeyboard(GetKeyboardState state, FormattedMessage message, int page, bool isIgnored);
     }
 
     internal class KeyboardFactory : IKeyboardFactory
     {
-        public Keyboard CreateKeyboard(MessageKeyboardState state, FormattedMessage message, int page=0, bool isIgnored=false)
+        public Keyboard CreateKeyboard(GetKeyboardState state, FormattedMessage message, int page=0, bool isIgnored=false)
         {
             Keyboard keyboard;
             switch (state)
             {
-                case MessageKeyboardState.Minimized:
+                case GetKeyboardState.Minimized:
                     keyboard = new MinimizedKeyboard(message);
                     break;
-                case MessageKeyboardState.Maximized:
+                case GetKeyboardState.Maximized:
                     keyboard = new MaximizedKeyboard(message);
                     break;
-                case MessageKeyboardState.MinimizedActions:
+                case GetKeyboardState.MinimizedActions:
                     keyboard = new MinimizedActionsKeyboard(message);
                     break;
-                case MessageKeyboardState.MaximizedActions:
+                case GetKeyboardState.MaximizedActions:
                     keyboard = new MaximizedActionsKeyboard(message);
                     break;
-                case MessageKeyboardState.Attachments:
+                case GetKeyboardState.Attachments:
                     keyboard = new AttachmentsKeyboard(message);
                     break;
                 default:

@@ -44,7 +44,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
 
             if (result)
             {
-                var decodedData = JsonConvert.DeserializeObject<EncodedMessageData>(Base64.DecodeUrl(message.Message.Data));
+                var decodedData = JsonConvert.DeserializeObject<EncodedMessageData>(Base64.DecodeUrlSafe(message.Message.Data));
                 if (decodedData == null)
                     result = false;
                 else

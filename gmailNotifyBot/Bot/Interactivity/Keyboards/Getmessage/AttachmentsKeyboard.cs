@@ -17,7 +17,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             CloseButton = new InlineKeyboardButton
             {
                 Text = MainButtonCaption.Close,
-                CallbackData = new CallbackData(GeneralCallbackData)
+                CallbackData = new GetCallbackData(GeneralCallbackData)
                 {
                     Command = Commands.HIDE_ATTACHMENTS_COMMAND
                 }
@@ -28,7 +28,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 FirstRow.Add(new InlineKeyboardButton
                 {
                     Text = $"{i + 1}. {a.FileName}",
-                    CallbackData = new CallbackData(GeneralCallbackData)
+                    CallbackData = new GetCallbackData(GeneralCallbackData)
                     {
                         Command = Commands.GET_ATTACHMENT_COMMAND + $"{i}"
                     }
@@ -37,7 +37,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             FirstRow.Add(CloseButton);
         }
 
-        protected override MessageKeyboardState State => MessageKeyboardState.Attachments;
+        protected override GetKeyboardState State => GetKeyboardState.Attachments;
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
         {

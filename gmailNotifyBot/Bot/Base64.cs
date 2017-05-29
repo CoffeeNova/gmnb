@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Ionic.Zlib;
+using MimeKit;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot
 {
@@ -22,14 +23,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
-        public static string EncodeUrl(string plainText)
+        public static string EncodeUrlSafe(string plainText)
         {
             plainText = plainText.Replace('+', '-');
             plainText = plainText.Replace('/', '_');
             return Encode(plainText);
         }
 
-        public static string DecodeUrl(string base64EncodedData)
+        public static string DecodeUrlSafe(string base64EncodedData)
         {
             base64EncodedData = base64EncodedData.Replace('-', '+');
             base64EncodedData = base64EncodedData.Replace('_', '/');
@@ -46,14 +47,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return System.Convert.FromBase64String(base64EncodedData);
         }
 
-        public static byte[] EncodeUrlToBytes(string plainText)
+        public static byte[] EncodeUrlSafeToBytes(string plainText)
         {
             plainText = plainText.Replace('+', '-');
             plainText = plainText.Replace('/', '_');
             return EncodeToBytes(plainText);
         }
 
-        public static byte[] DecodeUrlToBytes(string base64EncodedData)
+        public static byte[] DecodeUrlSafeToBytes(string base64EncodedData)
         {
             base64EncodedData = base64EncodedData.Replace('-', '+');
             base64EncodedData = base64EncodedData.Replace('_', '/');
@@ -65,7 +66,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return System.Convert.ToBase64String(bytes);
         }
 
-        public static string EncodeUrl(byte[] bytes)
+        public static string EncodeUrlSafe(byte[] bytes)
         {
             var encoded = Encode(bytes);
             encoded = encoded.Replace('+', '-');
@@ -73,7 +74,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             return encoded;
         }
 
-        public static byte[] DecodeToBytesUrl(string base64EncodedData)
+        public static byte[] DecodeToBytesUrlSafe(string base64EncodedData)
         {
             base64EncodedData = base64EncodedData.Replace('-', '+');
             base64EncodedData = base64EncodedData.Replace('_', '/');
@@ -118,6 +119,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 }
 
                 return Encoding.UTF8.GetString(buffer);
+            }
+        }
+
+        public static string EncodeUrlSafe(MimeMessage message)
+        {
+            using (var stream = new MemoryStream())
+            {
+                message.WriteTo(stream);
+
+                return Convert.ToBase64String(stream.GetBuffer(), 0, (int)stream.Length)
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Replace("=", "");
             }
         }
     }

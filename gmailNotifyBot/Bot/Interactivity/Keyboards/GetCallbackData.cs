@@ -1,28 +1,25 @@
 ﻿using System;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
+namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
 {
-    public interface ICallbackCommand
-    {
-        string Command { get; set; }
-    }
 
 
     [Serializable]
-    public class CallbackData : ICallbackCommand
+    public class GetCallbackData : ICallbackCommand
     {
-        public CallbackData()
+        public GetCallbackData()
         {
 
         }
-        public CallbackData(CallbackData callbackData)
+        public GetCallbackData(GetCallbackData callbackData)
         {
             callbackData.NullInspect(nameof(callbackData));
             AttachProperties(callbackData);
         }
 
-        public void AttachProperties(CallbackData callbackData)
+        public void AttachProperties(GetCallbackData callbackData)
         {
             Command = callbackData.Command;
             MessageId = callbackData.MessageId;
@@ -31,7 +28,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             AttachmentIndex = callbackData.AttachmentIndex;
         }
 
-        public CallbackData(string serializedCallbackData)
+        public GetCallbackData(string serializedCallbackData)
         {
             try
             {
@@ -39,7 +36,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 Command = splitted[0];
                 MessageId = splitted[1];
                 Page = Int32.Parse(splitted[2]);
-                MessageKeyboardState = splitted[3].ToEnum<MessageKeyboardState>();
+                MessageKeyboardState = splitted[3].ToEnum<GetKeyboardState>();
                 AttachmentIndex = Int32.Parse(splitted[4]);
             }
             catch
@@ -57,11 +54,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         public int AttachmentIndex { get; set; }
 
-        public MessageKeyboardState MessageKeyboardState { get; set; } = MessageKeyboardState.Minimized;
+        public GetKeyboardState MessageKeyboardState { get; set; } = GetKeyboardState.Minimized;
 
         protected const char SEPARATOR = ':';
 
-        public static implicit operator string(CallbackData obj)
+        public static implicit operator string(GetCallbackData obj)
         {
             return $"{obj.Command}{SEPARATOR}{obj.MessageId}{SEPARATOR}{obj.Page}{SEPARATOR}{obj.MessageKeyboardState.ToEnumString()}{SEPARATOR}{obj.AttachmentIndex}";
         }

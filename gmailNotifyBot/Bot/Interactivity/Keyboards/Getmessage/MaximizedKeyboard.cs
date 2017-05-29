@@ -17,7 +17,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             AttachmentsButton = InitButton(AttachmentsButtonCaption, AttachmentsButtonCommand);
         }
 
-        protected override MessageKeyboardState State => MessageKeyboardState.Maximized;
+        protected override GetKeyboardState State => GetKeyboardState.Maximized;
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
         {
