@@ -123,62 +123,55 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             dirInfo.Create();
         }
 
-        public static async Task<Message> GetDraft(string userId, string draftId, Format format = Format.Raw)
+        public static async Task<Draft> GetDraft(string userId, string draftId, Format format = Format.Raw)
         {
             var service = SearchServiceByUserId(userId);
             var getRequest = service.GmailService.Users.Drafts.Get("me", draftId);
             getRequest.Format = format;
             var draftResponce = await getRequest.ExecuteAsync();
-            return draftResponce?.Message;
+            return draftResponce;
         }
 
-        public static async Task<FormattedMessage> CreateDraft(Draft body, string userId)
+        public static async Task<Draft> CreateDraft(Draft body, string userId)
         {
             var service = SearchServiceByUserId(userId);
             var getRequest = service.GmailService.Users.Drafts.Create(body, "me");
             var draftResponce = await getRequest.ExecuteAsync();
-            if (draftResponce == null) return null;
-            return new FormattedMessage(draftResponce.Message);
+            return draftResponce;
+        }
+
+        public static async Task<Draft> UpdateDraft(Draft body, string userId, string draftId)
+        {
+            var service = SearchServiceByUserId(userId);
+            var getRequest = service.GmailService.Users.Drafts.Update(body, "me", draftId);
+            var draftResponce = await getRequest.ExecuteAsync();
+            return draftResponce;
         }
 
         //i use mimekit here :/
-        public static Draft CreateNewDraftBody(List<string> to = null, string subject = null, string text = null, List<string> cc = null, string fullFileName = null, List<string> bcc = null)
+        public static Draft CreateNewDraftBody(List<string> to = null, string subject = null, string text = null, List<string> cc = null, List<string> fullFileNameList = null, List<string> bcc = null)
         {
-            //var msg = new MailMessage
-            //{
-            //    IsBodyHtml = true,
-            //    Subject = subject,
-            //    Body = text ?? ""
-            //};
-            //if (to != null)
-            //    msg.To.Add(new MailAddress(to));
-            //if (cc != null)
-            //    msg.CC.Add(new MailAddress(cc));
-            //if (bcc != null)
-            //    msg.Bcc.Add(new MailAddress(bcc));
-
-            //var mimeMessage = MimeMessage.CreateFromMailMessage(msg);
             var mimeMessage = new MimeMessage();
-            FillMimeMessage(mimeMessage, to, subject, text, cc, bcc, fullFileName);
+            FillMimeMessage(mimeMessage, to, subject, text, cc, bcc, fullFileNameList);
 
             var message = TransformMimeMessageToMessage(mimeMessage);
             return new Draft { Message = message };
         }
 
-        public static Draft AddToDraftBody(Message draft, List<string> to = null, string subject = null, string text = null,
-    List<string> cc = null, List<string> bcc = null, string fullFileName = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Draft AddToDraftBody(Draft draft, List<string> to = null, string subject = null, string text = null,
+    List<string> cc = null, List<string> bcc = null, List<string> fullFileNameList = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             draft.NullInspect(nameof(draft));
-            if (draft.Raw == null)
-                throw new InvalidOperationException($"The {nameof(draft)} must contain a non-null Raw property.");
+            if (draft.Message?.Raw == null)
+                throw new InvalidOperationException($"The {nameof(Draft.Message)} must contain a non-null Raw property.");
 
-            var decodedRaw = Base64.DecodeUrlSafeToBytes(draft.Raw);
+            var decodedRaw = Base64.DecodeUrlSafeToBytes(draft.Message.Raw);
             using (var stream = new MemoryStream(decodedRaw))
             {
                 var mimeMessage = MimeMessage.Load(stream, cancellationToken);
-                FillMimeMessage(mimeMessage, to, subject, text, cc, bcc, fullFileName);
+                FillMimeMessage(mimeMessage, to, subject, text, cc, bcc, fullFileNameList);
                 var message = TransformMimeMessageToMessage(mimeMessage);
-                return new Draft { Message = message };
+                return new Draft {Message = message};
             }
         }
 
@@ -191,7 +184,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         }
 
         private static void FillMimeMessage(MimeMessage mimeMessage, List<string> to, string subject,
-            string text, List<string> cc, List<string> bcc, string fullFileName = null)
+            string text, List<string> cc, List<string> bcc, List<string> fullFileNameList = null)
         {
             to?.ForEach(recipient => mimeMessage.To.Add(new MailboxAddress(recipient)));
             cc?.ForEach(recipient => mimeMessage.Cc.Add(new MailboxAddress(recipient)));
@@ -199,25 +192,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (subject != null)
                 mimeMessage.Subject = subject;
 
-            if (text != null || fullFileName != null)
+            if (text != null || fullFileNameList != null)
             {
                 TextPart plainPart = null;
                 TextPart htmlPart = null;
-                MimePart attachment = null;
+                List<MimePart> attachments = null;
 
                 if (text != null)
                 {
                     plainPart = new TextPart(TextFormat.Plain) { Text = text };
                     htmlPart = new TextPart(TextFormat.Html) { Text = text };
                 }
-                if (fullFileName != null)
-                    attachment = new MimePart
+                if (fullFileNameList != null)
+                {
+                    attachments = new List<MimePart>();
+                    fullFileNameList.ForEach(fileName =>
                     {
-                        ContentObject = new ContentObject(File.OpenRead(fullFileName)),
-                        ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
-                        ContentTransferEncoding = ContentEncoding.Base64,
-                        FileName = Path.GetFileName(fullFileName)
-                    };
+                        attachments.Add(new MimePart
+                        {
+                            ContentObject = new ContentObject(File.OpenRead(fileName)),
+                            ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                            ContentTransferEncoding = ContentEncoding.Base64,
+                            FileName = Path.GetFileName(fileName)
+                        });
+                    });
+                }
 
                 var multipart = new Multipart("mixed");
                 var mimeEntities = mimeMessage.BodyParts.ToList();
@@ -229,8 +228,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     mimeEntities.Add(plainPart);
                 if (htmlPart != null)
                     mimeEntities.Add(htmlPart);
-                if (attachment != null)
-                    mimeEntities.Add(attachment);
+                attachments?.ForEach(attach =>
+                {
+                    mimeEntities.Add(attach);
+                });
+
 
                 mimeMessage.Body = multipart;
             }

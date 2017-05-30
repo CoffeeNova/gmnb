@@ -21,9 +21,11 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
             Request.InputStream.Seek(0, SeekOrigin.Begin);
             var json = new StreamReader(Request.InputStream).ReadToEnd();
             var message = JsonConvert.DeserializeObject<GoogleNotifyMessage>(json);
-            var commandHandler = CommandHandler.Instance;
+            var notifyHandler = BotInitializer.Instance?.NotifyHandler;
 
-            commandHandler.HandleGoogleNotifyMessage(message);
+            if (notifyHandler == null) return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+            notifyHandler.HandleGoogleNotifyMessage(message);
             return new HttpStatusCodeResult(HttpStatusCode.OK);
             //return commandHandler.HandleGoogleNotifyMessage(message)
             //    ? new HttpStatusCodeResult(HttpStatusCode.OK)

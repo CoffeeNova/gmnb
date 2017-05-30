@@ -17,5 +17,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         public static string Subject => $"{Emoji.AbcLowerCase}Subject";
 
         public static string Message => $"{Emoji.M}Message";
+
+        public static string Save => $"{Emoji.FloppyDisk}Save";
+
+        public static string NotSave => $"{Emoji.WasteBasket}Not save";
+
+        public static string Continue => $"{Emoji.Memo}Continue with old";
+
+        
     }
 }

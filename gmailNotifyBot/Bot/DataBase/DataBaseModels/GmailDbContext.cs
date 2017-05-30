@@ -11,6 +11,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public DbSet<UserSettingsModel> UserSettings { get; set; }
 
+        public DbSet<NmStoreModel> NmStore { get; set; }
+
     }
 
 }

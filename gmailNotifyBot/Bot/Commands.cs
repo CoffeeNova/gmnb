@@ -45,5 +45,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string SHOW_ATTACHMENTS_COMMAND = "/showattachments";
         public const string HIDE_ATTACHMENTS_COMMAND = "/hideattachments";
         public const string GET_ATTACHMENT_COMMAND = "/getattacment";
+        public const string SAVE_AS_DRAFT_COMMAND = "/saveasdraft";
+        public const string CONTINUE_COMPOSE_COMMAND = "/continuecompose";
+        public const string NOT_SAVE_AS_DRAFT_COMMAND = "/notsaveasdraft";
     }
 }

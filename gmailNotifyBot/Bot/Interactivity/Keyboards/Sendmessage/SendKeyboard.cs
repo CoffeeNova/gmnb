@@ -7,7 +7,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
     {
         protected SendKeyboard(FormattedMessage draft)
         {
-            draft.NullInspect(nameof(draft));
             Draft = draft;
         }
 

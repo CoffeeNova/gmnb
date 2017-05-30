@@ -13,7 +13,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         public static string NotSpam => $"{Emoji.HeartEnvelope} Not Spam";
         public static string Spam => $"{Emoji.RestrictionSign} Spam";
         public static string Restore => $"{Emoji.ClosedMailbox} Restore";
-        public static string Delete => $"{Emoji.RecycleBin} Delete";
+        public static string Delete => $"{Emoji.WasteBasket} Delete";
         public static string ToArchive => $"{Emoji.Multifolder} To Archive";
         public static string ToInbox => $"{Emoji.ClosedMailbox} To Inbox";
         public static string Unignore => "Unignore";

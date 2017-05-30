@@ -5,6 +5,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
     public enum SendKeyboardState
     {
         [EnumMember(Value = "init")]
-        Init
+        Init,
+        [EnumMember(Value = "continue")]
+        Continue,
+        [EnumMember(Value = "store")]
+        Store
     }
 }

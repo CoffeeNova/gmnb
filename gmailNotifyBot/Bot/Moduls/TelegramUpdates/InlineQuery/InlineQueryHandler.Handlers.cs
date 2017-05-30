@@ -49,7 +49,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
             var formatedMessages = await GetMessages(query, offset, labelId, null, resultsPerPage, messagesInOneResponse);
             var uniqueContacts = Methods.GetUniqueContactsFromMessageList(formatedMessages);
             if (uniqueContacts.Count == messagesInOneResponse)
-                await _botActions.ShowContactsAnswerInlineQuery(query.Id, uniqueContacts, offset + messagesInOneResponse);
+                await _botActions.ShowContactsAnswerInlineQuery(query.Id,  uniqueContacts, offset + messagesInOneResponse);
             else
                 await _botActions.ShowContactsAnswerInlineQuery(query.Id, uniqueContacts); //last response
         }

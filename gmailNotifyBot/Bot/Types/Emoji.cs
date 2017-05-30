@@ -20,7 +20,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Types
         public const string RedArrowedEnvelope = "\ud83d\udce9"; //envelope with red arrow
         public const string HeartEnvelope = "\ud83d\udc8c"; //envelope with red heart
         public const string RestrictionSign = "\u26d4\ufe0f"; //red restriction sign
-        public const string RecycleBin = "\ud83d\uddd1";
+        public const string WasteBasket = "\ud83d\uddd1";
         public const string ClosedMailbox = "\ud83d\udcea"; // closed blue mailbox
         public const string Multifolder = "\ud83d\uddc2";
         public const string BoyAndGirl = "\ud83d\udebb";
@@ -32,5 +32,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Types
         public const string ClosedEmailEnvelop = "\ud83d\udce7"; // closed Email
         public const string OpenFileFolder = "\ud83d\udcc2";
         public const string ClosedFileFolder = "\ud83d\udcc1";
+        public const string QuestionSign = "\u2753";
+        public const string FloppyDisk = "\ud83d\udcbe";
+        public const string Memo = "\ud83d\udcdd";
+
     }
 }

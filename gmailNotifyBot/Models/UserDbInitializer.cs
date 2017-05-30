@@ -45,6 +45,17 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 Expiration = 100,
                 HistoryId = 1
             });
+            db.NmStore.Add(new NmStoreModel
+            {
+                UserId=0,
+                MessageId = "0",
+                To = new List<string> { "to@gmail.com" },
+                Cc = new List<string> { "cc@gmail.com" },
+                Bcc = new List<string> { "bcc@gmail.com" },
+                Message = "testMessage",
+                Subject = "testSubj",
+                FileName = new List<string> { @"path\file1", @"path\file2"}
+            });
             base.Seed(db);
         }
     }

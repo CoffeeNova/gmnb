@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using Google.Apis.Gmail.v1.Data;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 {
@@ -161,8 +163,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 
         public async Task HandleNewMessageCommand(ISender sender)
         {
-            await _botActions.SpecifyNewMailMessage(sender.From, Interactivity.Keyboards.Sendmessage.SendKeyboardState.Init);
+            var nmStore = await _dbWorker.FindNmStoreAsync(sender.From);
+            if (nmStore == null)
+            {
+                await _botActions.SpecifyNewMailMessage(sender.From, SendKeyboardState.Init);
+                await _dbWorker.AddNewNmStoreAsync(new NmStoreModel {UserId = sender.From});
+            }
+            else
+               await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
         }
+
 
         public async Task HandleGetInboxMessagesCommand(ISender sender)
         {

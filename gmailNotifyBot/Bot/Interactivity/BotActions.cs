@@ -221,12 +221,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             {
                 inlineQueryResults.Add(new InlineQueryResultArticle
                 {
-                    Id = contact.Email,
+                    Id = $"{contact.Email}",
                     Title = contact.Email,
                     Description = contact.Name,
                     InputMessageContent = new InputTextMessageContent
                     {
-                        MessageText = $"Recipient added:{Environment.NewLine}{contact.Name} <{contact.Email}>"
+                        MessageText = new SendCallbackData
+                        {
+                            Command = "deletecommand",
+                        }//$"Recipient added:{Environment.NewLine}{contact.Name} <{contact.Email}>"
+
                     },
                     ThumbUrl = _contactsThumbUrl,
                     ThumbHeight = 48,
@@ -238,10 +242,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             else
                 await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
         }
-        public async Task SpecifyNewMailMessage(string chatId, SendKeyboardState state)
+
+        public async Task SpecifyNewMailMessage(string chatId, SendKeyboardState state, FormattedMessage draft = null)
+        {
+            var keyboard = _sendKeyboardFactory.CreateKeyboard(state, draft);
+            await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
+        }
+
+        public async Task SaveAsDraftQuestionMessage(string chatId, SendKeyboardState state)
         {
             var keyboard = _sendKeyboardFactory.CreateKeyboard(state);
-            await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
+            await _telegramMethods.SendMessageAsync(chatId, _storeDraftMessageText, ParseMode.Html, false, false, null, keyboard);
         }
 
         public async Task UpdateNewMailMessage(string chatId, int messageId, FormattedMessage draft)
@@ -332,6 +343,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                         $"{Environment.NewLine}and press Enter to quick send the email." +
                         $"{Environment.NewLine}{Emoji.InfoSign} For multiple recipients use comma separator.";
 
+        private readonly string _storeDraftMessageText =
+            $"{Emoji.QuestionSign} You have already started to create a new message. " +
+            $"You can save it as draft and create new instance of new message or continue composing.";
+                            
         private readonly BotSettings _settings = BotInitializer.Instance.BotSettings;
         private readonly string _contactsThumbUrl;
         private readonly GetKeyboardFactory _getKeyboardFactory = new GetKeyboardFactory();

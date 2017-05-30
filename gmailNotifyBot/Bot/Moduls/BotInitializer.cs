@@ -71,20 +71,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             ServiceFactory.RestoreServicesFromRepository();
         }
 
-        public void InitializeCommandHandler()
-        {
-            if (string.IsNullOrEmpty(BotSettings.Token))
-                throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
-            if (UpdatesHandler == null)
-                throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
-            if (BotSettings.ClientSecrets == null)
-                throw new InvalidOperationException($"{nameof(BotSettings.ClientSecrets)} property must be specified");
-            if (string.IsNullOrEmpty(BotSettings.Topic))
-                throw new InvalidOperationException($"{nameof(BotSettings.Topic)} property must be specified");
-
-            CommandHandler = CommandHandler.GetInstance(BotSettings.Token, UpdatesHandler, BotSettings.ClientSecrets, BotSettings.Topic);
-        }
-
         public void InitializeMessageHandler()
         {
             if (string.IsNullOrEmpty(BotSettings.Token))
@@ -136,12 +122,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         //restart push notification watches for all gmail control bot users
         public void InitializePushNotificationWatchesAsync(int delay)
         {
+            if (UpdatesHandler == null)
+                throw new InvalidOperationException($"{nameof(ServiceFactory)} property must be initialized first.");
+            if (UpdatesHandler == null)
+                throw new InvalidOperationException($"{nameof(MessageHandler)} property must be initialized first.");
             Task.Run(() =>
             {
                 Task.Delay(delay).Wait();
                 ServiceFactory?.ServiceCollection.ForEach(async s =>
                 {
-                    await CommandHandler.HandleStartWatchCommandAsync(s);
+                    await MessageHandler.HandleStartWatchCommandAsync(s);
                     //probably i need to do a delay here to avoid response ddos to my server
                 });
             });
@@ -149,6 +139,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         public void InitializePushNotificationWatchTimer(int updatePeriod)
         {
+            if (UpdatesHandler == null)
+                throw new InvalidOperationException($"{nameof(ServiceFactory)} property must be initialized first.");
+            if (UpdatesHandler == null)
+                throw new InvalidOperationException($"{nameof(MessageHandler)} property must be initialized first.");
+
             if (_gmailDbContextWorker == null)
                 _gmailDbContextWorker = new GmailDbContextWorker();
             //start timer which would be update push notification watch for users which expiration time approaches the end
@@ -161,7 +156,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     if (difference.TotalHours >= 2) return;
                     var service = ServiceFactory?.ServiceCollection.FirstOrDefault(s => s.From == us.UserId);
                     if (service == null) return;
-                    CommandHandler?.HandleStartWatchCommand(service);
+                    MessageHandler?.HandleStartWatchCommand(service);
                 });
             }, null, updatePeriod, updatePeriod);
         }
@@ -185,8 +180,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         public Authorizer Authorizer { get; set; }
 
         public ServiceFactory ServiceFactory { get; set; }
-
-        public CommandHandler CommandHandler { get; set; }
 
         public MessageHandler MessageHandler { get; set; }
 

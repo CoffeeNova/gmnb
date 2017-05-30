@@ -18,18 +18,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
         public async Task HandleSetToChosenInlineResult(QueryResult.ChosenInlineResult sender,
             SendCallbackData callbackData)
         {
-            //var formattedMessage = await Methods.GetMessage(sender.From, sender.ResultId);
-            Google.Apis.Gmail.v1.Data.Message draft = null;
-            if (string.IsNullOrEmpty(callbackData.DraftId))
-                draft = new Google.Apis.Gmail.v1.Data.Message();
-            else
-                draft = await Methods.GetDraft(sender.From, callbackData.DraftId);
+            ////var formattedMessage = await Methods.GetMessage(sender.From, sender.ResultId);
+            //Google.Apis.Gmail.v1.Data.Message draft = null;
+            //if (string.IsNullOrEmpty(callbackData.DraftId))
+            //    draft = new Google.Apis.Gmail.v1.Data.Message();
+            //else
+            //    draft = await Methods.GetDraft(sender.From, callbackData.DraftId);
 
-            Methods.AddToDraftBody(draft, new List<string> {sender.ResultId});
+            //Methods.AddToDraftBody(draft, new List<string> {sender.ResultId});
 
-            sender.Query
-                await 
-            _botActions.UpdateNewMailMessage(sender.From, se);
+            //sender.Query
+            //    await 
+            //_botActions.UpdateNewMailMessage(sender.From, se);
         }
 
         public async Task HandleSetCcChosenInlineResult(QueryResult.ChosenInlineResult sender,

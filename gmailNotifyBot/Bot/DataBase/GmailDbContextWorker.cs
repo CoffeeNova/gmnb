@@ -10,7 +10,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 {
-    public class GmailDbContextWorker
+    public partial class GmailDbContextWorker
     {
         public UserModel FindUser(int userId)
         {

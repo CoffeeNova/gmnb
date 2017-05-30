@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
@@ -10,6 +11,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
+using CoffeeJelly.TelegramBotApiWrapper.Types;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 {
@@ -311,7 +313,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         /// <param name="query"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQGetAttachment(Query query, GetCallbackData callbackData)
+        public async Task HandleCallbackQGetAttachment(ISender query, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             var attachmentInfo = new List<AttachmentInfo>(formattedMessage.Attachments)[callbackData.AttachmentIndex];
@@ -336,5 +338,57 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
                     await dInfo.DeleteAsync(true);
             }
         }
+
+        public async Task HandleCallbackQSaveAsDraft(Query query, SendCallbackData callbackData)
+        {
+            var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            if (nmModel == null)
+                return;
+            var draft = await Methods.GetDraft(query.From, callbackData.DraftId);
+            if (draft == null)
+            {
+                var body = Methods.CreateNewDraftBody(nmModel.To, nmModel.Subject, nmModel.Message, nmModel.Cc,
+                    nmModel.FileName, nmModel.Bcc);
+                draft = await Methods.CreateDraft(body, query.From);
+            }
+            else
+            {
+                var body = Methods.AddToDraftBody(draft, nmModel.To, nmModel.Subject, nmModel.Message, nmModel.Cc,
+                    nmModel.FileName, nmModel.Bcc);
+                draft = await Methods.UpdateDraft(body, query.From, draft.Id);
+            }
+            if (draft == null)
+                throw new NotImplementedException("BotAction message: error to save message as draft");
+
+            await HandleCallbackQNotSaveAsDraft(query, callbackData);
+        }
+
+        public async Task HandleCallbackQNotSaveAsDraft(Query query, SendCallbackData callbackData)
+        {
+            var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            await _dbWorker.RemoveNmStoreAsync(nmModel);
+            //there is the place to delete old message from chat by query.Message.MessageId
+            await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Init);
+            await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = query.From });
+        }
+
+        public async Task HandleCallbackQContinueWithOld(Query query, SendCallbackData callbackData)
+        {
+            var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            var to = new List<UserInfo>(nmModel.To);
+            var draft = new FormattedMessage
+            {
+                To = new List<UserInfo>() { Email =}
+            };
+
+            //there is the place to delete old message from chat by query.Message.MessageId
+            await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, draft);
+        }
+
+        public async Task HandleCallbackQAddSubject(Query query, SendCallbackData callbackData)
+        {
+
+        }
+
     }
 }

@@ -220,7 +220,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             if (!(data is GetCallbackData))
                 return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAddSubject(sender, data as GetCallbackData);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAddSubject(sender, data as SendCallbackData);
             if (data.Command.Equals(Commands.ADD_SUBJECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
