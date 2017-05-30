@@ -1,14 +1,16 @@
 ﻿
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
 {
     internal interface ISendKeyboardFactory
     {
-        SendKeyboard CreateKeyboard(SendKeyboardState state,  FormattedMessage draft);
+        SendKeyboard CreateKeyboard(SendKeyboardState state, NmStoreModel model);
     }
 
     internal class SendKeyboardFactory : ISendKeyboardFactory
     {
-        public SendKeyboard CreateKeyboard(SendKeyboardState state, FormattedMessage draft = null)
+        public SendKeyboard CreateKeyboard(SendKeyboardState state, NmStoreModel model = null)
         {
             SendKeyboard keyboard;
             switch (state)
@@ -17,10 +19,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
                     keyboard = new InitKeyboard(null);
                     break;
                 case SendKeyboardState.Store:
-                    keyboard = new StoreKeyboard(draft);
+                    keyboard = new StoreKeyboard(model);
                     break;
                 case SendKeyboardState.Continue:
-                    keyboard = new InitKeyboard(draft);
+                    keyboard = new InitKeyboard(model);
                     break;
                 default:
                     return null;

@@ -45,8 +45,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 }
             }
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Bcc");
-            if (messagePartHeader != null)
-                Bcc = Helper.ParseUserInfo(messagePartHeader.Value);
+            if (!string.IsNullOrEmpty(messagePartHeader?.Value))
+            {
+                var userInfoList = messagePartHeader.Value.Split(Separator, StringSplitOptions.RemoveEmptyEntries).ToList();
+                Bcc = new List<UserInfo>(userInfoList.Select(Helper.ParseUserInfo));
+            }
 
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Cc");
             if (!string.IsNullOrEmpty(messagePartHeader?.Value))
@@ -165,7 +168,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public List<UserInfo> Cc { get; set; }
 
-        public UserInfo Bcc { get; set; }
+        public List<UserInfo> Bcc { get; set; }
 
         public string Subject { get; set; }
 

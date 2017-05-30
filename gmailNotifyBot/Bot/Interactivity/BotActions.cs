@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
@@ -243,10 +244,41 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
         }
 
-        public async Task SpecifyNewMailMessage(string chatId, SendKeyboardState state, FormattedMessage draft = null)
+        public async Task SpecifyNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model = null)
         {
-            var keyboard = _sendKeyboardFactory.CreateKeyboard(state, draft);
-            await _telegramMethods.SendMessageAsync(chatId, _newMessageText, ParseMode.Html, false, false, null, keyboard);
+            var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model);
+            var message = BuildNewMailMessage(model);
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
+        }
+
+        private string BuildNewMailMessage(NmStoreModel model)
+        {
+            var message = new StringBuilder(_newMessageMainText);
+            if (model == null)
+            {
+                message.AppendLine(_newMessageTipText);
+                return message.ToString();
+            }
+
+            var iterFunc = new Action<StringBuilder, List<string>, string>((builder, collection, label) =>
+            {
+                if (collection == null || !collection.Any()) return;
+                builder.AppendLine($"<b>{label}:</b> ");
+                collection.IndexEach((item, i) =>
+                {
+                    builder.Append(item);
+                    if (i < collection.Count - 1) builder.Append(',');
+                });
+            });
+            message.AppendLine();
+            iterFunc(message, model.To, "To");
+            iterFunc(message, model.Cc, "Cc");
+            iterFunc(message, model.Bcc, "Bcc");
+            message.AppendLine();
+            message.AppendLine($"<b>Subject:</b> {model.Subject}");
+            message.AppendLine("<b>Message:</b>");
+            message.AppendLine(model.Message);
+            return message.ToString();
         }
 
         public async Task SaveAsDraftQuestionMessage(string chatId, SendKeyboardState state)
@@ -336,9 +368,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         }
 
         private readonly TelegramMethods _telegramMethods;
-        private readonly string _newMessageText =
-                        $"{Emoji.New} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: " +
-                        $"{Environment.NewLine}{Emoji.InfoSign} You can use quick command, just type in the chat:" +
+        private readonly string _newMessageMainText =
+                        $"{Emoji.New} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: ";
+                        
+        private readonly string _newMessageTipText = $"{Emoji.InfoSign} You can use quick command, just type in the chat:" +
                         $"{Environment.NewLine}<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
                         $"{Environment.NewLine}and press Enter to quick send the email." +
                         $"{Environment.NewLine}{Emoji.InfoSign} For multiple recipients use comma separator.";

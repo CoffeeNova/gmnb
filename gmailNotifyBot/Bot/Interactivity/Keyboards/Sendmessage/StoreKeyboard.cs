@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
 {
     internal class StoreKeyboard : SendKeyboard
     {
-        public StoreKeyboard(FormattedMessage draft) : base(draft)
+        public StoreKeyboard(NmStoreModel model) : base(model)
         {
         }
 
@@ -28,7 +29,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
                 SwitchInlineQueryCurrentChat = new SendCallbackData(GeneralCallbackData)
                 {
                     Command = callbackCommand,
-                    DraftId = Draft?.Id
+                    MessageId = Model?.MessageId
                 }
             };
         }

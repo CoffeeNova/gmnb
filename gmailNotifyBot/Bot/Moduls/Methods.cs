@@ -70,8 +70,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             {
                 message.To?.ForEach(t => recipients.Add(t));
                 message.Cc?.ForEach(t => recipients.Add(t));
-                if (message.Bcc != null)
-                    recipients.Add(message.Bcc);
+                message.Bcc?.ForEach(t => recipients.Add(t));
             });
             return recipients.Unique(r => r.Email).ToList();
         }

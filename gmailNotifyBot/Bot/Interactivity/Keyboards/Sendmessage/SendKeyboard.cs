@@ -1,20 +1,20 @@
-﻿using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+﻿using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
 {
     internal abstract class SendKeyboard : Keyboard
     {
-        protected SendKeyboard(FormattedMessage draft)
+        protected SendKeyboard(NmStoreModel model)
         {
-            Draft = draft;
+            Model = model;
         }
 
         public override void CreateInlineKeyboard()
         {
             GeneralCallbackData = new SendCallbackData
             {
-                DraftId = Draft?.Id,
                 MessageKeyboardState = State
             };
             ButtonsInitializer();
@@ -34,12 +34,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
                 Text = text,
                 CallbackData = new SendCallbackData(GeneralCallbackData)
                 {
-                    Command = callbackCommand
+                    Command = callbackCommand,
+                    MessageId = Model?.MessageId
                 }
             };
         }
 
-        protected readonly FormattedMessage Draft;
+        protected readonly NmStoreModel Model;
         protected SendCallbackData GeneralCallbackData;
         protected abstract SendKeyboardState State { get; }
     }

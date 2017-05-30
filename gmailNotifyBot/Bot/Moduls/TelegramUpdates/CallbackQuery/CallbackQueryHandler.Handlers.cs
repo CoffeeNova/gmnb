@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
@@ -375,14 +376,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         public async Task HandleCallbackQContinueWithOld(Query query, SendCallbackData callbackData)
         {
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
-            var to = new List<UserInfo>(nmModel.To);
-            var draft = new FormattedMessage
-            {
-                To = new List<UserInfo>() { Email =}
-            };
-
             //there is the place to delete old message from chat by query.Message.MessageId
-            await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, draft);
+            await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, nmModel);
         }
 
         public async Task HandleCallbackQAddSubject(Query query, SendCallbackData callbackData)
