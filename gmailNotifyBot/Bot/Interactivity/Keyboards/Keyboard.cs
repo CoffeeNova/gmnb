@@ -15,5 +15,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
         protected abstract void ButtonsInitializer();
 
         protected abstract IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="text"></param>
+        /// <param name="actionValue"></param>
+        /// <remarks>Do not use virtual members from constructor!</remarks>
+        protected virtual InlineKeyboardButton InitButton(InlineKeyboardType type, string text, string actionValue)
+        {
+            return new TypedInlineKeyboardButton(type, actionValue)
+            {
+                Text = text
+            };
+        }
     }
 }

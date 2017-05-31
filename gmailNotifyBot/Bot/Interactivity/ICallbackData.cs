@@ -1,6 +1,6 @@
 ﻿namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 {
-    public interface ICallbackCommand
+    public interface ICallbackData
     {
         string Command { get; set; }
     }

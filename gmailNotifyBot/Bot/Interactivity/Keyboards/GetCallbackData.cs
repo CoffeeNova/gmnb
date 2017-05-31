@@ -7,7 +7,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
 
 
     [Serializable]
-    public class GetCallbackData : ICallbackCommand
+    public class GetCallbackData : ICallbackData
     {
         public GetCallbackData()
         {

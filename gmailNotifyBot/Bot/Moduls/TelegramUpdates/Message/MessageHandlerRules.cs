@@ -111,4 +111,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
             return null;
         }
     }
+
+    internal class GetAddTextMessageRule : IMessageHandlerRules
+    {
+        public HandleMessageCommand Handle(TextMessage message, MessageHandler messageHandler)
+        {
+            HandleMessageCommand del = async sender => await messageHandler.HandleGetAddTextMessageCommand(sender);
+            if (message.Text.StartsWith(Commands.ADD_TEXT_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+
+            return null;
+        }
+    }
 }

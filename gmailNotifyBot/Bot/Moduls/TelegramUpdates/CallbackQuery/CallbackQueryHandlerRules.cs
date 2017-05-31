@@ -7,7 +7,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 {
     internal class SendAuthorizeLinkRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAuthorize(sender);
 
@@ -19,7 +19,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class ExpandRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -33,7 +33,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class HideRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -47,7 +47,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class ExpandActionsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -61,7 +61,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class HideActionsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -75,7 +75,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class ToReadRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -89,7 +89,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class ToUnReadRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -103,7 +103,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class ToSpamRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -117,7 +117,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class ToInboxRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -131,7 +131,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class ToTrashRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -145,7 +145,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class ArchiveRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -159,7 +159,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class UnignoreRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -173,7 +173,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class IgnoreRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -187,7 +187,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class NextPageRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -201,7 +201,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class PrevPageRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -215,7 +215,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class AddSubjectRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -229,7 +229,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class ShowAttachmentsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -243,7 +243,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class HideAttachmentsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -258,7 +258,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal class GetAttachmentRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;

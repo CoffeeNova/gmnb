@@ -369,20 +369,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             await _dbWorker.RemoveNmStoreAsync(nmModel);
             //there is the place to delete old message from chat by query.Message.MessageId
-            await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Init);
-            await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = query.From });
+            var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Init);
+            await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = query.From, MessageId = textMessage .MessageId.ToString()});
         }
 
         public async Task HandleCallbackQContinueWithOld(Query query, SendCallbackData callbackData)
         {
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             //there is the place to delete old message from chat by query.Message.MessageId
-            await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, nmModel);
+            var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, nmModel);
+            nmModel.MessageId = textMessage.MessageId.ToString();
+            await _dbWorker.UpdateNmStoreRecordAsync(nmModel);
         }
 
         public async Task HandleCallbackQAddSubject(Query query, SendCallbackData callbackData)
         {
-
+            var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            //nmModel.Subject= query.Data
+            await _botActions.UpdateNewMailMessage(query.From, callbackData.MessageKeyboardState, nmModel);
         }
 
     }

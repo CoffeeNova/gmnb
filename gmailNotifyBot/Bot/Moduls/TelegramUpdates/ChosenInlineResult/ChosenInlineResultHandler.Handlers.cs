@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResult
 {
@@ -15,31 +19,38 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
         }
 
-        public async Task HandleSetToChosenInlineResult(QueryResult.ChosenInlineResult sender,
-            SendCallbackData callbackData)
+        public async Task HandleSetToChosenInlineResult(QueryResult.ChosenInlineResult sender)
         {
-            ////var formattedMessage = await Methods.GetMessage(sender.From, sender.ResultId);
-            //Google.Apis.Gmail.v1.Data.Message draft = null;
-            //if (string.IsNullOrEmpty(callbackData.DraftId))
-            //    draft = new Google.Apis.Gmail.v1.Data.Message();
-            //else
-            //    draft = await Methods.GetDraft(sender.From, callbackData.DraftId);
-
-            //Methods.AddToDraftBody(draft, new List<string> {sender.ResultId});
-
-            //sender.Query
-            //    await 
-            //_botActions.UpdateNewMailMessage(sender.From, se);
+            await HandleRecipientChosenInlineResult(sender, "To");
         }
 
-        public async Task HandleSetCcChosenInlineResult(QueryResult.ChosenInlineResult sender,
-            SendCallbackData callbackData)
+        public async Task HandleSetCcChosenInlineResult(QueryResult.ChosenInlineResult sender)
         {
+            await HandleRecipientChosenInlineResult(sender, "Cc");
         }
 
-        public async Task HandleSetBccChosenInlineResult(QueryResult.ChosenInlineResult sender,
-            SendCallbackData callbackData)
+        public async Task HandleSetBccChosenInlineResult(QueryResult.ChosenInlineResult sender)
         {
+            await HandleRecipientChosenInlineResult(sender, "Bcc");
         }
+
+        private async Task HandleRecipientChosenInlineResult(QueryResult.ChosenInlineResult sender, string recipentProperyName)
+        {
+            var model = await _dbWorker.FindNmStoreAsync(sender.From);
+            if (model == null)
+            {
+                await _botActions.SendLostInfoMessage(sender.From);
+                return;
+            }
+            if (!Methods.EmailAddressValidation(sender.ResultId))
+            {
+                await _botActions.NotRecognizedEmailMessage(sender.From, sender.ResultId);
+                return;
+            }
+            var property = model.GetPropertyValue(recipentProperyName) as List<string>;
+            property?.Add(sender.ResultId);
+            await _botActions.UpdateNewMailMessage(sender.From, SendKeyboardState.Init, model);
+        }
+
     }
 }

@@ -18,6 +18,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             {
                 _botActions = new BotActions(BotInitializer.Instance.BotSettings.Token);
                 InitRules();
+                _dbWorker = new GmailDbContextWorker();
                 BotInitializer.Instance.UpdatesHandler.TelegramChosenInlineEvent += HandleChosenInlineResult;
             }
             catch (Exception ex)
@@ -69,11 +70,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
         {
             _rules.Add(new GetInboxMessagesRule());
             _rules.Add(new GetAllMessagesRule());
-            _rules.Add(new ShowContactsRule());
+            _rules.Add(new GetToContactsRule());
+            _rules.Add(new GetCcContactsRule());
+            _rules.Add(new GetBccContactsRule());
         }
 
         private readonly List<IChosenInlineResultHandlerRules> _rules = new List<IChosenInlineResultHandlerRules>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly GmailDbContextWorker _dbWorker;
     }
 }

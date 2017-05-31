@@ -166,15 +166,34 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
             var nmStore = await _dbWorker.FindNmStoreAsync(sender.From);
             if (nmStore == null)
             {
-                await _botActions.SpecifyNewMailMessage(sender.From, SendKeyboardState.Init);
-                await _dbWorker.AddNewNmStoreAsync(new NmStoreModel {UserId = sender.From});
+                var textMessage = await _botActions.SpecifyNewMailMessage(sender.From, SendKeyboardState.Init);
+                await _dbWorker.AddNewNmStoreAsync(new NmStoreModel {UserId = sender.From, MessageId = textMessage.MessageId.ToString()});
             }
             else
                await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
         }
 
-
         public async Task HandleGetInboxMessagesCommand(ISender sender)
+        {
+            await _botActions.GmailInlineCommandMessage(sender.From);
+        }
+
+        public async Task HandleGetAddTextMessageCommand(ISender sender)
+        {
+            var message = sender as TextMessage;
+            if (message == null) return;
+
+            var model = await _dbWorker.FindNmStoreAsync(message.From);
+            if (model == null)
+            {
+                await _botActions.SendLostInfoMessage(message.From);
+                return;
+            }
+
+            await _botActions.ChangeTextMessageForceReply(message.From, message.MessageId);
+        }
+
+        public async Task HandleGetAddSubjectCommand(ISender sender)
         {
             await _botActions.GmailInlineCommandMessage(sender.From);
         }

@@ -82,6 +82,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
             _rules.Add(new StopWatchRule());
             _rules.Add(new NewMessageRule());
             _rules.Add(new GetInboxRule());
+            _rules.Add(new GetAddTextMessageRule());
         }
 
         private readonly List<IMessageHandlerRules> _rules = new List<IMessageHandlerRules>();

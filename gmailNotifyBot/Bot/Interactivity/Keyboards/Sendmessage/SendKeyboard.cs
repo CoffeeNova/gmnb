@@ -24,20 +24,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="type"></param>
         /// <param name="text"></param>
-        /// <param name="callbackCommand"></param>
-        /// <returns>Do not use virtual members from constructor!</returns>
-        protected virtual InlineKeyboardButton InitButton(string text, string callbackCommand)
+        /// <param name="command"></param>
+        /// <param name="isCallbackData"></param>
+        protected virtual InlineKeyboardButton InitButton(InlineKeyboardType type, string text, string command, bool isCallbackData = true)
         {
-            return new InlineKeyboardButton
+            if (!isCallbackData)
+                return base.InitButton(type, text, command);
+            var callbackData = new SendCallbackData(GeneralCallbackData)
             {
-                Text = text,
-                CallbackData = new SendCallbackData(GeneralCallbackData)
-                {
-                    Command = callbackCommand,
-                    MessageId = Model?.MessageId
-                }
+                Command = command,
+                MessageId = Model?.MessageId
             };
+            return base.InitButton(type, text, callbackData);
         }
 
         protected readonly NmStoreModel Model;

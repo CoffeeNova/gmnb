@@ -8,6 +8,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
     internal interface ICallbackQueryHandlerRules
     {
-        HandleCallbackQueryCommand Handle(ICallbackCommand data, CallbackQueryHandler handler);
+        HandleCallbackQueryCommand Handle(ICallbackData data, CallbackQueryHandler handler);
     }
 }

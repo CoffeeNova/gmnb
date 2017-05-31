@@ -42,7 +42,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             if (query?.Data == null)
                 throw new ArgumentNullException(nameof(query));
 
-            var data = new GetCallbackData(query.Data);
+            ICallbackData data;
+            
+            data = new GetCallbackData(query.Data); 
+            тут
 
             foreach (var rule in _rules)
             {

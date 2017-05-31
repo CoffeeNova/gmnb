@@ -5,4 +5,11 @@
         Add,
         Remove
     }
+
+    public enum Recipients
+    {
+        To,
+        Cc,
+        Bcc
+    }
 }

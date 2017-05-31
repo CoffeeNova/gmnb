@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
@@ -53,7 +54,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
             else
                 await _botActions.ShowContactsAnswerInlineQuery(query.Id, uniqueContacts); //last response
         }
-
 
 
         private async Task<List<FormattedMessage>> GetMessages(ISender sender, int offset = 0, string labelId = null,

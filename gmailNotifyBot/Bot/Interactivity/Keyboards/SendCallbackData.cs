@@ -5,7 +5,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
 {
     [Serializable]
-    public class SendCallbackData : ICallbackCommand
+    public class SendCallbackData : ICallbackData
     {
         public SendCallbackData()
         {

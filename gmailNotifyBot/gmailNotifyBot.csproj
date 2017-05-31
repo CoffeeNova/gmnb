@@ -233,6 +233,7 @@
     <Compile Include="Bot\DataBase\GmailDbContextWorker.NmStore.cs" />
     <Compile Include="Bot\Exceptions\CommandHandlerException.cs" />
     <Compile Include="Bot\Extensions\FileExtension.cs" />
+    <Compile Include="Bot\Extensions\PropertyExtension.cs" />
     <Compile Include="Bot\Interactivity\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\GetCallbackData.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\SendKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\SendKeyboardState.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\SendCallbackData.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\TypedInlineKeyboardButton.cs" />
     <Compile Include="Bot\Moduls\GoogleRequests\NotifyHandler.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\CallbackQuery\ICallbackQueryHandlerRules.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\CallbackQuery\CallbackQueryHandler.cs" />

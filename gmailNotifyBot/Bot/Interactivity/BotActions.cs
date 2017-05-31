@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InputMessageContent;
+using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using TelegramMethods = CoffeeJelly.TelegramBotApiWrapper.Methods.TelegramMethods;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
@@ -122,7 +124,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Inbox:");
         }
 
-
         public async Task ShowShortMessageAnswerInlineQuery(string inlineQueryId, List<FormattedMessage> messages, int? offset = null)
         {
             var inlineQueryResults = new List<InlineQueryResult>();
@@ -146,19 +147,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true);
             else
                 await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
-        }
-
-        private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
-        {
-            const int maxLine = 44;
-
-            var builder = new StringBuilder(maxLine);
-            builder.Append(date);
-            builder.Append(' ');
-            builder.Append(senderName);
-            if (maxLine - builder.Length > senderEmail.Length + 2)
-                builder.Append($" /{senderEmail}/");
-            return builder.ToString();
         }
 
         public async Task EditProceedMessage(string chatId, string messageId)
@@ -244,11 +232,64 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
         }
 
-        public async Task SpecifyNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model = null)
+        public async Task<TextMessage> SpecifyNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model = null)
         {
             var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model);
             var message = BuildNewMailMessage(model);
-            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
+            return await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
+        }
+
+        public async Task SaveAsDraftQuestionMessage(string chatId, SendKeyboardState state)
+        {
+            var keyboard = _sendKeyboardFactory.CreateKeyboard(state);
+            await _telegramMethods.SendMessageAsync(chatId, _storeDraftMessageText, ParseMode.Html, false, false, null, keyboard);
+        }
+
+        public async Task UpdateNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model)
+        {
+            var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model);
+            var message = BuildNewMailMessage(model);
+            await _telegramMethods.EditMessageTextAsync(message, chatId, model.MessageId, null, ParseMode.Html, null, keyboard);
+        }
+
+        public async Task SendAttachmentToChat(string chatId, string fullFileName, string caption)
+        {
+            await _telegramMethods.SendDocument(chatId, fullFileName, caption);
+        }
+
+        public async Task SendLostInfoMessage(string chatId)
+        {
+            var message = $"{Emoji.WhiteExclamation} Info about this message is lost.";
+            await _telegramMethods.SendMessageAsync(chatId, message);
+        }
+
+        public async Task NotRecognizedEmailMessage(string chatId, string email)
+        {
+            var message = $"{Emoji.WhiteExclamation} The address {email} was not recognized.";
+            await _telegramMethods.SendMessageAsync(chatId, message);
+        }
+
+        public async Task ChangeTextMessageForceReply(string chatId, int messageId)
+        {
+            var reply = new ForceReply()
+            {
+                Selective = true
+            };
+            await _telegramMethods.SendMessageAsync(chatId, "testtext",null, false, false, messageId, reply);
+        }
+
+
+        private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
+        {
+            const int maxLine = 44;
+
+            var builder = new StringBuilder(maxLine);
+            builder.Append(date);
+            builder.Append(' ');
+            builder.Append(senderName);
+            if (maxLine - builder.Length > senderEmail.Length + 2)
+                builder.Append($" /{senderEmail}/");
+            return builder.ToString();
         }
 
         private string BuildNewMailMessage(NmStoreModel model)
@@ -266,7 +307,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 builder.AppendLine($"<b>{label}:</b> ");
                 collection.IndexEach((item, i) =>
                 {
-                    builder.Append(item);
+                    builder.Append(Path.GetFileName(item)); //! GetFileName 
                     if (i < collection.Count - 1) builder.Append(',');
                 });
             });
@@ -278,93 +319,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             message.AppendLine($"<b>Subject:</b> {model.Subject}");
             message.AppendLine("<b>Message:</b>");
             message.AppendLine(model.Message);
+            message.AppendLine();
+            iterFunc(message, model.FileName, $"{Emoji.PaperClip}Attachments:"); //Emoji probable cause of error, because it will be send inside <b> tag
             return message.ToString();
-        }
-
-        public async Task SaveAsDraftQuestionMessage(string chatId, SendKeyboardState state)
-        {
-            var keyboard = _sendKeyboardFactory.CreateKeyboard(state);
-            await _telegramMethods.SendMessageAsync(chatId, _storeDraftMessageText, ParseMode.Html, false, false, null, keyboard);
-        }
-
-        public async Task UpdateNewMailMessage(string chatId, int messageId, FormattedMessage draft)
-        {
-            //var keyboard = _sendKeybsoadrFactory.CreateKeyboard(state, draft);
-            //await _telegramMethods.EditMessageTextAsync(_newMessageText, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
-        }
-
-        public async Task SendAttachmentToChat(string chatId, string fullFileName, string caption)
-        {
-            await _telegramMethods.SendDocument(chatId, fullFileName, caption);
-        }
-
-        private ReplyKeyboardMarkup RecipientsReplyKeyboardMarkup(string recepient)
-        {
-            var keyboardMarkup = new ReplyKeyboardMarkup();
-            var testButton = new KeyboardButton
-            {
-                Text = "TEST BUTTON"
-            };
-            var firstRow = new List<KeyboardButton> { testButton };
-            var keyboard = new List<List<KeyboardButton>> { firstRow };
-            keyboardMarkup.Keyboard = keyboard;
-
-            return keyboardMarkup;
-        }
-
-        private InlineKeyboardMarkup NewMessageInlineKeyboardMarkup()
-        {
-            var recipientsButton = new InlineKeyboardButton
-            {
-                Text = $"{Emoji.BoyAndGirl}Add Recipients",
-                SwitchInlineQueryCurrentChat = Commands.RECIPIENTS_INLINE_QUERY_COMMAND
-            };
-            var subjectButton = new InlineKeyboardButton
-            {
-                Text = $"{Emoji.AbcLowerCase}Subject",
-                CallbackData = new GetCallbackData
-                {
-                    Command = Commands.ADD_SUBJECT_COMMAND
-                }
-            };
-            var messageButton = new InlineKeyboardButton
-            {
-                Text = $"{Emoji.M}Message",
-                CallbackData = new GetCallbackData
-                {
-                    Command = Commands.ADD_TEXT_MESSAGE_COMMAND
-                }
-            };
-            var ccButtons = new InlineKeyboardButton
-            {
-                Text = $"{Emoji.BoyAndGirl}CC Recipients",
-                CallbackData = new GetCallbackData
-                {
-                    Command = Commands.CC_RECIPIENTS_MESSAGE_COMMAND
-                }
-            };
-            var bccButtons = new InlineKeyboardButton
-            {
-                Text = $"{Emoji.MaleFemaleShadows}BCC Recipients",
-                CallbackData = new GetCallbackData
-                {
-                    Command = Commands.BCC_RECIPIENTS_MESSAGE_COMMAND
-                }
-            };
-            var firstRow = new List<InlineKeyboardButton>
-            {
-                recipientsButton,
-                subjectButton,
-                messageButton
-            };
-            var secondRow = new List<InlineKeyboardButton>
-            {
-                ccButtons,
-                bccButtons
-            };
-            var inlineKeyboard = new List<List<InlineKeyboardButton>> { firstRow, secondRow };
-
-            return new InlineKeyboardMarkup { InlineKeyboard = inlineKeyboard };
         }
 
         private readonly TelegramMethods _telegramMethods;

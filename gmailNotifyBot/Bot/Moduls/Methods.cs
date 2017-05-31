@@ -10,6 +10,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Google.Apis.Gmail.v1.Data;
 using MimeKit;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Google.Apis.Gmail.v1;
 using MimeKit.Text;
@@ -63,14 +64,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return new FormattedMessage(messageResponse);
         }
 
-        public static List<UserInfo> GetUniqueContactsFromMessageList(List<FormattedMessage> messages)
+        public static List<UserInfo> GetUniqueContactsFromMessageList(List<FormattedMessage> messages, bool includeCc = false, bool includeBcc = false)
         {
             var recipients = new List<UserInfo>();
             messages.ForEach(message =>
             {
                 message.To?.ForEach(t => recipients.Add(t));
-                message.Cc?.ForEach(t => recipients.Add(t));
-                message.Bcc?.ForEach(t => recipients.Add(t));
+                if (includeCc)
+                    message.Cc?.ForEach(t => recipients.Add(t));
+                if (includeBcc)
+                    message.Bcc?.ForEach(t => recipients.Add(t));
             });
             return recipients.Unique(r => r.Email).ToList();
         }
@@ -170,8 +173,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 var mimeMessage = MimeMessage.Load(stream, cancellationToken);
                 FillMimeMessage(mimeMessage, to, subject, text, cc, bcc, fullFileNameList);
                 var message = TransformMimeMessageToMessage(mimeMessage);
-                return new Draft {Message = message};
+                return new Draft { Message = message };
             }
+        }
+
+        public static bool EmailAddressValidation(string email)
+        {
+            return Regex.IsMatch(email, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z",
+                RegexOptions.IgnoreCase);
         }
 
         private static Message TransformMimeMessageToMessage(MimeMessage mimeMsg)

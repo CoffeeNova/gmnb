@@ -39,7 +39,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
         }
     }
 
-    internal class ShowContactsRule : IInlineQueryHandlerRules
+    internal class ShowToContactsRule : IInlineQueryHandlerRules
     {
         public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
         {
@@ -48,7 +48,37 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
                 await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent);
             };
 
-            if (query.Query.StartsWith(Commands.RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (query.Query.StartsWith(Commands.TO_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
+
+    internal class ShowCcContactsRule : IInlineQueryHandlerRules
+    {
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
+        {
+            HandleInlineQueryCommand del = async () =>
+            {
+                await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent);
+            };
+
+            if (query.Query.StartsWith(Commands.CC_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
+
+    internal class ShowBccContactsRule : IInlineQueryHandlerRules
+    {
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
+        {
+            HandleInlineQueryCommand del = async () =>
+            {
+                await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent);
+            };
+
+            if (query.Query.StartsWith(Commands.BCC_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }

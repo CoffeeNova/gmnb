@@ -15,23 +15,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
 
         protected override void ButtonsInitializer()
         {
-            SaveButton = InitButton(SaveButtonCaption, SaveButtonCommand);
-            ContinueButton = InitButton(ContinueButtonCaption, ContinueButtonCommand);
-            NotSaveButton = InitButton(NotSaveButtonCaption, NotSaveButtonCommand);
+            SaveButton = InitButton(InlineKeyboardType.CallbackData, SaveButtonCaption, SaveButtonCommand);
+            ContinueButton = InitButton(InlineKeyboardType.CallbackData, ContinueButtonCaption, ContinueButtonCommand);
+            NotSaveButton = InitButton(InlineKeyboardType.CallbackData, NotSaveButtonCaption, NotSaveButtonCommand);
 
-        }
-
-        protected override InlineKeyboardButton InitButton(string text, string callbackCommand)
-        {
-            return new InlineKeyboardButton
-            {
-                Text = text,
-                SwitchInlineQueryCurrentChat = new SendCallbackData(GeneralCallbackData)
-                {
-                    Command = callbackCommand,
-                    MessageId = Model?.MessageId
-                }
-            };
         }
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()

@@ -60,5 +60,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
             return Task.Run(() => AddNewNmStore(model));
         }
+
+        public void UpdateUserRecord(NmStoreModel model)
+        {
+            using (var db = new GmailBotDbContext())
+            {
+                db.NmStore.Attach(model);
+                db.Entry(model).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
+
+        public Task UpdateNmStoreRecordAsync(NmStoreModel model)
+        {
+            return Task.Run(() => UpdateUserRecord(model));
+        }
     }
 }

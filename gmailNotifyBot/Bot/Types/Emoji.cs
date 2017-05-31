@@ -35,6 +35,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Types
         public const string QuestionSign = "\u2753";
         public const string FloppyDisk = "\ud83d\udcbe";
         public const string Memo = "\ud83d\udcdd";
-
+        public const string WhiteExclamation = "\u2755";
+        public const string PaperClip = "\ud83d\udcce";
     }
 }
