@@ -19,8 +19,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
             ToButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, ToButtonCaption, ToButtonCommand, false);
             CcButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, CcButtonCaption, CcButtonCommand, false);
             BccButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, BccButtonCaption, BccButtonCommand, false);
-            MessageButton = InitButton(InlineKeyboardType.CallbackData, SubjectCaption, SubjectButtonCommand);
-            SubjectButton = InitButton(InlineKeyboardType.CallbackData, MessageButtonCaption, MessageButtonCommand);
+            MessageButton = InitButton(InlineKeyboardType.CallbackData, MessageButtonCaption, MessageButtonCommand);
+            SubjectButton = InitButton(InlineKeyboardType.CallbackData, SubjectCaption, SubjectButtonCommand);
         }
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
@@ -34,10 +34,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
                 RecipientsRow.Add(BccButton);
 
             MessageRow = new List<InlineKeyboardButton>();
-            if (MessageButton != null)
-                MessageRow.Add(MessageButton);
             if (SubjectButton != null)
                 MessageRow.Add(SubjectButton);
+            if (MessageButton != null)
+                MessageRow.Add(MessageButton);
             var inlineKeyboard = new List<List<InlineKeyboardButton>> { RecipientsRow, MessageRow };
             if (Model == null)
                 return inlineKeyboard;

@@ -7,7 +7,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
 
 
     [Serializable]
-    public class GetCallbackData : ICallbackData
+    public class GetCallbackData : CallbackData
     {
         public GetCallbackData()
         {
@@ -46,7 +46,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
 
         }
 
-        public string Command { get; set; } = "";
 
         public string MessageId { get; set; } = "";
 
@@ -56,11 +55,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
 
         public GetKeyboardState MessageKeyboardState { get; set; } = GetKeyboardState.Minimized;
 
-        protected const char SEPARATOR = ':';
-
         public static implicit operator string(GetCallbackData obj)
         {
-            return $"{obj.Command}{SEPARATOR}{obj.MessageId}{SEPARATOR}{obj.Page}{SEPARATOR}{obj.MessageKeyboardState.ToEnumString()}{SEPARATOR}{obj.AttachmentIndex}";
+            return $"{obj.Command}{SEPARATOR}{obj.MessageId}{SEPARATOR}{obj.Page}{SEPARATOR}" +
+                   $"{obj.MessageKeyboardState.ToEnumString()}{SEPARATOR}{obj.AttachmentIndex}{SEPARATOR}{obj.Type.Name}";
         }
+
+        public override Type Type { get; } = typeof(GetCallbackData);
     }
 }

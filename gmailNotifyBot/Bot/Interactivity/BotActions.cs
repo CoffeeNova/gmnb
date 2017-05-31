@@ -42,7 +42,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 Text = "Reauthorize",
                 CallbackData = new GetCallbackData
                 {
-                    Command = Commands.CONNECT_COMMAND
+                    Command = Commands.AUTHORIZE_COMMAND
                 }
             };
             var keyboard = new InlineKeyboardMarkup
@@ -119,7 +119,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(userId, $"{Emoji.Denied}  You do not have any messages left.");
         }
 
-        public async Task GmailInlineCommandMessage(string userId)
+        public async Task GmailInlineInboxCommandMessage(string userId)
+        {
+            await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Inbox:");
+        }
+
+        public async Task GmailInlineAllCommandMessage(string userId)
         {
             await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Inbox:");
         }

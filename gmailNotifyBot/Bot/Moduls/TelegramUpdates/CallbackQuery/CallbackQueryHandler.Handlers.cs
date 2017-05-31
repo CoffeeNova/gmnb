@@ -13,6 +13,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 {
@@ -21,7 +22,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
     public partial class CallbackQueryHandler
     {
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.CONNECT_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="Commands.AUTHORIZE_COMMAND"/>.
         /// This method calls <see cref="Authorizer.SendAuthorizeLink"/> that forms URL link and provides it to the chat as a message.
         /// </summary>
         /// <param name="query"></param>
@@ -382,11 +383,28 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             await _dbWorker.UpdateNmStoreRecordAsync(nmModel);
         }
 
+        //public async Task HandleCallbackQAddSubject(Query query, SendCallbackData callbackData)
+        //{
+        //    var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+        //    //nmModel.Subject= query.Data
+        //    await _botActions.UpdateNewMailMessage(query.From, callbackData.MessageKeyboardState, nmModel);
+        //}
+
+        public async Task HandleCallbackQAddTextMessage(Query query, SendCallbackData callbackData)
+        {
+            var model = await _dbWorker.FindNmStoreAsync(query.From);
+            if (model == null)
+            {
+                await _botActions.SendLostInfoMessage(query.From);
+                return;
+            }
+
+            await _botActions.ChangeTextMessageForceReply(query.From, query.Message.MessageId);
+        }
+
         public async Task HandleCallbackQAddSubject(Query query, SendCallbackData callbackData)
         {
-            var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
-            //nmModel.Subject= query.Data
-            await _botActions.UpdateNewMailMessage(query.From, callbackData.MessageKeyboardState, nmModel);
+            await _botActions.GmailInlineInboxCommandMessage(query.From);
         }
 
     }

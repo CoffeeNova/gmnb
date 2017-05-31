@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
@@ -31,7 +32,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
                 InitRules();
                 BotInitializer.Instance.UpdatesHandler.TelegramCallbackQueryEvent += Handle;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new TypeInitializationException(nameof(CallbackQueryHandler), ex);
             }
@@ -42,10 +43,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             if (query?.Data == null)
                 throw new ArgumentNullException(nameof(query));
 
-            ICallbackData data;
-            
-            data = new GetCallbackData(query.Data); 
-            тут
+            CallbackData data;
+            var callbackDataType = query.Data.Split(CallbackData.SEPARATOR).Last();
+            if (callbackDataType == typeof(GetCallbackData).Name)
+                data = CallbackData.Create<GetCallbackData>(query.Data);
+            else if (callbackDataType == typeof(SendCallbackData).Name)
+                data = CallbackData.Create<SendCallbackData>(query.Data);
+            else
+                return;
 
             foreach (var rule in _rules)
             {
@@ -103,13 +108,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             _rules.Add(new IgnoreRule());
             _rules.Add(new NextPageRule());
             _rules.Add(new PrevPageRule());
-            _rules.Add(new AddSubjectRule());
             _rules.Add(new ShowAttachmentsRule());
             _rules.Add(new HideAttachmentsRule());
             _rules.Add(new GetAttachmentRule());
+            _rules.Add(new AddSubjectRule());
+            _rules.Add(new AddTextMessageRule());
         }
 
-       
+
         private readonly List<ICallbackQueryHandlerRules> _rules = new List<ICallbackQueryHandlerRules>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

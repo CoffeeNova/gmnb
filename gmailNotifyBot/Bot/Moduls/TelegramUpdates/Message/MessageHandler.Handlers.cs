@@ -9,11 +9,23 @@ using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using Google.Apis.Gmail.v1.Data;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 {
     public partial class MessageHandler
     {
+        /// <summary>
+        /// Handles <see cref="Commands.AUTHORIZE_COMMAND"/>.
+        /// This method calls <see cref="Authorizer.SendAuthorizeLink"/> that forms URL link and provides it to the chat as a message.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public async Task HandleAuthorizeCommand(ISender query)
+        {
+            await _authorizer.SendAuthorizeLink(query);
+        }
+
         public async Task HandleTestMessageCommand(ISender sender)
         {
             sender.NullInspect(nameof(sender));
@@ -175,27 +187,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 
         public async Task HandleGetInboxMessagesCommand(ISender sender)
         {
-            await _botActions.GmailInlineCommandMessage(sender.From);
+            await _botActions.GmailInlineInboxCommandMessage(sender.From);
         }
 
-        public async Task HandleGetAddTextMessageCommand(ISender sender)
+        public async Task HandleGetAllMessagesCommand(ISender sender)
         {
-            var message = sender as TextMessage;
-            if (message == null) return;
-
-            var model = await _dbWorker.FindNmStoreAsync(message.From);
-            if (model == null)
-            {
-                await _botActions.SendLostInfoMessage(message.From);
-                return;
-            }
-
-            await _botActions.ChangeTextMessageForceReply(message.From, message.MessageId);
+            await _botActions.GmailInlineAllCommandMessage(sender.From);
         }
 
-        public async Task HandleGetAddSubjectCommand(ISender sender)
-        {
-            await _botActions.GmailInlineCommandMessage(sender.From);
-        }
+
     }
 }

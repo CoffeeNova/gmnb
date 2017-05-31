@@ -77,7 +77,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
             if (UpdatesHandler == null)
                 throw new InvalidOperationException($"{nameof(UpdatesHandler)} property must be initialized first.");
-            MessageHandler = new MessageHandler(BotSettings.Token, UpdatesHandler);
+            MessageHandler = new MessageHandler();
         }
 
         public void InitializeCallbackQueryHandler()

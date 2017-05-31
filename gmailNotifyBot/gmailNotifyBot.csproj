@@ -232,12 +232,13 @@
     <Compile Include="Bot\DataBase\DataBaseModels\NmStoreModel.cs" />
     <Compile Include="Bot\DataBase\GmailDbContextWorker.NmStore.cs" />
     <Compile Include="Bot\Exceptions\CommandHandlerException.cs" />
+    <Compile Include="Bot\Extensions\CallbackDataException.cs" />
     <Compile Include="Bot\Extensions\FileExtension.cs" />
     <Compile Include="Bot\Extensions\PropertyExtension.cs" />
     <Compile Include="Bot\Interactivity\BotActions.cs" />
     <Compile Include="Bot\BotSettings.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\GetCallbackData.cs" />
-    <Compile Include="Bot\Interactivity\ICallbackData.cs" />
+    <Compile Include="Bot\Interactivity\CallbackData.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\ButtonCaption.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\Factory.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\GetKeyboard.cs" />

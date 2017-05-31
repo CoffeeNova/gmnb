@@ -5,7 +5,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
 {
     [Serializable]
-    public class SendCallbackData : ICallbackData
+    public class SendCallbackData : CallbackData
     {
         public SendCallbackData()
         {
@@ -42,19 +42,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
 
         }
 
-        public string Command { get; set; } = "";
-
         public string MessageId { get; set; } = "";
 
         public string DraftId { get; set; } = "";
 
         public SendKeyboardState MessageKeyboardState { get; set; } = SendKeyboardState.Init;
 
-        protected const char SEPARATOR = ':';
-
         public static implicit operator string(SendCallbackData obj)
         {
-            return $"{obj.Command}{SEPARATOR}{obj.MessageId}{SEPARATOR}{obj.DraftId}{SEPARATOR}{obj.MessageKeyboardState.ToEnumString()}{SEPARATOR}";
+            return $"{obj.Command}{SEPARATOR}{obj.MessageId}{SEPARATOR}{obj.DraftId}" +
+                   $"{SEPARATOR}{obj.MessageKeyboardState.ToEnumString()}{SEPARATOR}{obj.Type.Name}";
         }
+
+        public override Type Type { get; } = typeof(SendCallbackData);
     }
 }

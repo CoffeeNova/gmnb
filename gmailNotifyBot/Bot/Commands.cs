@@ -8,7 +8,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
     public static class Commands
     {
         public const string SETTINGS_COMMAND = "/settings";
-        public const string CONNECT_COMMAND = "/connect";
+        public const string AUTHORIZE_COMMAND = "/connect";
         public const string TESTNAME_COMMAND = "/testname";
         public const string TESTMESSAGE_COMMAND = "/testmessage";
         public const string TESTTHREAD_COMMAND = "/testthread";

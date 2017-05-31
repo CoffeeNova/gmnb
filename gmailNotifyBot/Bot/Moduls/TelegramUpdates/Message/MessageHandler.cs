@@ -5,6 +5,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using NLog;
 
@@ -16,15 +17,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
     /// <remarks>Implemented using the rules pattern.</remarks>
     public partial class MessageHandler
     {
-        public MessageHandler(string token, UpdatesHandler updatesHandler)
+        public MessageHandler()
         {
-            token.NullInspect(nameof(token));
-            updatesHandler.NullInspect(nameof(updatesHandler));
-
-            _dbWorker = new GmailDbContextWorker();
-            _botActions = new BotActions(token);
-            InitRules();
-            updatesHandler.TelegramTextMessageEvent += Handle;
+            try
+            {
+                _authorizer = BotInitializer.Instance.Authorizer;
+                _dbWorker = new GmailDbContextWorker();
+                _botSettings = BotInitializer.Instance.BotSettings;
+                _botActions = new BotActions(_botSettings.Token);
+                InitRules();
+                BotInitializer.Instance.UpdatesHandler.TelegramTextMessageEvent += Handle;
+            }
+            catch (Exception ex)
+            {
+                throw new TypeInitializationException(nameof(MessageHandler), ex);
+            }
         }
 
         public async void Handle(TextMessage message)
@@ -73,6 +80,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 
         private void InitRules()
         {
+            _rules.Add(new AuthorizeRule());
             _rules.Add(new TestMessageRule());
             _rules.Add(new TestNameRule());
             _rules.Add(new TestThreadRule());
@@ -82,13 +90,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
             _rules.Add(new StopWatchRule());
             _rules.Add(new NewMessageRule());
             _rules.Add(new GetInboxRule());
-            _rules.Add(new GetAddTextMessageRule());
+            _rules.Add(new GetAllRule());
         }
 
         private readonly List<IMessageHandlerRules> _rules = new List<IMessageHandlerRules>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly GmailDbContextWorker _dbWorker;
+        private readonly BotSettings _botSettings;
+        private readonly Authorizer _authorizer;
     }
 
 }

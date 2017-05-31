@@ -3,6 +3,19 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 {
+    internal class AuthorizeRule : IMessageHandlerRules
+    {
+        public HandleMessageCommand Handle(TextMessage message, MessageHandler handler)
+        {
+            HandleMessageCommand del = async sender => await handler.HandleAuthorizeCommand(sender);
+
+            if (message.Text.StartsWith(Commands.AUTHORIZE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+
+            return null;
+        }
+    }
+
     internal class TestMessageRule : IMessageHandlerRules
     {
         public HandleMessageCommand Handle(TextMessage message, MessageHandler handler)
@@ -105,19 +118,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
         public HandleMessageCommand Handle(TextMessage message, MessageHandler messageHandler)
         {
             HandleMessageCommand del = async sender => await messageHandler.HandleGetInboxMessagesCommand(sender);
-            if (message.Text.StartsWith(Commands.CONNECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (message.Text.StartsWith(Commands.INBOX_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
             return null;
         }
     }
 
-    internal class GetAddTextMessageRule : IMessageHandlerRules
+    internal class GetAllRule : IMessageHandlerRules
     {
         public HandleMessageCommand Handle(TextMessage message, MessageHandler messageHandler)
         {
-            HandleMessageCommand del = async sender => await messageHandler.HandleGetAddTextMessageCommand(sender);
-            if (message.Text.StartsWith(Commands.ADD_TEXT_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            HandleMessageCommand del = async sender => await messageHandler.HandleGetAllMessagesCommand(sender);
+            if (message.Text.StartsWith(Commands.ALL_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
             return null;
