@@ -68,7 +68,6 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
         public Task<TextMessage> EditMessageTextAsync(string newText, string chatId = null, string messageId = null,
                         string inlineMessageId = null, ParseMode? parseMode = null, bool? disabeleWebPagePreview = null,
                         IMarkup replyMarkup = null, CancellationToken cancellationToken = default(CancellationToken))
-
         {
             return
                 Task.Run(

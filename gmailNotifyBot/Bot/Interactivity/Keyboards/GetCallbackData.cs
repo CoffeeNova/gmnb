@@ -1,6 +1,7 @@
 ﻿using System;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
 {
@@ -36,7 +37,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
                 Command = splitted[0];
                 MessageId = splitted[1];
                 Page = Int32.Parse(splitted[2]);
-                MessageKeyboardState = splitted[3].ToEnum<GetKeyboardState>();
+                MessageKeyboardState = (GetKeyboardState) Enum.Parse(typeof(GetKeyboardState), splitted[3]);
                 AttachmentIndex = Int32.Parse(splitted[4]);
             }
             catch
@@ -58,9 +59,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
         public static implicit operator string(GetCallbackData obj)
         {
             return $"{obj.Command}{SEPARATOR}{obj.MessageId}{SEPARATOR}{obj.Page}{SEPARATOR}" +
-                   $"{obj.MessageKeyboardState.ToEnumString()}{SEPARATOR}{obj.AttachmentIndex}{SEPARATOR}{obj.Type.Name}";
+                   $"{(int)obj.MessageKeyboardState}{SEPARATOR}{obj.AttachmentIndex}{SEPARATOR}{(int)obj.Type}";
         }
 
-        public override Type Type { get; } = typeof(GetCallbackData);
+        public override CallbackDataType Type { get; } = CallbackDataType.GetCallbackData;
     }
 }

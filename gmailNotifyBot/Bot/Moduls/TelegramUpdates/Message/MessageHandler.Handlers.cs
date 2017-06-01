@@ -175,26 +175,41 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
 
         public async Task HandleNewMessageCommand(ISender sender)
         {
+            Methods.SearchServiceByUserId(sender.From);
             var nmStore = await _dbWorker.FindNmStoreAsync(sender.From);
             if (nmStore == null)
             {
                 var textMessage = await _botActions.SpecifyNewMailMessage(sender.From, SendKeyboardState.Init);
-                await _dbWorker.AddNewNmStoreAsync(new NmStoreModel {UserId = sender.From, MessageId = textMessage.MessageId.ToString()});
+                await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = sender.From, MessageId = textMessage.MessageId });
             }
             else
-               await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
+                await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
         }
 
         public async Task HandleGetInboxMessagesCommand(ISender sender)
         {
+            Methods.SearchServiceByUserId(sender.From);
             await _botActions.GmailInlineInboxCommandMessage(sender.From);
         }
 
         public async Task HandleGetAllMessagesCommand(ISender sender)
         {
+            Methods.SearchServiceByUserId(sender.From);
             await _botActions.GmailInlineAllCommandMessage(sender.From);
         }
 
-
+        public async Task HandleTextMessageForceReply(TextMessage message)
+        {
+            //var model = await _dbWorker.FindNmStoreAsync(message.From);
+            //if (model == null)
+            //{
+            //    await _botActions.SendLostInfoMessage(message.From);
+            //    return;
+            //}
+            //if (message.Text != null)
+            //    model.Message = message.Text;
+            //if(message.Document)
+            //await _botActions.UpdateNewMailMessage(message.From);
+        }
     }
 }

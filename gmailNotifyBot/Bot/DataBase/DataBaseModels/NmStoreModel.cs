@@ -11,7 +11,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public int UserId { get; set; }
 
-        public string MessageId { get; set; }
+        public int MessageId { get; set; }
 
         public string Subject { get; set; }
 

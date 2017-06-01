@@ -188,10 +188,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var displayedMessage = page == 0
                 ? Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
                 : Emoji.RedArrowedEnvelope + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
-            await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
+             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
-        public async Task SendAttachmentsListMessage(string chatId, int messageId, FormattedMessage formattedMessage, GetKeyboardState state, int page=0)
+        public async Task SendAttachmentsListMessage(string chatId, int messageId, FormattedMessage formattedMessage, GetKeyboardState state, int page = 0)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
             if (!formattedMessage.HasAttachments)
@@ -254,7 +254,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         {
             var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model);
             var message = BuildNewMailMessage(model);
-            await _telegramMethods.EditMessageTextAsync(message, chatId, model.MessageId, null, ParseMode.Html, null, keyboard);
+            await _telegramMethods.EditMessageTextAsync(message, chatId, model.MessageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
         public async Task SendAttachmentToChat(string chatId, string fullFileName, string caption)
@@ -274,15 +274,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, message);
         }
 
-        public async Task ChangeTextMessageForceReply(string chatId, int messageId)
+        public async Task ChangeTextMessageForceReply(string chatId)
         {
-            var reply = new ForceReply()
+            var reply = new ForceReply
             {
                 Selective = true
             };
-            await _telegramMethods.SendMessageAsync(chatId, "testtext",null, false, false, messageId, reply);
+            var message = $"<b>Message:</b>\r\n{Emoji.InfoSign}<i>To attach files drop them into the chat.</i>";
+
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
 
+        public async Task ChangeSubjectForceReply(string chatId)
+        {
+            var reply = new ForceReply
+            {
+                Selective = true
+            };
+            var message = $"<b>Subject:</b>";
+
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
+        }
 
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
         {
@@ -332,7 +344,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         private readonly TelegramMethods _telegramMethods;
         private readonly string _newMessageMainText =
                         $"{Emoji.New} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: ";
-                        
+
         private readonly string _newMessageTipText = $"{Emoji.InfoSign} You can use quick command, just type in the chat:" +
                         $"{Environment.NewLine}<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
                         $"{Environment.NewLine}and press Enter to quick send the email." +
@@ -341,7 +353,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         private readonly string _storeDraftMessageText =
             $"{Emoji.QuestionSign} You have already started to create a new message. " +
             $"You can save it as draft and create new instance of new message or continue composing.";
-                            
+
         private readonly BotSettings _settings = BotInitializer.Instance.BotSettings;
         private readonly string _contactsThumbUrl;
         private readonly GetKeyboardFactory _getKeyboardFactory = new GetKeyboardFactory();

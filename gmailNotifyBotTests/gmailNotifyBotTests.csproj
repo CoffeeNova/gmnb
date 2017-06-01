@@ -92,6 +92,7 @@
     <Compile Include="Bot\FormattedMessageHelperTests.cs" />
     <Compile Include="Controllers\PushControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="temp.json" />
     <Compile Include="Tools.cs" />
   </ItemGroup>
   <ItemGroup>

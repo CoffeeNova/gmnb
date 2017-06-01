@@ -35,6 +35,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         public static async Task<FormattedMessage> GetMessage(string userId, string messageId)
         {
             var service = SearchServiceByUserId(userId);
+            return await GetMessage(service, messageId);
+        }
+
+        public static async Task<FormattedMessage> GetMessage(Service service, string messageId)
+        {
             var getRequest = service.GmailService.Users.Messages.Get("me", messageId);
             var messageResponse = await getRequest.ExecuteAsync();
             return new FormattedMessage(messageResponse);

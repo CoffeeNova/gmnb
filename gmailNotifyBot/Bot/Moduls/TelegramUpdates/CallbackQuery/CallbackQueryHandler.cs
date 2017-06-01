@@ -9,6 +9,8 @@ using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Exceptions;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
@@ -45,9 +47,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
 
             CallbackData data;
             var callbackDataType = query.Data.Split(CallbackData.SEPARATOR).Last();
-            if (callbackDataType == typeof(GetCallbackData).Name)
+            if (int.Parse(callbackDataType) == (int)CallbackDataType.GetCallbackData)
                 data = CallbackData.Create<GetCallbackData>(query.Data);
-            else if (callbackDataType == typeof(SendCallbackData).Name)
+            else if (int.Parse(callbackDataType) == (int)CallbackDataType.SendCallbackData)
                 data = CallbackData.Create<SendCallbackData>(query.Data);
             else
                 return;
@@ -56,9 +58,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             {
                 var rate = rule.Handle(data, this);
                 if (rate == null) continue;
-
-                Exception exception = null;
                 LogMaker.Log(Logger, $"{query.Data} command received from user with id {(string)query.From}", false);
+                Exception exception = null;
                 try
                 {
                     await rate.Invoke(query);
@@ -78,6 +79,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
                     exception = ex;
                     await _botActions.AuthorizationErrorMessage(query.From);
                 }
+                catch (TelegramMethodsException ex)
+                {
+                    exception = ex;
+                }
                 catch (Exception ex)
                 {
                     exception = ex;
@@ -86,7 +91,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
                 finally
                 {
                     if (exception != null)
-                        LogMaker.Log(Logger, exception, $"An exception has been thrown in processing CallbackQuery with command {query.Data}");
+                        LogMaker.Log(Logger, exception,
+                            $"An exception has been thrown in processing CallbackQuery with command {query.Data}");
                 }
             }
         }
@@ -113,6 +119,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
             _rules.Add(new GetAttachmentRule());
             _rules.Add(new AddSubjectRule());
             _rules.Add(new AddTextMessageRule());
+            _rules.Add(new SaveAsDraftRule());
+            _rules.Add(new NotSaveAsDraftRule());
+            _rules.Add(new CotinueWithOldRule());
         }
 
 

@@ -284,6 +284,45 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
         }
     }
 
+    internal class SaveAsDraftRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SendCallbackData))
+                return null;
 
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSaveAsDraft(sender, data as SendCallbackData);
+            if (data.Command.StartsWith(Commands.SAVE_AS_DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
 
+    internal class NotSaveAsDraftRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SendCallbackData))
+                return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQNotSaveAsDraft(sender, data as SendCallbackData);
+            if (data.Command.StartsWith(Commands.NOT_SAVE_AS_DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
+
+    internal class CotinueWithOldRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SendCallbackData))
+                return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQContinueWithOld(sender, data as SendCallbackData);
+            if (data.Command.StartsWith(Commands.CONTINUE_COMPOSE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
 }

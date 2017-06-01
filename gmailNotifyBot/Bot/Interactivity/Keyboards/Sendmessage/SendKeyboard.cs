@@ -35,7 +35,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
             var callbackData = new SendCallbackData(GeneralCallbackData)
             {
                 Command = command,
-                MessageId = Model?.MessageId
+                MessageId = Model?.MessageId.ToString()
             };
             return base.InitButton(type, text, callbackData);
         }

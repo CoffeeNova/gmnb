@@ -12,4 +12,10 @@
         Cc,
         Bcc
     }
+
+    public enum CallbackDataType
+    {
+        GetCallbackData,
+        SendCallbackData
+    }
 }

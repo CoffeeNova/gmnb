@@ -48,7 +48,7 @@ namespace CoffeeJelly.gmailNotifyBot.Models
             db.NmStore.Add(new NmStoreModel
             {
                 UserId=0,
-                MessageId = "0",
+                MessageId = 0,
                 To = new List<string> { "to@gmail.com" },
                 Cc = new List<string> { "cc@gmail.com" },
                 Bcc = new List<string> { "bcc@gmail.com" },

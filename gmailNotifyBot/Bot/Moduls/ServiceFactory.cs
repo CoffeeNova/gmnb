@@ -19,6 +19,8 @@ using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 {
+    internal delegate Service GetService(string userId);
+
     public sealed class ServiceFactory
     {
         public static ServiceFactory GetInstanse(Secrets secrets)

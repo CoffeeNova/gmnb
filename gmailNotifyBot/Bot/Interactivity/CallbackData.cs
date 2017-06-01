@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 {
@@ -24,7 +25,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         }
 
-        public abstract Type Type { get; }
+        public abstract CallbackDataType Type { get; }
         public string Command { get; set; } = "";
 
         public const char SEPARATOR = ':';
