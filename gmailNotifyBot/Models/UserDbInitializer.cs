@@ -21,10 +21,10 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 Email = "test@gmail.com",
                 AccessToken = "testaccess",
                 EmailVerified = true,
-                ExpiresIn =100,
+                ExpiresIn = 100,
                 GoogleUserId = "1",
                 IdToken = "1",
-                RefreshToken ="testrefresh",
+                RefreshToken = "testrefresh",
                 TokenType = "test"
             });
             db.PendingUser.Add(new PendingUserModel
@@ -39,7 +39,7 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 Access = UserAccess.Full,
                 IgnoreList = new List<string>
                 {
-                 "testadr1@gmail.com",   
+                 "testadr1@gmail.com",
                  "testadr2@gmail.com"
                 },
                 Expiration = 100,
@@ -47,14 +47,18 @@ namespace CoffeeJelly.gmailNotifyBot.Models
             });
             db.NmStore.Add(new NmStoreModel
             {
-                UserId=0,
+                UserId = 0,
                 MessageId = 0,
                 To = new List<string> { "to@gmail.com" },
                 Cc = new List<string> { "cc@gmail.com" },
                 Bcc = new List<string> { "bcc@gmail.com" },
                 Message = "testMessage",
                 Subject = "testSubj",
-                FileName = new List<string> { @"path\file1", @"path\file2"}
+                File = new List<FileStore>
+                {
+                    new FileStore { FileId = "testFileId1", FileName = "testFileName1"},
+                    new FileStore { FileId = "testFileId2", FileName = "testFileName2"}
+                }
             });
             base.Seed(db);
         }

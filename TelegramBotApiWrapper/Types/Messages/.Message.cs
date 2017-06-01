@@ -66,5 +66,13 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.Messages
         [JsonConverter(typeof(DateTimeConverter))]
         [JsonProperty("edit_date")]
         public DateTime? EditDate { get; set; }
+
+        /// <summary>
+        /// Optional. For replies, the original message. 
+        /// </summary>
+        /// <remark>Note that the <see cref="Message"/> object in this field will not contain further <see cref="ReplyToMessage"/> properties even if it itself is a reply.</remark>
+        [JsonConverter(typeof(MessageConverter))]
+        [JsonProperty("reply_to_message")]
+        public Message ReplyToMessage { get; set; }
     }
 }

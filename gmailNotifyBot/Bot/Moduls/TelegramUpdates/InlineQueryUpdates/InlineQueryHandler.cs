@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
-using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using NLog;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdates
 {
     using Query = TelegramBotApiWrapper.Types.InlineQuery;
     public partial class InlineQueryHandler
@@ -60,7 +59,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
                 finally
                 {
                     if (exception != null)
-                        LogMaker.Log(Logger, exception, $"An exception has been thrown in processing InlineQuery with command {query.Query}");
+                        LogMaker.Log(Logger, exception, $"An exception has been thrown in processing InlineQuery with query: {query.Query}");
                 }
             }
         }

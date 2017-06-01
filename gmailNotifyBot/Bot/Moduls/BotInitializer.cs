@@ -8,13 +8,13 @@ using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResult;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using Google.Apis.Auth.OAuth2;
 using NLog;
+using CallbackQueryHandler = CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates.CallbackQueryHandler;
+using ChosenInlineResultHandler = CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResultUpdates.ChosenInlineResultHandler;
+using InlineQueryHandler = CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdates.InlineQueryHandler;
+using MessageHandler = CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates.MessageHandler;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 {

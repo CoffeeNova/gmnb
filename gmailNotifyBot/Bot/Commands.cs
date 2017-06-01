@@ -48,5 +48,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string SAVE_AS_DRAFT_COMMAND = "/saveasdraft";
         public const string CONTINUE_COMPOSE_COMMAND = "/continuecompose";
         public const string NOT_SAVE_AS_DRAFT_COMMAND = "/notsaveasdraft";
+        public const string MESSAGE_FORCE_REPLY_COMMAND = "Message:";
+        public const string SUBJECT_FORCE_REPLY_COMMAND = "Subject:";
     }
 }

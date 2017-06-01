@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
-using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
-using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Exceptions;
 using NLog;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates
 {
     using Query = TelegramBotApiWrapper.Types.General.CallbackQuery;
 
@@ -92,7 +90,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQuery
                 {
                     if (exception != null)
                         LogMaker.Log(Logger, exception,
-                            $"An exception has been thrown in processing CallbackQuery with command {query.Data}");
+                            $"An exception has been thrown in processing CallbackQuery with data: {query.Data}");
                 }
             }
         }

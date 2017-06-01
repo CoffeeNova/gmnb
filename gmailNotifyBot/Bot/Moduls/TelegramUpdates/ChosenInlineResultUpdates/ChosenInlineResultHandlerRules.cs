@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResult
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResultUpdates
 {
     using QueryResult = TelegramBotApiWrapper.Types.InlineQueryResult;
 
     internal class GetInboxMessagesRule : IChosenInlineResultHandlerRules
     {
-        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultHandler handler)
+        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultUpdates.ChosenInlineResultHandler handler)
         {
             HandleChosenInlineResultCommand del = async () =>
             {
@@ -21,7 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
 
     internal class GetAllMessagesRule : IChosenInlineResultHandlerRules
     {
-        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultHandler handler)
+        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultUpdates.ChosenInlineResultHandler handler)
         {
             HandleChosenInlineResultCommand del = async () =>
             {
@@ -36,7 +36,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
 
     internal class GetToContactsRule : IChosenInlineResultHandlerRules
     {
-        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultHandler handler)
+        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultUpdates.ChosenInlineResultHandler handler)
         {
             HandleChosenInlineResultCommand del = async () =>
             {
@@ -51,7 +51,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
 
     internal class GetCcContactsRule : IChosenInlineResultHandlerRules
     {
-        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultHandler handler)
+        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultUpdates.ChosenInlineResultHandler handler)
         {
             HandleChosenInlineResultCommand del = async () =>
             {
@@ -66,7 +66,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
 
     internal class GetBccContactsRule : IChosenInlineResultHandlerRules
     {
-        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultHandler handler)
+        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultUpdates.ChosenInlineResultHandler handler)
         {
             HandleChosenInlineResultCommand del = async () =>
             {

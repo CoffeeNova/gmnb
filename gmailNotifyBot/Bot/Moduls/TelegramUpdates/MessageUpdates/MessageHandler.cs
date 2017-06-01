@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
-using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using NLog;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 {
     /// <summary>
     /// 
@@ -73,7 +72,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
                 {
                     if (exception != null)
                         LogMaker.Log(Logger, exception,
-                            $"An exception has been thrown in processing TextMessage with command {message.Text}");
+                            $"An exception has been thrown in processing TextMessage with text: {message.Text}");
                 }
             }
         }

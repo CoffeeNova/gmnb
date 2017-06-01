@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdates
 {
     using Query = TelegramBotApiWrapper.Types.InlineQuery;
 

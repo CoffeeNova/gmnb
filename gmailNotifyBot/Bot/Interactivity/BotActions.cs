@@ -188,7 +188,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var displayedMessage = page == 0
                 ? Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
                 : Emoji.RedArrowedEnvelope + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
-             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
+            await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
         public async Task SendAttachmentsListMessage(string chatId, int messageId, FormattedMessage formattedMessage, GetKeyboardState state, int page = 0)
@@ -280,7 +280,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             {
                 Selective = true
             };
-            var message = $"<b>Message:</b>\r\n{Emoji.InfoSign}<i>To attach files drop them into the chat.</i>";
+            var message = $"<b>{Commands.MESSAGE_FORCE_REPLY_COMMAND} </b>\r\n{Emoji.InfoSign}<i>To attach files drop them into the chat.</i>";
 
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
@@ -291,7 +291,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             {
                 Selective = true
             };
-            var message = $"<b>Subject:</b>";
+            var message = $"<b>{Commands.SUBJECT_FORCE_REPLY_COMMAND}:</b>";
 
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
@@ -333,11 +333,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             iterFunc(message, model.Cc, "Cc");
             iterFunc(message, model.Bcc, "Bcc");
             message.AppendLine();
-            message.AppendLine($"<b>Subject:</b> {model.Subject}");
-            message.AppendLine("<b>Message:</b>");
-            message.AppendLine(model.Message);
+            if (model.Subject != null)
+                message.AppendLine($"<b>Subject:</b> {model.Subject}");
+            if (model.Message != null)
+            {
+                message.AppendLine("<b>Message:</b>");
+                message.AppendLine(model.Message);
+            }
             message.AppendLine();
-            iterFunc(message, model.FileName, $"{Emoji.PaperClip}Attachments:"); //Emoji probable cause of error, because it will be send inside <b> tag
+            iterFunc(message, model.File.Select(f => f.FileName).ToList(), $"{Emoji.PaperClip}Attachments:"); //Emoji probable cause of error, because it will be send inside <b> tag
             return message.ToString();
         }
 

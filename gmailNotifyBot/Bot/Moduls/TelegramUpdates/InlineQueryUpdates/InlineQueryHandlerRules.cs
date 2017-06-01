@@ -1,13 +1,13 @@
 ﻿using System;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdates
 {
     using Query = TelegramBotApiWrapper.Types.InlineQuery;
 
     internal class ShowInboxMessagesRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {
@@ -24,7 +24,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
 
     internal class ShowAllMessagesRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {
@@ -41,7 +41,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
 
     internal class ShowToContactsRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {
@@ -56,7 +56,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
 
     internal class ShowCcContactsRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {
@@ -71,7 +71,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQuery
 
     internal class ShowBccContactsRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {

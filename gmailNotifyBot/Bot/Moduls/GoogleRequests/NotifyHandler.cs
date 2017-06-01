@@ -5,11 +5,11 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using Google.Apis.Gmail.v1;
 using Newtonsoft.Json;
 using NLog;
+using MessageHandler = CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates.MessageHandler;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
 {

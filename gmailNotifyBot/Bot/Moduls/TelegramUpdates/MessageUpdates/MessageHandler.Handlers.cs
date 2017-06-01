@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using Google.Apis.Gmail.v1.Data;
-using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
-using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
+using Message = CoffeeJelly.TelegramBotApiWrapper.Types.Messages.Message;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
+namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 {
     public partial class MessageHandler
     {
@@ -198,18 +199,46 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.Message
             await _botActions.GmailInlineAllCommandMessage(sender.From);
         }
 
-        public async Task HandleTextMessageForceReply(TextMessage message)
+        public async Task HandleMessageForceReply(Message message)
         {
-            //var model = await _dbWorker.FindNmStoreAsync(message.From);
-            //if (model == null)
-            //{
-            //    await _botActions.SendLostInfoMessage(message.From);
-            //    return;
-            //}
-            //if (message.Text != null)
-            //    model.Message = message.Text;
-            //if(message.Document)
-            //await _botActions.UpdateNewMailMessage(message.From);
+            var model = await _dbWorker.FindNmStoreAsync(message.From);
+            if (model == null)
+            {
+                await _botActions.SendLostInfoMessage(message.From);
+                return;
+            }
+            if (message.ReplyToMessage == null)
+                return;
+
+            
+            
+            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Init, model);
+        }
+
+        private void UpdateNmStoreModel(NmStoreModel model, Message message)
+        {
+            if (message.GetType() == typeof(TextMessage))
+                model.Message = (message as TextMessage)?.Text;
+            else if (message.GetType() == typeof(DocumentMessage))
+            {
+                model.Message = (message as DocumentMessage)?.Document.FileName;
+                model.Message = (message as DocumentMessage)?.Document.FileId;
+            }
+
+        }
+
+        public async Task HandleSubjectForceReply(Message message)
+        {
+            var model = await _dbWorker.FindNmStoreAsync(message.From);
+            if (model == null)
+            {
+                await _botActions.SendLostInfoMessage(message.From);
+                return;
+            }
+            if (message.Text == null)
+                return;
+            model.Subject = message.Text;
+            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Init, model);
         }
     }
 }
