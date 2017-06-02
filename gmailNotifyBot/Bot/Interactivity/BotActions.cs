@@ -296,6 +296,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
 
+        public async Task<FileInfo> DownloadFile()
+        {
+            _telegramMethods.
+        }
+
+
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
         {
             const int maxLine = 44;

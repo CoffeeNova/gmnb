@@ -343,6 +343,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             if (nmModel == null)
                 return;
+            if (nmModel.File != null)
+            {
+                //download file and save to local temp
+            }
             var draft = await Methods.GetDraft(query.From, callbackData.DraftId);
             if (draft == null)
             {
