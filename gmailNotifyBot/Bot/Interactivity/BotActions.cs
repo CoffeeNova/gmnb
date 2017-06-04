@@ -17,6 +17,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InputMessageContent;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
+using File = CoffeeJelly.TelegramBotApiWrapper.Types.General.File;
 using TelegramMethods = CoffeeJelly.TelegramBotApiWrapper.Methods.TelegramMethods;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
@@ -296,11 +297,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
 
-        public async Task<FileInfo> DownloadFile()
+        public async Task DownloadFile(File file, string localPath)
         {
-            _telegramMethods.
+            await _telegramMethods.DownloadFileAsync(file, localPath);
         }
 
+
+        public async Task<File> GetFile(string fileId)
+        {
+            return await _telegramMethods.GetFileAsync(fileId);
+        }
+
+        public async Task SendErrorAboutMaxAttachmentSizeToChat(string chatId)
+        {
+            throw new NotImplementedException("error");
+        }
 
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
         {
@@ -347,7 +358,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 message.AppendLine(model.Message);
             }
             message.AppendLine();
-            iterFunc(message, model.File.Select(f => f.FileName).ToList(), $"{Emoji.PaperClip}Attachments:"); //Emoji probable cause of error, because it will be send inside <b> tag
+            iterFunc(message, model.File.Select(f => f.OriginalName).ToList(), $"{Emoji.PaperClip}Attachments:"); //Emoji probable cause of error, because it will be send inside <b> tag
             return message.ToString();
         }
 

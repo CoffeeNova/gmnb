@@ -2,9 +2,9 @@
   "ok": true,
   "result": [
     {
-      "update_id": 982336147,
+      "update_id": 982336251,
       "message": {
-        "message_id": 2612,
+        "message_id": 2667,
         "from": {
           "id": 170181775,
           "first_name": "Coffee",
@@ -19,9 +19,9 @@
           "username": "CoffeeJelly",
           "type": "private"
         },
-        "date": 1496304720,
+        "date": 1496571890,
         "reply_to_message": {
-          "message_id": 2611,
+          "message_id": 2666,
           "from": {
             "id": 252886092,
             "first_name": "Gmail control bot",
@@ -34,33 +34,53 @@
             "username": "CoffeeJelly",
             "type": "private"
           },
-          "date": 1496304659,
-          "text": "Message:\n\u2139\ufe0fTo attach files drop them into the chat.",
+          "date": 1496571849,
+          "text": "Message: \n\u2139\ufe0fTo attach files drop them into the chat.",
           "entities": [
             {
               "type": "bold",
               "offset": 0,
-              "length": 8
+              "length": 9
             },
             {
               "type": "italic",
-              "offset": 11,
+              "offset": 12,
               "length": 40
             }
           ]
         },
-        "document": {
-          "file_name": ".cloud_ss",
-          "mime_type": "text/x-csrc",
-          "file_id": "BQADAgADIwAD28iBSZjpS92pvO_kAg",
-          "file_size": 9
-        }
+        "photo": [
+          {
+            "file_id": "AgADAgAD6qcxG9DQoUl9y_nLjbJsldlXtw0ABIMx_jtQco8CKxAEAAEC",
+            "file_size": 1181,
+            "width": 90,
+            "height": 51
+          },
+          {
+            "file_id": "AgADAgAD6qcxG9DQoUl9y_nLjbJsldlXtw0ABMgxhnXF9bs2LBAEAAEC",
+            "file_size": 9206,
+            "width": 320,
+            "height": 180
+          },
+          {
+            "file_id": "AgADAgAD6qcxG9DQoUl9y_nLjbJsldlXtw0ABFINhaIRqdlCLRAEAAEC",
+            "file_size": 33520,
+            "width": 800,
+            "height": 449
+          },
+          {
+            "file_id": "AgADAgAD6qcxG9DQoUl9y_nLjbJsldlXtw0ABA_pFWzb2rj-KhAEAAEC",
+            "file_size": 73114,
+            "width": 1280,
+            "height": 719
+          }
+        ]
       }
     },
     {
-      "update_id": 982336148,
+      "update_id": 982336252,
       "message": {
-        "message_id": 2613,
+        "message_id": 2668,
         "from": {
           "id": 170181775,
           "first_name": "Coffee",
@@ -75,9 +95,98 @@
           "username": "CoffeeJelly",
           "type": "private"
         },
-        "date": 1496304720,
+        "date": 1496571910,
+        "document": {
+          "file_name": "WP_20140613_001.jpg",
+          "mime_type": "image/jpeg",
+          "thumb": {
+            "file_id": "AAQCABMeQUsNAATLzYR5nB3MRD4rAgABAg",
+            "file_size": 2316,
+            "width": 90,
+            "height": 50
+          },
+          "file_id": "BQADAgADfQAD0NChSUz-UAtEKn2iAg",
+          "file_size": 825829
+        }
+      }
+    },
+    {
+      "update_id": 982336253,
+      "message": {
+        "message_id": 2669,
+        "from": {
+          "id": 170181775,
+          "first_name": "Coffee",
+          "last_name": "Jelly",
+          "username": "CoffeeJelly",
+          "language_code": "en"
+        },
+        "chat": {
+          "id": 170181775,
+          "first_name": "Coffee",
+          "last_name": "Jelly",
+          "username": "CoffeeJelly",
+          "type": "private"
+        },
+        "date": 1496571970,
+        "audio": {
+          "duration": 105,
+          "mime_type": "audio/mpeg",
+          "title": "Crocodile Goes For Porto",
+          "performer": "The Jumping Cats",
+          "file_id": "CQADAgADfgAD0NChSWOwpcCi1lnlAg",
+          "file_size": 3686307
+        }
+      }
+    },
+    {
+      "update_id": 982336254,
+      "message": {
+        "message_id": 2670,
+        "from": {
+          "id": 170181775,
+          "first_name": "Coffee",
+          "last_name": "Jelly",
+          "username": "CoffeeJelly",
+          "language_code": "en"
+        },
+        "chat": {
+          "id": 170181775,
+          "first_name": "Coffee",
+          "last_name": "Jelly",
+          "username": "CoffeeJelly",
+          "type": "private"
+        },
+        "date": 1496571995,
+        "document": {
+          "file_name": "WP_20160817_005.avi",
+          "mime_type": "video/x-msvideo",
+          "file_id": "BQADAgADfwAD0NChSX-oV7ddmHDRAg",
+          "file_size": 4290768
+        }
+      }
+    },
+    {
+      "update_id": 982336255,
+      "message": {
+        "message_id": 2671,
+        "from": {
+          "id": 170181775,
+          "first_name": "Coffee",
+          "last_name": "Jelly",
+          "username": "CoffeeJelly",
+          "language_code": "en"
+        },
+        "chat": {
+          "id": 170181775,
+          "first_name": "Coffee",
+          "last_name": "Jelly",
+          "username": "CoffeeJelly",
+          "type": "private"
+        },
+        "date": 1496572388,
         "reply_to_message": {
-          "message_id": 2611,
+          "message_id": 2666,
           "from": {
             "id": 252886092,
             "first_name": "Gmail control bot",
@@ -90,49 +199,22 @@
             "username": "CoffeeJelly",
             "type": "private"
           },
-          "date": 1496304659,
-          "text": "Message:\n\u2139\ufe0fTo attach files drop them into the chat.",
+          "date": 1496571849,
+          "text": "Message: \n\u2139\ufe0fTo attach files drop them into the chat.",
           "entities": [
             {
               "type": "bold",
               "offset": 0,
-              "length": 8
+              "length": 9
             },
             {
               "type": "italic",
-              "offset": 11,
+              "offset": 12,
               "length": 40
             }
           ]
         },
-        "document": {
-          "file_name": "123123.txt",
-          "mime_type": "text/plain",
-          "file_id": "BQADAgADJAAD28iBSfs10cnE4kjuAg",
-          "file_size": 15
-        }
-      }
-    },
-    {
-      "update_id": 982336149,
-      "message": {
-        "message_id": 2614,
-        "from": {
-          "id": 170181775,
-          "first_name": "Coffee",
-          "last_name": "Jelly",
-          "username": "CoffeeJelly",
-          "language_code": "en"
-        },
-        "chat": {
-          "id": 170181775,
-          "first_name": "Coffee",
-          "last_name": "Jelly",
-          "username": "CoffeeJelly",
-          "type": "private"
-        },
-        "date": 1496304737,
-        "text": "this is a test message with attachments"
+        "text": "lalala"
       }
     }
   ]

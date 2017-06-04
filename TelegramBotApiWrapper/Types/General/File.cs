@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
@@ -8,7 +9,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
     /// </summary>
     /// <remarks>
     /// The file can be downloaded via the link https://api.telegram.org/file/bot&lt;token&gt;/&lt;file_path&gt;
-    /// or by method <see cref="Methods.TelegramMethods.DownloadFileAsync(System.IO.File,string)"/>. 
+    /// or by method <see cref="Methods.TelegramMethods.DownloadFileAsync(File,string)"/>. 
     /// It is guaranteed that the link will be valid for at least 1 hour. 
     /// When the link expires, a new one can be requested by calling <see cref="Methods.TelegramMethods.GetFile(string)"/>.
     /// </remarks>
@@ -31,7 +32,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// </summary>
         /// <remarks>
         /// Use https://api.telegram.org/file/bot&lt;token&gt;/&lt;file_path&gt; to get the file
-        /// or method <see cref="Methods.TelegramMethods.DownloadFileAsync(System.IO.File, string)"/>.
+        /// or method <see cref="Methods.TelegramMethods.DownloadFileAsync(File, string)"/>.
         /// </remarks>
         [JsonProperty("file_path")]
         public string FilePath
@@ -48,10 +49,16 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         }
 
         /// <summary>
-        /// The date when <see cref="FilePath"/> created on Telegeram's servers by <see cref="Methods.TelegramMethods.GetFile(string)"/> method.
+        /// Not required. The date when <see cref="FilePath"/> created on Telegeram's servers by <see cref="Methods.TelegramMethods.GetFile(string)"/> method.
         /// </summary>
         [JsonIgnore]
         public DateTime FilePathCreated { get; private set; }
+
+        /// <summary>
+        /// Not required. File name.
+        /// </summary>
+        [JsonIgnore]
+        public string FileName => Path.GetFileName(_filePath);
 
         private string _filePath;
     }

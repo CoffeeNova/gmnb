@@ -102,6 +102,11 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             return JsonConvert.DeserializeObject<File>(result.ToString());
         }
 
+        public Task<File> GetFileAsync(string fileId)
+        {
+            return Task.Run(() => GetFile(fileId));
+        }
+
         [TelegramMethod("getChat")]
         public Chat GetChat(string chatId)
         {

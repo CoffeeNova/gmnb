@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using CoffeeJelly.TelegramBotApiWrapper.Types.General;
+﻿using System.Collections.Generic;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
@@ -23,14 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public List<string> Bcc { get; set; } = new List<string>();
 
-        public List<FileStore> File { get; set; } = new List<FileStore>();
+        public List<FileModel> File { get; set; } = new List<FileModel>();
 
-    }
-
-    public class FileStore
-    {
-        public string FileName { get; set; }
-
-        public string FileId { get; set; }
     }
 }

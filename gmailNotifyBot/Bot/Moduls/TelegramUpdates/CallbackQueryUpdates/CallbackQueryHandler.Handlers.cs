@@ -319,7 +319,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var service = Methods.SearchServiceByUserId(query.From);
             var attachment = await Methods.GetAttachment(service, callbackData.MessageId, attachmentInfo);
             if (attachment.Length > _botSettings.MaxAttachmentSize)
-                throw new NotImplementedException("should be _botAction.SendErrorAboutMaxAttachmentSizeToChat");
+                await _botActions.SendErrorAboutMaxAttachmentSizeToChat(query.From);
 
             string randomFolder = Tools.RandomString(8);
             var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
@@ -343,21 +343,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             if (nmModel == null)
                 return;
+            var localFileNames = new List<string>();
             if (nmModel.File != null)
             {
                 //download file and save to local temp
+                foreach (var file in nmModel.File)
+                {
+                    string randomFolder = Tools.RandomString(8);
+                    var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
+                    await _botActions.DownloadFile(file, tempDirName);
+                    var attachFullName = Path.Combine(tempDirName, file.FileName);
+                    localFileNames.Add(attachFullName);
+                }
+                
             }
             var draft = await Methods.GetDraft(query.From, callbackData.DraftId);
             if (draft == null)
             {
                 var body = Methods.CreateNewDraftBody(nmModel.To, nmModel.Subject, nmModel.Message, nmModel.Cc,
-                    nmModel.FileName, nmModel.Bcc);
+                    localFileNames, nmModel.Bcc);
                 draft = await Methods.CreateDraft(body, query.From);
             }
             else
             {
                 var body = Methods.AddToDraftBody(draft, nmModel.To, nmModel.Subject, nmModel.Message, nmModel.Cc,
-                    nmModel.FileName, nmModel.Bcc);
+                    localFileNames, nmModel.Bcc);
                 draft = await Methods.UpdateDraft(body, query.From, draft.Id);
             }
             if (draft == null)
@@ -373,7 +383,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             await _dbWorker.RemoveNmStoreAsync(nmModel);
             //there is the place to delete old message from chat by query.Message.MessageId
             var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Init);
-            await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = query.From, MessageId = textMessage .MessageId});
+            await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = query.From, MessageId = textMessage.MessageId });
         }
 
         public async Task HandleCallbackQContinueWithOld(Query query, SendCallbackData callbackData)

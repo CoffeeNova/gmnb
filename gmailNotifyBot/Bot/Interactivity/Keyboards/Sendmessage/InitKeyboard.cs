@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
@@ -55,19 +56,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
                 var buttonRow = new List<InlineKeyboardButton>();
                 collection.IndexEach((item, i) =>
                 {
-                    buttonRow.Add(InitButton(InlineKeyboardType.CallbackData, item, item));
+                    buttonRow.Add(InitButton(InlineKeyboardType.CallbackData, $"{Emoji.CrossMark}{item}", RemoveItemCommand));
                 });
                 return buttonRow;
             });
             RemoveToRow = iterFunc(Model.To);
             RemoveCcRow = iterFunc(Model.Cc);
             RemoveBccRow = iterFunc(Model.Bcc);
+            RemoveFileRow = iterFunc(Model.File.Select(f => f.OriginalName).ToList());
             if (RemoveToRow != null)
                 keyboard.Add(RemoveToRow);
             if (RemoveCcRow != null)
                 keyboard.Add(RemoveCcRow);
             if (RemoveBccRow != null)
                 keyboard.Add(RemoveBccRow);
+            if (RemoveFileRow != null)
+                keyboard.Add(RemoveFileRow);
         }
 
         protected override SendKeyboardState State { get; } = SendKeyboardState.Init;
@@ -81,6 +85,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         protected List<InlineKeyboardButton> RemoveCcRow;
 
         protected List<InlineKeyboardButton> RemoveBccRow;
+
+        protected List<InlineKeyboardButton> RemoveFileRow;
 
         protected InlineKeyboardButton ToButton { get; set; }
         protected InlineKeyboardButton CcButton { get; set; }
@@ -99,5 +105,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         private static string BccButtonCommand => Commands.BCC_RECIPIENTS_INLINE_QUERY_COMMAND;
         private static string SubjectButtonCommand => Commands.ADD_SUBJECT_COMMAND;
         private static string MessageButtonCommand => Commands.ADD_TEXT_MESSAGE_COMMAND;
+        private static string RemoveItemCommand => Commands.REMOVE_ITEM_FROM_NEW_MESSAGE;
     }
 }

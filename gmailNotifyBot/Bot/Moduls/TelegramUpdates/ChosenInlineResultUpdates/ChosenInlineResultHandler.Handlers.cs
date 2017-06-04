@@ -46,7 +46,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             }
             var property = model.GetPropertyValue(recipentProperyName) as List<string>;
             property?.Add(sender.ResultId);
-            await _botActions.UpdateNewMailMessage(sender.From, SendKeyboardState.Init, model);
+            await _botActions.UpdateNewMailMessage(sender.From, SendKeyboardState.Continue, model);
         }
 
     }

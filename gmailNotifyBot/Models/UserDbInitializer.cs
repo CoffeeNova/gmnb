@@ -4,6 +4,8 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Models
 {
@@ -54,10 +56,10 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 Bcc = new List<string> { "bcc@gmail.com" },
                 Message = "testMessage",
                 Subject = "testSubj",
-                File = new List<FileStore>
+                File = new List<FileModel>
                 {
-                    new FileStore { FileId = "testFileId1", FileName = "testFileName1"},
-                    new FileStore { FileId = "testFileId2", FileName = "testFileName2"}
+                    new FileModel { FileId = "testFileId1", FilePath = "testFilePath1", OriginalName = "testFileName1"},
+                    new FileModel { FileId = "testFileId2", FilePath = "testFilePath2", OriginalName = "testFileName2"}
                 }
             });
             base.Seed(db);

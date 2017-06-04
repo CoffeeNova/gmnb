@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using CoffeeJelly.TelegramBotApiWrapper.Exceptions;
 using File = CoffeeJelly.TelegramBotApiWrapper.Types.General.File;
 
@@ -10,7 +11,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
 {
     public partial class TelegramMethods
     {
-        public void DownloadFileAsync(File file, string path = null)
+        public async Task DownloadFileAsync(File file, string path = null)
         {
             if (path == null) path = FileStorage;
             if (!Directory.Exists(path))
@@ -22,13 +23,10 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
 
             using (var webClient = new WebClient())
             {
-                webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
-                webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
-
                 try
                 {
                     var fullFileName = Path.Combine(path, file.FilePath.Split('/').Last());
-                    _downloadFile.Download(webClient, new Uri(TelegramFileUrl + Token + "/" + file.FilePath),
+                    await _downloadFile.Download(webClient, new Uri(TelegramFileUrl + Token + "/" + file.FilePath),
                         fullFileName);
                 }
                 catch (WebException ex)
@@ -38,32 +36,18 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             }
         }
 
-        public event DownloadProgressChangedEventHandler DownloadFileProgressChanged;
-        public event AsyncCompletedEventHandler DownloadFileCompleted;
-
-        private void WebClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            DownloadFileProgressChanged?.Invoke(sender, e);
-        }
-
-        private void WebClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            DownloadFileCompleted?.Invoke(sender, e);
-        }
-
-
         #region inner private classes
 
         private interface IDownloadFile
         {
-            void Download(WebClient webClient, Uri uri, string fileName);
+            Task Download(WebClient webClient, Uri uri, string fileName);
         }
 
         private class DownloadFile : IDownloadFile
         {
-            public void Download(WebClient webClient, Uri uri, string fileName)
+            public async Task Download(WebClient webClient, Uri uri, string fileName)
             {
-                webClient.DownloadFileAsync(uri, fileName);
+                await webClient.DownloadFileTaskAsync(uri, fileName).ConfigureAwait(false);
             }
 
         }
@@ -71,9 +55,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
         //for test only
         private class DownloadFileStub : IDownloadFile
         {
-            public void Download(WebClient webClient, Uri uri, string fileName)
+            public async Task Download(WebClient webClient, Uri uri, string fileName)
             {
-                webClient.DownloadFile(uri, fileName);
+                await webClient.DownloadFileTaskAsync(uri, fileName).ConfigureAwait(false);
             }
         }
         #endregion

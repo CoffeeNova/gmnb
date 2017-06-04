@@ -36,7 +36,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
 
             var rm = new ResourceManager("CoffeeJelly.TelegramBotApiWrapperTests.Token", Assembly.GetExecutingAssembly());
             var token = rm.GetString("testToken");
-             _telegramMethods = new TelegramMethods(token);
+             _telegramMethods = new TelegramMethods(token, true);
 
             _privateChat = new Chat
             {

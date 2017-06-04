@@ -28,13 +28,13 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
         public TelegramMethods(string token)
         {
             Token = token;
-            _downloadFile = new TelegramMethods.DownloadFile();
+            _downloadFile = new DownloadFile();
         }
 
         internal TelegramMethods(string token, bool test = true)
         {
             Token = token;
-            _downloadFile = new TelegramMethods.DownloadFileStub();
+            _downloadFile = new DownloadFileStub();
         }
 
 
@@ -169,6 +169,6 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
         {
             NullValueHandling = NullValueHandling.Ignore
         };
-        private TelegramMethods.IDownloadFile _downloadFile;
+        private readonly IDownloadFile _downloadFile;
     }
 }

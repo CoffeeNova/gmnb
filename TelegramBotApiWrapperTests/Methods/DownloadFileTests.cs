@@ -10,12 +10,10 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         {
             _file = _telegramMethods.GetFile(_file.FileId);
 
-            _telegramMethods.DownloadFileCompleted +=
-                delegate (object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-                {
-                    Assert.IsTrue(System.IO.File.Exists(_fullFileName + _file.FilePath), $"File {Path.Combine(_fullFileName, _file.FilePath)} is not exist!");
-                };
-            _telegramMethods.DownloadFileAsync(_file, _fullFileName);
+            _telegramMethods.DownloadFileAsync(_file, _fullFileName).Wait();
+            var fileName = Path.GetFileName(_file.FilePath);
+            _fullFileName = Path.Combine(_fullFileName, fileName);
+            Assert.IsTrue(System.IO.File.Exists(_fullFileName), $"File {_fullFileName} is not exist!");
         }
 
     }

@@ -7,7 +7,9 @@ using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using Google.Apis.Gmail.v1.Data;
 using Message = CoffeeJelly.TelegramBotApiWrapper.Types.Messages.Message;
@@ -199,7 +201,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             await _botActions.GmailInlineAllCommandMessage(sender.From);
         }
 
-        public async Task HandleMessageForceReply(Message message)
+        public async Task HandleMessageForceReply(TextMessage message)
         {
             var model = await _dbWorker.FindNmStoreAsync(message.From);
             if (model == null)
@@ -209,10 +211,56 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             }
             if (message.ReplyToMessage == null)
                 return;
+            if (message.Text == null)
+                return;
 
-            
-            
-            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Init, model);
+            model.Message = message.Text;
+            await _dbWorker.UpdateNmStoreRecordAsync(model);
+            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+        }
+
+        public async Task HandleSubjectForceReply(TextMessage message)
+        {
+            var model = await _dbWorker.FindNmStoreAsync(message.From);
+            if (model == null)
+            {
+                await _botActions.SendLostInfoMessage(message.From);
+                return;
+            }
+            if (message.Text == null)
+                return;
+
+            model.Subject = message.Text;
+            await _dbWorker.UpdateNmStoreRecordAsync(model);
+            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+        }
+
+        public async Task HandleFileForceReply(DocumentMessage message)
+        {
+            if (message.ReplyToMessage == null)
+                return;
+            var model = await _dbWorker.FindNmStoreAsync(message.From);
+            if (model == null)
+            {
+                await _botActions.SendLostInfoMessage(message.From);
+                return;
+            }
+            var fillFile = new Action<string, string, int?>(async (fileId, originalName, filSize) =>
+            {
+                if (filSize > _botSettings.MaxAttachmentSize)
+                    await _botActions.SendErrorAboutMaxAttachmentSizeToChat(message.From);
+
+                model.File.Add(new FileModel
+                {
+                    FileId = fileId,
+                    FileSize = filSize,
+                    OriginalName = originalName
+                });
+            });
+            fillFile(message.Document.FileId, message.Document.FileName, message.Document.FileSize);
+
+            await _dbWorker.UpdateNmStoreRecordAsync(model);
+            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
         }
 
         private void UpdateNmStoreModel(NmStoreModel model, Message message)
@@ -227,18 +275,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         }
 
-        public async Task HandleSubjectForceReply(Message message)
-        {
-            var model = await _dbWorker.FindNmStoreAsync(message.From);
-            if (model == null)
-            {
-                await _botActions.SendLostInfoMessage(message.From);
-                return;
-            }
-            if (message.Text == null)
-                return;
-            model.Subject = message.Text;
-            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Init, model);
-        }
+
     }
 }
