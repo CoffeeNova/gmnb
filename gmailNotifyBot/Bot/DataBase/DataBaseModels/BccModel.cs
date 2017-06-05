@@ -9,12 +9,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         [Key, Column(Order = 1), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
-        //[ForeignKey("NmStoreModelId")]
-        public virtual NmStoreModel NmStoreModel { get; set; }
+        [ForeignKey("NmStoreModelId")]
+        public NmStoreModel NmStoreModel { get; set; }
 
         [Key, Column(Order = 2)]
-        public virtual int NmStoreModelId { get; set; }
+        public int NmStoreModelId { get; set; }
 
         public string Address { get; set; }
     }

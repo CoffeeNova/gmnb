@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using System.Data.Entity;
-using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 {
@@ -18,8 +16,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
                 var nmStoreModel = db.NmStore.FirstOrDefault(u => u.UserId == userId);
                 if (nmStoreModel == null)
                     return null;
-                var files = db.File.Include(f => f.NmStoreModelId == nmStoreModel.Id).ToList();
-                nmStoreModel.File = files;
+                db.Entry(nmStoreModel)
+                    .Collection(c => c.To)
+                    .Load();
+                db.Entry(nmStoreModel)
+                    .Collection(c => c.Cc)
+                    .Load();
+                db.Entry(nmStoreModel)
+                    .Collection(c => c.Bcc)
+                    .Load();
+                db.Entry(nmStoreModel)
+                    .Collection(c => c.File)
+                    .Load();
                 return nmStoreModel;
             }
         }
@@ -37,7 +45,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             {
                 var entry = db.Entry(model);
                 if (entry.State == EntityState.Detached)
-                    db.NmStore.Attach(model);
+                    db.NmStore.Attach(model); error here
+
                 db.NmStore.Remove(model);
                 db.SaveChanges();
             }
@@ -66,64 +75,82 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => AddNewNmStore(model));
         }
 
-        public void UpdateNmStoreRecord(NmStoreModel model)
+        public void UpdateNmStoreRecord(NmStoreModel newModel)
         {
-            //using (var db = new GmailBotDbContext())
-            //{
-            //    db.NmStore.Attach(model);
-            //    db.Entry(model).State = EntityState.Modified;
-            //    db.SaveChanges();
-            //}
-
             using (var dbContext = new GmailBotDbContext())
             {
-                var nmStoreModel = dbContext.NmStore
-                                    .Where(nmStore => nmStore.Id == model.Id)
+                //dbContext.Entry(newModel).State = EntityState.Modified;
+                //dbContext.NmStore.Attach(newModel);
+                //dbContext.SaveChanges();
+                var existModel = dbContext.NmStore
+                                    .Where(nmStore => nmStore.Id == newModel.Id)
+                                    .Include(nmStore => nmStore.To)
+                                    .Include(nmStore => nmStore.Cc)
+                                    .Include(nmStore => nmStore.Bcc)
                                     .Include(nmStore => nmStore.File)
                                     .SingleOrDefault();
 
-                if (nmStoreModel == null)
+                if (existModel == null)
                     return;
                 // Update 
-                dbContext.Entry(nmStoreModel).CurrentValues.SetValues(model);
+                dbContext.Entry(existModel).CurrentValues.SetValues(newModel);
+                // Delete
+                dbContext.To.RemoveRange(existModel.To.Intersect(newModel.To));
+                dbContext.Cc.RemoveRange(existModel.Cc.Intersect(newModel.Cc));
+                dbContext.Bcc.RemoveRange(existModel.Bcc.Intersect(newModel.Bcc));
+                dbContext.File.RemoveRange(existModel.File.Intersect(newModel.File));
 
-                // Delete file
-                foreach (var file in nmStoreModel.File)
-                {
-                    if (model.File.All(f => f.Id != file.Id))
-                        dbContext.File.Remove(file);
-                }
-
-                foreach (var file in model.File)
-                {
-                    var fileModel = nmStoreModel.File
-                        .SingleOrDefault(f => f.Id == file.Id);
-
-                    if (fileModel != null)
-                        // Update
-                        dbContext.Entry(fileModel).CurrentValues.SetValues(file);
-                    else
-                    {
-                        // Insert child
-                        var newfile = new FileModel
-                        {
-                            //FilePath = file.FilePath,
-                            //FileSize = file.FileSize,
-                            FileId = file.FileId,
-                            OriginalName = file.OriginalName,
-                            NmStoreModel = file.NmStoreModel
-                        };
-                        nmStoreModel.File.Add(newfile);
-                    }
-                }
-
-                dbContext.SaveChanges();
+                UpdateAdress(dbContext, newModel.To, existModel.To);
+                UpdateAdress(dbContext, newModel.Cc, existModel.Cc);
+                UpdateAdress(dbContext, newModel.Bcc, existModel.Bcc);
+                UpdateFile(dbContext, newModel.File, existModel.File);
             }
         }
 
         public Task UpdateNmStoreRecordAsync(NmStoreModel model)
         {
             return Task.Run(() => UpdateNmStoreRecord(model));
+        }
+
+        private void UpdateAdress<T>(DbContext dbContext, ICollection<T> newAddressCollection,
+    ICollection<T> existAddressCollection) where T : class, IAddressModel, new()
+        {
+            foreach (var address in newAddressCollection)
+            {
+                var existAddressModel = existAddressCollection
+                .SingleOrDefault(a => a.Id == address.Id);
+
+                if (existAddressModel != null)
+                    dbContext.Entry(existAddressModel).CurrentValues.SetValues(address);
+                else
+                {
+                    var newAddress = new T { Address = address.Address };
+                    existAddressCollection.Add(newAddress);
+                }
+            }
+        }
+
+        private void UpdateFile(DbContext dbContext, ICollection<FileModel> newFileCollection,
+            ICollection<FileModel> existFileCollection)
+        {
+            foreach (var file in newFileCollection)
+            {
+                var existAddressModel = existFileCollection
+                .SingleOrDefault(a => a.Id == file.Id);
+
+                if (existAddressModel != null)
+                    dbContext.Entry(existAddressModel).CurrentValues.SetValues(file);
+                else
+                {
+                    var newfile = new FileModel
+                    {
+                        FileId = file.FileId,
+                        OriginalName = file.OriginalName,
+                        NmStoreModel = file.NmStoreModel
+                    };
+                    existFileCollection.Add(newfile);
+                }
+            }
         }
     }
 }

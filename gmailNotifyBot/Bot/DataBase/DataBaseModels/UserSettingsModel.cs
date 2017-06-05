@@ -21,7 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public string Access { get; set; } = UserAccess.Full;
 
-        public virtual List<IgnoreModel> IgnoreList { get; set; } = new List<IgnoreModel>();
+        public List<IgnoreModel> IgnoreList { get; set; } = new List<IgnoreModel>();
 
 
     }

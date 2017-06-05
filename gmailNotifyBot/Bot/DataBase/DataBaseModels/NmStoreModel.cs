@@ -16,13 +16,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public string Message { get; set; }
 
-        public virtual ICollection<ToModel> To { get; set; } = new List<ToModel>();
+        public ICollection<ToModel> To { get; set; } = new List<ToModel>();
 
-        public virtual ICollection<CcModel> Cc { get; set; } = new List<CcModel>();
+        public ICollection<CcModel> Cc { get; set; } = new List<CcModel>();
 
-        public virtual ICollection<BccModel> Bcc { get; set; } = new List<BccModel>();
+        public ICollection<BccModel> Bcc { get; set; } = new List<BccModel>();
 
-        public virtual ICollection<FileModel> File { get; set; } = new List<FileModel>();
+        public ICollection<FileModel> File { get; set; } = new List<FileModel>();
 
     }
 }

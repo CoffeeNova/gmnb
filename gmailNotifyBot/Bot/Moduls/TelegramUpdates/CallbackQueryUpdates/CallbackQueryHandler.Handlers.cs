@@ -382,6 +382,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             Methods.SearchServiceByUserId(query.From);
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            nmModel.File = new List<FileModel> {new FileModel {FileId = "123"} };
             await _dbWorker.RemoveNmStoreAsync(nmModel);
             //there is the place to delete old message from chat by query.Message.MessageId
             var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Init);
