@@ -39,10 +39,10 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 MailNotification = false,
                 UserId = 1,
                 Access = UserAccess.Full,
-                IgnoreList = new List<string>
+                IgnoreList = new List<IgnoreModel>
                 {
-                 "testadr1@gmail.com",
-                 "testadr2@gmail.com"
+                 new IgnoreModel { Address = "testadr1@gmail.com"},
+                 new IgnoreModel {Address = "testadr2@gmail.com" }
                 },
                 Expiration = 100,
                 HistoryId = 1
@@ -51,15 +51,25 @@ namespace CoffeeJelly.gmailNotifyBot.Models
             {
                 UserId = 0,
                 MessageId = 0,
-                To = new List<string> { "to@gmail.com" },
-                Cc = new List<string> { "cc@gmail.com" },
-                Bcc = new List<string> { "bcc@gmail.com" },
+                To = new List<ToModel>
+                {
+                    new ToModel {Address = "to1@gmail.com" },
+                    new ToModel {Address = "to2@gmail.com" }
+                },
+                Cc = new List<CcModel>
+                {
+                    new CcModel {Address = "cc@gmail.com" }
+                },
+                Bcc = new List<BccModel>
+                {
+                    new BccModel {Address = "bcc@gmail.com" }
+                },
                 Message = "testMessage",
                 Subject = "testSubj",
                 File = new List<FileModel>
                 {
-                    new FileModel { FileId = "testFileId1", FilePath = "testFilePath1", OriginalName = "testFileName1"},
-                    new FileModel { FileId = "testFileId2", FilePath = "testFilePath2", OriginalName = "testFileName2"}
+                    new FileModel { FileId = "testFileId1", /*FilePath = "testFilePath1",*/ OriginalName = "testFileName1"/*, FileSize = 1*/},
+                    new FileModel { FileId = "testFileId2", /*FilePath = "testFilePath2",*/ OriginalName = "testFileName2"/*, FileSize = 2*/}
                 }
             });
             base.Seed(db);

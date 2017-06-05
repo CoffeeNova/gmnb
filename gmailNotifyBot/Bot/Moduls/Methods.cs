@@ -12,6 +12,7 @@ using MimeKit;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using Google.Apis.Gmail.v1;
 using MimeKit.Text;
 
@@ -156,17 +157,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         }
 
         //i use mimekit here :/
-        public static Draft CreateNewDraftBody(List<string> to = null, string subject = null, string text = null, List<string> cc = null, List<string> fullFileNameList = null, List<string> bcc = null)
+        public static Draft CreateNewDraftBody( string subject = null, string text = null, List<ToModel> to = null, List<CcModel> cc = null, List<BccModel> bcc = null, List<string> fullFileNameList = null)
         {
             var mimeMessage = new MimeMessage();
-            FillMimeMessage(mimeMessage, to, subject, text, cc, bcc, fullFileNameList);
+            FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fullFileNameList);
 
             var message = TransformMimeMessageToMessage(mimeMessage);
             return new Draft { Message = message };
         }
 
-        public static Draft AddToDraftBody(Draft draft, List<string> to = null, string subject = null, string text = null,
-    List<string> cc = null, List<string> bcc = null, List<string> fullFileNameList = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Draft AddToDraftBody(Draft draft, string subject = null, string text = null , List<ToModel> to = null,
+    List<CcModel> cc = null, List<BccModel> bcc = null, List<string> fullFileNameList = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             draft.NullInspect(nameof(draft));
             if (draft.Message?.Raw == null)
@@ -176,7 +177,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             using (var stream = new MemoryStream(decodedRaw))
             {
                 var mimeMessage = MimeMessage.Load(stream, cancellationToken);
-                FillMimeMessage(mimeMessage, to, subject, text, cc, bcc, fullFileNameList);
+                FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fullFileNameList);
                 var message = TransformMimeMessageToMessage(mimeMessage);
                 return new Draft { Message = message };
             }
@@ -196,12 +197,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             };
         }
 
-        private static void FillMimeMessage(MimeMessage mimeMessage, List<string> to, string subject,
-            string text, List<string> cc, List<string> bcc, List<string> fullFileNameList = null)
+        private static void FillMimeMessage(MimeMessage mimeMessage, string subject,
+            string text, List<ToModel> to, List<CcModel> cc, List<BccModel> bcc, List<string> fullFileNameList = null)
         {
-            to?.ForEach(recipient => mimeMessage.To.Add(new MailboxAddress(recipient)));
-            cc?.ForEach(recipient => mimeMessage.Cc.Add(new MailboxAddress(recipient)));
-            bcc?.ForEach(recipient => mimeMessage.Bcc.Add(new MailboxAddress(recipient)));
+            to?.ForEach(recipient => mimeMessage.To.Add(new MailboxAddress(recipient.Address)));
+            cc?.ForEach(recipient => mimeMessage.Cc.Add(new MailboxAddress(recipient.Address)));
+            bcc?.ForEach(recipient => mimeMessage.Bcc.Add(new MailboxAddress(recipient.Address)));
             if (subject != null)
                 mimeMessage.Subject = subject;
 

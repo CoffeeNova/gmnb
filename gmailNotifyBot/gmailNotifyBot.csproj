@@ -229,6 +229,11 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Bot\Attributes\ScopesAttribute.cs" />
     <Compile Include="Bot\Base64.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\IAddressModel.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\IgnoreModel.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\BccModel.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\CcModel.cs" />
+    <Compile Include="Bot\DataBase\DataBaseModels\ToModel.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\FileModel.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\NmStoreModel.cs" />
     <Compile Include="Bot\DataBase\GmailDbContextWorker.NmStore.cs" />

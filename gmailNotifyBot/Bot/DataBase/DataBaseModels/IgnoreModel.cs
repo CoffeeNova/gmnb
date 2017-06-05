@@ -1,24 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
-    public class FileModel
+    public class IgnoreModel
     {
+
         [Key, Column(Order = 1), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public string FileId { get; set; }
-
         [Required]
-        //[ForeignKey("NmStoreModelId")]
-        public virtual NmStoreModel NmStoreModel { get; set; }
+        [ForeignKey("NmStoreModelId")]
+        public virtual UserSettingsModel UserSettingsModel { get; set; }
 
         [Key, Column(Order = 2)]
         public virtual int NmStoreModelId { get; set; }
 
-        public string OriginalName { get; set; }
+        public string Address { get; set; }
     }
 }

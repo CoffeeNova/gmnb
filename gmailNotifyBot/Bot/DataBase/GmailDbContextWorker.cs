@@ -243,7 +243,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => GetAllUsersSettings());
         }
 
-        public void AddToIgnoreList(int userId, string address)
+        public void AddToIgnoreList(int userId, string address) //marked
         {
             address.NullInspect(nameof(address));
 
@@ -252,7 +252,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
                 var query = db.UserSettings.FirstOrDefault(a => a.UserId == userId);
                 if (query == null) return;
 
-                query.IgnoreList.Add(address);
+                query.IgnoreList.Add(new IgnoreModel {Address = address});
                 db.SaveChanges();
             }
         }
@@ -266,7 +266,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
                 var query = await db.UserSettings.FirstOrDefaultAsync(a => a.UserId == userId);
                 if (query == null) return;
 
-                query.IgnoreList.Add(address);
+                query.IgnoreList.Add(new IgnoreModel { Address = address});
                 await db.SaveChangesAsync();
             }
         }
@@ -283,9 +283,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             using (var db = new GmailBotDbContext())
             {
                 var query = db.UserSettings.FirstOrDefault(a => a.UserId == userId);
-                if (query == null) return;
+                var ignoreModel = query?.IgnoreList.FirstOrDefault(i => i.Address == address);
+                if (ignoreModel == null)
+                    return;
 
-                var removed = query.IgnoreList.Remove(address);
+                var removed = query.IgnoreList.Remove(ignoreModel);
                 if (removed)
                     db.SaveChanges();
             }
@@ -298,9 +300,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             using (var db = new GmailBotDbContext())
             {
                 var query = await db.UserSettings.FirstOrDefaultAsync(a => a.UserId == userId);
-                if (query == null) return;
-
-                var removed = query.IgnoreList.Remove(address);
+                var ignoreModel = query?.IgnoreList.FirstOrDefault(i => i.Address == address);
+                if (ignoreModel == null)
+                    return;
+                var removed = query.IgnoreList.Remove(ignoreModel);
                 if (removed)
                     await db.SaveChangesAsync();
             }
@@ -313,9 +316,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             using (var db = new GmailBotDbContext())
             {
                 var query = db.UserSettings.FirstOrDefault(a => a.UserId == userId);
-                if (query == null) return false;
 
-                return query.IgnoreList.Any(a => a == address);
+                var ignoreModel = query?.IgnoreList.FirstOrDefault(i => i.Address == address);
+                if (ignoreModel == null)
+                    return false;
+                return query.IgnoreList.Any(a => a == ignoreModel);
             }
         }
 
@@ -326,9 +331,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             using (var db = new GmailBotDbContext())
             {
                 var query = await db.UserSettings.FirstOrDefaultAsync(a => a.UserId == userId);
-                if (query == null) return false ;
-
-                return query.IgnoreList.Any(a => a == address);
+                var ignoreModel = query?.IgnoreList.FirstOrDefault(i => i.Address == address);
+                if (ignoreModel == null)
+                    return false;
+                return query.IgnoreList.Any(a => a == ignoreModel);
             }
         }
 

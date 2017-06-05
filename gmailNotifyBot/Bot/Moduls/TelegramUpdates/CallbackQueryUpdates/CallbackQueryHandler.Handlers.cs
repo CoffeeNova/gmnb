@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
@@ -347,10 +348,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (nmModel.File != null)
             {
                 //download file and save to local temp
-                foreach (var file in nmModel.File)
+                foreach (var fileModel in nmModel.File)
                 {
                     string randomFolder = Tools.RandomString(8);
                     var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
+                    var file = await _botActions.GetFile(fileModel.FileId);
                     await _botActions.DownloadFile(file, tempDirName);
                     var attachFullName = Path.Combine(tempDirName, file.FileName);
                     localFileNames.Add(attachFullName);
@@ -360,14 +362,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var draft = await Methods.GetDraft(query.From, callbackData.DraftId);
             if (draft == null)
             {
-                var body = Methods.CreateNewDraftBody(nmModel.To, nmModel.Subject, nmModel.Message, nmModel.Cc,
-                    localFileNames, nmModel.Bcc);
+                var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, nmModel.To.ToList(), nmModel.Cc.ToList(),
+                    nmModel.Bcc.ToList(), localFileNames);
                 draft = await Methods.CreateDraft(body, query.From);
             }
             else
             {
-                var body = Methods.AddToDraftBody(draft, nmModel.To, nmModel.Subject, nmModel.Message, nmModel.Cc,
-                    localFileNames, nmModel.Bcc);
+                var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, nmModel.To.ToList(), nmModel.Cc.ToList(),
+                    nmModel.Bcc.ToList(), localFileNames);
                 draft = await Methods.UpdateDraft(body, query.From, draft.Id);
             }
             if (draft == null)

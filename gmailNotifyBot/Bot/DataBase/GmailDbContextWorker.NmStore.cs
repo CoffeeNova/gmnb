@@ -15,7 +15,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             using (var db = new GmailBotDbContext())
             {
-                return db.NmStore.FirstOrDefault(u => u.UserId == userId);
+                var nmStoreModel = db.NmStore.FirstOrDefault(u => u.UserId == userId);
+                if (nmStoreModel == null)
+                    return null;
+                var files = db.File.Include(f => f.NmStoreModelId == nmStoreModel.Id).ToList();
+                nmStoreModel.File = files;
+                return nmStoreModel;
             }
         }
 
@@ -61,19 +66,64 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => AddNewNmStore(model));
         }
 
-        public void UpdateUserRecord(NmStoreModel model)
+        public void UpdateNmStoreRecord(NmStoreModel model)
         {
-            using (var db = new GmailBotDbContext())
+            //using (var db = new GmailBotDbContext())
+            //{
+            //    db.NmStore.Attach(model);
+            //    db.Entry(model).State = EntityState.Modified;
+            //    db.SaveChanges();
+            //}
+
+            using (var dbContext = new GmailBotDbContext())
             {
-                db.NmStore.Attach(model);
-                db.Entry(model).State = EntityState.Modified;
-                db.SaveChanges();
+                var nmStoreModel = dbContext.NmStore
+                                    .Where(nmStore => nmStore.Id == model.Id)
+                                    .Include(nmStore => nmStore.File)
+                                    .SingleOrDefault();
+
+                if (nmStoreModel == null)
+                    return;
+                // Update 
+                dbContext.Entry(nmStoreModel).CurrentValues.SetValues(model);
+
+                // Delete file
+                foreach (var file in nmStoreModel.File)
+                {
+                    if (model.File.All(f => f.Id != file.Id))
+                        dbContext.File.Remove(file);
+                }
+
+                foreach (var file in model.File)
+                {
+                    var fileModel = nmStoreModel.File
+                        .SingleOrDefault(f => f.Id == file.Id);
+
+                    if (fileModel != null)
+                        // Update
+                        dbContext.Entry(fileModel).CurrentValues.SetValues(file);
+                    else
+                    {
+                        // Insert child
+                        var newfile = new FileModel
+                        {
+                            //FilePath = file.FilePath,
+                            //FileSize = file.FileSize,
+                            FileId = file.FileId,
+                            OriginalName = file.OriginalName,
+                            NmStoreModel = file.NmStoreModel
+                        };
+                        nmStoreModel.File.Add(newfile);
+                    }
+                }
+
+                dbContext.SaveChanges();
             }
         }
 
         public Task UpdateNmStoreRecordAsync(NmStoreModel model)
         {
-            return Task.Run(() => UpdateUserRecord(model));
+            return Task.Run(() => UpdateNmStoreRecord(model));
         }
     }
 }

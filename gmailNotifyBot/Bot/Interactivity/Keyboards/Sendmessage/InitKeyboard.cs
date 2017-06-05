@@ -60,9 +60,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
                 });
                 return buttonRow;
             });
-            RemoveToRow = iterFunc(Model.To);
-            RemoveCcRow = iterFunc(Model.Cc);
-            RemoveBccRow = iterFunc(Model.Bcc);
+            RemoveToRow = iterFunc(Model.To.Select(a => a.Address).ToList());
+            RemoveCcRow = iterFunc(Model.Cc.Select(a => a.Address).ToList());
+            RemoveBccRow = iterFunc(Model.Bcc.Select(a => a.Address).ToList());
             RemoveFileRow = iterFunc(Model.File.Select(f => f.OriginalName).ToList());
             if (RemoveToRow != null)
                 keyboard.Add(RemoveToRow);

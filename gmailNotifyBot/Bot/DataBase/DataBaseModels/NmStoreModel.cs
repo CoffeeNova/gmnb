@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
@@ -15,13 +16,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public string Message { get; set; }
 
-        public List<string> To { get; set; } = new List<string>();
+        public virtual ICollection<ToModel> To { get; set; } = new List<ToModel>();
 
-        public List<string> Cc { get; set; } = new List<string>();
+        public virtual ICollection<CcModel> Cc { get; set; } = new List<CcModel>();
 
-        public List<string> Bcc { get; set; } = new List<string>();
+        public virtual ICollection<BccModel> Bcc { get; set; } = new List<BccModel>();
 
-        public List<FileModel> File { get; set; } = new List<FileModel>();
+        public virtual ICollection<FileModel> File { get; set; } = new List<FileModel>();
 
     }
 }

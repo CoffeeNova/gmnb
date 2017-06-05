@@ -253,7 +253,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 model.File.Add(new FileModel
                 {
                     FileId = fileId,
-                    FileSize = filSize,
+                    //FileSize = filSize,
                     OriginalName = originalName
                 });
             });
