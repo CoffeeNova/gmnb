@@ -12,6 +12,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
+using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates
@@ -362,7 +363,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                         localFileNames.Add(attachFullName);
                     }
                 }
-               // var draft = await Methods.GetDraft(query.From, callbackData.DraftId);
+                // var draft = await Methods.GetDraft(query.From, callbackData.DraftId);
                 Draft draft = null;
                 if (callbackData.DraftId == "")
                 {
@@ -396,14 +397,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             await HandleCallbackQNotSaveAsDraft(query, callbackData);
         }
 
+
         public async Task HandleCallbackQNotSaveAsDraft(Query query, SendCallbackData callbackData)
         {
             Methods.SearchServiceByUserId(query.From);
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             await _dbWorker.RemoveNmStoreAsync(nmModel);
             //there is the place to delete old message from chat by query.Message.MessageId
-            var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Init);
-            await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = query.From, MessageId = textMessage.MessageId });
+            //var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Init);
+            //await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = query.From, MessageId = textMessage.MessageId });
         }
 
         public async Task HandleCallbackQContinueWithOld(Query query, SendCallbackData callbackData)
@@ -415,13 +417,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             nmModel.MessageId = textMessage.MessageId;
             await _dbWorker.UpdateNmStoreRecordAsync(nmModel);
         }
-
-        //public async Task HandleCallbackQAddSubject(Query query, SendCallbackData callbackData)
-        //{
-        //    var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
-        //    //nmModel.Subject= query.Data
-        //    await _botActions.UpdateNewMailMessage(query.From, callbackData.MessageKeyboardState, nmModel);
-        //}
 
         public async Task HandleCallbackQAddTextMessage(Query query, SendCallbackData callbackData)
         {
@@ -447,6 +442,33 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             }
 
             await _botActions.ChangeSubjectForceReply(query.From).ConfigureAwait(false); ;
+        }
+
+        public async Task HandleCallbackQContinueCompose(Query query, SendCallbackData callbackData)
+        {
+
+            Methods.SearchServiceByUserId(query.From);
+
+            var nmStore = await _dbWorker.FindNmStoreAsync(query.From);
+            if (nmStore == null)
+            {
+                var draft = await Methods.GetDraft(query.From, callbackData.DraftId,
+                                    UsersResource.DraftsResource.GetRequest.FormatEnum.Full);
+                nmStore = await _dbWorker.AddNewNmStoreAsync(query.From);
+
+                
+                var textMessage = await _botActions.SpecifyNewMailMessage(sender.From, SendKeyboardState.Continue, );
+                await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = sender.From, MessageId = textMessage.MessageId });
+            }
+            else
+                await _botActions.SaveAsDraftQuestionMessage(query.From, SendKeyboardState.Store);
+
+
+
+
+
+
+
         }
 
     }

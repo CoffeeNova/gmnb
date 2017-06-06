@@ -183,7 +183,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (nmStore == null)
             {
                 var textMessage = await _botActions.SpecifyNewMailMessage(sender.From, SendKeyboardState.Init);
-                await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = sender.From, MessageId = textMessage.MessageId });
+                nmStore = await _dbWorker.AddNewNmStoreAsync(sender.From);
+                nmStore.MessageId = textMessage.MessageId;
+                await _dbWorker.UpdateNmStoreRecordAsync(nmStore);
             }
             else
                 await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
@@ -253,7 +255,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 model.File.Add(new FileModel
                 {
                     FileId = fileId,
-                    //FileSize = filSize,
                     OriginalName = originalName
                 });
             });

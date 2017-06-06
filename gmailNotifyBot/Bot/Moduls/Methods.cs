@@ -188,6 +188,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 RegexOptions.IgnoreCase);
         }
 
+        public static void ComposeNmStateModel(NmStoreModel model, FormattedMessage formattedMessage)
+        {
+            model.NullInspect(nameof(model));
+            mimeMessage.NullInspect(nameof(mimeMessage));
+            model.To.NullInspect(nameof(model.To));
+            model.Cc.NullInspect(nameof(model.Cc));
+            model.Bcc.NullInspect(nameof(model.Bcc));
+            model.File.NullInspect(nameof(model.File));
+
+            if(mimeMessage.To!=null)
+                mimeMessage.To
+
+        }
+
         private static Message TransformMimeMessageToMessage(MimeMessage mimeMsg)
         {
             return new Message

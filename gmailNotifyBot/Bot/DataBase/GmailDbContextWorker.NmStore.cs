@@ -63,22 +63,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => RemoveNmStore(model));
         }
 
-        public void AddNewNmStore(NmStoreModel model)
-        {
-            model.NullInspect(nameof(model));
-
+        public NmStoreModel AddNewNmStore(int userId)
+        { 
             using (var db = new GmailBotDbContext())
             {
-                var newModel = db.NmStore.Add(model);
+                var newModel = db.NmStore.Add(new NmStoreModel {UserId = userId});
                 db.SaveChanges();
+                return newModel;
             }
         }
 
-        public Task AddNewNmStoreAsync(NmStoreModel model)
+        public Task<NmStoreModel> AddNewNmStoreAsync(int userId)
         {
-            model.NullInspect(nameof(model));
-
-            return Task.Run(() => AddNewNmStore(model));
+            return Task.Run(() => AddNewNmStore(userId));
         }
 
         public void UpdateNmStoreRecord(NmStoreModel newModel)
