@@ -9,6 +9,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         [EnumMember(Value = "continue")]
         Continue,
         [EnumMember(Value = "store")]
-        Store
+        Store,
+        [EnumMember(Value = "drafted")]
+        Drafted
     }
 }

@@ -41,14 +41,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             model.NullInspect(nameof(model));
 
-            using (var db = new GmailBotDbContext())
+            using (var dbContext = new GmailBotDbContext())
             {
-                var entry = db.Entry(model);
-                if (entry.State == EntityState.Detached)
-                    db.NmStore.Attach(model); error here
+                var existModel = dbContext.NmStore
+                                    .Where(nmStore => nmStore.Id == model.Id)
+                                    .Include(nmStore => nmStore.To)
+                                    .Include(nmStore => nmStore.Cc)
+                                    .Include(nmStore => nmStore.Bcc)
+                                    .Include(nmStore => nmStore.File)
+                                    .SingleOrDefault();
+                if (existModel == null)
+                    return;
 
-                db.NmStore.Remove(model);
-                db.SaveChanges();
+                dbContext.NmStore.Remove(existModel);
+                dbContext.SaveChanges();
             }
         }
 
@@ -79,9 +85,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             using (var dbContext = new GmailBotDbContext())
             {
-                //dbContext.Entry(newModel).State = EntityState.Modified;
-                //dbContext.NmStore.Attach(newModel);
-                //dbContext.SaveChanges();
                 var existModel = dbContext.NmStore
                                     .Where(nmStore => nmStore.Id == newModel.Id)
                                     .Include(nmStore => nmStore.To)
@@ -104,6 +107,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
                 UpdateAdress(dbContext, newModel.Cc, existModel.Cc);
                 UpdateAdress(dbContext, newModel.Bcc, existModel.Bcc);
                 UpdateFile(dbContext, newModel.File, existModel.File);
+                dbContext.SaveChanges();
             }
         }
 
@@ -135,11 +139,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             foreach (var file in newFileCollection)
             {
-                var existAddressModel = existFileCollection
-                .SingleOrDefault(a => a.Id == file.Id);
+                var existFileModel = existFileCollection
+                .SingleOrDefault(f => f.Id == file.Id);
 
-                if (existAddressModel != null)
-                    dbContext.Entry(existAddressModel).CurrentValues.SetValues(file);
+                if (existFileModel != null)
+                    dbContext.Entry(existFileModel).CurrentValues.SetValues(file);
                 else
                 {
                     var newfile = new FileModel

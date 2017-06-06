@@ -45,9 +45,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         protected InlineKeyboardButton ContinueButton { get; set; }
 
 
-        private static string SaveButtonCaption => SendButtonCapton.Save;
-        private static string NotSaveButtonCaption => SendButtonCapton.NotSave;
-        private static string ContinueButtonCaption => SendButtonCapton.Continue;
+        private static string SaveButtonCaption => SendKeyboardButtonCapton.Save;
+        private static string NotSaveButtonCaption => SendKeyboardButtonCapton.NotSave;
+        private static string ContinueButtonCaption => SendKeyboardButtonCapton.ContinueOld;
 
 
         private static string SaveButtonCommand => Commands.SAVE_AS_DRAFT_COMMAND;

@@ -251,12 +251,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, _storeDraftMessageText, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task UpdateNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model)
+        public async Task UpdateNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model, string draftId = "")
         {
-            var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model);
-            var message = BuildNewMailMessage(model);
+            var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model, draftId);
+            var message = draftId == null 
+                ? BuildNewMailMessage(model) 
+                : _restoreFromDraftMessageText;
             await _telegramMethods.EditMessageTextAsync(message, chatId, model.MessageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
+
+
 
         public async Task SendAttachmentToChat(string chatId, string fullFileName, string caption)
         {
@@ -292,7 +296,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             {
                 Selective = true
             };
-            var message = $"<b>{Commands.SUBJECT_FORCE_REPLY_COMMAND}:</b>";
+            var message = $"<b>{Commands.SUBJECT_FORCE_REPLY_COMMAND} </b>";
 
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
@@ -338,16 +342,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var iterFunc = new Action<StringBuilder, List<string>, string>((builder, collection, label) =>
             {
                 if (collection == null || !collection.Any()) return;
-                builder.AppendLine($"<b>{label}:</b> ");
+                builder.Append($"<b>{label}:</b> ");
                 collection.IndexEach((item, i) =>
                 {
                     builder.Append(Path.GetFileName(item)); //! GetFileName 
-                    if (i < collection.Count - 1) builder.Append(',');
+                    if (i < collection.Count - 1) builder.Append(", ");
                 });
             });
             message.AppendLine();
             iterFunc(message, model.To.Select(a => a.Address).ToList(), "To");
+            message.AppendLine();
             iterFunc(message, model.Cc.Select(a => a.Address).ToList(), "Cc");
+            message.AppendLine();
             iterFunc(message, model.Bcc.Select(a => a.Address).ToList(), "Bcc");
             message.AppendLine();
             if (model.Subject != null)
@@ -358,7 +364,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 message.AppendLine(model.Message);
             }
             message.AppendLine();
-            iterFunc(message, model.File.Select(f => f.OriginalName).ToList(), $"{Emoji.PaperClip}Attachments:"); //Emoji probable cause of error, because it will be send inside <b> tag
+            iterFunc(message, model.File.Select(f => f.OriginalName).ToList(), $"{Emoji.PaperClip}Attachments"); //Emoji probable cause of error, because it will be send inside <b> tag
             return message.ToString();
         }
 
@@ -374,6 +380,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         private readonly string _storeDraftMessageText =
             $"{Emoji.QuestionSign} You have already started to create a new message. " +
             $"You can save it as draft and create new instance of new message or continue composing.";
+
+        private readonly string _restoreFromDraftMessageText =
+            $"{Emoji.InfoSign} To restore message from draft and continue composing click this button {Emoji.DownArrow}";
 
         private readonly BotSettings _settings = BotInitializer.Instance.BotSettings;
         private readonly string _contactsThumbUrl;

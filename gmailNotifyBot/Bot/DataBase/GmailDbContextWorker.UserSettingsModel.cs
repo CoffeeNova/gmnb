@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 
@@ -55,10 +54,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
             using (var db = new GmailBotDbContext())
             {
-                var entry = db.Entry(model);
-                if (entry.State == EntityState.Detached)
-                    db.UserSettings.Attach(model);
-                db.UserSettings.Remove(model);
+                var existModel = db.UserSettings
+                                    .Where(userSettings => userSettings.Id == model.Id)
+                                    .Include(userSettings => userSettings.IgnoreList)
+                                    .SingleOrDefault();
+                if (existModel == null)
+                    return;
+
+                db.UserSettings.Remove(existModel);
                 db.SaveChanges();
             }
         }
@@ -73,6 +76,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             using (var db = new GmailBotDbContext())
             {
+                foreach (var us in db.UserSettings)
+                {
+                    db.Entry(us)
+                    .Collection(c => c.IgnoreList)
+                    .Load();
+                }
                 return db.UserSettings.ToList();
             }
         }
@@ -82,12 +91,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => GetAllUsersSettings());
         }
 
-        public void UpdateUserSettingsRecord(UserSettingsModel userSettingsModel)
+        public void UpdateUserSettingsRecord(UserSettingsModel newModel)
         {
             using (var db = new GmailBotDbContext())
             {
-                db.UserSettings.Attach(userSettingsModel);
-                db.Entry(userSettingsModel).State = EntityState.Modified;
+                var existModel = db.UserSettings
+                                    .Where(userSettings => userSettings.Id == newModel.Id)
+                                    .Include(nmStore => nmStore.IgnoreList)
+                                    .SingleOrDefault();
+                if (existModel == null)
+                    return;
+                // Update 
+                db.Entry(existModel).CurrentValues.SetValues(newModel);
+                UpdateIgnoreList(db, newModel.IgnoreList, existModel.IgnoreList);
                 db.SaveChanges();
             }
         }
@@ -95,6 +111,28 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         public Task UpdateUserSettingsRecordAsync(UserSettingsModel userSettingsModel)
         {
             return Task.Run(() => UpdateUserSettingsRecord(userSettingsModel));
+        }
+
+        private void UpdateIgnoreList(DbContext dbContext, ICollection<IgnoreModel> newIgnoreListCollection,
+           ICollection<IgnoreModel> existIgnoreListCollection)
+        {
+            foreach (var ignoreModel in newIgnoreListCollection)
+            {
+                var existIgnoreModel = existIgnoreListCollection
+                .SingleOrDefault(i => i.Id == ignoreModel.Id);
+
+                if (existIgnoreModel != null)
+                    dbContext.Entry(existIgnoreModel).CurrentValues.SetValues(ignoreModel);
+                else
+                {
+                    var newfile = new IgnoreModel
+                    {
+                        Address = ignoreModel.Address,
+                        UserSettingsModel = ignoreModel.UserSettingsModel
+                    };
+                    existIgnoreListCollection.Add(newfile);
+                }
+            }
         }
     }
 }

@@ -161,7 +161,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         {
             var mimeMessage = new MimeMessage();
             FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fullFileNameList);
-
             var message = TransformMimeMessageToMessage(mimeMessage);
             return new Draft { Message = message };
         }
@@ -209,14 +208,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (text != null || fullFileNameList != null)
             {
                 TextPart plainPart = null;
-                TextPart htmlPart = null;
                 List<MimePart> attachments = null;
 
                 if (text != null)
-                {
                     plainPart = new TextPart(TextFormat.Plain) { Text = text };
-                    htmlPart = new TextPart(TextFormat.Html) { Text = text };
-                }
                 if (fullFileNameList != null)
                 {
                     attachments = new List<MimePart>();
@@ -231,23 +226,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                         });
                     });
                 }
-
                 var multipart = new Multipart("mixed");
-                var mimeEntities = mimeMessage.BodyParts.ToList();
-                mimeEntities.ForEach(mimeEntity =>
-                {
-                    multipart.Add(mimeEntity);
-                });
                 if (plainPart != null)
-                    mimeEntities.Add(plainPart);
-                if (htmlPart != null)
-                    mimeEntities.Add(htmlPart);
-                attachments?.ForEach(attach =>
-                {
-                    mimeEntities.Add(attach);
-                });
+                    multipart.Add(plainPart);
 
-
+                attachments?.ForEach(attach => { multipart.Add(attach); });
                 mimeMessage.Body = multipart;
             }
         }

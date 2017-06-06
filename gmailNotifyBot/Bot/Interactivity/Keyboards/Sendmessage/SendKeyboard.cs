@@ -27,15 +27,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         /// <param name="type"></param>
         /// <param name="text"></param>
         /// <param name="command"></param>
+        /// <param name="draftId"></param>
         /// <param name="isCallbackData"></param>
-        protected virtual InlineKeyboardButton InitButton(InlineKeyboardType type, string text, string command, bool isCallbackData = true)
+        protected virtual InlineKeyboardButton InitButton(InlineKeyboardType type, string text, string command, string draftId = "", bool isCallbackData = true)
         {
             if (!isCallbackData)
                 return base.InitButton(type, text, command);
             var callbackData = new SendCallbackData(GeneralCallbackData)
             {
                 Command = command,
-                MessageId = Model?.MessageId.ToString()
+                MessageId = Model?.MessageId.ToString(),
+                DraftId = draftId
             };
             return base.InitButton(type, text, callbackData);
         }

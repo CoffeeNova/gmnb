@@ -255,6 +255,7 @@
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MaximizedKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\AttachmentsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\ButtonCapton.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\DraftedKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\Factory.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\StoreKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\InitKeyboard.cs" />

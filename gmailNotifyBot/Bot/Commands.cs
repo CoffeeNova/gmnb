@@ -28,7 +28,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string TO_SPAM_COMMAND = "/tospam";
         public const string REMOVE_SPAM_COMMAND = "/removespam";
         public const string TO_TRASH_COMMAND = "/totrash";
-        public const string RESTORE_COMMAND = "/restore";
         public const string TO_INBOX_COMMAND = "/toinbox";
         public const string ARCHIVE_COMMAND = "/archive";
         public const string IGNORE_COMMAND = "/ignore";
@@ -51,5 +50,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string MESSAGE_FORCE_REPLY_COMMAND = "Message:";
         public const string SUBJECT_FORCE_REPLY_COMMAND = "Subject:";
         public const string REMOVE_ITEM_FROM_NEW_MESSAGE = "/removeitem";
+        public const string SEND_NEW_MESSAGE_COMMAND = "/sendnewmessage";
+        public const string CONTINUE_COMPOSE = "/continuecomp";
+
     }
 }

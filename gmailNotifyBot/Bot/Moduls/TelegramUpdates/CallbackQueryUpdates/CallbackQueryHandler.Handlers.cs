@@ -12,6 +12,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
+using Google.Apis.Gmail.v1.Data;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates
 {
@@ -345,36 +346,53 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (nmModel == null)
                 return;
             var localFileNames = new List<string>();
-            if (nmModel.File != null)
+            try
             {
-                //download file and save to local temp
-                foreach (var fileModel in nmModel.File)
+                if (nmModel.File != null)
                 {
-                    string randomFolder = Tools.RandomString(8);
-                    var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
-                    var file = await _botActions.GetFile(fileModel.FileId);
-                    await _botActions.DownloadFile(file, tempDirName);
-                    var attachFullName = Path.Combine(tempDirName, file.FileName);
-                    localFileNames.Add(attachFullName);
+                    //download file and save to local temp
+                    foreach (var fileModel in nmModel.File)
+                    {
+                        string randomFolder = Tools.RandomString(8);
+                        var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
+                        Methods.CreateDirectory(tempDirName);
+                        var file = await _botActions.GetFile(fileModel.FileId);
+                        await _botActions.DownloadFile(file, tempDirName);
+                        var attachFullName = Path.Combine(tempDirName, file.FileName);
+                        localFileNames.Add(attachFullName);
+                    }
                 }
-                
-            }
-            var draft = await Methods.GetDraft(query.From, callbackData.DraftId);
-            if (draft == null)
-            {
-                var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, nmModel.To.ToList(), nmModel.Cc.ToList(),
-                    nmModel.Bcc.ToList(), localFileNames);
-                draft = await Methods.CreateDraft(body, query.From);
-            }
-            else
-            {
-                var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, nmModel.To.ToList(), nmModel.Cc.ToList(),
-                    nmModel.Bcc.ToList(), localFileNames);
-                draft = await Methods.UpdateDraft(body, query.From, draft.Id);
-            }
-            if (draft == null)
-                throw new NotImplementedException("BotAction message: error to save message as draft");
+               // var draft = await Methods.GetDraft(query.From, callbackData.DraftId);
+                Draft draft = null;
+                if (callbackData.DraftId == "")
+                {
+                    var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
+                        nmModel.Cc.ToList(),
+                        nmModel.Bcc.ToList(), localFileNames);
+                    draft = await Methods.CreateDraft(body, query.From);
+                }
+                else
+                {
+                    draft = await Methods.GetDraft(query.From, callbackData.DraftId);
+                    var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
+                        nmModel.Cc.ToList(),
+                        nmModel.Bcc.ToList(), localFileNames);
+                    draft = await Methods.UpdateDraft(body, query.From, draft.Id);
+                }
+                if (draft == null)
+                    throw new NotImplementedException("BotAction message: error to save message as draft");
 
+                await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.Drafted, nmModel, draft.Id);
+            }
+            finally
+            {
+                localFileNames.ForEach(async f =>
+                {
+                    var dInfo = new DirectoryInfo(Path.GetFullPath(f));
+                    if (dInfo.Exists)
+                        await dInfo.DeleteAsync(true);
+                });
+            }
             await HandleCallbackQNotSaveAsDraft(query, callbackData);
         }
 
@@ -382,7 +400,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             Methods.SearchServiceByUserId(query.From);
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
-            nmModel.File = new List<FileModel> {new FileModel {FileId = "123"} };
             await _dbWorker.RemoveNmStoreAsync(nmModel);
             //there is the place to delete old message from chat by query.Message.MessageId
             var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Init);

@@ -38,5 +38,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Types
         public const string WhiteExclamation = "\u2755";
         public const string PaperClip = "\ud83d\udcce";
         public const string CrossMark = "\u274e";
+        public const string BlackCross = "\u2716";
+        public const string IncomingEnvelope = "\ud83d\udce8";
+        public const string OutboxTray = "\ud83d\udce4";
+        public const string InboxTray = "\ud83d\udce5";
     }
 }

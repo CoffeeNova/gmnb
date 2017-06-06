@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 
@@ -18,20 +19,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
 
         public async Task HandleSetToChosenInlineResult(QueryResult.ChosenInlineResult sender)
         {
-            await HandleRecipientChosenInlineResult(sender, "To");
+            await HandleRecipientChosenInlineResult<ToModel>(sender, "To");
         }
 
         public async Task HandleSetCcChosenInlineResult(QueryResult.ChosenInlineResult sender)
         {
-            await HandleRecipientChosenInlineResult(sender, "Cc");
+            await HandleRecipientChosenInlineResult<CcModel>(sender, "Cc");
         }
 
         public async Task HandleSetBccChosenInlineResult(QueryResult.ChosenInlineResult sender)
         {
-            await HandleRecipientChosenInlineResult(sender, "Bcc");
+            await HandleRecipientChosenInlineResult<BccModel>(sender, "Bcc");
         }
 
-        private async Task HandleRecipientChosenInlineResult(QueryResult.ChosenInlineResult sender, string recipentProperyName)
+        private async Task HandleRecipientChosenInlineResult<T>(QueryResult.ChosenInlineResult sender, string recipentProperyName) where T : class, IAddressModel, new()
         {
             var model = await _dbWorker.FindNmStoreAsync(sender.From);
             if (model == null)
@@ -44,8 +45,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await _botActions.NotRecognizedEmailMessage(sender.From, sender.ResultId);
                 return;
             }
-            var property = model.GetPropertyValue(recipentProperyName) as List<string>;
-            property?.Add(sender.ResultId);
+            var property = model.GetPropertyValue(recipentProperyName) as ICollection<T>;
+            var addressModel = new T {Address = sender.ResultId};
+            property?.Add(addressModel);
+            await _dbWorker.UpdateNmStoreRecordAsync(model);
             await _botActions.UpdateNewMailMessage(sender.From, SendKeyboardState.Continue, model);
         }
 
