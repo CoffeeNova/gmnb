@@ -16,6 +16,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public string Message { get; set; }
 
+        public string DraftId { get; set; }
+
         public ICollection<ToModel> To { get; set; } = new List<ToModel>();
 
         public ICollection<CcModel> Cc { get; set; } = new List<CcModel>();

@@ -254,7 +254,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task UpdateNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model, string draftId = "")
         {
             var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model, draftId);
-            var message = draftId == null 
+            var message = string.IsNullOrEmpty(draftId) 
                 ? BuildNewMailMessage(model) 
                 : _restoreFromDraftMessageText;
             await _telegramMethods.EditMessageTextAsync(message, chatId, model.MessageId.ToString(), null, ParseMode.Html, null, keyboard);
@@ -315,6 +315,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task SendErrorAboutMaxAttachmentSizeToChat(string chatId)
         {
             throw new NotImplementedException("error");
+        }
+
+        public async Task DraftSavedMessage(string chatId, bool notSaved = false)
+        {
+            var not = notSaved ? "not" : "";
+            var message = $"{Emoji.Ok} Draft {not} saved!";
+            await _telegramMethods.SendMessageAsync(chatId, message);
         }
 
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)

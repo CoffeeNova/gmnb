@@ -126,7 +126,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         {
             using (var stream = new MemoryStream())
             {
-                message.WriteTo(stream);
+                var options = FormatOptions.Default.Clone();
+                message.WriteTo(options, stream);
 
                 return Convert.ToBase64String(stream.GetBuffer(), 0, (int)stream.Length)
                     .Replace('+', '-')

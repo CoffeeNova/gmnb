@@ -157,7 +157,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         }
 
         //i use mimekit here :/
-        public static Draft CreateNewDraftBody( string subject = null, string text = null, List<ToModel> to = null, List<CcModel> cc = null, List<BccModel> bcc = null, List<string> fullFileNameList = null)
+        public static Draft CreateNewDraftBody(string subject = null, string text = null, List<ToModel> to = null, List<CcModel> cc = null, List<BccModel> bcc = null, List<string> fullFileNameList = null)
         {
             var mimeMessage = new MimeMessage();
             FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fullFileNameList);
@@ -165,7 +165,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return new Draft { Message = message };
         }
 
-        public static Draft AddToDraftBody(Draft draft, string subject = null, string text = null , List<ToModel> to = null,
+        public static Draft AddToDraftBody(Draft draft, string subject = null, string text = null, List<ToModel> to = null,
     List<CcModel> cc = null, List<BccModel> bcc = null, List<string> fullFileNameList = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             draft.NullInspect(nameof(draft));
@@ -191,15 +191,34 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         public static void ComposeNmStateModel(NmStoreModel model, FormattedMessage formattedMessage)
         {
             model.NullInspect(nameof(model));
-            mimeMessage.NullInspect(nameof(mimeMessage));
-            model.To.NullInspect(nameof(model.To));
-            model.Cc.NullInspect(nameof(model.Cc));
-            model.Bcc.NullInspect(nameof(model.Bcc));
-            model.File.NullInspect(nameof(model.File));
+            formattedMessage.NullInspect(nameof(formattedMessage));
 
-            if(mimeMessage.To!=null)
-                mimeMessage.To
+            formattedMessage.To?.ForEach(to => { model.To.Add(new ToModel { Address = to.Email }); });
+            formattedMessage.Cc?.ForEach(cc => { model.Cc.Add(new CcModel { Address = cc.Email }); });
+            formattedMessage.Bcc?.ForEach(bcc => { model.Bcc.Add(new BccModel { Address = bcc.Email }); });
+            if (formattedMessage.HasAttachments)
+                foreach (var attach in formattedMessage.Attachments)
+                {
+                    model.File.Add(new FileModel
+                    {
+                        FileId = attach.Id,
+                        OriginalName = attach.FileName
+                    });
+                }
+            model.Subject = formattedMessage.Subject;
+            if (formattedMessage.Body != null)
+                model.Message = GetTextPlainMessage(formattedMessage.Body);
+        }
 
+        private static string GetTextPlainMessage(IEnumerable<BodyForm> collection)
+        {
+            string message = "";
+            foreach (var body in collection)
+            {
+                if (body.MimeType == "text/plain")
+                    message += body.Value;
+            }
+            return message;
         }
 
         private static Message TransformMimeMessageToMessage(MimeMessage mimeMsg)
@@ -233,6 +252,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     {
                         attachments.Add(new MimePart
                         {
+                            close stream here
                             ContentObject = new ContentObject(File.OpenRead(fileName)),
                             ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
                             ContentTransferEncoding = ContentEncoding.Base64,

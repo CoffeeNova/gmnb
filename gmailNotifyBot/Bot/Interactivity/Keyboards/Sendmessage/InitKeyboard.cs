@@ -17,20 +17,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
 
         protected override void ButtonsInitializer()
         {
-            if (Model != null 
-                && true.EqualsAll(true.EqualsAny(Model.To.Any(), Model.Cc.Any()),
-                                            !string.IsNullOrEmpty(Model.Subject), 
-                                            !string.IsNullOrEmpty(Model.Message)))
-            {
-                SendButton = InitButton(InlineKeyboardType.CallbackData, SendButtonCaption, SendButtonCommand);
-                ToDraftButton = InitButton(InlineKeyboardType.CallbackData, ToDraftButtonCaption, ToDraftButtonCommand);
-            }
-
             ToButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, ToButtonCaption, ToButtonCommand, "", false);
             CcButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, CcButtonCaption, CcButtonCommand, "", false);
             BccButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, BccButtonCaption, BccButtonCommand, "", false);
             MessageButton = InitButton(InlineKeyboardType.CallbackData, MessageButtonCaption, MessageButtonCommand);
             SubjectButton = InitButton(InlineKeyboardType.CallbackData, SubjectButtonCaption, SubjectButtonCommand);
+
+            if (Model == null)
+                return;
+            if (true.EqualsAll(true.EqualsAny(Model.To.Any(), Model.Cc.Any()),
+                               !string.IsNullOrEmpty(Model.Subject), 
+                               !string.IsNullOrEmpty(Model.Message)))
+                SendButton = InitButton(InlineKeyboardType.CallbackData, SendButtonCaption, SendButtonCommand);
+
+            if (true.EqualsAny(Model.To.Any(), 
+                               Model.Cc.Any(), 
+                               Model.File.Any(),
+                               !string.IsNullOrEmpty(Model.Subject),
+                               !string.IsNullOrEmpty(Model.Message)))
+                ToDraftButton = InitButton(InlineKeyboardType.CallbackData, ToDraftButtonCaption, ToDraftButtonCommand);
         }
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()

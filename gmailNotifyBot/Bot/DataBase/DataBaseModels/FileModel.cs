@@ -18,5 +18,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         public int NmStoreModelId { get; set; }
 
         public string OriginalName { get; set; }
+
     }
 }

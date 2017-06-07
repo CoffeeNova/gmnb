@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
@@ -241,27 +242,57 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         {
             if (message.ReplyToMessage == null)
                 return;
-            var model = await _dbWorker.FindNmStoreAsync(message.From);
-            if (model == null)
-            {
-                await _botActions.SendLostInfoMessage(message.From);
-                return;
-            }
-            var fillFile = new Action<string, string, int?>(async (fileId, originalName, filSize) =>
-            {
-                if (filSize > _botSettings.MaxAttachmentSize)
-                    await _botActions.SendErrorAboutMaxAttachmentSizeToChat(message.From);
 
-                model.File.Add(new FileModel
+            try
+            {
+                FileForceReplyLockers.Add(message.From);
+
+                #region handleAction
+
+                var handleAction = new Func<Task>(async () =>
                 {
-                    FileId = fileId,
-                    OriginalName = originalName
+                    var model = await _dbWorker.FindNmStoreAsync(message.From);
+                    if (model == null)
+                    {
+                        await _botActions.SendLostInfoMessage(message.From);
+                        return;
+                    }
+                    if (message.Document.FileSize > _botSettings.MaxAttachmentSize)
+                    {
+                        await _botActions.SendErrorAboutMaxAttachmentSizeToChat(message.From);
+                        return;
+                    }
+                    model.File.Add(new FileModel
+                    {
+                        FileId = message.Document.FileId,
+                        OriginalName = message.Document.FileName
+                    });
+                    await _dbWorker.UpdateNmStoreRecordAsync(model);
+                    await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
                 });
-            });
-            fillFile(message.Document.FileId, message.Document.FileName, message.Document.FileSize);
 
-            await _dbWorker.UpdateNmStoreRecordAsync(model);
-            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+                #endregion
+
+                if (FileForceReplyLockers.Any(l => l == message.From))
+                {
+                    await _fileForceReplySemaphore.WaitAsync();
+                    try
+                    {
+                        await handleAction();
+                    }
+                    finally
+                    {
+                        _fileForceReplySemaphore.Release();
+                    }
+                }
+                else
+                    await handleAction();
+            }
+            finally
+            {
+                FileForceReplyLockers.Remove(message.From);
+            }
+
         }
 
         private void UpdateNmStoreModel(NmStoreModel model, Message message)
@@ -276,6 +307,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         }
 
+        private readonly SemaphoreSlim _fileForceReplySemaphore = new SemaphoreSlim(1);
+        private static readonly List<string> FileForceReplyLockers = new List<string>();
 
     }
 }

@@ -42,5 +42,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Types
         public const string IncomingEnvelope = "\ud83d\udce8";
         public const string OutboxTray = "\ud83d\udce4";
         public const string InboxTray = "\ud83d\udce5";
+        public const string Ok = "\ud83c\udd97";
     }
 }

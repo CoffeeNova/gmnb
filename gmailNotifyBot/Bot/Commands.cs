@@ -51,7 +51,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public const string SUBJECT_FORCE_REPLY_COMMAND = "Subject:";
         public const string REMOVE_ITEM_FROM_NEW_MESSAGE = "/removeitem";
         public const string SEND_NEW_MESSAGE_COMMAND = "/sendnewmessage";
-        public const string CONTINUE_COMPOSE = "/continuecomp";
+        public const string CONTINUE_FROM_DRAFT_COMMAND = "/continuedraft";
 
     }
 }
