@@ -157,16 +157,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         }
 
         //i use mimekit here :/
-        public static Draft CreateNewDraftBody(string subject = null, string text = null, List<ToModel> to = null, List<CcModel> cc = null, List<BccModel> bcc = null, List<string> fullFileNameList = null)
+        public static Draft CreateNewDraftBody(string subject = null, string text = null, List<ToModel> to = null, List<CcModel> cc = null, List<BccModel> bcc = null, List<FileStream> fileStream = null)
         {
             var mimeMessage = new MimeMessage();
-            FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fullFileNameList);
+            FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fileStream);
             var message = TransformMimeMessageToMessage(mimeMessage);
             return new Draft { Message = message };
         }
 
         public static Draft AddToDraftBody(Draft draft, string subject = null, string text = null, List<ToModel> to = null,
-    List<CcModel> cc = null, List<BccModel> bcc = null, List<string> fullFileNameList = null, CancellationToken cancellationToken = default(CancellationToken))
+    List<CcModel> cc = null, List<BccModel> bcc = null, List<FileStream> fileStream = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             draft.NullInspect(nameof(draft));
             if (draft.Message?.Raw == null)
@@ -176,7 +176,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             using (var stream = new MemoryStream(decodedRaw))
             {
                 var mimeMessage = MimeMessage.Load(stream, cancellationToken);
-                FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fullFileNameList);
+                FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fileStream);
                 var message = TransformMimeMessageToMessage(mimeMessage);
                 return new Draft { Message = message };
             }
@@ -230,7 +230,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         }
 
         private static void FillMimeMessage(MimeMessage mimeMessage, string subject,
-            string text, List<ToModel> to, List<CcModel> cc, List<BccModel> bcc, List<string> fullFileNameList = null)
+            string text, List<ToModel> to, List<CcModel> cc, List<BccModel> bcc, List<FileStream> contentList = null)
         {
             to?.ForEach(recipient => mimeMessage.To.Add(new MailboxAddress(recipient.Address)));
             cc?.ForEach(recipient => mimeMessage.Cc.Add(new MailboxAddress(recipient.Address)));
@@ -238,25 +238,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (subject != null)
                 mimeMessage.Subject = subject;
 
-            if (text != null || fullFileNameList != null)
+            if (text != null || contentList != null)
             {
                 TextPart plainPart = null;
                 List<MimePart> attachments = null;
 
                 if (text != null)
                     plainPart = new TextPart(TextFormat.Plain) { Text = text };
-                if (fullFileNameList != null)
+                if (contentList != null)
                 {
                     attachments = new List<MimePart>();
-                    fullFileNameList.ForEach(fileName =>
+                    contentList.ForEach(content =>
                     {
                         attachments.Add(new MimePart
                         {
-                            close stream here
-                            ContentObject = new ContentObject(File.OpenRead(fileName)),
+                            ContentObject = new ContentObject(content),
                             ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
                             ContentTransferEncoding = ContentEncoding.Base64,
-                            FileName = Path.GetFileName(fileName)
+                            FileName = Path.GetFileName(content.Name)
                         });
                     });
                 }

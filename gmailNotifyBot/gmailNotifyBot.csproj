@@ -283,6 +283,7 @@
     <Compile Include="Bot\Moduls\TelegramUpdates\MessageUpdates\TextMessageHandlerRules.cs" />
     <Compile Include="Bot\Moduls\Methods.cs" />
     <Compile Include="Bot\Tools.cs" />
+    <Compile Include="Bot\Types\ContentStream.cs" />
     <Compile Include="Bot\Types\Enums.cs" />
     <Compile Include="Bot\Types\Labels.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Keyboard.cs" />

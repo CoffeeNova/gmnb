@@ -346,7 +346,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             if (nmModel == null)
                 return;
-            var localFileNames = new List<string>();
+            var streams = new List<FileStream>();
             try
             {
                 if (nmModel.File != null)
@@ -363,16 +363,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                         var originalFullName = Path.Combine(tempDirName, fileModel.OriginalName);
                         if (fileModel.OriginalName != file.FileName)
                             File.Move(tempFullName, originalFullName);
-                        localFileNames.Add(originalFullName);
+                        streams.Add(File.OpenRead(originalFullName));
                     }
                 }
-                Draft draft = null;
+                Draft draft;
                 if (string.IsNullOrEmpty(nmModel.DraftId))
                 {
 
                     var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
                         nmModel.Cc.ToList(),
-                        nmModel.Bcc.ToList(), localFileNames);
+                        nmModel.Bcc.ToList(), streams);
                     draft = await Methods.CreateDraft(body, query.From);
                 }
                 else
@@ -380,29 +380,28 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                     draft = await Methods.GetDraft(query.From, nmModel.DraftId);
                     var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
                         nmModel.Cc.ToList(),
-                        nmModel.Bcc.ToList(), localFileNames);
+                        nmModel.Bcc.ToList(), streams);
                     draft = await Methods.UpdateDraft(body, query.From, draft.Id);
                 }
-                //if (draft == null)
-                  //  throw new NotImplementedException("BotAction message: error to save message as draft");
+                if (draft == null)
+                    throw new NotImplementedException("BotAction message: error to save message as draft");
 
-                //await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.Drafted, nmModel, draft.Id);
+                await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.Drafted, nmModel, draft.Id);
             }
             finally
             {
-                foreach (var fileName in localFileNames)
+                foreach (var stream in streams)
                 {
-                    var dir = Path.GetDirectoryName(fileName);
+                    stream.Close();
+                    var dir = Path.GetDirectoryName(stream.Name);
                     var dInfo = new DirectoryInfo(dir);
                     if (dInfo.Exists)
                         dInfo.Delete(true);
                 }
             }
-            
-            //await _botActions.DraftSavedMessage(query.From);
-            //await _dbWorker.RemoveNmStoreAsync(nmModel);
+            await _botActions.DraftSavedMessage(query.From);
+            await _dbWorker.RemoveNmStoreAsync(nmModel);
         }
-
 
         public async Task HandleCallbackQNotSaveAsDraft(Query query, SendCallbackData callbackData)
         {
