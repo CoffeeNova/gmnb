@@ -25,11 +25,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
                     keyboard = new InitKeyboard(model);
                     break;
                 case SendKeyboardState.Drafted:
+                case SendKeyboardState.SentWithError:
                     keyboard = new DraftedKeyboard(model, draftId);
+                    break;
+                case SendKeyboardState.SentSuccessful:
+                    keyboard = null;
                     break;
                 default:
                     return null;
             }
+            if (keyboard == null)
+                return null;
             keyboard.CreateInlineKeyboard();
             return keyboard;
         }

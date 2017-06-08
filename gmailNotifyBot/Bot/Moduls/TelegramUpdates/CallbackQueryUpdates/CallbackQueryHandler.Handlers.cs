@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -346,59 +347,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             if (nmModel == null)
                 return;
-            var streams = new List<FileStream>();
-            try
-            {
-                if (nmModel.File != null)
-                {
-                    //download file and save to local temp
-                    foreach (var fileModel in nmModel.File)
-                    {
-                        string randomFolder = Tools.RandomString(8);
-                        var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
-                        Methods.CreateDirectory(tempDirName);
-                        var file = await _botActions.GetFile(fileModel.FileId);
-                        await _botActions.DownloadFile(file, tempDirName);
-                        var tempFullName = Path.Combine(tempDirName, file.FileName);
-                        var originalFullName = Path.Combine(tempDirName, fileModel.OriginalName);
-                        if (fileModel.OriginalName != file.FileName)
-                            File.Move(tempFullName, originalFullName);
-                        streams.Add(File.OpenRead(originalFullName));
-                    }
-                }
-                Draft draft;
-                if (string.IsNullOrEmpty(nmModel.DraftId))
-                {
-
-                    var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
-                        nmModel.Cc.ToList(),
-                        nmModel.Bcc.ToList(), streams);
-                    draft = await Methods.CreateDraft(body, query.From);
-                }
-                else
-                {
-                    draft = await Methods.GetDraft(query.From, nmModel.DraftId);
-                    var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
-                        nmModel.Cc.ToList(),
-                        nmModel.Bcc.ToList(), streams);
-                    draft = await Methods.UpdateDraft(body, query.From, draft.Id);
-                }
-                if (draft == null)
-                    throw new NotImplementedException("BotAction message: error to save message as draft");
-
-                await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.Drafted, nmModel, draft.Id);
-            }
-            finally
-            {
-                foreach (var stream in streams)
-                {
-                    stream.Close();
-                    var dir = Path.GetDirectoryName(stream.Name);
-                    var dInfo = new DirectoryInfo(dir);
-                    if (dInfo.Exists)
-                        dInfo.Delete(true);
-                }
-            }
+            var draft = await SaveDraftMailServer(query.From, nmModel);
+            //save draftId in database in case of exception
+            nmModel.DraftId = draft.Id;
+            await _dbWorker.UpdateNmStoreRecordAsync(nmModel);
+            await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.Drafted, nmModel, draft.Id);
             await _botActions.DraftSavedMessage(query.From);
             await _dbWorker.RemoveNmStoreAsync(nmModel);
         }
@@ -469,6 +422,127 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             }
             else
                 await _botActions.SaveAsDraftQuestionMessage(query.From, SendKeyboardState.Store);
+        }
+
+        public async Task HandleCallbackQSendNewMessage(Query query, SendCallbackData callbackData)
+        {
+            var service = Methods.SearchServiceByUserId(query.From);
+            var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            if (nmModel == null)
+                return;
+
+            var draft = await SaveDraftMailServer(query.From, nmModel);
+            nmModel.DraftId = draft.Id;
+            await _dbWorker.UpdateNmStoreRecordAsync(nmModel); //save draftId in database in case of exception
+            try
+            {
+                var request = service.GmailService.Users.Drafts.Send(draft, "me");
+                var response = await request.ExecuteAsync();
+                await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.SentSuccessful, nmModel, draft.Id);
+            }
+            catch (Exception ex)
+            {
+                await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.SentWithError, nmModel, draft.Id, ex.Message);
+            }
+
+            await _dbWorker.RemoveNmStoreAsync(nmModel);
+        }
+
+        public async Task HandleCallbackQRemoveItemNewMessage(Query query, SendCallbackData callbackData)
+        {
+            var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            if (nmModel == null)
+                return;
+
+            switch (callbackData.Row)
+            {
+                case NmStoreUnit.To:
+                    nmModel.To.ToList().RemoveAt(callbackData.Column);
+                    break;
+                case NmStoreUnit.Cc:
+                    nmModel.Cc.ToList().RemoveAt(callbackData.Column);
+                    break;
+                case NmStoreUnit.Bcc:
+                    nmModel.Bcc.ToList().RemoveAt(callbackData.Column);
+                    break;
+                case NmStoreUnit.File:
+                    nmModel.File.ToList().RemoveAt(callbackData.Column);
+                    break;
+                default:
+                    return;
+            }
+            await _dbWorker.UpdateNmStoreRecordAsync(nmModel);
+            await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.Continue, nmModel);
+        }
+
+        private async Task<Draft> SaveDraftMailServer(string userId, NmStoreModel nmModel)
+        {
+            nmModel.NullInspect(nameof(nmModel));
+            List<FileStream> streams = null;
+            Draft draft;
+            try
+            {
+                if (nmModel.File != null)
+                {
+                    var filesPaths = await DownloadFilesToLocalTemp(nmModel.File);
+                    streams = new List<FileStream>();
+                    filesPaths.ForEach(f => streams.Add(File.OpenRead(f)));
+                }
+                if (string.IsNullOrEmpty(nmModel.DraftId))
+                {
+
+                    var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
+                        nmModel.Cc.ToList(),
+                        nmModel.Bcc.ToList(), streams);
+                    draft = await Methods.CreateDraft(body, userId);
+                }
+                else
+                {
+                    draft = await Methods.GetDraft(userId, nmModel.DraftId);
+                    var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
+                        nmModel.Cc.ToList(),
+                        nmModel.Bcc.ToList(), streams);
+                    draft = await Methods.UpdateDraft(body, userId, draft.Id);
+                }
+                if (draft == null)
+                    throw new NotImplementedException("BotAction message: error to save message as draft");
+            }
+            finally
+            {
+                if (streams != null)
+                {
+                    foreach (var stream in streams)
+                    {
+                        stream.Close();
+                        var dir = Path.GetDirectoryName(stream.Name);
+                        var dInfo = new DirectoryInfo(dir);
+                        if (dInfo.Exists)
+                            dInfo.Delete(true);
+                    }
+                }
+            }
+            return draft;
+        }
+
+        private async Task<List<string>> DownloadFilesToLocalTemp(ICollection<FileModel> fileModelCollection)
+        {
+            fileModelCollection.NullInspect(nameof(fileModelCollection));
+
+            var fileNames = new List<string>();
+            foreach (var fileModel in fileModelCollection)
+            {
+                string randomFolder = Tools.RandomString(8);
+                var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
+                Methods.CreateDirectory(tempDirName);
+                var file = await _botActions.GetFile(fileModel.FileId);
+                await _botActions.DownloadFile(file, tempDirName);
+                var tempFullName = Path.Combine(tempDirName, file.FileName);
+                var originalFullName = Path.Combine(tempDirName, fileModel.OriginalName);
+                if (fileModel.OriginalName != file.FileName)
+                    File.Move(tempFullName, originalFullName);
+                fileNames.Add(originalFullName);
+            }
+            return fileNames;
         }
     }
 }

@@ -121,6 +121,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             _rules.Add(new NotSaveAsDraftRule());
             _rules.Add(new CotinueWithOldRule());
             _rules.Add(new ContinueFromDraftRule());
+            _rules.Add(new SendMessageRule());
+            _rules.Add(new RemoveItemNewMessageRule());
         }
 
 

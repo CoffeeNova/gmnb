@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
@@ -34,8 +35,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
         }
 
         //label should be "SEND" to get user's contacts
-        public async Task HandleShowContactsInlineQueryCommand(Query query, string labelId = null)
+        public async Task HandleShowContactsInlineQueryCommand(Query query, string labelId = null, string userContact = null)
         {
+            if (!string.IsNullOrEmpty(userContact))
+            {
+                var userInfo = new UserInfo { Email = userContact };
+                await _botActions.ShowContactsAnswerInlineQuery(query.Id, new List<UserInfo> { userInfo });
+                return;
+            }
             int offset;
             Int32.TryParse(query.Offset, out offset);
             if (offset == -1)
@@ -48,7 +55,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
             var formatedMessages = await GetMessages(query, offset, labelId, null, resultsPerPage, messagesInOneResponse);
             var uniqueContacts = Methods.GetUniqueContactsFromMessageList(formatedMessages);
             if (uniqueContacts.Count == messagesInOneResponse)
-                await _botActions.ShowContactsAnswerInlineQuery(query.Id,  uniqueContacts, offset + messagesInOneResponse);
+                await _botActions.ShowContactsAnswerInlineQuery(query.Id, uniqueContacts, offset + messagesInOneResponse);
             else
                 await _botActions.ShowContactsAnswerInlineQuery(query.Id, uniqueContacts); //last response
         }

@@ -221,11 +221,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     Description = contact.Name,
                     InputMessageContent = new InputTextMessageContent
                     {
-                        MessageText = new SendCallbackData
-                        {
-                            Command = "deletecommand",
-                        }//$"Recipient added:{Environment.NewLine}{contact.Name} <{contact.Email}>"
-
+                        MessageText = $"Recipient added:{Environment.NewLine}{contact.Name} <{contact.Email}>"
                     },
                     ThumbUrl = _contactsThumbUrl,
                     ThumbHeight = 48,
@@ -241,7 +237,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task<TextMessage> SpecifyNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model = null)
         {
             var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model);
-            var message = BuildNewMailMessage(model);
+            var message = BuildNewMailMessage(model, state);
             return await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
@@ -251,12 +247,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, _storeDraftMessageText, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task UpdateNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model, string draftId = "")
+        public async Task UpdateNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model, string draftId = "", string errorMessage = "Unidentified error")
         {
             var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model, draftId);
-            var message = string.IsNullOrEmpty(draftId) 
-                ? BuildNewMailMessage(model) 
-                : _restoreFromDraftMessageText;
+            string message = null;
+            switch (state)
+            {
+                case SendKeyboardState.Drafted:
+                    message = _restoreFromDraftMessageText;
+                    break;
+                case SendKeyboardState.SentSuccessful:
+                    message = BuildNewMailMessage(model, state);
+                    break;
+                case SendKeyboardState.SentWithError:
+                    message = $"<b>Error while sending a message:</b>{Environment.NewLine}{errorMessage}";
+                    break;
+                default:
+                    message = BuildNewMailMessage(model, state);
+                    break;
+            }
+ 
             await _telegramMethods.EditMessageTextAsync(message, chatId, model.MessageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
@@ -324,6 +334,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, message);
         }
 
+        public async Task RemoveKeyboard(string chatId)
+        {
+            var removeKeyboard = new ReplyKeyboardRemove();
+            await _telegramMethods.SendMessageAsync(chatId, "/delete", null, false, false, null, removeKeyboard);
+        }
+
+        public async Task DeleteMessage(string chatId, int messageId)
+        {
+            
+        }
+
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
         {
             const int maxLine = 44;
@@ -337,15 +358,28 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             return builder.ToString();
         }
 
-        private string BuildNewMailMessage(NmStoreModel model)
+        private string BuildNewMailMessage(NmStoreModel model, SendKeyboardState state )
         {
-            var message = new StringBuilder(_newMessageMainText);
+            string headerText;
+            switch (state)
+            {
+                case SendKeyboardState.Init:
+                case SendKeyboardState.Continue:
+                    headerText = _newMessageMainText;
+                    break;
+                case SendKeyboardState.SentSuccessful:
+                    headerText = _newMessageSuccessfulSentText;
+                    break;
+                default:
+                    headerText = "";
+                    break;
+            }
+            var message = new StringBuilder(headerText);
             if (model == null)
             {
                 message.AppendLine(_newMessageTipText);
                 return message.ToString();
             }
-
             var iterFunc = new Action<StringBuilder, List<string>, string>((builder, collection, label) =>
             {
                 if (collection == null || !collection.Any()) return;
@@ -378,6 +412,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         private readonly TelegramMethods _telegramMethods;
         private readonly string _newMessageMainText =
                         $"{Emoji.New} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: ";
+
+        private readonly string _newMessageSuccessfulSentText = $"{Emoji.Ok} Message sent successfully!";
 
         private readonly string _newMessageTipText = $"{Emoji.InfoSign} You can use quick command, just type in the chat:" +
                         $"{Environment.NewLine}<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +

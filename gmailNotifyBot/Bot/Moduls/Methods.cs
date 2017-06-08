@@ -84,7 +84,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return recipients.Unique(r => r.Email).ToList();
         }
 
-        public static string CutArguments(TelegramBotApiWrapper.Types.InlineQuery query)
+        public static string CutArguments(InlineQuery query)
         {
             var splittedQuery = query.Query.Split(" ".ToCharArray(), 2);
             var queryArguments = splittedQuery.Length > 1 ? splittedQuery[1] : "";

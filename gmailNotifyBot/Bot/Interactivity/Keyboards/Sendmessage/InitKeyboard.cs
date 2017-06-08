@@ -17,9 +17,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
 
         protected override void ButtonsInitializer()
         {
-            ToButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, ToButtonCaption, ToButtonCommand, "", false);
-            CcButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, CcButtonCaption, CcButtonCommand, "", false);
-            BccButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, BccButtonCaption, BccButtonCommand, "", false);
+            ToButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, ToButtonCaption, ToButtonCommand, "", NmStoreUnit.None, -1, false);
+            CcButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, CcButtonCaption, CcButtonCommand, "", NmStoreUnit.None, -1, false);
+            BccButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, BccButtonCaption, BccButtonCommand, "", NmStoreUnit.None, -1, false);
             MessageButton = InitButton(InlineKeyboardType.CallbackData, MessageButtonCaption, MessageButtonCommand);
             SubjectButton = InitButton(InlineKeyboardType.CallbackData, SubjectButtonCaption, SubjectButtonCommand);
 
@@ -68,21 +68,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
 
         private void AddDynamicButtons(List<List<InlineKeyboardButton>> keyboard)
         {
-            var iterFunc = new Func<List<string>, List<InlineKeyboardButton>>(collection =>
+            var iterFunc = new Func<List<string>, NmStoreUnit, List<InlineKeyboardButton>>((collection, row) =>
             {
                 if (collection == null || !collection.Any()) return null;
 
                 var buttonRow = new List<InlineKeyboardButton>();
                 collection.IndexEach((item, i) =>
                 {
-                    buttonRow.Add(InitButton(InlineKeyboardType.CallbackData, $"{Emoji.BlackCross}{item}", RemoveItemCommand));
+                    buttonRow.Add(InitButton(InlineKeyboardType.CallbackData, $"{Emoji.BlackCross}{item}", RemoveItemCommand, "", row, i));
                 });
                 return buttonRow;
             });
-            RemoveToRow = iterFunc(Model.To.Select(a => a.Address).ToList());
-            RemoveCcRow = iterFunc(Model.Cc.Select(a => a.Address).ToList());
-            RemoveBccRow = iterFunc(Model.Bcc.Select(a => a.Address).ToList());
-            RemoveFileRow = iterFunc(Model.File.Select(f => f.OriginalName).ToList());
+            RemoveToRow = iterFunc(Model.To.Select(a => a.Address).ToList(), NmStoreUnit.To);
+            RemoveCcRow = iterFunc(Model.Cc.Select(a => a.Address).ToList(), NmStoreUnit.Cc);
+            RemoveBccRow = iterFunc(Model.Bcc.Select(a => a.Address).ToList(), NmStoreUnit.Bcc);
+            RemoveFileRow = iterFunc(Model.File.Select(f => f.OriginalName).ToList(), NmStoreUnit.File);
             if (RemoveToRow != null)
                 keyboard.Add(RemoveToRow);
             if (RemoveCcRow != null)

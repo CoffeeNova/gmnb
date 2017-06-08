@@ -24,7 +24,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
 
     internal class ShowAllMessagesRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {
@@ -41,11 +41,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
 
     internal class ShowToContactsRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {
-                await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent);
+                var contact = Methods.CutArguments(query);
+                await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent, contact);
             };
 
             if (query.Query.StartsWith(Commands.TO_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
@@ -56,11 +57,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
 
     internal class ShowCcContactsRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {
-                await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent);
+                var contact = Methods.CutArguments(query);
+                await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent, contact);
             };
 
             if (query.Query.StartsWith(Commands.CC_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
@@ -71,11 +73,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
 
     internal class ShowBccContactsRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {
-                await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent);
+                var contact = Methods.CutArguments(query);
+                await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent, contact);
             };
 
             if (query.Query.StartsWith(Commands.BCC_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))

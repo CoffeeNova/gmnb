@@ -39,7 +39,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             await dbWorker.UpdateUserRecordAsync(userModel);
             LogMaker.Log(Logger, $"{nameof(UserModel)} record with userId={userId} updated with new access token.", false);
 
-            Debug.Assert(false, "?? should i revoke service from ServiceFactory.Instance.ServiceCollection ??");
+           // Debug.Assert(false, "?? should i revoke service from ServiceFactory.Instance.ServiceCollection ??");
         }
 
         public async Task DeleteAsync<T>(string key)

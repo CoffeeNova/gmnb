@@ -13,6 +13,15 @@
         Bcc
     }
 
+    public enum NmStoreUnit
+    {
+        None = 0,
+        To = 1,
+        Cc = 2,
+        Bcc = 3,
+        File = 4
+    }
+
     public enum CallbackDataType
     {
         GetCallbackData,

@@ -338,4 +338,32 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             return null;
         }
     }
+
+    internal class SendMessageRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SendCallbackData))
+                return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSendNewMessage(sender, data as SendCallbackData);
+            if (data.Command.StartsWith(Commands.SEND_NEW_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
+
+    internal class RemoveItemNewMessageRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SendCallbackData))
+                return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRemoveItemNewMessage(sender, data as SendCallbackData);
+            if (data.Command.StartsWith(Commands.REMOVE_ITEM_FROM_NEW_MESSAGE, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
 }

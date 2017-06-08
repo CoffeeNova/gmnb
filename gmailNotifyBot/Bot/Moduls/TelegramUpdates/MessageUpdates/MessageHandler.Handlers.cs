@@ -206,36 +206,50 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         public async Task HandleMessageForceReply(TextMessage message)
         {
-            var model = await _dbWorker.FindNmStoreAsync(message.From);
-            if (model == null)
+            try
             {
-                await _botActions.SendLostInfoMessage(message.From);
-                return;
-            }
-            if (message.ReplyToMessage == null)
-                return;
-            if (message.Text == null)
-                return;
+                var model = await _dbWorker.FindNmStoreAsync(message.From);
+                if (model == null)
+                {
+                    await _botActions.SendLostInfoMessage(message.From);
+                    return;
+                }
+                if (message.ReplyToMessage == null)
+                    return;
+                if (message.Text == null)
+                    return;
 
-            model.Message = message.Text;
-            await _dbWorker.UpdateNmStoreRecordAsync(model);
-            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+                model.Message = message.Text;
+                await _dbWorker.UpdateNmStoreRecordAsync(model);
+                await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+            }
+            finally
+            {
+                await _botActions.RemoveKeyboard(message.From);
+            }
         }
 
         public async Task HandleSubjectForceReply(TextMessage message)
         {
-            var model = await _dbWorker.FindNmStoreAsync(message.From);
-            if (model == null)
+            try
             {
-                await _botActions.SendLostInfoMessage(message.From);
-                return;
-            }
-            if (message.Text == null)
-                return;
+                var model = await _dbWorker.FindNmStoreAsync(message.From);
+                if (model == null)
+                {
+                    await _botActions.SendLostInfoMessage(message.From);
+                    return;
+                }
+                if (message.Text == null)
+                    return;
 
-            model.Subject = message.Text;
-            await _dbWorker.UpdateNmStoreRecordAsync(model);
-            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+                model.Subject = message.Text;
+                await _dbWorker.UpdateNmStoreRecordAsync(model);
+                await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+            }
+            finally
+            {
+                await _botActions.RemoveKeyboard(message.From);
+            }
         }
 
         public async Task HandleFileForceReply(DocumentMessage message)
@@ -291,6 +305,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             finally
             {
                 FileForceReplyLockers.Remove(message.From);
+                await _botActions.RemoveKeyboard(message.From);
             }
 
         }

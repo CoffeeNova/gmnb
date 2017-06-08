@@ -11,6 +11,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         [EnumMember(Value = "store")]
         Store,
         [EnumMember(Value = "drafted")]
-        Drafted
+        Drafted,
+        [EnumMember(Value = "sentSuccessful")]
+        SentSuccessful,
+        [EnumMember(Value = "sentWithError")]
+        SentWithError
     }
 }
