@@ -238,7 +238,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         {
             var keyboard = _sendKeyboardFactory.CreateKeyboard(state, model);
             var message = BuildNewMailMessage(model, state);
-            return await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
+            return await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, true, false, null, keyboard);
         }
 
         public async Task SaveAsDraftQuestionMessage(string chatId, SendKeyboardState state)
@@ -267,10 +267,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     break;
             }
  
-            await _telegramMethods.EditMessageTextAsync(message, chatId, model.MessageId.ToString(), null, ParseMode.Html, null, keyboard);
+            await _telegramMethods.EditMessageTextAsync(message, chatId, model.MessageId.ToString(), null, ParseMode.Html, true, keyboard);
         }
-
-
 
         public async Task SendAttachmentToChat(string chatId, string fullFileName, string caption)
         {
@@ -386,7 +384,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 builder.Append($"<b>{label}:</b> ");
                 collection.IndexEach((item, i) =>
                 {
-                    builder.Append(Path.GetFileName(item)); //! GetFileName 
+                    builder.Append($"<code>{Path.GetFileName(item)}</code>"); //! GetFileName 
                     if (i < collection.Count - 1) builder.Append(", ");
                 });
             });
