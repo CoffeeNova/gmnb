@@ -95,10 +95,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
                 // Update 
                 dbContext.Entry(existModel).CurrentValues.SetValues(newModel);
                 // Delete
-                dbContext.To.RemoveRange(existModel.To.Intersect(newModel.To));
-                dbContext.Cc.RemoveRange(existModel.Cc.Intersect(newModel.Cc));
-                dbContext.Bcc.RemoveRange(existModel.Bcc.Intersect(newModel.Bcc));
-                dbContext.File.RemoveRange(existModel.File.Intersect(newModel.File));
+                dbContext.To.RemoveRange(existModel.To.Except(newModel.To, new IdEqualityComparer<ToModel>()));
+                dbContext.Cc.RemoveRange(existModel.Cc.Except(newModel.Cc, new IdEqualityComparer<CcModel>()));
+                dbContext.Bcc.RemoveRange(existModel.Bcc.Except(newModel.Bcc, new IdEqualityComparer<BccModel>()));
+                dbContext.File.RemoveRange(existModel.File.Except(newModel.File, new IdEqualityComparer<FileModel>()));
 
                 UpdateAdress(dbContext, newModel.To, existModel.To);
                 UpdateAdress(dbContext, newModel.Cc, existModel.Cc);
@@ -114,7 +114,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         }
 
         private void UpdateAdress<T>(DbContext dbContext, ICollection<T> newAddressCollection,
-    ICollection<T> existAddressCollection) where T : class, IAddressModel, new()
+    ICollection<T> existAddressCollection) where T : class, INmStoreModel, IAddressModel, new()
         {
             foreach (var address in newAddressCollection)
             {

@@ -454,19 +454,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (nmModel == null)
                 return;
 
+            INmStoreModel element;
             switch (callbackData.Row)
             {
                 case NmStoreUnit.To:
-                    nmModel.To.ToList().RemoveAt(callbackData.Column);
+                    element = nmModel.To.ElementAt(callbackData.Column);
+                    var t = nmModel.To.Remove((ToModel) element);
                     break;
                 case NmStoreUnit.Cc:
-                    nmModel.Cc.ToList().RemoveAt(callbackData.Column);
+                    element = nmModel.Cc.ElementAt(callbackData.Column);
+                    nmModel.Cc.Remove((CcModel)element);
                     break;
                 case NmStoreUnit.Bcc:
-                    nmModel.Bcc.ToList().RemoveAt(callbackData.Column);
+                    element = nmModel.Bcc.ElementAt(callbackData.Column);
+                    nmModel.Bcc.Remove((BccModel)element);
                     break;
                 case NmStoreUnit.File:
-                    nmModel.File.ToList().RemoveAt(callbackData.Column);
+                    element = nmModel.File.ElementAt(callbackData.Column);
+                    nmModel.File.Remove((FileModel)element);
                     break;
                 default:
                     return;
