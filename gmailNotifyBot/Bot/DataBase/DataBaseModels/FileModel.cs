@@ -9,7 +9,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         [Key, Column(Order = 1), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        /// <summary>
+        /// Telegram's file id.
+        /// </summary>
         public string FileId { get; set; }
+
+        /// <summary>
+        /// Google attachment id.
+        /// </summary>
+        public string AttachId { get; set; }
 
         [ForeignKey("NmStoreModelId")]
         public NmStoreModel NmStoreModel { get; set; }

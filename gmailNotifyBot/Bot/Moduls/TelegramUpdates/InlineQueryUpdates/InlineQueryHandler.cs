@@ -71,6 +71,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
             _rules.Add(new ShowToContactsRule());
             _rules.Add(new ShowCcContactsRule());
             _rules.Add(new ShowBccContactsRule());
+            _rules.Add(new ShowDraftMessagesRule());
+            _rules.Add(new ShowEditDraftMessagesRule());
         }
 
         private readonly List<IInlineQueryHandlerRules> _rules = new List<IInlineQueryHandlerRules>();

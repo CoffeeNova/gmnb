@@ -21,9 +21,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         }
 
+        public FormattedMessage(Draft draft)
+        {
+            draft.NullInspect(nameof(draft));
+            DraftId = draft.Id;
+            ParseMessage(draft.Message);
+        }
+
         public FormattedMessage(Message message)
         {
-            if (message?.Payload == null)
+            ParseMessage(message);
+        }
+
+        private void ParseMessage(Message message)
+        {
+            message.NullInspect(nameof(message));
+            if (message.Payload == null)
                 throw new FormattedGmailMessageException($"{nameof(message.Payload)} must be not null.");
 
             Id = message.Id;
@@ -209,7 +222,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public IReadOnlyList<string> DesirableBody => GetDesirableBody();
 
-        public IReadOnlyList<AttachmentInfo> Attachments { get; }
+        public IReadOnlyList<AttachmentInfo> Attachments { get; private set; }
 
         public string Header => HtmlStyledMessageHeader();
 
@@ -245,6 +258,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public ReadOnlyCollection<string> MimeTypes { get; } = new ReadOnlyCollection<string>(_mimeTypes);
 
         public bool SnippetEqualsBody => IsSnippetEqualsBody();
+
+        public string DraftId { get; }
+
+        public bool IsDraft => !string.IsNullOrEmpty(DraftId);
     }
 
     internal class BodyForm

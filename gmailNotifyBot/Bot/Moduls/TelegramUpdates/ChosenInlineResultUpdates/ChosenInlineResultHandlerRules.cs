@@ -13,7 +13,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await handler.HandleGetMesssagesChosenInlineResult(result);
             };
 
-            if (result.Query.Equals(Commands.INBOX_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (result.Query.StartsWith(Commands.INBOX_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -28,7 +28,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await handler.HandleGetMesssagesChosenInlineResult(result);
             };
 
-            if (result.Query.Equals(Commands.ALL_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (result.Query.StartsWith(Commands.ALL_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
+
+    internal class GetDraftMessagesRule : IChosenInlineResultHandlerRules
+    {
+        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultUpdates.ChosenInlineResultHandler handler)
+        {
+            HandleChosenInlineResultCommand del = async () =>
+            {
+                await handler.HandleGetMesssagesChosenInlineResult(result);
+            };
+
+            if (result.Query.StartsWith(Commands.DRAFT_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -74,6 +89,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             };
 
             if (result.Query.StartsWith(Commands.BCC_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
+
+    internal class GetEditDraftRule : IChosenInlineResultHandlerRules
+    {
+        public HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultUpdates.ChosenInlineResultHandler handler)
+        {
+            HandleChosenInlineResultCommand del = async () =>
+            {
+                await handler.HandleEditDraftChosenInlineResult(result);
+            };
+
+            if (result.Query.StartsWith(Commands.EDIT_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }

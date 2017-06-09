@@ -12,6 +12,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
+using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Message = CoffeeJelly.TelegramBotApiWrapper.Types.Messages.Message;
 
@@ -83,6 +84,62 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (mailInfoResponse == null) return;
             var formattedMessage = new FormattedMessage(mailInfoResponse);
             await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
+        }
+
+        public async Task HandleTestDraftCommand(ISender sender)
+        {
+            sender.NullInspect(nameof(sender));
+
+            string draftId = "";
+            int draftIndex = -1;
+            if (sender.GetType() == typeof(TextMessage))
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                var splittedtext = (sender as TextMessage).Text.Split(' ');
+                if (splittedtext.Length > 1)
+                {
+                    if (splittedtext[1].StartsWith("="))
+                    {
+                        int draftNum;
+                        int.TryParse(splittedtext[1].Remove(0, 1), out draftNum);
+                        draftIndex = draftNum - 1;
+                    }
+                    else
+                        draftId = splittedtext[1];
+                }
+            }
+
+            var service = Methods.SearchServiceByUserId(sender.From);
+            var query = service.GmailService.Users.Drafts.List("me");
+            //query.LabelIds = "INBOX";
+            var listDraftsResponse = await query.ExecuteAsync();
+            if (listDraftsResponse?.Drafts == null) return;
+
+            Draft draftInfo;
+            if (draftIndex > -1)
+                draftInfo = listDraftsResponse.Drafts[draftIndex];
+            else if (!string.IsNullOrEmpty(draftId))
+                draftInfo = listDraftsResponse.Drafts.SingleOrDefault(m => m.Id == draftId);
+            else
+                draftInfo = listDraftsResponse.Drafts.First();
+            if (draftInfo == null)
+                return;
+
+            var nmStore = await _dbWorker.FindNmStoreAsync(sender.From);
+            if (nmStore == null)
+            {
+                var draft = await Methods.GetDraft(sender.From, draftInfo.Id,
+                                    UsersResource.DraftsResource.GetRequest.FormatEnum.Full);
+                nmStore = await _dbWorker.AddNewNmStoreAsync(sender.From);
+                var formattedMessage = new FormattedMessage(draft.Message);
+                Methods.ComposeNmStateModel(nmStore, formattedMessage);
+                var textMessage = await _botActions.SpecifyNewMailMessage(sender.From, SendKeyboardState.Continue, nmStore);
+                nmStore.MessageId = textMessage.MessageId;
+                nmStore.DraftId = draft.Id;
+                await _dbWorker.UpdateNmStoreRecordAsync(nmStore);
+            }
+            else
+                await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
         }
 
         public async Task HandleStartNotifyCommand(ISender sender)
@@ -204,6 +261,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             await _botActions.GmailInlineAllCommandMessage(sender.From);
         }
 
+        public async Task HandleGetDraftMessagesCommand(ISender sender)
+        {
+            Methods.SearchServiceByUserId(sender.From);
+            await _botActions.GmailInlineDraftCommandMessage(sender.From);
+        }
+
         public async Task HandleMessageForceReply(TextMessage message)
         {
             try
@@ -273,7 +336,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                     }
                     if (message.Document.FileSize > _botSettings.MaxAttachmentSize)
                     {
-                        await _botActions.SendErrorAboutMaxAttachmentSizeToChat(message.From);
+                        await _botActions.SendErrorAboutMaxAttachmentSizeToChat(message.From, message.Document.FileName);
                         return;
                     }
                     model.File.Add(new FileModel

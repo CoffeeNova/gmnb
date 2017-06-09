@@ -68,8 +68,8 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 Subject = "testSubj",
                 File = new List<FileModel>
                 {
-                    new FileModel { FileId = "testFileId1", /*FilePath = "testFilePath1",*/ OriginalName = "testFileName1"/*, FileSize = 1*/},
-                    new FileModel { FileId = "testFileId2", /*FilePath = "testFilePath2",*/ OriginalName = "testFileName2"/*, FileSize = 2*/}
+                    new FileModel { FileId = "testFileId1", AttachId = "testAttach1", OriginalName = "testFileName1"},
+                    new FileModel { FileId = "testFileId2", AttachId = "testAttach2", OriginalName = "testFileName2"}
                 }
             });
             base.Seed(db);

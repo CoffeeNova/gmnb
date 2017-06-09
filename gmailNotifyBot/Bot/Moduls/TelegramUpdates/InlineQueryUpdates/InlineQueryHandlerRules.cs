@@ -7,7 +7,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
 
     internal class ShowInboxMessagesRule : IInlineQueryHandlerRules
     {
-        public HandleInlineQueryCommand Handle(Query query, InlineQueryUpdates.InlineQueryHandler handler)
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
         {
             HandleInlineQueryCommand del = async () =>
             {
@@ -34,6 +34,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
             };
 
             if (query.Query.StartsWith(Commands.ALL_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
+
+    internal class ShowDraftMessagesRule : IInlineQueryHandlerRules
+    {
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
+        {
+            HandleInlineQueryCommand del = async () =>
+            {
+                var arguments = Methods.CutArguments(query);
+                var skip = Methods.ArgumentAssigment(ref arguments);
+                await handler.HandleShowMessagesInlineQueryCommand(query, Label.Draft, skip, arguments);
+            };
+
+            if (query.Query.StartsWith(Commands.DRAFT_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -82,6 +99,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
             };
 
             if (query.Query.StartsWith(Commands.BCC_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+            return null;
+        }
+    }
+
+    internal class ShowEditDraftMessagesRule : IInlineQueryHandlerRules
+    {
+        public HandleInlineQueryCommand Handle(Query query, InlineQueryHandler handler)
+        {
+            HandleInlineQueryCommand del = async () =>
+            {
+                var arguments = Methods.CutArguments(query);
+                var skip = Methods.ArgumentAssigment(ref arguments);
+                await handler.HandleShowEditDraftsInlineQueryCommand(query, skip, arguments);
+            };
+
+            if (query.Query.StartsWith(Commands.EDIT_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }

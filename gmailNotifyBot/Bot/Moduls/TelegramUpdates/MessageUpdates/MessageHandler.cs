@@ -143,7 +143,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             _rules.Add(new NewMessageRule());
             _rules.Add(new GetInboxRule());
             _rules.Add(new GetAllRule());
-
+            _rules.Add(new GetDraftRule());
+            _rules.Add(new TestDraftRule());
         }
 
         private void InitForceReplyRules()

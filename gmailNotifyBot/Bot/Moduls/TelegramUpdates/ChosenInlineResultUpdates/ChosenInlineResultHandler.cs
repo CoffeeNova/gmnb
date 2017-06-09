@@ -72,6 +72,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             _rules.Add(new GetToContactsRule());
             _rules.Add(new GetCcContactsRule());
             _rules.Add(new GetBccContactsRule());
+            _rules.Add(new GetDraftMessagesRule());
+            _rules.Add(new GetEditDraftRule());
         }
 
         private readonly List<IChosenInlineResultHandlerRules> _rules = new List<IChosenInlineResultHandlerRules>();

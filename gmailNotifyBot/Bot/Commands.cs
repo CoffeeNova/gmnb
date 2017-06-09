@@ -9,14 +9,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
     {
         public const string SETTINGS_COMMAND = "/settings";
         public const string AUTHORIZE_COMMAND = "/connect";
-        public const string TESTNAME_COMMAND = "/testname";
-        public const string TESTMESSAGE_COMMAND = "/testmessage";
-        public const string TESTTHREAD_COMMAND = "/testthread";
+        public const string TEST_NAME_COMMAND = "/testname";
+        public const string TEST_MESSAGE_COMMAND = "/testmessage";
+        public const string TEST_THREAD_COMMAND = "/testthread";
+        public const string TEST_DRAFT_COMMAND = "/testdraft";
         public const string NEW_MESSAGE_COMMAND = "/new";
         public const string INBOX_COMMAND = "/inbox";
         public const string ALL_COMMAND = "/all";
+        public const string DRAFT_COMMAND = "/draft";
+        public const string EDIT_COMMAND = "/edit";
         public const string INBOX_INLINE_QUERY_COMMAND = "inbox";
         public const string ALL_INLINE_QUERY_COMMAND = "all";
+        public const string DRAFT_INLINE_QUERY_COMMAND = "draft";
+        public const string EDIT_INLINE_QUERY_COMMAND = "edit";
         public const string EXPAND_COMMAND = "/expand";
         public const string HIDE_COMMAND = "/hide";
         public const string EXPAND_ACTIONS_COMMAND = "/expandActions";

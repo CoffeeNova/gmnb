@@ -44,8 +44,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQExpand(Query query, GetCallbackData callbackData)
         {
-            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.Maximized, GetKeyboardState.MaximizedActions))
-                throw new ArgumentException("Must be a Minimized or MinimizedAction state.", nameof(callbackData.MessageKeyboardState));
+            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.Maximized,
+                GetKeyboardState.MaximizedActions))
+                throw new ArgumentException("Must be a Minimized or MinimizedAction state.",
+                    nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -53,7 +55,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 ? GetKeyboardState.Maximized
                 : GetKeyboardState.MaximizedActions;
             var newPage = 1;
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, newPage, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, newPage,
+                    isIgnored);
         }
 
         /// <summary>
@@ -67,8 +71,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQHide(Query query, GetCallbackData callbackData)
         {
-            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.Minimized, GetKeyboardState.MinimizedActions))
-                throw new ArgumentException("Must be a Maximized or MaximizedAction state.", nameof(callbackData.MessageKeyboardState));
+            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.Minimized,
+                GetKeyboardState.MinimizedActions))
+                throw new ArgumentException("Must be a Maximized or MaximizedAction state.",
+                    nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -76,7 +82,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 ? GetKeyboardState.Minimized
                 : GetKeyboardState.MinimizedActions;
             var newPage = 0;
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, newPage, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, newPage,
+                    isIgnored);
 
         }
 
@@ -91,15 +99,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQExpandActions(Query query, GetCallbackData callbackData)
         {
-            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.MinimizedActions, GetKeyboardState.MaximizedActions))
-                throw new ArgumentException("Must be a Minimized or Maximized state.", nameof(callbackData.MessageKeyboardState));
+            if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.MinimizedActions,
+                GetKeyboardState.MaximizedActions))
+                throw new ArgumentException("Must be a Minimized or Maximized state.",
+                    nameof(callbackData.MessageKeyboardState));
 
-            var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null, "UNREAD");
+            var formattedMessage =
+                await
+                    Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
+                        "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
             var newState = callbackData.MessageKeyboardState == GetKeyboardState.Minimized
                 ? GetKeyboardState.MinimizedActions
                 : GetKeyboardState.MaximizedActions;
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, callbackData.Page, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage,
+                    callbackData.Page, isIgnored);
         }
 
         /// <summary>
@@ -114,14 +129,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         public async Task HandleCallbackQHideActions(Query query, GetCallbackData callbackData)
         {
             if (callbackData.MessageKeyboardState.EqualsAny(GetKeyboardState.Minimized, GetKeyboardState.Maximized))
-                throw new ArgumentException("Must be a MinimizedActions or MaximizedActions state.", nameof(callbackData.MessageKeyboardState));
+                throw new ArgumentException("Must be a MinimizedActions or MaximizedActions state.",
+                    nameof(callbackData.MessageKeyboardState));
 
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
             var newState = callbackData.MessageKeyboardState == GetKeyboardState.MinimizedActions
                 ? GetKeyboardState.Minimized
                 : GetKeyboardState.Maximized;
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage, callbackData.Page, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, newState, formattedMessage,
+                    callbackData.Page, isIgnored);
         }
 
         /// <summary>
@@ -133,10 +151,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQToRead(Query query, GetCallbackData callbackData)
         {
-            var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null, "UNREAD");
+            var formattedMessage =
+                await
+                    Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
+                        "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, callbackData.Page, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage, callbackData.Page, isIgnored);
         }
 
         /// <summary>
@@ -148,10 +171,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQToUnRead(Query query, GetCallbackData callbackData)
         {
-            var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "UNREAD");
+            var formattedMessage =
+                await
+                    Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null,
+                        "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, callbackData.Page, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage, callbackData.Page, isIgnored);
         }
 
         /// <summary>
@@ -163,10 +191,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQToSpam(Query query, GetCallbackData callbackData)
         {
-            var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "SPAM");
+            var formattedMessage =
+                await
+                    Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "SPAM");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, callbackData.Page, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage, callbackData.Page, isIgnored);
         }
 
         /// <summary>
@@ -178,10 +210,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQToInbox(Query query, GetCallbackData callbackData)
         {
-            var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "INBOX");
+            var formattedMessage =
+                await
+                    Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null,
+                        "INBOX");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, callbackData.Page, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage, callbackData.Page, isIgnored);
         }
 
         /// <summary>
@@ -193,10 +230,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQToTrash(Query query, GetCallbackData callbackData)
         {
-            var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "TRASH");
+            var formattedMessage =
+                await
+                    Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null,
+                        "TRASH");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, callbackData.Page, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage, callbackData.Page, isIgnored);
         }
 
         /// <summary>
@@ -208,10 +250,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQArchive(Query query, GetCallbackData callbackData)
         {
-            var formattedMessage = await Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null, "INBOX");
+            var formattedMessage =
+                await
+                    Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
+                        "INBOX");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, callbackData.Page, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage, callbackData.Page, isIgnored);
         }
 
         /// <summary>
@@ -225,7 +272,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             await _dbWorker.RemoveFromIgnoreListAsync(query.From, formattedMessage.From.Email);
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, callbackData.Page, false);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage, callbackData.Page, false);
         }
 
         /// <summary>
@@ -239,7 +288,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             await _dbWorker.AddToIgnoreListAsync(query.From, formattedMessage.From.Email);
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, callbackData.Page, false);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage, callbackData.Page, false);
         }
 
         /// <summary>
@@ -257,8 +308,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
             var newPage = callbackData.Page + 1;
             await
-                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage,
-                newPage, isIgnored);
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage,
+                    newPage, isIgnored);
         }
 
         /// <summary>
@@ -275,7 +327,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 throw new InvalidOperationException("Execution of this method is not permissible in this situation");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
             var newPage = callbackData.Page - 1;
-            await _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState, formattedMessage, newPage, isIgnored);
+            await
+                _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
+                    formattedMessage, newPage, isIgnored);
         }
 
         /// <summary>
@@ -321,9 +375,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
             var attachmentInfo = new List<AttachmentInfo>(formattedMessage.Attachments)[callbackData.AttachmentIndex];
             var service = Methods.SearchServiceByUserId(query.From);
-            var attachment = await Methods.GetAttachment(service, callbackData.MessageId, attachmentInfo);
+            var attachment = await Methods.GetAttachment(service, callbackData.MessageId, attachmentInfo.Id);
             if (attachment.Length > _botSettings.MaxAttachmentSize)
-                await _botActions.SendErrorAboutMaxAttachmentSizeToChat(query.From);
+                await _botActions.SendErrorAboutMaxAttachmentSizeToChat(query.From, attachmentInfo.FileName);
 
             string randomFolder = Tools.RandomString(8);
             var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
@@ -400,7 +454,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return;
             }
 
-            await _botActions.ChangeSubjectForceReply(query.From).ConfigureAwait(false); ;
+            await _botActions.ChangeSubjectForceReply(query.From).ConfigureAwait(false);
+            ;
         }
 
         public async Task HandleCallbackQContinueFromDraft(Query query, SendCallbackData callbackData)
@@ -410,12 +465,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (nmStore == null)
             {
                 var draft = await Methods.GetDraft(query.From, callbackData.DraftId,
-                                    UsersResource.DraftsResource.GetRequest.FormatEnum.Full);
+                    UsersResource.DraftsResource.GetRequest.FormatEnum.Full);
                 nmStore = await _dbWorker.AddNewNmStoreAsync(query.From);
 
                 var formattedMessage = new FormattedMessage(draft.Message);
                 Methods.ComposeNmStateModel(nmStore, formattedMessage);
-                var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, nmStore);
+                var textMessage =
+                    await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, nmStore);
                 nmStore.MessageId = textMessage.MessageId;
                 nmStore.DraftId = draft.Id;
                 await _dbWorker.UpdateNmStoreRecordAsync(nmStore);
@@ -442,7 +498,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             }
             catch (Exception ex)
             {
-                await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.SentWithError, nmModel, draft.Id, ex.Message);
+                await
+                    _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.SentWithError, nmModel, draft.Id,
+                        ex.Message);
             }
 
             await _dbWorker.RemoveNmStoreAsync(nmModel);
@@ -459,7 +517,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             {
                 case NmStoreUnit.To:
                     element = nmModel.To.ElementAt(callbackData.Column);
-                    var t = nmModel.To.Remove((ToModel) element);
+                    var t = nmModel.To.Remove((ToModel)element);
                     break;
                 case NmStoreUnit.Cc:
                     element = nmModel.Cc.ElementAt(callbackData.Column);
@@ -483,19 +541,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         private async Task<Draft> SaveDraftMailServer(string userId, NmStoreModel nmModel)
         {
             nmModel.NullInspect(nameof(nmModel));
-            List<FileStream> streams = null;
+            List<FileStream> streams = new List<FileStream>();
             Draft draft;
             try
             {
-                if (nmModel.File != null)
+                var downloadAndOpenFiles = new Func<string, Task>(async messageId =>
                 {
-                    var filesPaths = await DownloadFilesToLocalTemp(nmModel.File);
-                    streams = new List<FileStream>();
-                    filesPaths.ForEach(f => streams.Add(File.OpenRead(f)));
-                }
+                    if (nmModel.File != null)
+                    {
+                        var teleramFiles = await DownloadFilesFromTelegramStore(nmModel.File);
+                        teleramFiles.ForEach(f => streams.Add(File.OpenRead(f)));
+                        if (messageId == null) return;
+
+                        var gmailFiles = await DownloadFilesFromGmailStore(userId, messageId, nmModel.File);
+                        gmailFiles.ForEach(f => streams.Add(File.OpenRead(f)));
+                    }
+                });
+
                 if (string.IsNullOrEmpty(nmModel.DraftId))
                 {
-
+                    await downloadAndOpenFiles(null);
                     var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
                         nmModel.Cc.ToList(),
                         nmModel.Bcc.ToList(), streams);
@@ -504,6 +569,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 else
                 {
                     draft = await Methods.GetDraft(userId, nmModel.DraftId);
+                    await downloadAndOpenFiles(draft.Message.Id);
                     var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
                         nmModel.Cc.ToList(),
                         nmModel.Bcc.ToList(), streams);
@@ -514,28 +580,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             }
             finally
             {
-                if (streams != null)
+                foreach (var stream in streams)
                 {
-                    foreach (var stream in streams)
-                    {
-                        stream.Close();
-                        var dir = Path.GetDirectoryName(stream.Name);
-                        var dInfo = new DirectoryInfo(dir);
-                        if (dInfo.Exists)
-                            dInfo.Delete(true);
-                    }
+                    stream.Close();
+                    var dir = Path.GetDirectoryName(stream.Name);
+                    var dInfo = new DirectoryInfo(dir);
+                    if (dInfo.Exists)
+                        dInfo.Delete(true);
                 }
             }
             return draft;
         }
 
-        private async Task<List<string>> DownloadFilesToLocalTemp(ICollection<FileModel> fileModelCollection)
+        private async Task<List<string>> DownloadFilesFromTelegramStore(ICollection<FileModel> fileModelCollection)
         {
             fileModelCollection.NullInspect(nameof(fileModelCollection));
 
             var fileNames = new List<string>();
             foreach (var fileModel in fileModelCollection)
             {
+                if (string.IsNullOrEmpty(fileModel.FileId)) continue; //download from telegram server if possible
+
                 string randomFolder = Tools.RandomString(8);
                 var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
                 Methods.CreateDirectory(tempDirName);
@@ -547,6 +612,34 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                     File.Move(tempFullName, originalFullName);
                 fileNames.Add(originalFullName);
             }
+            return fileNames;
+        }
+
+        private async Task<List<string>> DownloadFilesFromGmailStore(string userId, string messageId, ICollection<FileModel> fileModelCollection, bool skipTelegramFiles = true)
+        {
+            fileModelCollection.NullInspect(nameof(fileModelCollection));
+
+            var service = Methods.SearchServiceByUserId(userId);
+
+            var fileNames = new List<string>();
+            foreach (var fileModel in fileModelCollection)
+            {
+                if (string.IsNullOrEmpty(fileModel.AttachId)) continue; //download from gmail server
+                if (skipTelegramFiles)
+                    if (!string.IsNullOrEmpty(fileModel.FileId)) continue; //skip if has fileId
+
+                var attachment = await Methods.GetAttachment(service, messageId, fileModel.AttachId);
+                if (attachment.Length > _botSettings.MaxAttachmentSize)
+                    await _botActions.SendErrorAboutMaxAttachmentSizeToChat(userId, fileModel.OriginalName);
+
+                string randomFolder = Tools.RandomString(8);
+                var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
+                var attachFullName = Path.Combine(tempDirName, fileModel.OriginalName);
+                Methods.CreateDirectory(tempDirName);
+                await Methods.WriteAttachmentToTemp(attachFullName, attachment);
+                fileNames.Add(attachFullName);
+            }
+
             return fileNames;
         }
     }

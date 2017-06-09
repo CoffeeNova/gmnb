@@ -109,9 +109,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return skipMessages;
         }
 
-        public static async Task<byte[]> GetAttachment(Service service, string messageId, AttachmentInfo info)
+        public static async Task<byte[]> GetAttachment(Service service, string messageId, string attachId)
         {
-            var query = service.GmailService.Users.Messages.Attachments.Get("me", messageId, info.Id);
+            var query = service.GmailService.Users.Messages.Attachments.Get("me", messageId, attachId);
             var attachPart = await query.ExecuteAsync();
             return Base64.DecodeUrlSafeToBytes(attachPart.Data);
         }
@@ -201,7 +201,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 {
                     model.File.Add(new FileModel
                     {
-                        FileId = attach.Id,
+                        AttachId = attach.Id,
                         OriginalName = attach.FileName
                     });
                 }

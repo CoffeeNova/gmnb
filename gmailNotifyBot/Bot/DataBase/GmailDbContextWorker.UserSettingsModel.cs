@@ -116,9 +116,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         private void UpdateIgnoreList(DbContext dbContext, ICollection<IgnoreModel> newIgnoreListCollection,
            ICollection<IgnoreModel> existIgnoreListCollection)
         {
+            var tempCollection = existIgnoreListCollection.Select(i => i).ToList();
             foreach (var ignoreModel in newIgnoreListCollection)
             {
-                var existIgnoreModel = existIgnoreListCollection
+                var existIgnoreModel = tempCollection
                 .SingleOrDefault(i => i.Id == ignoreModel.Id);
 
                 if (existIgnoreModel != null)

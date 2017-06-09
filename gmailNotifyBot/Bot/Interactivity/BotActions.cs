@@ -125,6 +125,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Inbox:");
         }
 
+        public async Task GmailInlineDraftCommandMessage(string userId)
+        {
+            await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Draft:");
+        }
+
         public async Task GmailInlineAllCommandMessage(string userId)
         {
             await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Inbox:");
@@ -140,12 +145,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     : message.Date.ToString("dd.MM.yy");
                 inlineQueryResults.Add(new InlineQueryResultArticle
                 {
-                    Id = message.Id,
+                    Id = message.IsDraft ? message.DraftId : message.Id,
                     Title = ShortMessageTitleFormatter(message.From.Name, message.From.Email, date),
                     Description = message.Subject,
                     InputMessageContent = new InputTextMessageContent
                     {
-                        MessageText = "Message:"
+                        MessageText = message.IsDraft ? "Draft:" : "Message:"
                     }
                 });
             }
@@ -314,13 +319,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.DownloadFileAsync(file, localPath);
         }
 
-
+    
         public async Task<File> GetFile(string fileId)
         {
             return await _telegramMethods.GetFileAsync(fileId);
         }
 
-        public async Task SendErrorAboutMaxAttachmentSizeToChat(string chatId)
+        public async Task SendErrorAboutMaxAttachmentSizeToChat(string chatId, string fileName)
         {
             throw new NotImplementedException("error");
         }
