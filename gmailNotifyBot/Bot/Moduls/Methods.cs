@@ -157,16 +157,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         }
 
         //i use mimekit here :/
-        public static Draft CreateNewDraftBody(string subject = null, string text = null, List<ToModel> to = null, List<CcModel> cc = null, List<BccModel> bcc = null, List<FileStream> fileStream = null)
+        public static Draft CreateNewDraftBody(string subject = null, string text = null, List<IUserInfo> to = null, List<IUserInfo> cc = null,
+                                                List<IUserInfo> bcc = null, List<IUserInfo> from = null, List<FileStream> fileStream = null)
         {
             var mimeMessage = new MimeMessage();
-            FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fileStream);
+            FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, from, fileStream);
             var message = TransformMimeMessageToMessage(mimeMessage);
             return new Draft { Message = message };
         }
 
-        public static Draft AddToDraftBody(Draft draft, string subject = null, string text = null, List<ToModel> to = null,
-    List<CcModel> cc = null, List<BccModel> bcc = null, List<FileStream> fileStream = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Draft AddToDraftBody(Draft draft, string subject = null, string text = null, List<IUserInfo> to = null,
+                                List<IUserInfo> cc = null, List<IUserInfo> bcc = null, List<IUserInfo> from = null,
+                                List<FileStream> fileStream = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             draft.NullInspect(nameof(draft));
             if (draft.Message?.Raw == null)
@@ -176,7 +178,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             using (var stream = new MemoryStream(decodedRaw))
             {
                 var mimeMessage = MimeMessage.Load(stream, cancellationToken);
-                FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, fileStream);
+                FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, from, fileStream);
                 var message = TransformMimeMessageToMessage(mimeMessage);
                 return new Draft { Message = message };
             }
@@ -193,9 +195,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             model.NullInspect(nameof(model));
             formattedMessage.NullInspect(nameof(formattedMessage));
 
-            formattedMessage.To?.ForEach(to => { model.To.Add(new ToModel { Address = to.Email }); });
-            formattedMessage.Cc?.ForEach(cc => { model.Cc.Add(new CcModel { Address = cc.Email }); });
-            formattedMessage.Bcc?.ForEach(bcc => { model.Bcc.Add(new BccModel { Address = bcc.Email }); });
+            formattedMessage.To?.ForEach(to => { model.To.Add(new ToModel { Email = to.Email, Name = to.Name }); });
+            formattedMessage.Cc?.ForEach(cc => { model.Cc.Add(new CcModel { Email = cc.Email, Name = cc.Name }); });
+            formattedMessage.Bcc?.ForEach(bcc => { model.Bcc.Add(new BccModel { Email = bcc.Email, Name = bcc.Name }); });
             if (formattedMessage.HasAttachments)
                 foreach (var attach in formattedMessage.Attachments)
                 {
@@ -230,11 +232,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         }
 
         private static void FillMimeMessage(MimeMessage mimeMessage, string subject,
-            string text, List<ToModel> to, List<CcModel> cc, List<BccModel> bcc, List<FileStream> contentList = null)
+            string text, List<IUserInfo> to, List<IUserInfo> cc, List<IUserInfo> bcc, List<IUserInfo> from, List<FileStream> contentList = null)
         {
-            to?.ForEach(recipient => mimeMessage.To.Add(new MailboxAddress(recipient.Address)));
-            cc?.ForEach(recipient => mimeMessage.Cc.Add(new MailboxAddress(recipient.Address)));
-            bcc?.ForEach(recipient => mimeMessage.Bcc.Add(new MailboxAddress(recipient.Address)));
+            to?.ForEach(recipient => mimeMessage.To.Add(new MailboxAddress(recipient.Name, recipient.Email)));
+            cc?.ForEach(recipient => mimeMessage.Cc.Add(new MailboxAddress(recipient.Name, recipient.Email)));
+            bcc?.ForEach(recipient => mimeMessage.Bcc.Add(new MailboxAddress(recipient.Name, recipient.Email)));
+            from?.ForEach(sender => mimeMessage.From.Add(new MailboxAddress(sender.Name, sender.Email)));
             if (subject != null)
                 mimeMessage.Subject = subject;
 

@@ -32,7 +32,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             await HandleRecipientChosenInlineResult<BccModel>(sender, "Bcc");
         }
 
-        private async Task HandleRecipientChosenInlineResult<T>(ChosenInlineResult sender, string recipentProperyName) where T : class, IAddressModel, new()
+        private async Task HandleRecipientChosenInlineResult<T>(ChosenInlineResult sender, string recipentProperyName) where T : class, IUserInfo, new()
         {
             var model = await _dbWorker.FindNmStoreAsync(sender.From);
             if (model == null)
@@ -46,7 +46,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 return;
             }
             var property = model.GetPropertyValue(recipentProperyName) as ICollection<T>;
-            var addressModel = new T {Address = sender.ResultId};
+            var addressModel = new T {Email = sender.ResultId};
             property?.Add(addressModel);
             await _dbWorker.UpdateNmStoreRecordAsync(model);
             await _botActions.UpdateNewMailMessage(sender.From, SendKeyboardState.Continue, model);

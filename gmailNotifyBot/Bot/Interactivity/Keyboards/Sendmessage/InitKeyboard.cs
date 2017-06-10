@@ -79,9 +79,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
                 });
                 return buttonRow;
             });
-            RemoveToRow = iterFunc(Model.To.Select(a => a.Address).ToList(), NmStoreUnit.To);
-            RemoveCcRow = iterFunc(Model.Cc.Select(a => a.Address).ToList(), NmStoreUnit.Cc);
-            RemoveBccRow = iterFunc(Model.Bcc.Select(a => a.Address).ToList(), NmStoreUnit.Bcc);
+            RemoveToRow = iterFunc(Model.To.Select(a => a.Email).ToList(), NmStoreUnit.To);
+            RemoveCcRow = iterFunc(Model.Cc.Select(a => a.Email).ToList(), NmStoreUnit.Cc);
+            RemoveBccRow = iterFunc(Model.Bcc.Select(a => a.Email).ToList(), NmStoreUnit.Bcc);
             RemoveFileRow = iterFunc(Model.File.Select(f => f.OriginalName).ToList(), NmStoreUnit.File);
             if (RemoveToRow != null)
                 keyboard.Add(RemoveToRow);

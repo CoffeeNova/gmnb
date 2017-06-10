@@ -394,11 +394,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 });
             });
             message.AppendLine();
-            iterFunc(message, model.To.Select(a => a.Address).ToList(), "To");
+            iterFunc(message, model.To.Select(a => a.Email).ToList(), "To");
             message.AppendLine();
-            iterFunc(message, model.Cc.Select(a => a.Address).ToList(), "Cc");
+            iterFunc(message, model.Cc.Select(a => a.Email).ToList(), "Cc");
             message.AppendLine();
-            iterFunc(message, model.Bcc.Select(a => a.Address).ToList(), "Bcc");
+            iterFunc(message, model.Bcc.Select(a => a.Email).ToList(), "Bcc");
             message.AppendLine();
             if (model.Subject != null)
                 message.AppendLine($"<b>Subject:</b> {model.Subject}");

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
-    public class ToModel : IAddressModel, INmStoreModel
+    public class ToModel : IUserInfo, INmStoreModel
     {
         [Key, Column(Order = 1), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -14,6 +14,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         [Key, Column(Order = 2)]
         public int NmStoreModelId { get; set; }
 
-        public string Address { get; set; }
+        public string Email { get; set; }
+
+        public string Name { get; set; }
     }
 }

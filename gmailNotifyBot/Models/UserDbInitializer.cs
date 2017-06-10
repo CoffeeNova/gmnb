@@ -53,16 +53,16 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 MessageId = 0,
                 To = new List<ToModel>
                 {
-                    new ToModel {Address = "to1@gmail.com" },
-                    new ToModel {Address = "to2@gmail.com" }
+                    new ToModel {Email = "to1@gmail.com", Name="testToName1" },
+                    new ToModel {Email = "to2@gmail.com", Name="testToName2"  }
                 },
                 Cc = new List<CcModel>
                 {
-                    new CcModel {Address = "cc@gmail.com" }
+                    new CcModel {Email = "cc@gmail.com", Name="testCcName1" }
                 },
                 Bcc = new List<BccModel>
                 {
-                    new BccModel {Address = "bcc@gmail.com" }
+                    new BccModel {Email = "bcc@gmail.com", Name="testBccName1"  }
                 },
                 Message = "testMessage",
                 Subject = "testSubj",
@@ -71,6 +71,19 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                     new FileModel { FileId = "testFileId1", AttachId = "testAttach1", OriginalName = "testFileName1"},
                     new FileModel { FileId = "testFileId2", AttachId = "testAttach2", OriginalName = "testFileName2"}
                 }
+            });
+            db.LogEntry.Add(new LogEntryModel
+            {
+                CallSite="testCs",
+                Date="testDate",
+                Exception ="testEx",
+                Level="testLvl",
+                Logger="testLogger",
+                MachineName="testMn",
+                Message="testMessage",
+                StackTrace="testSt",
+                Thread="testThread",
+                Username="testUsername"
             });
             base.Seed(db);
         }

@@ -114,7 +114,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         }
 
         private void UpdateAdress<T>(DbContext dbContext, ICollection<T> newAddressCollection,
-    ICollection<T> existAddressCollection) where T : class, INmStoreModel, IAddressModel, new()
+    ICollection<T> existAddressCollection) where T : class, INmStoreModel, IUserInfo, new()
         {
             var tempCollection = existAddressCollection.Select(i => i).ToList();
 
@@ -127,7 +127,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
                     dbContext.Entry(existAddressModel).CurrentValues.SetValues(address);
                 else
                 {
-                    var newAddress = new T { Address = address.Address };
+                    var newAddress = new T { Email = address.Email, Name = address.Name };
                     existAddressCollection.Add(newAddress);
                 }
             }

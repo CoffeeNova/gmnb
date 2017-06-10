@@ -487,22 +487,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (nmModel == null)
                 return;
 
-            var draft = await SaveDraftMailServer(query.From, nmModel);
+            var userInfoQuery = service.Oauth2Service.Userinfo.Get();
+            var userinfoResponse = await userInfoQuery.ExecuteAsync();
+            var userInfo = new UserInfo { Email = userinfoResponse.Email, Name = userinfoResponse.Name };
+            var draft = await SaveDraftMailServer(query.From, nmModel, new List<IUserInfo> { userInfo });
             nmModel.DraftId = draft.Id;
             await _dbWorker.UpdateNmStoreRecordAsync(nmModel); //save draftId in database in case of exception
-            try
-            {
-                var request = service.GmailService.Users.Drafts.Send(draft, "me");
-                var response = await request.ExecuteAsync();
-                await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.SentSuccessful, nmModel, draft.Id);
-            }
-            catch (Exception ex)
-            {
-                await
-                    _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.SentWithError, nmModel, draft.Id,
-                        ex.Message);
-            }
-
+            var request = service.GmailService.Users.Drafts.Send(draft, "me");
+            var response = await request.ExecuteAsync();
+            await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.SentSuccessful, nmModel, draft.Id);
             await _dbWorker.RemoveNmStoreAsync(nmModel);
         }
 
@@ -538,7 +531,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.Continue, nmModel);
         }
 
-        private async Task<Draft> SaveDraftMailServer(string userId, NmStoreModel nmModel)
+        private async Task<Draft> SaveDraftMailServer(string userId, NmStoreModel nmModel, List<IUserInfo> sender = null)
         {
             nmModel.NullInspect(nameof(nmModel));
             List<FileStream> streams = new List<FileStream>();
@@ -561,18 +554,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 if (string.IsNullOrEmpty(nmModel.DraftId))
                 {
                     await downloadAndOpenFiles(null);
-                    var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
-                        nmModel.Cc.ToList(),
-                        nmModel.Bcc.ToList(), streams);
+                    var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, 
+                        nmModel.To.ToList<IUserInfo>(),
+                        nmModel.Cc.ToList<IUserInfo>(), 
+                        nmModel.Bcc.ToList<IUserInfo>(), 
+                        sender, streams);
                     draft = await Methods.CreateDraft(body, userId);
                 }
                 else
                 {
                     draft = await Methods.GetDraft(userId, nmModel.DraftId);
                     await downloadAndOpenFiles(draft.Message.Id);
-                    var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, nmModel.To.ToList(),
-                        nmModel.Cc.ToList(),
-                        nmModel.Bcc.ToList(), streams);
+                    var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, 
+                        nmModel.To.ToList<IUserInfo>(),
+                        nmModel.Cc.ToList<IUserInfo>(), 
+                        nmModel.Bcc.ToList<IUserInfo>(), 
+                        sender, streams);
                     draft = await Methods.UpdateDraft(body, userId, draft.Id);
                 }
                 if (draft == null)
