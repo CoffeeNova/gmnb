@@ -120,11 +120,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         private string HtmlStyledMessageHeader()
         {
-            var date = Date.Date == DateTime.Now.Date ? Date.ToString("HH:mm") : Date.ToString("dd.MM.yy");
+            var date = Date.Date == DateTime.Now.Date ? Date.ToString("hh:mm tt") : Date.ToString("M.dd.yyyy hh:mm tt");
                 
             var header = string.IsNullOrEmpty(From.Name) 
-                ? $"*lt;b*gt;{From.Email}*lt;/b*gt;    *lt;i*gt;{date}*lt;/i*gt; {Environment.NewLine}{Environment.NewLine}*lt;b*gt{Subject}*lt;/b*gt;" 
-                : $"*lt;b*gt;{From.Name}*lt;/b*gt;    '{From.Email}'  *lt;i*gt;{date}*lt;/i*gt; {Environment.NewLine}{Environment.NewLine}*lt;b*gt;{Subject}*lt;/b*gt;";
+                ? $"*lt;b*gt;{From.Email}*lt;/b*gt;    *lt;code*gt;{date}*lt;/code*gt; {Environment.NewLine}{Environment.NewLine}*lt;b*gt{Subject}*lt;/b*gt;" 
+                : $"*lt;b*gt;{From.Name}*lt;/b*gt;    *lt;code*gt;{date}*lt;/code*gt; *lt;pre*gt;{From.Email}*lt;/pre*gt;{Environment.NewLine}{Environment.NewLine}*lt;b*gt;{Subject}*lt;/b*gt;";
             return Helper.FormatTextToHtmlParseMode(header);
         }
 

@@ -37,7 +37,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 if (del == null) continue;
 
                 Exception exception = null;
-                LogMaker.Log(Logger, $"{result.Query} command received from user with id {(string)result.From}", false);
+                LogMaker.Log(Logger, $"{result.Query} command received from user with id {(string)result.From}, resultId={result.ResultId}", false);
+                if (result.ResultId == Commands.IGNORE_COMMAND)
+                    return;
                 try
                 {
                     await del.Invoke();

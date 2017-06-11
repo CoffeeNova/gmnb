@@ -25,8 +25,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
                 resultsPerPage = 500;
 
             var formatedMessages = await GetMessages(query, offset, labelId, searchExpression, resultsPerPage, messagesInOneResponse);
-            if (formatedMessages.Count == 0) return;
-            if (formatedMessages.Count == messagesInOneResponse)
+            if (formatedMessages.Count == 0)
+                await _botActions.ShowShortEmptyAnswerInlineQuery(query.Id);
+            else if (formatedMessages.Count == messagesInOneResponse)
                 await _botActions.ShowShortMessageAnswerInlineQuery(query.Id, formatedMessages, offset + messagesInOneResponse);
             else
                 await _botActions.ShowShortMessageAnswerInlineQuery(query.Id, formatedMessages); //last response
@@ -72,8 +73,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
                 resultsPerPage = 500;
 
             var formatedMessages = await GetDrafts(query, offset, searchExpression, resultsPerPage, messagesInOneResponse);
-            if (formatedMessages.Count == 0) return;
-            if (formatedMessages.Count == messagesInOneResponse)
+            if (formatedMessages.Count == 0)
+                await _botActions.ShowShortEmptyAnswerInlineQuery(query.Id);
+            else if (formatedMessages.Count == messagesInOneResponse)
                 await _botActions.ShowShortMessageAnswerInlineQuery(query.Id, formatedMessages, offset + messagesInOneResponse);
             else
                 await _botActions.ShowShortMessageAnswerInlineQuery(query.Id, formatedMessages); //last response
@@ -101,7 +103,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
             {
                 query.PageToken = pageToken;
                 listDraftsResponse = await query.ExecuteAsync();
-                totalDrafts.AddRange(listDraftsResponse.Drafts);
+                if (listDraftsResponse.Drafts != null)
+                    totalDrafts.AddRange(listDraftsResponse.Drafts);
                 if (string.IsNullOrEmpty(listDraftsResponse.NextPageToken))
                     break;
                 pageToken = listDraftsResponse.NextPageToken;
@@ -145,12 +148,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
             ListMessagesResponse listMessagesResponse = null;
             var totalMessages = new List<Message>();
             string pageToken = null;
+
             var tempOffset = offset;
             while (tempOffset >= 0)
             {
                 query.PageToken = pageToken;
                 listMessagesResponse = await query.ExecuteAsync();
-                totalMessages.AddRange(listMessagesResponse.Messages);
+                if (listMessagesResponse.Messages != null)
+                    totalMessages.AddRange(listMessagesResponse.Messages);
                 if (string.IsNullOrEmpty(listMessagesResponse.NextPageToken))
                     break;
                 pageToken = listMessagesResponse.NextPageToken;

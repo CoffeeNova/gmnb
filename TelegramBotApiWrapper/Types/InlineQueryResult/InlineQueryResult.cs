@@ -46,7 +46,6 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult
         /// <summary>
         /// Content of the message to be sent.
         /// </summary>
-        /// <remarks>Optional.</remarks>
         [JsonProperty("input_message_content")]
         public IInputMessageContent InputMessageContent { get; set; }
     }

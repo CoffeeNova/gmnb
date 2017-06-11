@@ -155,9 +155,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 });
             }
             if (!offset.HasValue)
-                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true);
+                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 0, true);
             else
-                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
+                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 0, true, offset.ToString());
+        }
+
+        public async Task ShowShortEmptyAnswerInlineQuery(string inlineQueryId)
+        {
+            var inlineQueryResults = new List<InlineQueryResult>
+            {
+                new InlineQueryResultArticle
+                {
+                    Id = Commands.IGNORE_COMMAND,
+                    Title = "No results matched your search.",
+                    Description = "Try using search options such as sender, date, size and more.",
+                    InputMessageContent = new InputTextMessageContent
+                    {
+                        MessageText = "There is no point in choosing this result"
+                    }
+                }
+            };
+            await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 0, true);
         }
 
         public async Task EditProceedMessage(string chatId, string messageId)
@@ -234,9 +252,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 });
             }
             if (!offset.HasValue)
-                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true);
+                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 0, true);
             else
-                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 30, true, offset.ToString());
+                await _telegramMethods.AnswerInlineQueryAsync(inlineQueryId, inlineQueryResults, 0, true, offset.ToString());
         }
 
         public async Task<TextMessage> SpecifyNewMailMessage(string chatId, SendKeyboardState state, NmStoreModel model = null)
