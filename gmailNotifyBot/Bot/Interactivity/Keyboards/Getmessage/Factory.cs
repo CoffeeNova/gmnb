@@ -28,6 +28,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 case GetKeyboardState.Attachments:
                     keyboard = new AttachmentsKeyboard(message);
                     break;
+                case GetKeyboardState.Notify:
+                    keyboard = new NotifyKeyboard(message);
+                    break;  
                 default:
                     return null;
             }

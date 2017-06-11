@@ -13,6 +13,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         [EnumMember(Value = "maximizedActions")]
         MaximizedActions,
         [EnumMember(Value = "attachments")]
-        Attachments
+        Attachments,
+        [EnumMember(Value = "notify")]
+        Notify
     }
 }

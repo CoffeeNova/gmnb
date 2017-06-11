@@ -124,8 +124,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                 LogMaker.Log(Logger, $"The user with id:{userModel.UserId} has requested authorization", false);
                 if (CheckUserAuthorization(userModel)) return;
 
-                var fullAccessState = Base64.Encode($"{userModel.UserId},{UserAccess.Full}");
-                var notifyAccessState = Base64.Encode($"{userModel.UserId},{UserAccess.Notify}");
+                var fullAccessState = Base64.Encode($"{userModel.UserId},{UserAccess.FULL}");
+                var notifyAccessState = Base64.Encode($"{userModel.UserId},{UserAccess.NOTIFY}");
 
                 var pendingUserModel = await gmailDbContextWorker.FindPendingUserAsync(userModel.UserId);
                 if (pendingUserModel != null)
@@ -133,8 +133,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                 else
                     await gmailDbContextWorker.QueueAsync(userModel.UserId);
 
-                var notifyAccessUri = GetAuthenticationUri(notifyAccessState, UserAccessAttribute.GetScopesValue(UserAccess.Notify));
-                var fullAccessUri = GetAuthenticationUri(fullAccessState, UserAccessAttribute.GetScopesValue(UserAccess.Full));
+                var notifyAccessUri = GetAuthenticationUri(notifyAccessState, UserAccessAttribute.GetScopesValue(UserAccess.NOTIFY));
+                var fullAccessUri = GetAuthenticationUri(fullAccessState, UserAccessAttribute.GetScopesValue(UserAccess.FULL));
                 await _botMessages.AuthorizeMessage(message.From.Id.ToString(), notifyAccessUri, fullAccessUri);
             }
             catch (Exception ex)
@@ -146,7 +146,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
         private bool CheckUserAuthorization(UserModel userModel)
         {
             //at this point bot should ask user "You are autorized as {his email}. Do you want to authorize one more account?"
-            Debug.Assert(false, $"{nameof(CheckUserAuthorization)} is not impemented yet.");
+            //Debug.Assert(false, $"{nameof(CheckUserAuthorization)} is not impemented yet.");
             return false;
         }
 

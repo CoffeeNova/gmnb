@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.Attributes;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
@@ -19,19 +20,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public long Expiration { get; set; }
 
-        public string Access { get; set; } = UserAccess.Full;
+        public string Access { get; set; } = UserAccess.FULL;
 
         public List<IgnoreModel> IgnoreList { get; set; } = new List<IgnoreModel>();
-
-
     }
 
-    public static class UserAccess
-    {
-        [UserAccess(@"https://mail.google.com/", @"https://www.googleapis.com/auth/gmail.compose", @"https://www.googleapis.com/auth/userinfo.email")]
-        public static readonly string Full = "full";
-
-        [UserAccess(@"https://www.googleapis.com/auth/gmail.labels", @"https://www.googleapis.com/auth/userinfo.email")]
-        public static readonly string Notify = "notify";
-    }
 }

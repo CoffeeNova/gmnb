@@ -39,7 +39,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 if (Page < pageCount)
                 {
                     nextPageButton = new InlineKeyboardButton();
-                    nextPageButton.Text = $"To Page {Page + 1} {Emoji.RightArrow}";
+                    nextPageButton.Text = $"To Page {Page + 1} {Emoji.RIGHT_ARROW}";
                     nextPageButton.CallbackData = new GetCallbackData(GeneralCallbackData)
                     {
                         Command = Commands.NEXTPAGE_COMMAND
@@ -49,7 +49,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             if (Page > 1)
             {
                 prevPageButton = new InlineKeyboardButton();
-                prevPageButton.Text = $"{Emoji.LeftArrow} To Page {Page - 1}";
+                prevPageButton.Text = $"{Emoji.LEFT_ARROW} To Page {Page - 1}";
                 prevPageButton.CallbackData = new GetCallbackData(GeneralCallbackData)
                 {
                     Command = Commands.PREVPAGE_COMMAND

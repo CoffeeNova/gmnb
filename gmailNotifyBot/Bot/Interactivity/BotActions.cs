@@ -112,12 +112,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         public async Task EmptyLabelMessage(string userId, string labelId)
         {
-            await _telegramMethods.SendMessageAsync(userId, $"{Emoji.Denied}  You do not have messages left in your {labelId}.");
+            await _telegramMethods.SendMessageAsync(userId, $"{Emoji.DENIED}  You do not have messages left in your {labelId}.");
         }
 
         public async Task EmptyAllMessage(string userId)
         {
-            await _telegramMethods.SendMessageAsync(userId, $"{Emoji.Denied}  You do not have any messages left.");
+            await _telegramMethods.SendMessageAsync(userId, $"{Emoji.DENIED}  You do not have any messages left.");
         }
 
         public async Task GmailInlineInboxCommandMessage(string userId)
@@ -183,23 +183,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.EditMessageTextAsync("Success", chatId, messageId);
         }
 
-        public async Task ShowShortMessageAsync(string chatId, FormattedMessage formattedMessage)
+        public async Task ShowShortMessageAsync(string chatId, FormattedMessage formattedMessage, string access = UserAccess.FULL)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
 
             var header = formattedMessage.Header;
-            var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage);
+            var message = Emoji.CLOSED_EMAIL_ENVELOP + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
+            var keyboard = access == UserAccess.FULL
+                ? _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage)
+                : _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Notify, formattedMessage);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public void ShowShortMessage(string chatId, FormattedMessage formattedMessage)
+        public void ShowShortMessage(string chatId, FormattedMessage formattedMessage, string access = UserAccess.FULL)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
 
             var header = formattedMessage.Header;
-            var message = Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage);
+            var message = Emoji.CLOSED_EMAIL_ENVELOP + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
+            var keyboard = access == UserAccess.FULL
+                ? _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage)
+                : _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Notify, formattedMessage);
             _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
@@ -210,8 +214,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var header = formattedMessage.Header;
             var keyboard = _getKeyboardFactory.CreateKeyboard(state, formattedMessage, page, isIgnored);
             var displayedMessage = page == 0
-                ? Emoji.ClosedEmailEnvelop + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
-                : Emoji.RedArrowedEnvelope + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
+                ? Emoji.CLOSED_EMAIL_ENVELOP + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.Snippet}"
+                : Emoji.RED_ARROWED_ENVELOPE + header + $"{Environment.NewLine}{Environment.NewLine}{formattedMessage.DesirableBody[page - 1]}";
             await _telegramMethods.EditMessageTextAsync(displayedMessage, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
 
@@ -300,13 +304,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         public async Task SendLostInfoMessage(string chatId)
         {
-            var message = $"{Emoji.WhiteExclamation} Info about this message is lost.";
+            var message = $"{Emoji.WHITE_EXCLAMATION} Info about this message is lost.";
             await _telegramMethods.SendMessageAsync(chatId, message);
         }
 
         public async Task NotRecognizedEmailMessage(string chatId, string email)
         {
-            var message = $"{Emoji.WhiteExclamation} The address {email} was not recognized.";
+            var message = $"{Emoji.WHITE_EXCLAMATION} The address {email} was not recognized.";
             await _telegramMethods.SendMessageAsync(chatId, message);
         }
 
@@ -316,7 +320,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             {
                 Selective = true
             };
-            var message = $"<b>{Commands.MESSAGE_FORCE_REPLY_COMMAND} </b>\r\n{Emoji.InfoSign}<i>To attach files drop them into the chat.</i>";
+            var message = $"<b>{Commands.MESSAGE_FORCE_REPLY_COMMAND} </b>\r\n{Emoji.INFO_SIGN}<i>To attach files drop them into the chat.</i>";
 
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
@@ -351,7 +355,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task DraftSavedMessage(string chatId, bool notSaved = false)
         {
             var not = notSaved ? "not" : "";
-            var message = $"{Emoji.Ok} Draft {not} saved!";
+            var message = $"{Emoji.OK} Draft {not} saved!";
             await _telegramMethods.SendMessageAsync(chatId, message);
         }
 
@@ -426,27 +430,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 message.AppendLine(model.Message);
             }
             message.AppendLine();
-            iterFunc(message, model.File.Select(f => f.OriginalName).ToList(), $"{Emoji.PaperClip}Attachments"); //Emoji probable cause of error, because it will be send inside <b> tag
+            iterFunc(message, model.File.Select(f => f.OriginalName).ToList(), $"{Emoji.PAPER_CLIP}Attachments"); //Emoji probable cause of error, because it will be send inside <b> tag
             return message.ToString();
         }
 
         private readonly TelegramMethods _telegramMethods;
         private readonly string _newMessageMainText =
-                        $"{Emoji.New} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: ";
+                        $"{Emoji.NEW} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: ";
 
-        private readonly string _newMessageSuccessfulSentText = $"{Emoji.Ok} Message sent successfully!";
+        private readonly string _newMessageSuccessfulSentText = $"{Emoji.OK} Message sent successfully!";
 
-        private readonly string _newMessageTipText = $"{Emoji.InfoSign} You can use quick command, just type in the chat:" +
+        private readonly string _newMessageTipText = $"{Emoji.INFO_SIGN} You can use quick command, just type in the chat:" +
                         $"{Environment.NewLine}<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
                         $"{Environment.NewLine}and press Enter to quick send the email." +
-                        $"{Environment.NewLine}{Emoji.InfoSign} For multiple recipients use comma separator.";
+                        $"{Environment.NewLine}{Emoji.INFO_SIGN} For multiple recipients use comma separator.";
 
         private readonly string _storeDraftMessageText =
-            $"{Emoji.QuestionSign} You have already started to create a new message. " +
+            $"{Emoji.QUESTION_SIGN} You have already started to create a new message. " +
             $"You can save it as draft and create new instance of new message or continue composing.";
 
         private readonly string _restoreFromDraftMessageText =
-            $"{Emoji.InfoSign} To restore message from draft and continue composing click this button {Emoji.DownArrow}";
+            $"{Emoji.INFO_SIGN} To restore message from draft and continue composing click this button {Emoji.DOWN_ARROW}";
 
         private readonly BotSettings _settings = BotInitializer.Instance.BotSettings;
         private readonly string _contactsThumbUrl;

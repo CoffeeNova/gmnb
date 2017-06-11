@@ -75,7 +75,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
                 var buttonRow = new List<InlineKeyboardButton>();
                 collection.IndexEach((item, i) =>
                 {
-                    buttonRow.Add(InitButton(InlineKeyboardType.CallbackData, $"{Emoji.BlackCross}{item}", RemoveItemCommand, "", row, i));
+                    buttonRow.Add(InitButton(InlineKeyboardType.CallbackData, $"{Emoji.BLACK_CROSS}{item}", RemoveItemCommand, "", row, i));
                 });
                 return buttonRow;
             });
