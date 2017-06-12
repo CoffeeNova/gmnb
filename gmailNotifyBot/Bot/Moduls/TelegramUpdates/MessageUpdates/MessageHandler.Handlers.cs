@@ -21,7 +21,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
     public partial class MessageHandler
     {
         /// <summary>
-        /// Handles <see cref="Commands.AUTHORIZE_COMMAND"/>.
+        /// Handles <see cref="TextTextCommandHORIZE_COMMAND"/>.
         /// This method calls <see cref="Authorizer.SendAuthorizeLink"/> that forms URL link and provides it to the chat as a message.
         /// </summary>
         /// <param name="query"></param>

@@ -23,7 +23,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
     public partial class CallbackQueryHandler
     {
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.AUTHORIZE_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="TextTextCommandHORIZE_COMMAND"/>.
         /// This method calls <see cref="Authorizer.SendAuthorizeLink"/> that forms URL link and provides it to the chat as a message.
         /// </summary>
         /// <param name="query"></param>
@@ -34,7 +34,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.EXPAND_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.EXPAND_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
         ///  which <see cref="GetCallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Maximized"/> or 
         /// <see langword="MessageKeyboardState.MaximizedActions"/> which updates it to the 1st page.
@@ -61,7 +61,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.HIDE_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.HIDE_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
         /// which <see cref="GetCallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Minimized"/> or 
         /// <see langword="MessageKeyboardState.MinimizedActions"/> which updates it to the 0 page.
@@ -89,7 +89,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.EXPAND_ACTIONS_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.EXPAND_ACTIONS_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
         /// which <see cref="GetCallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.MinimizedActions"/> or 
         /// <see langword="MessageKeyboardState.MaximizedActions"/> which updates it on the set <see cref="GetCallbackData.Page"/>.
@@ -118,7 +118,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.HIDE_ACTIONS_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.HIDE_ACTIONS_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>
         /// which <see cref="GetCallbackData.MessageKeyboardState"/> equals <see langword="MessageKeyboardState.Minimized"/> or 
         /// <see langword="MessageKeyboardState.Maximized"/> which updates it on the set <see cref="GetCallbackData.Page"/>.
@@ -143,7 +143,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.TO_READ_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.TO_READ_COMMAND"/>.
         /// This method removes message's "UNREAD" label and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="query"></param>
@@ -163,7 +163,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.TO_READ_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.TO_READ_COMMAND"/>.
         /// This method adds "UNREAD" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="query"></param>
@@ -183,7 +183,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.TO_SPAM_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.TO_SPAM_COMMAND"/>.
         /// This method adds "SPAM" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="query"></param>
@@ -202,7 +202,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.TO_INBOX_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.TO_INBOX_COMMAND"/>.
         /// This method adds "INBOX" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="query"></param>
@@ -222,7 +222,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.TO_TRASH_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.TO_TRASH_COMMAND"/>.
         /// This method adds "TRASH" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="query"></param>
@@ -242,7 +242,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.ARCHIVE_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.ARCHIVE_COMMAND"/>.
         /// This method removes "INBOX" label to message and calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/>.
         /// </summary>
         /// <param name="query"></param>
@@ -262,7 +262,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.UNIGNORE_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.UNIGNORE_COMMAND"/>.
         /// Removes senders email address from db.
         /// </summary>
         /// <param name="query"></param>
@@ -278,7 +278,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.IGNORE_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.IGNORE_COMMAND"/>.
         /// Adds senders email address to db.
         /// </summary>
         /// <param name="query"></param>
@@ -294,7 +294,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.NEXTPAGE_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.NEXTPAGE_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/> where Page property increased by 1.
         /// </summary>
         /// <param name="query"></param>
@@ -314,7 +314,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.NEXTPAGE_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.NEXTPAGE_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/> where Page property decreased by 1.
         /// </summary>
         /// <param name="query"></param>
@@ -333,7 +333,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.SHOW_ATTACHMENTS_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.SHOW_ATTACHMENTS_COMMAND"/>.
         /// This method calls <see cref="BotActions.SendAttachmentsListMessage"/> method for message with <paramref name="callbackData"/> where <see cref="GetCallbackData.MessageKeyboardState"/>
         /// equals <see cref="GetKeyboardState.Attachments"/>.
         /// </summary>
@@ -348,7 +348,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.HIDE_ATTACHMENTS_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.HIDE_ATTACHMENTS_COMMAND"/>.
         /// This method calls <see cref="BotActions.UpdateMessage"/> method for message with <paramref name="callbackData"/> where <see cref="GetCallbackData.MessageKeyboardState"/>
         /// equals <see cref="GetKeyboardState.Minimized"/> (restores the original state).
         /// </summary>
@@ -363,7 +363,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
 
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="Commands.GET_ATTACHMENT_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="CallbackCommand.GET_ATTACHMENT_COMMAND"/>.
         /// Downloads from gmail server attachment defined in <paramref name="callbackData"/> to temp folder and send in to telegram recipient by 
         /// <see cref="BotActions.SendAttachmentToChat"/> method.
         /// </summary>

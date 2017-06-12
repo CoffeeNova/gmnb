@@ -45,9 +45,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         private string ActionButtonCaption => MainButtonCaption.Actions;
         private string AttachmentsButtonCaption => MainButtonCaption.Attachments;
 
-        private string ExpandButtonCommand => Commands.HIDE_COMMAND;
-        private string ActionsButtonCommand => Commands.EXPAND_ACTIONS_COMMAND;
-        private string AttachmentsButtonCommand => Commands.SHOW_ATTACHMENTS_COMMAND;
+        private string ExpandButtonCommand => CallbackCommand.HIDE_COMMAND;
+        private string ActionsButtonCommand => CallbackCommand.EXPAND_ACTIONS_COMMAND;
+        private string AttachmentsButtonCommand => CallbackCommand.SHOW_ATTACHMENTS_COMMAND;
 
     }
 

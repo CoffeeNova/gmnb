@@ -18,7 +18,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 Text = MainButtonCaption.Close,
                 CallbackData = new GetCallbackData(GeneralCallbackData)
                 {
-                    Command = Commands.HIDE_ATTACHMENTS_COMMAND
+                    Command = CallbackCommand.HIDE_ATTACHMENTS_COMMAND
                 }
             };
             FirstRow = new List<InlineKeyboardButton>();
@@ -29,7 +29,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                     Text = $"{i + 1}. {a.FileName}",
                     CallbackData = new GetCallbackData(GeneralCallbackData)
                     {
-                        Command = Commands.GET_ATTACHMENT_COMMAND + $"{i}"
+                        Command = CallbackCommand.GET_ATTACHMENT_COMMAND + $"{i}"
                     }
                 });
             });

@@ -35,7 +35,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
 
         private static string ContinueButtonCaption => SendKeyboardButtonCapton.Continue;
 
-        private static string ContinueButtonCommand => Commands.CONTINUE_FROM_DRAFT_COMMAND;
+        private static string ContinueButtonCommand => CallbackCommand.CONTINUE_FROM_DRAFT_COMMAND;
 
         protected override SendKeyboardState State { get; } = SendKeyboardState.Drafted;
 

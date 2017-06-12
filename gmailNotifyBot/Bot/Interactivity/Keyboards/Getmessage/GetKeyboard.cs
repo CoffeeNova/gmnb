@@ -42,7 +42,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                     nextPageButton.Text = $"To Page {Page + 1} {Emoji.RIGHT_ARROW}";
                     nextPageButton.CallbackData = new GetCallbackData(GeneralCallbackData)
                     {
-                        Command = Commands.NEXTPAGE_COMMAND
+                        Command = CallbackCommand.NEXTPAGE_COMMAND
                     };
                 }
             }
@@ -52,7 +52,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 prevPageButton.Text = $"{Emoji.LEFT_ARROW} To Page {Page - 1}";
                 prevPageButton.CallbackData = new GetCallbackData(GeneralCallbackData)
                 {
-                    Command = Commands.PREVPAGE_COMMAND
+                    Command = CallbackCommand.PREVPAGE_COMMAND
                 };
             }
             if (prevPageButton != null)

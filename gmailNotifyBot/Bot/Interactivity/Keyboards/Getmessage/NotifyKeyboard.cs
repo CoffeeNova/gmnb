@@ -14,10 +14,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         protected override void ButtonsInitializer()
         {
             NotifyButton = IsIgnored
-                ? InitButton(ActionButtonCaption.Unignore, Commands.UNIGNORE_COMMAND)
-                : InitButton(ActionButtonCaption.Ignore, Commands.IGNORE_COMMAND);
+                ? InitButton(ActionButtonCaption.Unignore, CallbackCommand.UNIGNORE_COMMAND)
+                : InitButton(ActionButtonCaption.Ignore, CallbackCommand.IGNORE_COMMAND);
 
-            OpenWebButton = InitButton(ActionButtonCaption.OpenWeb, Commands.OPEN_WEB_COMMAND);
+            OpenWebButton = InitButton(ActionButtonCaption.OpenWeb, CallbackCommand.OPEN_WEB_COMMAND);
         }
 
         protected override GetKeyboardState State => GetKeyboardState.Minimized;

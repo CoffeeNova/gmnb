@@ -43,7 +43,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 Text = "Reauthorize",
                 CallbackData = new GetCallbackData
                 {
-                    Command = Commands.AUTHORIZE_COMMAND
+                    Command = TextCommand.AUTHORIZE_COMMAND
                 }
             };
             var keyboard = new InlineKeyboardMarkup
@@ -166,7 +166,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             {
                 new InlineQueryResultArticle
                 {
-                    Id = Commands.IGNORE_COMMAND,
+                    Id = CallbackCommand.IGNORE_COMMAND,
                     Title = "No results matched your search.",
                     Description = "Try using search options such as sender, date, size and more.",
                     InputMessageContent = new InputTextMessageContent
@@ -320,7 +320,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             {
                 Selective = true
             };
-            var message = $"<b>{Commands.MESSAGE_FORCE_REPLY_COMMAND} </b>\r\n{Emoji.INFO_SIGN}<i>To attach files drop them into the chat.</i>";
+            var message = $"<b>{ForceReplyCommand.MESSAGE_COMMAND} </b>\r\n{Emoji.INFO_SIGN}<i>To attach files drop them into the chat.</i>";
 
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
@@ -331,7 +331,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             {
                 Selective = true
             };
-            var message = $"<b>{Commands.SUBJECT_FORCE_REPLY_COMMAND} </b>";
+            var message = $"<b>{ForceReplyCommand.SUBJECT_COMMAND} </b>";
 
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }

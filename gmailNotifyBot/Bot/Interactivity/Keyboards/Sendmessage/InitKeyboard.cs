@@ -146,13 +146,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         private static string SendButtonCaption => SendKeyboardButtonCapton.Send;
         private static string ToDraftButtonCaption => SendKeyboardButtonCapton.ToDraft;
 
-        private static string ToButtonCommand => Commands.TO_RECIPIENTS_INLINE_QUERY_COMMAND;
-        private static string CcButtonCommand => Commands.CC_RECIPIENTS_INLINE_QUERY_COMMAND;
-        private static string BccButtonCommand => Commands.BCC_RECIPIENTS_INLINE_QUERY_COMMAND;
-        private static string SubjectButtonCommand => Commands.ADD_SUBJECT_COMMAND;
-        private static string MessageButtonCommand => Commands.ADD_TEXT_MESSAGE_COMMAND;
-        private static string RemoveItemCommand => Commands.REMOVE_ITEM_FROM_NEW_MESSAGE;
-        private static string SendButtonCommand => Commands.SEND_NEW_MESSAGE_COMMAND;
-        private static string ToDraftButtonCommand => Commands.SAVE_AS_DRAFT_COMMAND;
+        private static string ToButtonCommand => InlineQueryCommand.TO_RECIPIENTS_COMMAND;
+        private static string CcButtonCommand => InlineQueryCommand.CC_RECIPIENTS_COMMAND;
+        private static string BccButtonCommand => InlineQueryCommand.BCC_RECIPIENTS_COMMAND;
+        private static string SubjectButtonCommand => CallbackCommand.ADD_SUBJECT_COMMAND;
+        private static string MessageButtonCommand => CallbackCommand.ADD_TEXT_MESSAGE_COMMAND;
+        private static string RemoveItemCommand => CallbackCommand.REMOVE_ITEM_COMMAND;
+        private static string SendButtonCommand => CallbackCommand.SEND_NEW_MESSAGE_COMMAND;
+        private static string ToDraftButtonCommand => CallbackCommand.SAVE_AS_DRAFT_COMMAND;
     }
 }

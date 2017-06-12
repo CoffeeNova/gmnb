@@ -50,9 +50,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         private static string ContinueButtonCaption => SendKeyboardButtonCapton.ContinueOld;
 
 
-        private static string SaveButtonCommand => Commands.SAVE_AS_DRAFT_COMMAND;
-        private static string NotSaveButtonCommand => Commands.NOT_SAVE_AS_DRAFT_COMMAND;
-        private static string ContinueButtonCommand => Commands.CONTINUE_COMPOSE_COMMAND;
+        private static string SaveButtonCommand => CallbackCommand.SAVE_AS_DRAFT_COMMAND;
+        private static string NotSaveButtonCommand => CallbackCommand.NOT_SAVE_AS_DRAFT_COMMAND;
+        private static string ContinueButtonCommand => CallbackCommand.CONTINUE_COMPOSE_COMMAND;
 
 
     }

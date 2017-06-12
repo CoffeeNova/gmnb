@@ -18,7 +18,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             AttachmentsButton = InitButton(AttachmentsButtonCaption, AttachmentsButtonCommand);
         }
 
-        protected override GetKeyboardState State => GetKeyboardState.Minimized;
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
         {
@@ -43,9 +42,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         private static string ActionButtonCaption => MainButtonCaption.Actions;
         private static string AttachmentsButtonCaption => MainButtonCaption.Attachments;
 
-        private static string ExpandButtonCommand => Commands.EXPAND_COMMAND;
-        private static string ActionsButtonCommand => Commands.EXPAND_ACTIONS_COMMAND;
-        private static string AttachmentsButtonCommand => Commands.SHOW_ATTACHMENTS_COMMAND;
+        private static string ExpandButtonCommand => CallbackCommand.EXPAND_COMMAND;
+        private static string ActionsButtonCommand => CallbackCommand.EXPAND_ACTIONS_COMMAND;
+        private static string AttachmentsButtonCommand => CallbackCommand.SHOW_ATTACHMENTS_COMMAND;
+
+        protected override GetKeyboardState State => GetKeyboardState.Minimized;
 
     }
 

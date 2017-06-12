@@ -266,6 +266,16 @@
     <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\SendKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Sendmessage\SendKeyboardState.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\SendCallbackData.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\SettingsCallbackData.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\ButtonCaption.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\PermissionsKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\IgnoreKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\LabelsKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\LabelsListKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\MainMenuKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\SettingsKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\SettingsKeyboardState.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\WhiteListKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\TypedInlineKeyboardButton.cs" />
     <Compile Include="Bot\Moduls\GoogleRequests\NotifyHandler.cs" />
     <Compile Include="Bot\Moduls\TelegramUpdates\CallbackQueryUpdates\ICallbackQueryHandlerRules.cs" />

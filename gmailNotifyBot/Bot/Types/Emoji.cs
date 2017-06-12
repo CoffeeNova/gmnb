@@ -44,5 +44,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Types
         public const string INBOX_TRAY = "\ud83d\udce5";
         public const string OK = "\ud83c\udd97";
         public const string GLOBE = "\ud83c\udf10";
+        public const string GRAY_CHECKED_BOX = "\u2611\ufe0f";
     }
 }

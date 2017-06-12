@@ -25,6 +25,7 @@
     public enum CallbackDataType
     {
         GetCallbackData,
-        SendCallbackData
+        SendCallbackData,
+        Settings
     }
 }

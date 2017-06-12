@@ -13,7 +13,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await handler.HandleGetMesssagesChosenInlineResult(result);
             };
 
-            if (result.Query.StartsWith(Commands.INBOX_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (result.Query.StartsWith(InlineQueryCommand.INBOX_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -28,7 +28,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await handler.HandleGetMesssagesChosenInlineResult(result);
             };
 
-            if (result.Query.StartsWith(Commands.ALL_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (result.Query.StartsWith(InlineQueryCommand.ALL_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -43,7 +43,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await handler.HandleGetMesssagesChosenInlineResult(result);
             };
 
-            if (result.Query.StartsWith(Commands.DRAFT_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (result.Query.StartsWith(InlineQueryCommand.DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -58,7 +58,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await handler.HandleSetToChosenInlineResult(result);
             };
 
-            if (result.Query.StartsWith(Commands.TO_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (result.Query.StartsWith(InlineQueryCommand.TO_RECIPIENTS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -73,7 +73,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await handler.HandleSetCcChosenInlineResult(result);
             };
 
-            if (result.Query.StartsWith(Commands.CC_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (result.Query.StartsWith(InlineQueryCommand.CC_RECIPIENTS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -88,7 +88,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await handler.HandleSetBccChosenInlineResult(result);
             };
 
-            if (result.Query.StartsWith(Commands.BCC_RECIPIENTS_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (result.Query.StartsWith(InlineQueryCommand.BCC_RECIPIENTS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -103,7 +103,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                 await handler.HandleEditDraftChosenInlineResult(result);
             };
 
-            if (result.Query.StartsWith(Commands.EDIT_INLINE_QUERY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (result.Query.StartsWith(InlineQueryCommand.EDIT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }

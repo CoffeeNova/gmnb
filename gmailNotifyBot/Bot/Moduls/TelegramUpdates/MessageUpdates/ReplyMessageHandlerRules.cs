@@ -15,7 +15,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 return null;
 
             HandleMessageCommand del = async sender => await handler.HandleMessageForceReply(textMessage);
-            if (reply.Text.StartsWith(Commands.MESSAGE_FORCE_REPLY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (reply.Text.StartsWith(ForceReplyCommand.MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
             return null;
@@ -34,7 +34,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 return null;
 
             HandleMessageCommand del = async sender => await handler.HandleSubjectForceReply(textMessage);
-            if (reply.Text.StartsWith(Commands.SUBJECT_FORCE_REPLY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (reply.Text.StartsWith(ForceReplyCommand.SUBJECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
             return null;
@@ -52,7 +52,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 return null;
 
             HandleMessageCommand del = async sender => await handler.HandleFileForceReply(docMessage);
-            if (reply.Text.StartsWith(Commands.MESSAGE_FORCE_REPLY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (reply.Text.StartsWith(ForceReplyCommand.MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
             return null;

@@ -38,7 +38,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
 
                 Exception exception = null;
                 LogMaker.Log(Logger, $"{result.Query} command received from user with id {(string)result.From}, resultId={result.ResultId}", false);
-                if (result.ResultId == Commands.IGNORE_COMMAND)
+                if (result.ResultId == CallbackCommand.IGNORE_COMMAND)
                     return;
                 try
                 {
