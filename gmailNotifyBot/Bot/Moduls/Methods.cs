@@ -15,6 +15,7 @@ using System.Threading;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using Google.Apis.Gmail.v1;
 using MimeKit.Text;
+using GmailLabel = Google.Apis.Gmail.v1.Data.Label;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 {
@@ -210,6 +211,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             model.Subject = formattedMessage.Subject;
             if (formattedMessage.Body != null)
                 model.Message = GetTextPlainMessage(formattedMessage.Body);
+        }
+
+        public static async Task<GmailLabel> CreateLabelAsync(string labelName, Service service)
+        {
+            var label = new GmailLabel {Name = labelName};
+            var request = service.GmailService.Users.Labels.Create(label, "me");
+            return await request.ExecuteAsync();
+        }
+
+        public static async Task<GmailLabel> GetLabelAsync(string labelName, Service service)
+        {
+            var requestList = service.GmailService.Users.Labels.List("me");
+            var labelsListResponse = await requestList.ExecuteAsync();
+            foreach (var label in labelsListResponse.Labels)
+            {
+                if (label.Name == labelName)
+                    return label;
+            }
+            return null;
         }
 
         private static string GetTextPlainMessage(IEnumerable<BodyForm> collection)

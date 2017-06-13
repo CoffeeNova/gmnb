@@ -23,7 +23,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
     public partial class CallbackQueryHandler
     {
         /// <summary>
-        /// Handles <see cref="Query"/> <see cref="TextTextCommandHORIZE_COMMAND"/>.
+        /// Handles <see cref="Query"/> <see cref="TextCommand.AUTHORIZE_COMMAND"/>.
         /// This method calls <see cref="Authorizer.SendAuthorizeLink"/> that forms URL link and provides it to the chat as a message.
         /// </summary>
         /// <param name="query"></param>

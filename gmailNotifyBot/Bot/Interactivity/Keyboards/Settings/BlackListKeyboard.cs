@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 
+
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 {
-    internal class WhiteListKeyboard : LabelsListKeyboard
+    internal class BlackListKeyboard : LabelsListKeyboard
     {
-        public WhiteListKeyboard(Dictionary<string, string> labels) : base(labels)
+        public BlackListKeyboard(Dictionary<string, string> labels) : base(labels)
         {
         }
 
-        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.WhiteList;
+        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.BlackList;
 
         protected override string LabelButtonCommand { get; set; } = CallbackCommand.LABELSLIST_WHITELIST_COMMAND;
     }

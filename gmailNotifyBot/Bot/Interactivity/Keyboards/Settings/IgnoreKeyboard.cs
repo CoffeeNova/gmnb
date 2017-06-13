@@ -7,10 +7,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
     {
         protected override void ButtonsInitializer()
         {
-            ShowIgnoreButton = InitButton(IgnoreMenuButtonCaption.Show, CallbackCommand.SHOW_IGNORE_COMMAND);
-            AddToIgnoreButton = InitButton(IgnoreMenuButtonCaption.Add, CallbackCommand.ADD_TO_IGNORE_COMMAND);
-            RemoveFromIgnoreButton = InitButton(IgnoreMenuButtonCaption.Remove, CallbackCommand.REMOVE_FROM_IGNORE_COMMAND);
-            BackIgnoreButton = InitButton(GeneralButtonCaption.Back, CallbackCommand.IGNORE_BACK_COMMAND);
+            ShowIgnoreButton = InitButton(InlineKeyboardType.CallbackData, IgnoreMenuButtonCaption.Show, CallbackCommand.SHOW_IGNORE_COMMAND, SelectedOption.Option1);
+            AddToIgnoreButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, IgnoreMenuButtonCaption.Add, CallbackCommand.ADD_TO_IGNORE_COMMAND);
+            RemoveFromIgnoreButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, IgnoreMenuButtonCaption.Remove, CallbackCommand.REMOVE_FROM_IGNORE_COMMAND);
+            BackIgnoreButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.IGNORE_BACK_COMMAND);
         }
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()

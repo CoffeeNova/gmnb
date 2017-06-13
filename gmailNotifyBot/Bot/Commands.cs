@@ -32,8 +32,17 @@
 
     public static class ForceReplyCommand
     {
+        #region SendMessage
         public const string MESSAGE_COMMAND = "Message:";
         public const string SUBJECT_COMMAND = "Subject:";
+        #endregion
+
+        #region Settings
+
+        public const string NEW_LABEL_COMMAND = "New label:";
+        public const string EDIT_LABEL_NAME_COMMAND = "Edit label name:";
+
+        #endregion
     }
 
     public static class CallbackCommand
@@ -96,7 +105,9 @@
         #endregion
 
         #region Labels List commands
-
+        public const string LABELSLIST_EDIT_COMMAND = "300";
+        public const string LABELSLIST_WHITELIST_COMMAND = "301";
+        public const string LABELSLIST_BLACKLIST_COMMAND = "302";
         public const string LABELSLIST_BACK_COMMAND = "320";
 
         #endregion

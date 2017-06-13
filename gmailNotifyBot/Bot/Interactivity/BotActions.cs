@@ -10,6 +10,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
@@ -293,7 +294,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     message = BuildNewMailMessage(model, state);
                     break;
             }
- 
+
             await _telegramMethods.EditMessageTextAsync(message, chatId, model.MessageId.ToString(), null, ParseMode.Html, true, keyboard);
         }
 
@@ -318,7 +319,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         {
             var reply = new ForceReply
             {
-                Selective = true
+                Selective = false
             };
             var message = $"<b>{ForceReplyCommand.MESSAGE_COMMAND} </b>\r\n{Emoji.INFO_SIGN}<i>To attach files drop them into the chat.</i>";
 
@@ -329,7 +330,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         {
             var reply = new ForceReply
             {
-                Selective = true
+                Selective = false
             };
             var message = $"<b>{ForceReplyCommand.SUBJECT_COMMAND} </b>";
 
@@ -341,7 +342,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.DownloadFileAsync(file, localPath);
         }
 
-    
+
         public async Task<File> GetFile(string fileId)
         {
             return await _telegramMethods.GetFileAsync(fileId);
@@ -367,7 +368,39 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         public async Task DeleteMessage(string chatId, int messageId)
         {
-            
+
+        }
+
+        public async Task ShowSettingsMenu(string chatId)
+        {
+            var keyboard = _settingsKeyboardFactory.CreateKeyboard(SettingsKeyboardState.MainMenu);
+            var message = SettingsMenuMessageBuilder(SettingsKeyboardState.MainMenu);
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
+        }
+
+        public async Task UpdateSettingsMenu(string chatId, int messageId, SettingsKeyboardState state, SelectedOption option = default(SelectedOption), UserSettingsModel userSettings = null)
+        {
+            var keyboard = _settingsKeyboardFactory.CreateKeyboard(state);
+            var message = SettingsMenuMessageBuilder(state, option, userSettings);
+            await
+                _telegramMethods.EditMessageTextAsync(message, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
+        }
+
+        public async Task CreateNewLabelForceReply(string chatId)
+        {
+            var reply = new ForceReply();
+            var message = $"<b>{ForceReplyCommand.NEW_LABEL_COMMAND}</b>";
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
+        }
+
+        public async Task CreateLabelSuccessful(string chatId, string labelName)
+        {
+            await _telegramMethods.SendMessageAsync(chatId, $"Label {labelName} created successfully.");
+        }
+
+        public async Task CreateLabelError(string chatId, string labelName)
+        {
+            await _telegramMethods.SendMessageAsync(chatId, $"Label {labelName} was not created because of an error.");
         }
 
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
@@ -383,7 +416,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             return builder.ToString();
         }
 
-        private string BuildNewMailMessage(NmStoreModel model, SendKeyboardState state )
+        private string BuildNewMailMessage(NmStoreModel model, SendKeyboardState state)
         {
             string headerText;
             switch (state)
@@ -434,6 +467,100 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             return message.ToString();
         }
 
+        private string SettingsMenuMessageBuilder(SettingsKeyboardState state, SelectedOption option = default(SelectedOption), UserSettingsModel userSettings = null)
+        {
+            if (userSettings == null && state.EqualsAny(
+                SettingsKeyboardState.Labels,
+                SettingsKeyboardState.Ignore,
+                SettingsKeyboardState.WhiteList,
+                SettingsKeyboardState.BlackList,
+                SettingsKeyboardState.EditLabelsList))
+                throw new InvalidOperationException($"{nameof(userSettings)} must be not null if {nameof(state)} equals {state}.");
+
+            StringBuilder message = new StringBuilder();
+            switch (state)
+            {
+                case SettingsKeyboardState.MainMenu:
+                    switch (option)
+                    {
+                        case SelectedOption.Option9: //about button
+                            message.AppendLine($"<b>{_settings.BotName}</b>");
+                            message.AppendLine();
+                            message.AppendLine();
+                            message.AppendLine($"Bot verison: {_settings.BotVersion}");
+                            message.AppendLine("Developed by Igor 'CoffeeJelly' Salzhenitsin");
+                            message.AppendLine("Contact emails:");
+                            message.AppendLine("<code>dnm.nova@gmail.com</code>");
+                            message.AppendLine("<code>igor.sal@protonmail.com</code>");
+                            message.AppendLine();
+                            message.AppendLine();
+                            message.AppendLine("2017");
+                            break;
+                        default:
+                            message.Append("<b>Main Settings Menu</b>");
+                            break;
+                    }
+                    break;
+                case SettingsKeyboardState.Labels:
+                    switch (option)
+                    {
+                        default:
+                            message.AppendLine("<b>Labels Menu</b>");
+                            message.AppendLine();
+                            message.Append(!userSettings.UseWhitelist
+                                ? "Choose <b>Whitelist</b> to specify the email labels that will be allowed. "
+                                + "Incoming email without at least one of the selected labels will not be displayed in the Telegram chat."
+                                : "Choose <b>Blacklist</b> to specify the email labels that will be blocked."
+                                + "Incoming email with at least one of the selected labels will not be displayed in the Telegram chat.");
+                            break;
+                    }
+                    break;
+                case SettingsKeyboardState.EditLabelsList:
+                    break;
+                case SettingsKeyboardState.WhiteList:
+                        message.AppendLine("<b>Whitelist</b>");
+                        message.AppendLine();
+                    message.AppendLine(!userSettings.UseWhitelist
+                        ? "If you want to use whitelist click \"Use whitelist mode\" button."
+                        : "Click the button to add it to (or remove from) the whitelist.");
+                    break;
+                case SettingsKeyboardState.BlackList:
+                    message.AppendLine("<b>Blacklist</b>");
+                    message.AppendLine();
+                    message.AppendLine(userSettings.UseWhitelist
+                        ? "If you want to use blacklist click \"Use blacklist mode\" button."
+                        : "Click the button to add it to (or remove from) the whitelist.");
+                    break;
+                case SettingsKeyboardState.Ignore:
+                    switch (option)
+                    {
+                        case SelectedOption.Option1:
+                            message.AppendLine(userSettings.IgnoreList?.Count == 0
+                                ? "Your ignore list is empty."
+                                : $"You have {userSettings.IgnoreList?.Count} email(s) ignored:");
+                            userSettings.IgnoreList?.ForEach(email =>
+                                {
+                                    message.AppendLine(email.Address);
+                                });
+                            break;
+                        default:
+                            message.AppendLine("<b>Ignore Control Menu</b>");
+                            message.AppendLine();
+                            break;
+                    }
+                    break;
+                case SettingsKeyboardState.Permissions:
+                    message.AppendLine("<b>Permissions Menu</b>");
+                    message.AppendLine();
+                    message.AppendLine("You can change or revoke the bot permissions to your Gmail account here.");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
+
+            return message.ToString();
+        }
+
         private readonly TelegramMethods _telegramMethods;
         private readonly string _newMessageMainText =
                         $"{Emoji.NEW} Please specify the <b>Recipients</b>, a <b>Subject</b> and the <b>Content</b> of the email: ";
@@ -456,5 +583,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         private readonly string _contactsThumbUrl;
         private readonly GetKeyboardFactory _getKeyboardFactory = new GetKeyboardFactory();
         private readonly SendKeyboardFactory _sendKeyboardFactory = new SendKeyboardFactory();
+        private readonly SettingsKeyboardFactory _settingsKeyboardFactory = new SettingsKeyboardFactory();
     }
 }

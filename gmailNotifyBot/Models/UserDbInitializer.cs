@@ -39,6 +39,7 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 MailNotification = false,
                 UserId = 1,
                 Access = UserAccess.FULL,
+                UseWhitelist = false,
                 IgnoreList = new List<IgnoreModel>
                 {
                  new IgnoreModel { Address = "testadr1@gmail.com"},

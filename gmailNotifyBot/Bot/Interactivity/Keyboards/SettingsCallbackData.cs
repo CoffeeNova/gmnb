@@ -10,7 +10,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
     {
         public SettingsCallbackData()
         {
-            
+
         }
 
         public SettingsCallbackData(SettingsCallbackData callbackData)
@@ -25,7 +25,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
             {
                 var splitted = serializedCallbackData.Split(SEPARATOR);
                 Command = splitted[0];
-                MessageKeyboardState = (SettingsKeyboardState)Enum.Parse(typeof(SettingsKeyboardState), splitted[1]);
+                Option = (SelectedOption)Enum.Parse(typeof(SelectedOption), splitted[1]);
+                LabelId = splitted[2];
+                MessageKeyboardState = (SettingsKeyboardState)Enum.Parse(typeof(SettingsKeyboardState), splitted[3]);
             }
             catch
             {
@@ -36,15 +38,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
         public void AttachProperties(SettingsCallbackData callbackData)
         {
             Command = callbackData.Command;
+            Option = callbackData.Option;
+            LabelId = callbackData.LabelId;
         }
 
         public static implicit operator string(SettingsCallbackData obj)
         {
             return $"{obj.Command}{SEPARATOR}" +
+                $"{obj.Option}{SEPARATOR}" +
+                $"{ obj.LabelId}{ SEPARATOR}" +
                    $"{(int)obj.MessageKeyboardState}{SEPARATOR}";
         }
 
         public SettingsKeyboardState MessageKeyboardState { get; set; } = SettingsKeyboardState.MainMenu;
+        public SelectedOption Option { get; set; }
+        public string LabelId { get; set; }
         public override CallbackDataType Type { get; } = CallbackDataType.Settings;
     }
 }

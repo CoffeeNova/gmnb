@@ -61,7 +61,8 @@ namespace CoffeeJelly.gmailNotifyBot
                 ImagesPath = System.Configuration.ConfigurationSettings.AppSettings["ImagesPath"],
                 DomainName = App_LocalResources.Tokens.DomainName,
                 AttachmentsTempFolder = Path.Combine(HttpRuntime.AppDomainAppPath, System.Configuration.ConfigurationSettings.AppSettings["AttachmentsTemp"]),
-                MaxAttachmentSize = int.Parse(System.Configuration.ConfigurationSettings.AppSettings["MaxAttachmentSize"])
+                MaxAttachmentSize = int.Parse(System.Configuration.ConfigurationSettings.AppSettings["MaxAttachmentSize"]),
+                BotVersion = ReturnBotVersion()
             };
             _botInitializer = BotInitializer.GetInstance(botSettings);
             _botInitializer.InitializeUpdates();
@@ -88,6 +89,13 @@ namespace CoffeeJelly.gmailNotifyBot
             if (stackTrace != null)
                 TestModel.WriteLogToFile($"{stackTrace}{Environment.NewLine}");
 #endif
+        }
+
+        private string ReturnBotVersion()
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return fvi.FileVersion;
         }
 
         private int _updatePeriod = 3600000; // 1 hour

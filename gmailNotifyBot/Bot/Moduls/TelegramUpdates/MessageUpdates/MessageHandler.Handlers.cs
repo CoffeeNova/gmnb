@@ -373,6 +373,30 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         }
 
+        #region Settings
+
+        public async Task HandleSettingsCommand(ISender sender)
+        {
+            await _botActions.ShowSettingsMenu(sender.From);
+        }
+
+        public async Task HandleCreateNewLabelForceReply(TextMessage message)
+        {
+            var service = Methods.SearchServiceByUserId(message.From);
+            try
+            {
+                var label = await Methods.CreateLabelAsync(message.Text, service);
+                if (label == null)
+                    throw new Exception();
+                await _botActions.CreateLabelSuccessful(message.From, label.Name);
+            }
+            catch 
+            {
+                await _botActions.CreateLabelError(message.From, message.Text);
+            }
+        }
+
+        #endregion
         private void UpdateNmStoreModel(NmStoreModel model, Message message)
         {
             if (message.GetType() == typeof(TextMessage))

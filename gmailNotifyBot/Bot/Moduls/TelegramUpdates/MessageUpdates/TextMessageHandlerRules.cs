@@ -197,4 +197,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             return null;
         }
     }
+
+    internal class ShowSettingsRule : IMessageHandlerRules
+    {
+        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        {
+            var textMessage = message as TextMessage;
+            if (textMessage == null) return null;
+
+            if (textMessage.Text.StartsWith(TextCommand.SETTINGS_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            {
+                HandleMessageCommand del = async sender => await handler.HandleSettingsCommand(textMessage);
+                return del;
+            }
+
+            return null;
+        }
+    }
 }

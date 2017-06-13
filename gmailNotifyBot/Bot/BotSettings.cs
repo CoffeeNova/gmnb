@@ -29,5 +29,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public string AttachmentsTempFolder { get; set; }
 
         public int MaxAttachmentSize { get; set; }
+
+        public string BotVersion { get; set; }
     }
 }

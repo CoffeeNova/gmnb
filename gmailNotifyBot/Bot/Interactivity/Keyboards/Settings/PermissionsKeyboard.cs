@@ -11,10 +11,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         }
         protected override void ButtonsInitializer()
         {
-            ChangePermissionsButton = InitButton(ChangePermissionsButtonCaption, CallbackCommand.CHANGE_PERMISSIONS_COMMAND);
-            RevokePermissionsButton = InitButton(PermissionsMenuButtonCaption.RevokePermissions, CallbackCommand.REVOKE_REPMISSIONS_COMMAND);
-            RevokeViaWebButton = InitButton(PermissionsMenuButtonCaption.RevokeViaWeb, CallbackCommand.REVOKE_VIA_WEB_COMMAND);
-            BackPermissionsButton = InitButton(GeneralButtonCaption.Back, CallbackCommand.PERMISSIONS_BACK_COMMAND);
+            ChangePermissionsButton = InitButton(InlineKeyboardType.CallbackData, ChangePermissionsButtonCaption, CallbackCommand.CHANGE_PERMISSIONS_COMMAND);
+            RevokePermissionsButton = InitButton(InlineKeyboardType.CallbackData, PermissionsMenuButtonCaption.RevokePermissions, CallbackCommand.REVOKE_REPMISSIONS_COMMAND);
+            RevokeViaWebButton = InitButton(InlineKeyboardType.CallbackData, PermissionsMenuButtonCaption.RevokeViaWeb, CallbackCommand.REVOKE_VIA_WEB_COMMAND);
+            BackPermissionsButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.PERMISSIONS_BACK_COMMAND);
         }
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()

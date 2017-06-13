@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Attributes
 {

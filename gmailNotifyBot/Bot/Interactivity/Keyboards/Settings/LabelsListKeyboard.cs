@@ -8,31 +8,44 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 {
     internal abstract class LabelsListKeyboard : SettingsKeyboard
     {
+        protected LabelsListKeyboard(Dictionary<string, string> labels)
+        {
+            if (labels == null)
+                throw new ArgumentNullException(nameof(labels));
 
+            Labels = labels;
+        }
         protected override void ButtonsInitializer()
         {
-
-            BackLabelsListButton = InitButton(GeneralButtonCaption.Back, CallbackCommand.LABELSLIST_BACK_COMMAND);
+            foreach (var label in Labels)
+            {
+                var button = InitButton(InlineKeyboardType.CallbackData, label.Value, LabelButtonCommand,
+                    SelectedOption.None, label.Key);
+                LabelsListRow.Add(button);
+            }
+            BackLabelsListButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.LABELSLIST_BACK_COMMAND, SelectedOption.Option10);
         }
+
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
         {
-            if (BackLabelsButton != null)
-                BackLabelsListRow.Add(BackLabelsButton);
+            if (BackLabelsListButton != null)
+                BackLabelsListRow.Add(BackLabelsListButton);
 
             var inlineKeyboard = new List<List<InlineKeyboardButton>>
             {
-                DisplayLabelsRow, CreateLabelRow, RemoveLabelRow, EditLabelRow,
-                WhitelistRow, BlacklistRow, BackLabelsRow
+                LabelsListRow, BackLabelsListRow 
             };
 
             return inlineKeyboard;
         }
 
+        protected abstract string LabelButtonCommand { get; set; }
 
-
+        protected Dictionary<string, string> Labels;
         protected InlineKeyboardButton BackLabelsListButton { get; set; }
-        protected List<InlineKeyboardButton> BackLabelsListRow = new List<InlineKeyboardButton>();
 
+        protected List<InlineKeyboardButton> LabelsListRow = new List<InlineKeyboardButton>();
+        protected List<InlineKeyboardButton> BackLabelsListRow = new List<InlineKeyboardButton>();
     }
 }

@@ -19,19 +19,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
             base.InlineKeyboard = DefineInlineKeyboard();
         }
 
-        protected virtual InlineKeyboardButton InitButton(string text, string callbackCommand)
+        protected virtual InlineKeyboardButton InitButton(InlineKeyboardType type, string text, string command, SelectedOption option = default(SelectedOption), 
+            string labelId = "", bool forceCallbackData = true)
         {
-            return new InlineKeyboardButton
+            if (!forceCallbackData)
+                return base.InitButton(type, text, command);
+            var callbackData = new SettingsCallbackData(GeneralCallbackData)
             {
-                Text = text,
-                CallbackData = new SettingsCallbackData(GeneralCallbackData)
-                {
-                    Command = callbackCommand
-                }
+                Command = command,
+                Option = option,
+                LabelId = labelId
             };
+            return base.InitButton(type, text, callbackData);
         }
 
         protected abstract SettingsKeyboardState State { get; }
         protected SettingsCallbackData GeneralCallbackData;
     }
+
 }
