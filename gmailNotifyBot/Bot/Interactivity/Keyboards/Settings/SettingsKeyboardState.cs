@@ -17,7 +17,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         [EnumMember(Value = "ignore")]
         Ignore,
         [EnumMember(Value = "permissions")]
-        Permissions
+        Permissions,
+        [EnumMember(Value = "labelActions")]
+        LabelActions
     }
 
     public enum SelectedOption

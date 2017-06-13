@@ -269,6 +269,7 @@
     <Compile Include="Bot\Interactivity\Keyboards\SettingsCallbackData.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\ButtonCaption.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\Factory.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\LabelActionsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\PermissionsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\IgnoreKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\LabelsKeyboard.cs" />
@@ -302,6 +303,7 @@
     <Compile Include="Bot\Moduls\Methods.cs" />
     <Compile Include="Bot\Tools.cs" />
     <Compile Include="Bot\Types\Enums.cs" />
+    <Compile Include="Bot\Types\LabelInfo.cs" />
     <Compile Include="Bot\Types\Labels.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Keyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Getmessage\MinimizedKeyboard.cs" />

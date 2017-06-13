@@ -23,10 +23,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 
         public static string CreateNewLabel => "Create New Label";
 
-        public static string RemoveLabel => "Remove Label";
-
-        public static string EditLabel => "Edit Label";
-
         public static string WhiteListDisabled => "Whitelist Labels";
 
         public static string BlackListDisabled => "Blasklist Labels";
@@ -58,5 +54,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
     internal static class GeneralButtonCaption
     {
         public static string Back => $"{Emoji.LEFT_ARROW} Back";
+    }
+
+    internal static class LabelActionsButtonCaption
+    {
+        public static string RemoveLabel => "Remove Label";
+
+        public static string EditLabel => "Edit Label";
     }
 }

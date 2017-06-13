@@ -16,9 +16,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         protected override void ButtonsInitializer()
         {
             DisplayLabelsButton = InitButton(InlineKeyboardType.CallbackData, LabelsMenuButtonCaption.DisplayLabels, CallbackCommand.DISPLAY_LABELS_COMMAND, SelectedOption.Option1);
-            CreateLabelButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, LabelsMenuButtonCaption.CreateNewLabel, CallbackCommand.CREATE_NEW_LABEL_COMMAND, SelectedOption.Option2);
-            //RemoveLabelButton = InitButton(LabelsMenuButtonCaption.RemoveLabel, CallbackCommand.REMOVE_LABEL_COMMAND);
-            //EditLabelButton = InitButton(InlineKeyboardType.CallbackData,LabelsMenuButtonCaption.EditLabel, CallbackCommand.EDIT_LABEL_COMMAND, SelectedOption.Option2);
+            CreateLabelButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, LabelsMenuButtonCaption.CreateNewLabel, ForceReplyCommand.NEW_LABEL_COMMAND, SelectedOption.Option2);
             WhitelistButton = InitButton(InlineKeyboardType.CallbackData, WhitelistButtonCaption, CallbackCommand.WHITELIST_COMMAND, SelectedOption.Option3);
             BlacklistButton = InitButton(InlineKeyboardType.CallbackData, BlacklistButtonCaption, CallbackCommand.BLACKLIST_COMMAND, SelectedOption.Option4);
             BackLabelsButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.LABELS_BACK_COMMAND, SelectedOption.Option10);

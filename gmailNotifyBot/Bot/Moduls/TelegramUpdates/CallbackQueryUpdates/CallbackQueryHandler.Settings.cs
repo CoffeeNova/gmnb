@@ -120,5 +120,32 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
 
         #endregion
+
+        #region LabelsList
+
+        public async Task HandleCallbackQBackToLabelsMenu(CallbackQuery query, SettingsCallbackData callbackData)
+        {
+            Methods.SearchServiceByUserId(query.From);
+            var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
+            if (userSettings == null)
+                return;
+
+            await
+                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.Labels, SelectedOption.None, userSettings);
         }
+
+        public async Task HandleCallbackQEditLabel(CallbackQuery query, SettingsCallbackData callbackData)
+        {
+            Methods.SearchServiceByUserId(query.From);
+            var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
+            if (userSettings == null)
+                return;
+
+
+            await
+                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.MainMenu, SelectedOption.None, userSettings);
+        }
+
+        #endregion
+    }
 }

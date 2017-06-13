@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 {
     internal abstract class LabelsListKeyboard : SettingsKeyboard
     {
-        protected LabelsListKeyboard(Dictionary<string, string> labels)
+        protected LabelsListKeyboard(List<LabelInfo> labels)
         {
             if (labels == null)
                 throw new ArgumentNullException(nameof(labels));
@@ -19,8 +20,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         {
             foreach (var label in Labels)
             {
-                var button = InitButton(InlineKeyboardType.CallbackData, label.Value, LabelButtonCommand,
-                    SelectedOption.None, label.Key);
+                var button = InitButton(InlineKeyboardType.CallbackData, label.Name, LabelButtonCommand,
+                    SelectedOption.None, label.LabelId);
                 LabelsListRow.Add(button);
             }
             BackLabelsListButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.LABELSLIST_BACK_COMMAND, SelectedOption.Option10);
@@ -42,7 +43,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 
         protected abstract string LabelButtonCommand { get; set; }
 
-        protected Dictionary<string, string> Labels;
+        protected List<LabelInfo> Labels;
         protected InlineKeyboardButton BackLabelsListButton { get; set; }
 
         protected List<InlineKeyboardButton> LabelsListRow = new List<InlineKeyboardButton>();
