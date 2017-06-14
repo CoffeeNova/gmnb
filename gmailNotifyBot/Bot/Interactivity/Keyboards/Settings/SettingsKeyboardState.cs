@@ -6,20 +6,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
     {
         [EnumMember(Value = "mainMenu")]
         MainMenu,
-        [EnumMember(Value = "labels")]
-        Labels,
-        [EnumMember(Value = "whiteList")]
-        WhiteList,
-        [EnumMember(Value = "blackList")]
-        BlackList,
-        [EnumMember(Value = "editLabelsList")]
-        EditLabelsList,
-        [EnumMember(Value = "ignore")]
-        Ignore,
-        [EnumMember(Value = "permissions")]
-        Permissions,
-        [EnumMember(Value = "labelActions")]
-        LabelActions
+        [EnumMember(Value = "labelsMenu")]
+        LabelsMenu,
+        [EnumMember(Value = "whiteListMenu")]
+        WhiteListMenu,
+        [EnumMember(Value = "blackListMenu")]
+        BlackListMenu,
+        [EnumMember(Value = "editLabelsMenu")]
+        EditLabelsMenu,
+        [EnumMember(Value = "ignoreMenu")]
+        IgnoreMenu,
+        [EnumMember(Value = "permissionsMenu")]
+        PermissionsMenu,
+        [EnumMember(Value = "labelActionsMenu")]
+        LabelActionsMenu
     }
 
     public enum SelectedOption

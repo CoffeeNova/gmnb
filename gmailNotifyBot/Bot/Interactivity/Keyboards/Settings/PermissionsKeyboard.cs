@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
-using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
@@ -13,7 +12,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         }
         protected override void ButtonsInitializer()
         {
-            ChangePermissionsButton = InitButton(InlineKeyboardType.CallbackData, ChangePermissionsButtonCaption, CallbackCommand.CHANGE_PERMISSIONS_COMMAND);
+            ChangePermissionsButton = InitButton(InlineKeyboardType.CallbackData, ChangePermissionsButtonCaption, CallbackCommand.SWAP_PERMISSIONS_COMMAND);
             RevokePermissionsButton = InitButton(InlineKeyboardType.CallbackData, PermissionsMenuButtonCaption.RevokePermissions, CallbackCommand.REVOKE_REPMISSIONS_COMMAND);
             RevokeViaWebButton = InitButton(InlineKeyboardType.CallbackData, PermissionsMenuButtonCaption.RevokeViaWeb, CallbackCommand.REVOKE_VIA_WEB_COMMAND);
             BackPermissionsButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.PERMISSIONS_BACK_COMMAND);
@@ -50,7 +49,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         protected List<InlineKeyboardButton> RevokePermissionsRow;
         protected List<InlineKeyboardButton> RevokeViaWebRow;
         protected List<InlineKeyboardButton> BackPermissionsRow;
-        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.Permissions;
+        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.PermissionsMenu;
 
         private UserSettingsModel Settings { get;}
 

@@ -58,4 +58,84 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             return null;
         }
     }
+
+    #region Settings
+
+    internal class CreateNewLabelForceReplyRule : IMessageHandlerRules
+    {
+        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        {
+            var textMessage = message as TextMessage;
+            if (textMessage?.Text == null)
+                return null;
+            var reply = message.ReplyToMessage as TextMessage;
+            if (reply == null)
+                return null;
+
+            if (!reply.Text.StartsWith(ForceReplyCommand.NEW_LABEL_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleMessageCommand del = async sender => await handler.HandleCreateNewLabelForceReply(textMessage);
+            return del;
+        }
+    }
+
+    internal class EditLabelNameForceReplyRule : IMessageHandlerRules
+    {
+        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        {
+            var textMessage = message as TextMessage;
+            if (textMessage?.Text == null)
+                return null;
+            var reply = message.ReplyToMessage as TextMessage;
+            if (reply == null)
+                return null;
+
+            if (!reply.Text.StartsWith(ForceReplyCommand.EDIT_LABEL_NAME_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleMessageCommand del = async sender => await handler.HandleEditLabelNameForceReply(textMessage);
+            return del;
+        }
+    }
+
+    internal class AddToIgnoreForceReplyRule : IMessageHandlerRules
+    {
+        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        {
+            var textMessage = message as TextMessage;
+            if (textMessage?.Text == null)
+                return null;
+            var reply = message.ReplyToMessage as TextMessage;
+            if (reply == null)
+                return null;
+
+            if (!reply.Text.StartsWith(ForceReplyCommand.ADD_TO_IGNORE_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleMessageCommand del = async sender => await handler.HandleAddToIgnoreForceReply(textMessage);
+            return del;
+        }
+    }
+
+    internal class RemoveFromIgnoreForceReplyRule : IMessageHandlerRules
+    {
+        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        {
+            var textMessage = message as TextMessage;
+            if (textMessage?.Text == null)
+                return null;
+            var reply = message.ReplyToMessage as TextMessage;
+            if (reply == null)
+                return null;
+
+            if (!reply.Text.StartsWith(ForceReplyCommand.REMOVE_FROM_IGNORE_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleMessageCommand del = async sender => await handler.HandleRemoveFromIgnoreForceReply(textMessage);
+            return del;
+        }
+    }
+
+    #endregion
 }

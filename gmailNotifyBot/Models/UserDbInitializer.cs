@@ -96,6 +96,11 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                 Thread="testThread",
                 Username="testUsername"
             });
+            db.TempData.Add(new TempDataModel
+            {
+                EditableLabelId = "testId",
+                UserId = 0
+            });
             base.Seed(db);
         }
     }

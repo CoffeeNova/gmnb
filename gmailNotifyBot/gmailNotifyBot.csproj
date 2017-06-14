@@ -283,7 +283,7 @@
     <Compile Include="Bot\Interactivity\Keyboards\Settings\SettingsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\SettingsKeyboardState.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\BlackListKeyboard.cs" />
-    <Compile Include="Bot\Interactivity\Keyboards\Settings\EditLabelsListKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\EditLabelsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\WhiteListKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\TypedInlineKeyboardButton.cs" />
     <Compile Include="Bot\Moduls\GoogleRequests\NotifyHandler.cs" />

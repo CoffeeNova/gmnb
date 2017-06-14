@@ -9,11 +9,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 {
     internal class LabelActionsKeyboard : SettingsKeyboard
     {
-        public LabelActionsKeyboard(LabelInfo label)
-        {
-            Label = label;
-        }
-
         protected override void ButtonsInitializer()
         {
             EditLabelActionsButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat,
@@ -48,7 +43,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         protected List<InlineKeyboardButton> EditRow = new List<InlineKeyboardButton>();
         protected List<InlineKeyboardButton> RemoveRow = new List<InlineKeyboardButton>();
         protected List<InlineKeyboardButton> BackLabelActionsRow = new List<InlineKeyboardButton>();
-        protected LabelInfo Label { get; set; }
-        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.LabelActions;
+        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.LabelActionsMenu;
     }
 }

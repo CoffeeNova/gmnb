@@ -22,7 +22,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
     public partial class MessageHandler
     {
         /// <summary>
-        /// Handles <see cref="TextTextCommandHORIZE_COMMAND"/>.
+        /// Handles <see cref="TextCommand.AUTHORIZE_COMMAND"/>.
         /// This method calls <see cref="Authorizer.SendAuthorizeLink"/> that forms URL link and provides it to the chat as a message.
         /// </summary>
         /// <param name="query"></param>
@@ -408,7 +408,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             var labelInfoList = labels.Select(l => new LabelInfo { Name = l.Name, LabelId = l.Id } as ILabelInfo);
 
             await
-                _botActions.ShowSettingsMenu(message.From, SettingsKeyboardState.EditLabelsList, SelectedOption.None, null, labelInfoList);
+                _botActions.ShowSettingsMenu(message.From, SettingsKeyboardState.EditLabelsMenu, SelectedOption.None, null, labelInfoList);
         }
 
         public async Task HandleAddToIgnoreForceReply(TextMessage message)

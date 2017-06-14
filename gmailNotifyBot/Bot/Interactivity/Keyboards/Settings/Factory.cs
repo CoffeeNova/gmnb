@@ -22,23 +22,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
                 case SettingsKeyboardState.MainMenu:
                     keyboard = new MainMenuKeyboard();
                     break;
-                case SettingsKeyboardState.EditLabelsList:
-                    keyboard = new EditLabelsListKeyboard(labels);
+                case SettingsKeyboardState.EditLabelsMenu:
+                    keyboard = new EditLabelsKeyboard(labels);
                     break;
-                case SettingsKeyboardState.BlackList:
+                case SettingsKeyboardState.BlackListMenu:
                     keyboard = new BlackListKeyboard(labels, model?.Blacklist.Select(b => new LabelInfo { Name = b.Name, LabelId = b.LabelId } as ILabelInfo).ToList());
                     break;
-                case SettingsKeyboardState.WhiteList:
+                case SettingsKeyboardState.WhiteListMenu:
                     keyboard = new WhiteListKeyboard(labels, model?.Blacklist.Select(b => new LabelInfo { Name = b.Name, LabelId = b.LabelId } as ILabelInfo).ToList());
                     break;
-                case SettingsKeyboardState.Labels:
+                case SettingsKeyboardState.LabelsMenu:
+                    keyboard = new LabelsKeyboard(model.UseWhitelist);
                     break;
-                case SettingsKeyboardState.Ignore:
+                case SettingsKeyboardState.IgnoreMenu:
+                    keyboard = new IgnoreKeyboard();
                     break;
-                case SettingsKeyboardState.Permissions:
+                case SettingsKeyboardState.PermissionsMenu:
                     keyboard = new PermissionsKeyboard(model);
                     break;
-                case SettingsKeyboardState.LabelActions:
+                case SettingsKeyboardState.LabelActionsMenu:
+                    keyboard = new LabelActionsKeyboard();
                     break;
                 default:
                     return null;

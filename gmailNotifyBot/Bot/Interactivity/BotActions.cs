@@ -400,11 +400,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task UpdateSettingsMenu(string chatId, int messageId, SettingsKeyboardState state,
-             SelectedOption option = default(SelectedOption), UserSettingsModel model = null, IEnumerable<ILabelInfo> labels = null)
+        public async Task UpdateSettingsMenu(string chatId, int messageId, SettingsKeyboardState state, SelectedOption option = default(SelectedOption),
+              UserSettingsModel model = null, TempDataModel tempData = null, IEnumerable<ILabelInfo> labels = null)
         {
             var keyboard = _settingsKeyboardFactory.CreateKeyboard(state, model, labels);
-            var message = SettingsMenuMessageBuilder(state, option, model);
+            var message = SettingsMenuMessageBuilder(state, option, model, tempData?.EditableLabelId);
             await
                 _telegramMethods.EditMessageTextAsync(message, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
@@ -446,6 +446,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task RevokeTokenUnSuccessfulMessage(string chatId)
         {
             await _telegramMethods.SendMessageAsync(chatId, $"Can't revoke permissions, please try to revoke permissions via web browser.");
+        }
+
+        public async Task SendAccountPermissinsUrl(string chatId)
+        {
+            var message =
+                $"To revoke permissions via web browser <a href=\"{AccountPermissionsUrl}\">open this link</a>";
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html);
         }
 
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
@@ -512,14 +519,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             return message.ToString();
         }
 
-        private string SettingsMenuMessageBuilder(SettingsKeyboardState state, SelectedOption option = default(SelectedOption), UserSettingsModel userSettings = null)
+        private string SettingsMenuMessageBuilder(SettingsKeyboardState state, SelectedOption option = default(SelectedOption), 
+            UserSettingsModel userSettings = null, string editableLableId = null)
         {
             if (userSettings == null && state.EqualsAny(
-                SettingsKeyboardState.Labels,
-                SettingsKeyboardState.Ignore,
-                SettingsKeyboardState.WhiteList,
-                SettingsKeyboardState.BlackList,
-                SettingsKeyboardState.EditLabelsList))
+                SettingsKeyboardState.LabelsMenu,
+                SettingsKeyboardState.IgnoreMenu,
+                SettingsKeyboardState.WhiteListMenu,
+                SettingsKeyboardState.BlackListMenu,
+                SettingsKeyboardState.EditLabelsMenu))
                 throw new InvalidOperationException($"{nameof(userSettings)} must be not null if {nameof(state)} equals {state}.");
 
             StringBuilder message = new StringBuilder();
@@ -546,7 +554,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                             break;
                     }
                     break;
-                case SettingsKeyboardState.Labels:
+                case SettingsKeyboardState.LabelsMenu:
                     switch (option)
                     {
                         default:
@@ -560,25 +568,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                             break;
                     }
                     break;
-                case SettingsKeyboardState.EditLabelsList:
+                case SettingsKeyboardState.EditLabelsMenu:
                     message.AppendLine("<b>Labels</b>");
                     message.AppendLine();
                     break;
-                case SettingsKeyboardState.WhiteList:
+                case SettingsKeyboardState.WhiteListMenu:
                     message.AppendLine("<b>Whitelist</b>");
                     message.AppendLine();
                     message.AppendLine(!userSettings.UseWhitelist
                         ? "If you want to use whitelist click \"Use whitelist mode\" button."
                         : "Click the button to add it to (or remove from) the whitelist.");
                     break;
-                case SettingsKeyboardState.BlackList:
+                case SettingsKeyboardState.BlackListMenu:
                     message.AppendLine("<b>Blacklist</b>");
                     message.AppendLine();
                     message.AppendLine(userSettings.UseWhitelist
                         ? "If you want to use blacklist click \"Use blacklist mode\" button."
                         : "Click the button to add it to (or remove from) the whitelist.");
                     break;
-                case SettingsKeyboardState.Ignore:
+                case SettingsKeyboardState.IgnoreMenu:
                     switch (option)
                     {
                         case SelectedOption.Option1:
@@ -602,13 +610,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                             break;
                     }
                     break;
-                case SettingsKeyboardState.Permissions:
+                case SettingsKeyboardState.PermissionsMenu:
                     message.AppendLine("<b>Permissions Menu</b>");
                     message.AppendLine();
                     message.AppendLine("You can change or revoke the bot permissions to your Gmail account here.");
                     break;
-                case SettingsKeyboardState.LabelActions:
-                    message.AppendLine("<b>Edit label:</b>");
+                case SettingsKeyboardState.LabelActionsMenu:
+                    message.AppendLine($"<b>Edit label with id {editableLableId}:</b>");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);

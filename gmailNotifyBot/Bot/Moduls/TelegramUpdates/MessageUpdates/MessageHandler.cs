@@ -146,6 +146,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             _rules.Add(new GetDraftRule());
             _rules.Add(new TestDraftRule());
             _rules.Add(new ShowSettingsRule());
+            #region Settings
+            _rules.Add(new CreateNewLabelForceReplyRule());
+            _rules.Add(new EditLabelNameForceReplyRule());
+            _rules.Add(new AddToIgnoreForceReplyRule());
+            _rules.Add(new RemoveFromIgnoreForceReplyRule());
+            #endregion
         }
 
         private void InitForceReplyRules()

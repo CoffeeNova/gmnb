@@ -7,7 +7,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
     {
         protected override void ButtonsInitializer()
         {
-            ShowIgnoreButton = InitButton(InlineKeyboardType.CallbackData, IgnoreMenuButtonCaption.Show, CallbackCommand.SHOW_IGNORE_COMMAND, SelectedOption.Option1);
+            ShowIgnoreButton = InitButton(InlineKeyboardType.CallbackData, IgnoreMenuButtonCaption.Show, CallbackCommand.DISPLAY_IGNORE_COMMAND, SelectedOption.Option1);
             AddToIgnoreButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, IgnoreMenuButtonCaption.Add, ForceReplyCommand.ADD_TO_IGNORE_COMMAND);
             RemoveFromIgnoreButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, IgnoreMenuButtonCaption.Remove, ForceReplyCommand.REMOVE_FROM_IGNORE_COMMAND);
             BackIgnoreButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.IGNORE_BACK_COMMAND);
@@ -44,6 +44,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         protected List<InlineKeyboardButton> AddToIgnoreRow;
         protected List<InlineKeyboardButton> RemoveFromIgnoreRow;
         protected List<InlineKeyboardButton> BackIgnoreRow;
-        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.Ignore;
+        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.IgnoreMenu;
     }
 }

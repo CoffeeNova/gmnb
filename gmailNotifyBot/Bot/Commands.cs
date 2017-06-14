@@ -85,34 +85,34 @@
 
         #region Settings commands
 
-            #region MainMenu commands
+        #region MainMenu commands
 
-            public const string LABELS_COMMAND = "300";
-            public const string PERMISSIONS_COMMAND = "301";
-            public const string IGNORELIST_COMMAND = "302";
-            public const string ABOUT_COMMAND = "309";
+        public const string LABELS_MENU_COMMAND = "300";
+        public const string PERMISSIONS_MENU_COMMAND = "301";
+        public const string IGNORE_LIST_MENU_COMMAND = "302";
+        public const string ABOUT_COMMAND = "309";
 
-            #endregion
+        #endregion
 
         #region Labels commands
 
-        public const string DISPLAY_LABELS_COMMAND = "310";
-        public const string WHITELIST_COMMAND = "311";
-        public const string BLACKLIST_COMMAND = "312";
+        public const string EDIT_LABELS_MENU_COMMAND = "310";
+        public const string WHITELIST_MENU_COMMAND = "311";
+        public const string BLACKLIST_MENU_COMMAND = "312";
         public const string LABELS_BACK_COMMAND = "319";
 
         #endregion
 
         #region Labels List commands
         public const string LABEL_ACTIONS_MENU_COMMAND = "320";
-        public const string LABELS_LIST_WHITELIST_COMMAND = "321";
-        public const string LABELS_LIST_BLACKLIST_COMMAND = "321";
-        public const string LABELSLIST_BACK_COMMAND = "329";
+        public const string WHITELIST_ACTION_COMMAND = "321";
+        public const string BLACKLIST_ACTION_COMMAND = "321";
+        public const string LABELS_LIST_BACK_COMMAND = "329";
 
         #endregion
 
         #region Permission commands
-        public const string CHANGE_PERMISSIONS_COMMAND = "330";
+        public const string SWAP_PERMISSIONS_COMMAND = "330";
         public const string REVOKE_REPMISSIONS_COMMAND = "331";
         public const string REVOKE_VIA_WEB_COMMAND = "332";
         public const string PERMISSIONS_BACK_COMMAND = "339";
@@ -120,7 +120,7 @@
         #endregion
 
         #region Ignore commands
-        public const string SHOW_IGNORE_COMMAND = "340";
+        public const string DISPLAY_IGNORE_COMMAND = "340";
         public const string IGNORE_BACK_COMMAND = "349";
 
         #endregion

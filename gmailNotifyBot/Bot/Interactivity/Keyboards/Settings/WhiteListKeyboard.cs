@@ -22,12 +22,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
                     SelectedOption.None, label.LabelId);
                 LabelsListRow.Add(button);
             }
-            BackLabelsListButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.LABELSLIST_BACK_COMMAND, SelectedOption.Option10);
+            BackLabelsListButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.LABELS_LIST_BACK_COMMAND, SelectedOption.Option10);
         }
 
-        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.WhiteList;
+        protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.WhiteListMenu;
 
-        protected override string LabelButtonCommand { get; set; } = CallbackCommand.LABELS_LIST_WHITELIST_COMMAND;
+        protected override string LabelButtonCommand { get; set; } = CallbackCommand.WHITELIST_ACTION_COMMAND;
 
         protected List<ILabelInfo> WhitelistedLabels { get; set; }
     }

@@ -10,9 +10,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
     {
         protected override void ButtonsInitializer()
         {
-            LabelsButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.Labels, CallbackCommand.LABELS_COMMAND, SelectedOption.Option1);
-            PermissionsButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.Permissions, CallbackCommand.PERMISSIONS_COMMAND, SelectedOption.Option2);
-            IgnoreButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.Ignore, CallbackCommand.IGNORE_COMMAND, SelectedOption.Option3);
+            LabelsButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.Labels, CallbackCommand.LABELS_MENU_COMMAND, SelectedOption.Option1);
+            PermissionsButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.Permissions, CallbackCommand.PERMISSIONS_MENU_COMMAND, SelectedOption.Option2);
+            IgnoreButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.Ignore, CallbackCommand.IGNORE_LIST_MENU_COMMAND, SelectedOption.Option3);
             AboutButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.About, CallbackCommand.ABOUT_COMMAND, SelectedOption.Option9);
         }
 

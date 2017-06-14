@@ -123,6 +123,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             _rules.Add(new ContinueFromDraftRule());
             _rules.Add(new SendMessageRule());
             _rules.Add(new RemoveItemNewMessageRule());
+            #region Settings
+            _rules.Add(new OpenLabelsMenuRule());
+            _rules.Add(new OpenPermissionsMenuRule());
+            _rules.Add(new OpenIgnoreListMenuRule());
+            _rules.Add(new ShowAboutRule());
+            _rules.Add(new OpenEditLabelsMenuRule());
+            _rules.Add(new OpenWhitelistMenuRule());
+            _rules.Add(new OpenBlacklistMenuRule());
+            _rules.Add(new BackToLabelsMenuRule());
+            _rules.Add(new OpenLabelActionsMenuRule());
+            _rules.Add(new WhitelistLabelActionRule());
+            _rules.Add(new BlacklistLabelActionRule());
+            _rules.Add(new RemoveLabelRule());
+            _rules.Add(new BackToEditLabelsListMenuRule());
+            _rules.Add(new DisplayIgnoredEmailRule());
+            _rules.Add(new SwapPermissionsRule());
+            _rules.Add(new RevokePermissionsRule());
+            _rules.Add(new RevokePermissionsViaWebRule());
+            _rules.Add(new BackToMainMenuRule());
+            #endregion
         }
 
 

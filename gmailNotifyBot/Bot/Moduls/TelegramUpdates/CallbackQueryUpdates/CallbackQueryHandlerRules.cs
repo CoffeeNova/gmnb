@@ -1,6 +1,7 @@
 ﻿using System;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
+using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates
 {
@@ -366,4 +367,300 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             return null;
         }
     }
+
+    #region Settings menu rules
+
+    #region Main menu
+    internal class OpenLabelsMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.LABELS_MENU_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQLabelsMenu(sender);
+            return del;
+        }
+    }
+
+    internal class OpenPermissionsMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.PERMISSIONS_MENU_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQPermissionsMenu(sender);
+            return del;
+        }
+    }
+
+    internal class OpenIgnoreListMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.IGNORE_LIST_MENU_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQIgnoreMenu(sender);
+            return del;
+        }
+    }
+
+    internal class ShowAboutRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.ABOUT_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAbout(sender, data as SettingsCallbackData);
+            return del;
+        }
+    }
+    #endregion
+
+    #region Labels menu
+
+    internal class OpenEditLabelsMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.EDIT_LABELS_MENU_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQEditLabelsMenu(sender);
+            return del;
+        }
+    }
+
+    internal class OpenWhitelistMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.WHITELIST_MENU_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQWhitelistMenu(sender);
+            return del;
+        }
+    }
+
+    internal class OpenBlacklistMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.BLACKLIST_MENU_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBlacklistMenu(sender);
+            return del;
+        }
+    }
+    #endregion
+
+    #region Labels list
+
+    internal class BackToLabelsMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.LABELS_LIST_BACK_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBackToLabelsMenu(sender);
+            return del;
+        }
+    }
+
+    internal class OpenLabelActionsMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.LABEL_ACTIONS_MENU_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQLabelActionsMenu(sender, data as SettingsCallbackData);
+            return del;
+        }
+    }
+
+    internal class WhitelistLabelActionRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.WHITELIST_ACTION_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQWhitelistLabelAction(sender, data as SettingsCallbackData);
+            return del;
+        }
+    }
+
+    internal class BlacklistLabelActionRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.BLACKLIST_ACTION_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBlacklistLabelAction(sender, data as SettingsCallbackData);
+            return del;
+        }
+    }
+    #endregion
+
+    #region Label actions menu
+
+    internal class RemoveLabelRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.REMOVE_LABEL_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRemoveLabel(sender, data as SettingsCallbackData);
+            return del;
+        }
+    }
+
+    internal class BackToEditLabelsListMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.LABEL_ACTIONS_BACK_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBackToEditLabelsListMenu(sender);
+            return del;
+        }
+    }
+
+    #endregion
+
+    #region Ignore menu
+
+    internal class DisplayIgnoredEmailRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.DISPLAY_IGNORE_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQDisplayIgnoredEmails(sender, data as SettingsCallbackData);
+            return del;
+        }
+    }
+
+    #endregion
+
+    #region Permissions menu
+
+    internal class SwapPermissionsRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.SWAP_PERMISSIONS_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSwapPermissions(sender);
+            return del;
+        }
+    }
+
+    internal class RevokePermissionsRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.REVOKE_REPMISSIONS_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRevokePermissions(sender);
+            return del;
+        }
+    }
+
+    internal class RevokePermissionsViaWebRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.REVOKE_VIA_WEB_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRevokePermissionsViaWeb(sender);
+            return del;
+        }
+    }
+    #endregion
+
+    internal class BackToMainMenuRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWithAny(StringComparison.CurrentCultureIgnoreCase, 
+                CallbackCommand.LABELS_BACK_COMMAND,
+                CallbackCommand.PERMISSIONS_BACK_COMMAND,
+                CallbackCommand.IGNORE_BACK_COMMAND
+                )) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBackToMainMenu(sender);
+            return del;
+        }
+    }
+
+    #endregion
 }

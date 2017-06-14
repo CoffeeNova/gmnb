@@ -38,8 +38,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             JsonConvert.PopulateObject(json, userModel);
             await dbWorker.UpdateUserRecordAsync(userModel);
             LogMaker.Log(Logger, $"{nameof(UserModel)} record with userId={userId} updated with new access token.", false);
-
-           // Debug.Assert(false, "?? should i revoke service from ServiceFactory.Instance.ServiceCollection ??");
         }
 
         public async Task DeleteAsync<T>(string key)
@@ -93,12 +91,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public Task<T> GetAsync<T>(string key)
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
+            return null;
         }
 
         public Task ClearAsync()
         {
-            throw new NotImplementedException();
+            return null;
+            // throw new NotImplementedException();
         }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
