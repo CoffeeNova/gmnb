@@ -9,7 +9,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 {
     internal abstract class LabelsListKeyboard : SettingsKeyboard
     {
-        protected LabelsListKeyboard(List<LabelInfo> labels)
+        protected LabelsListKeyboard(IEnumerable<ILabelInfo> labels)
         {
             if (labels == null)
                 throw new ArgumentNullException(nameof(labels));
@@ -43,7 +43,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 
         protected abstract string LabelButtonCommand { get; set; }
 
-        protected List<LabelInfo> Labels;
+        protected IEnumerable<ILabelInfo> Labels;
         protected InlineKeyboardButton BackLabelsListButton { get; set; }
 
         protected List<InlineKeyboardButton> LabelsListRow = new List<InlineKeyboardButton>();

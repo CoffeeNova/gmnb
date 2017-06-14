@@ -73,6 +73,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 LogMaker.Log(Logger, $"{nameof(UserSettingsModel)} record with userId={userId} deleted.", false);
             }
 
+            var nmStoreModel = await dbWorker.FindNmStoreAsync(userId);
+            if (nmStoreModel != null)
+            {
+                await dbWorker.RemoveNmStoreAsync(nmStoreModel);
+                LogMaker.Log(Logger, $"{nameof(NmStoreModel)} record with userId={userId} deleted.", false);
+            }
+            var tempData = await dbWorker.FindTempDataAsync(userId);
+            if (tempData != null)
+            {
+                await dbWorker.RemoveTempDataAsync(tempData);
+                LogMaker.Log(Logger, $"{nameof(TempDataModel)} record with userId={userId} deleted.", false);
+            }
 
             var i = ServiceFactory.Instance?.ServiceCollection.RemoveAll(s => s.From == userId);
             if (i > 0)

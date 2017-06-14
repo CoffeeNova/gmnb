@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using CoffeeJelly.gmailNotifyBot.Bot.Attributes;
+﻿using System.Collections.Generic;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 
@@ -25,6 +21,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         public bool UseWhitelist { get; set; }
 
         public List<IgnoreModel> IgnoreList { get; set; } = new List<IgnoreModel>();
+
+        public List<LabelModel> Blacklist { get; set; } = new List<LabelModel>();
+
+        public List<LabelModel> Whitelist { get; set; } = new List<LabelModel>();
     }
 
 }

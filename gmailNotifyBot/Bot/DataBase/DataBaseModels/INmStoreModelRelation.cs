@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
+﻿
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
-    public interface INmStoreModel
+    public interface INmStoreModelRelation
     {
         int Id { get; set; }
         NmStoreModel NmStoreModel { get; set; }

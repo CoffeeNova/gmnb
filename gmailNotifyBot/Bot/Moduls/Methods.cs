@@ -220,7 +220,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return await request.ExecuteAsync();
         }
 
-        public static async Task<GmailLabel> GetLabelAsync(string labelName, Service service)
+        public static async Task<GmailLabel> GetLabelByNameAsync(string labelName, Service service)
         {
             var requestList = service.GmailService.Users.Labels.List("me");
             var labelsListResponse = await requestList.ExecuteAsync();
@@ -230,6 +230,39 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     return label;
             }
             return null;
+        }
+
+        public static async Task<GmailLabel> GetLabelAsync(string labelId, Service service)
+        {
+            var requestList = service.GmailService.Users.Labels.Get("me", labelId);
+            return await requestList.ExecuteAsync();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="service"></param>
+        /// <param name="labelId">The id of the label. Use if <paramref name="label"/> is new instance of <see cref="GmailLabel"/> or to change an another label.</param>
+        /// <returns></returns>
+        public static async Task<GmailLabel> EditLabelAsync(GmailLabel label, Service service, string labelId = null)
+        {
+            var id = labelId ?? label.Id;
+            var requestList = service.GmailService.Users.Labels.Update(label, "me", id);
+            return await requestList.ExecuteAsync();
+        }
+
+        public static async Task<IList<GmailLabel>> GetLabelsList(Service service)
+        {
+            var requestList = service.GmailService.Users.Labels.List("me");
+            var labels = await requestList.ExecuteAsync();
+            return labels?.Labels;
+        }
+
+        public static async Task<string> DeleteLabelAsync(string labelId, Service service)
+        {
+            var requestList = service.GmailService.Users.Labels.Delete("me", labelId);
+            return await requestList.ExecuteAsync();
         }
 
         private static string GetTextPlainMessage(IEnumerable<BodyForm> collection)

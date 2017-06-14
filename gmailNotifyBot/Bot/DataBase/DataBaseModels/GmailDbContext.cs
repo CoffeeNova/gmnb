@@ -29,6 +29,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public DbSet<LogEntryModel> LogEntry { get; set; }
 
+        public DbSet<TempDataModel> TempData { get; set; }
+
     }
 
 }

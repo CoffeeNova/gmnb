@@ -45,6 +45,16 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                  new IgnoreModel { Address = "testadr1@gmail.com"},
                  new IgnoreModel {Address = "testadr2@gmail.com" }
                 },
+                Blacklist = new List<LabelModel>
+                {
+                    new LabelModel {Name = "testName1", LabelId="testId1" },
+                    new LabelModel {Name = "testName2", LabelId="testId2" }
+                },
+                Whitelist = new List<LabelModel>
+                {
+                    new LabelModel {Name = "testName1", LabelId="testId1" },
+                    new LabelModel {Name = "testName2", LabelId="testId2" }
+                },
                 Expiration = 100,
                 HistoryId = 1
             });

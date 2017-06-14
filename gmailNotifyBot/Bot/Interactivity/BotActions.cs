@@ -20,6 +20,8 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.InputMessageContent;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using File = CoffeeJelly.TelegramBotApiWrapper.Types.General.File;
 using TelegramMethods = CoffeeJelly.TelegramBotApiWrapper.Methods.TelegramMethods;
+using GmailLabel = Google.Apis.Gmail.v1.Data.Label;
+
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 {
@@ -315,6 +317,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, message);
         }
 
+        public async Task EmailAbsentInIgnoreMessage(string chatId, string email)
+        {
+            var message = $"{Emoji.WHITE_EXCLAMATION} The email address {email} absent in the ignore list.";
+            await _telegramMethods.SendMessageAsync(chatId, message);
+        }
+
+        public async Task EmailAbsentInIgnoreMessage(string chatId, int number)
+        {
+            var message = $"{Emoji.WHITE_EXCLAMATION} Ignore list does not contain an email address with a sequence number equal to {number}.";
+            await _telegramMethods.SendMessageAsync(chatId, message);
+        }
+
         public async Task ChangeTextMessageForceReply(string chatId)
         {
             var reply = new ForceReply
@@ -378,10 +392,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
-        public async Task UpdateSettingsMenu(string chatId, int messageId, SettingsKeyboardState state, SelectedOption option = default(SelectedOption), UserSettingsModel userSettings = null)
+        public async Task ShowSettingsMenu(string chatId, SettingsKeyboardState state,
+             SelectedOption option = default(SelectedOption), UserSettingsModel model = null, IEnumerable<ILabelInfo> labels = null)
         {
-            var keyboard = _settingsKeyboardFactory.CreateKeyboard(state);
-            var message = SettingsMenuMessageBuilder(state, option, userSettings);
+            var keyboard = _settingsKeyboardFactory.CreateKeyboard(state, model, labels);
+            var message = SettingsMenuMessageBuilder(state, option, model);
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
+        }
+
+        public async Task UpdateSettingsMenu(string chatId, int messageId, SettingsKeyboardState state,
+             SelectedOption option = default(SelectedOption), UserSettingsModel model = null, IEnumerable<ILabelInfo> labels = null)
+        {
+            var keyboard = _settingsKeyboardFactory.CreateKeyboard(state, model, labels);
+            var message = SettingsMenuMessageBuilder(state, option, model);
             await
                 _telegramMethods.EditMessageTextAsync(message, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
@@ -398,9 +421,31 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, $"Label {labelName} created successfully.");
         }
 
+        public async Task AddToIgnoreListSuccessMessage(string chatId, string emailAddress)
+        {
+            await _telegramMethods.SendMessageAsync(chatId, $"{emailAddress} added to the ignore list.");
+        }
+
+        public async Task RemoveFromIgnoreListSuccessMessage(string chatId, string emailAddress)
+        {
+            await _telegramMethods.SendMessageAsync(chatId, $"{emailAddress} removed from the ignore list.");
+        }
+
         public async Task CreateLabelError(string chatId, string labelName)
         {
             await _telegramMethods.SendMessageAsync(chatId, $"Label {labelName} was not created because of an error.");
+        }
+
+        public async Task RevokeTokenSuccessfulMessage(string chatId)
+        {
+            await _telegramMethods.SendMessageAsync(chatId, $"The {_settings.BotName}'s permissions to your account has been revorked." +
+                $"\r\nTo see apps connected to your account visit {AccountPermissionsUrl}" +
+                $" \r\nThanks for using this bot, see you!");
+        }
+
+        public async Task RevokeTokenUnSuccessfulMessage(string chatId)
+        {
+            await _telegramMethods.SendMessageAsync(chatId, $"Can't revoke permissions, please try to revoke permissions via web browser.");
         }
 
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
@@ -516,10 +561,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     }
                     break;
                 case SettingsKeyboardState.EditLabelsList:
+                    message.AppendLine("<b>Labels</b>");
+                    message.AppendLine();
                     break;
                 case SettingsKeyboardState.WhiteList:
-                        message.AppendLine("<b>Whitelist</b>");
-                        message.AppendLine();
+                    message.AppendLine("<b>Whitelist</b>");
+                    message.AppendLine();
                     message.AppendLine(!userSettings.UseWhitelist
                         ? "If you want to use whitelist click \"Use whitelist mode\" button."
                         : "Click the button to add it to (or remove from) the whitelist.");
@@ -538,14 +585,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                             message.AppendLine(userSettings.IgnoreList?.Count == 0
                                 ? "Your ignore list is empty."
                                 : $"You have {userSettings.IgnoreList?.Count} email(s) ignored:");
-                            userSettings.IgnoreList?.ForEach(email =>
+                            userSettings.IgnoreList?.IndexEach((email, i) =>
                                 {
-                                    message.AppendLine(email.Address);
+                                    message.AppendLine($"{i + 1}. {email.Address}");
                                 });
                             break;
                         default:
                             message.AppendLine("<b>Ignore Control Menu</b>");
                             message.AppendLine();
+                            message.AppendLine(
+                                "To stop receiving notifications about new emails from a specific email address, " +
+                                "add it to the ignore list.");
+                            message.AppendLine("To add or remove an email from the ignore list, click the button and type the email address.");
+                            message.AppendLine();
+                            message.AppendLine($"{Emoji.INFO_SIGN} You can type the displayed sequence number to remove the email from the ignore list.");
                             break;
                     }
                     break;
@@ -553,6 +606,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     message.AppendLine("<b>Permissions Menu</b>");
                     message.AppendLine();
                     message.AppendLine("You can change or revoke the bot permissions to your Gmail account here.");
+                    break;
+                case SettingsKeyboardState.LabelActions:
+                    message.AppendLine("<b>Edit label:</b>");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -578,6 +634,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         private readonly string _restoreFromDraftMessageText =
             $"{Emoji.INFO_SIGN} To restore message from draft and continue composing click this button {Emoji.DOWN_ARROW}";
+
+        private readonly string AccountPermissionsUrl = @"https://myaccount.google.com/permissions";
 
         private readonly BotSettings _settings = BotInitializer.Instance.BotSettings;
         private readonly string _contactsThumbUrl;

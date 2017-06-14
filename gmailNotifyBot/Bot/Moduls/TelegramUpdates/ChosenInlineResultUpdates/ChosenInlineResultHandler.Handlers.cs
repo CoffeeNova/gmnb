@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
 using Google.Apis.Gmail.v1;
 

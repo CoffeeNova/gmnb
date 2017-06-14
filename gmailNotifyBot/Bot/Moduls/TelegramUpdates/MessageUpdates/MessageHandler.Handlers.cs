@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
@@ -160,9 +161,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (userSettings == null)
                 throw new DbDataStoreException(
                     $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
-            await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
             await HandleStopWatchCommandAsync(sender);
             userSettings.MailNotification = false;
+            await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
             //message to chat about stop notification
         }
 
@@ -390,10 +391,81 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                     throw new Exception();
                 await _botActions.CreateLabelSuccessful(message.From, label.Name);
             }
-            catch 
+            catch
             {
                 await _botActions.CreateLabelError(message.From, message.Text);
             }
+        }
+
+        public async Task HandleEditLabelNameForceReply(TextMessage message)
+        {
+            var service = Methods.SearchServiceByUserId(message.From);
+            var tempData = await _dbWorker.FindTempDataAsync(message.From);
+            var label = await Methods.GetLabelAsync(tempData.EditableLabelId, service);
+            var editedLabel = await Methods.EditLabelAsync(label, service);
+
+            var labels = await Methods.GetLabelsList(service);
+            var labelInfoList = labels.Select(l => new LabelInfo { Name = l.Name, LabelId = l.Id } as ILabelInfo);
+
+            await
+                _botActions.ShowSettingsMenu(message.From, SettingsKeyboardState.EditLabelsList, SelectedOption.None, null, labelInfoList);
+        }
+
+        public async Task HandleAddToIgnoreForceReply(TextMessage message)
+        {
+            var userSettings = await _dbWorker.FindUserSettingsAsync(message.From);
+            if (userSettings == null)
+                throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {message.From} is absent in the database.");
+            if (userSettings.IgnoreList == null) return;
+
+            if (!Methods.EmailAddressValidation(message.Text))
+            {
+                await _botActions.NotRecognizedEmailMessage(message.From, message.Text);
+                return;
+            }
+            if (userSettings.IgnoreList.Exists(i => i.Address == message.Text))
+                return;
+
+            await _dbWorker.AddToIgnoreListAsync(message.From, message.Text);
+            await _botActions.AddToIgnoreListSuccessMessage(message.From, message.Text);
+        }
+
+        public async Task HandleRemoveFromIgnoreForceReply(TextMessage message)
+        {
+            var userSettings = await _dbWorker.FindUserSettingsAsync(message.From);
+            if (userSettings == null)
+                throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {message.From} is absent in the database.");
+            if (userSettings.IgnoreList == null) return;
+
+            int number;
+            if (int.TryParse(message.Text, out number))
+            {
+                if (number < 1 || number > userSettings.IgnoreList.Count)
+                {
+                    await _botActions.EmailAbsentInIgnoreMessage(message.From, number);
+                    return;
+                }
+                var emailModel = userSettings.IgnoreList.ElementAt(number - 1);
+                userSettings.IgnoreList.Remove(emailModel);
+                await _botActions.RemoveFromIgnoreListSuccessMessage(message.From, emailModel.Address);
+                return;
+            }
+
+            if (!Methods.EmailAddressValidation(message.Text))
+            {
+                await _botActions.NotRecognizedEmailMessage(message.From, message.Text);
+                return;
+            }
+            if (!userSettings.IgnoreList.Exists(i => i.Address == message.Text))
+            {
+                await _botActions.EmailAbsentInIgnoreMessage(message.From, message.Text);
+                return;
+            }
+
+            await _dbWorker.RemoveFromIgnoreListAsync(message.From, message.Text);
+            await _botActions.RemoveFromIgnoreListSuccessMessage(message.From, message.Text);
         }
 
         #endregion

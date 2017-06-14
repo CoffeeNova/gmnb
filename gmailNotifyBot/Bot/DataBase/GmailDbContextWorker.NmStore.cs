@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using System.Data.Entity;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 {
@@ -114,7 +115,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         }
 
         private void UpdateAdress<T>(DbContext dbContext, ICollection<T> newAddressCollection,
-    ICollection<T> existAddressCollection) where T : class, INmStoreModel, IUserInfo, new()
+    ICollection<T> existAddressCollection) where T : class, INmStoreModelRelation, IUserInfo, new()
         {
             var tempCollection = existAddressCollection.Select(i => i).ToList();
 

@@ -85,14 +85,14 @@
 
         #region Settings commands
 
-        #region MainMenu commands
+            #region MainMenu commands
 
-        public const string LABELS_COMMAND = "300";
-        public const string PERMISSIONS_COMMAND = "301";
-        public const string IGNORELIST_COMMAND = "302";
-        public const string ABOUT_COMMAND = "309";
+            public const string LABELS_COMMAND = "300";
+            public const string PERMISSIONS_COMMAND = "301";
+            public const string IGNORELIST_COMMAND = "302";
+            public const string ABOUT_COMMAND = "309";
 
-        #endregion
+            #endregion
 
         #region Labels commands
 
@@ -104,10 +104,10 @@
         #endregion
 
         #region Labels List commands
-        public const string LABELSLIST_EDIT_COMMAND = "300";
-        public const string LABELSLIST_WHITELIST_COMMAND = "301";
-        public const string LABELSLIST_BLACKLIST_COMMAND = "302";
-        public const string LABELSLIST_BACK_COMMAND = "309";
+        public const string LABEL_ACTIONS_MENU_COMMAND = "320";
+        public const string LABELS_LIST_WHITELIST_COMMAND = "321";
+        public const string LABELS_LIST_BLACKLIST_COMMAND = "321";
+        public const string LABELSLIST_BACK_COMMAND = "329";
 
         #endregion
 

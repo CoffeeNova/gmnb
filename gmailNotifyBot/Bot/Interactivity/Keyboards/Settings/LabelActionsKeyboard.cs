@@ -33,6 +33,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 
             if (BackLabelActionsButton != null)
                 BackLabelActionsRow.Add(BackLabelActionsButton);
+
+            var inlineKeyboard = new List<List<InlineKeyboardButton>>
+            {
+                EditRow, RemoveRow, BackLabelActionsRow
+            };
+            return inlineKeyboard;
         }
 
         protected InlineKeyboardButton EditLabelActionsButton { get; set; }

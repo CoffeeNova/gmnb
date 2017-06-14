@@ -1,4 +1,4 @@
-﻿namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
+﻿namespace CoffeeJelly.gmailNotifyBot.Bot.Types
 {
     public interface IUserInfo
     {

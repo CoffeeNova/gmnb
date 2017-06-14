@@ -505,7 +505,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (nmModel == null)
                 return;
 
-            INmStoreModel element;
+            INmStoreModelRelation element;
             switch (callbackData.Row)
             {
                 case NmStoreUnit.To:

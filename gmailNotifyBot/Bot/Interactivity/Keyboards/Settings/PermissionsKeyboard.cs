@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 {
     internal class PermissionsKeyboard : SettingsKeyboard
     {
-        public PermissionsKeyboard(string newPermissions)
+        public PermissionsKeyboard(UserSettingsModel settings)
         {
-            NewPermissions = newPermissions;
+            Settings = settings;
         }
         protected override void ButtonsInitializer()
         {
@@ -50,8 +52,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         protected List<InlineKeyboardButton> BackPermissionsRow;
         protected override SettingsKeyboardState State { get; } = SettingsKeyboardState.Permissions;
 
-        private string NewPermissions { get;}
+        private UserSettingsModel Settings { get;}
 
-        private string ChangePermissionsButtonCaption => PermissionsMenuButtonCaption.ChangePermissions + " " + NewPermissions;
+        private string ChangePermissionsButtonCaption => PermissionsMenuButtonCaption.ChangePermissions + " " + Settings.Access;
     }
 }
