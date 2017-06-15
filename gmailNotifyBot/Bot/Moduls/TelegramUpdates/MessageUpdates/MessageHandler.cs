@@ -146,12 +146,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             _rules.Add(new GetDraftRule());
             _rules.Add(new TestDraftRule());
             _rules.Add(new ShowSettingsRule());
-            #region Settings
-            _rules.Add(new CreateNewLabelForceReplyRule());
-            _rules.Add(new EditLabelNameForceReplyRule());
-            _rules.Add(new AddToIgnoreForceReplyRule());
-            _rules.Add(new RemoveFromIgnoreForceReplyRule());
-            #endregion
+
         }
 
         private void InitForceReplyRules()
@@ -159,6 +154,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             _fileRules.Add(new MessageForceReplyRule());
             _fileRules.Add(new SubjectForceReplyRule());
             _fileRules.Add(new FileForceReplyRule());
+            #region Settings
+            _fileRules.Add(new CreateNewLabelForceReplyRule());
+            _fileRules.Add(new EditLabelNameForceReplyRule());
+            _fileRules.Add(new AddToIgnoreForceReplyRule());
+            _fileRules.Add(new RemoveFromIgnoreForceReplyRule());
+            #endregion
         }
 
         private readonly List<IMessageHandlerRules> _rules = new List<IMessageHandlerRules>();

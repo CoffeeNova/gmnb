@@ -449,6 +449,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
     }
 
+    internal class CreateNewLabelRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.NEW_LABEL_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQCreateNewLabel(sender);
+            return del;
+        }
+    }
+
     internal class OpenWhitelistMenuRule : ICallbackQueryHandlerRules
     {
         public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
@@ -545,6 +560,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     #region Label actions menu
 
+    internal class EditLabelNameRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.EDIT_LABEL_NAME_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQEditLabelName(sender);
+            return del;
+        }
+    }
+
     internal class RemoveLabelRule : ICallbackQueryHandlerRules
     {
         public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
@@ -597,6 +627,36 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
     #endregion
 
     #region Permissions menu
+
+    internal class AddToIgnoreRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.ADD_TO_IGNORE_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAddToIgnore(sender);
+            return del;
+        }
+    }
+
+    internal class RemoveFromIgnoreRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.StartsWith(CallbackCommand.REMOVE_FROM_IGNORE_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRemoveFromIgnore(sender);
+            return del;
+        }
+    }
 
     internal class SwapPermissionsRule : ICallbackQueryHandlerRules
     {

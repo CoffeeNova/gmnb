@@ -121,6 +121,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
                     return;
                 // Update 
                 db.Entry(existModel).CurrentValues.SetValues(newModel);
+                //Delete
+                db.Ignore.RemoveRange(existModel.IgnoreList.Except(newModel.IgnoreList, new IdEqualityComparer<IgnoreModel>()));
+                db.Blacklist.RemoveRange(existModel.Blacklist.Except(newModel.Blacklist, new IdEqualityComparer<BlacklistModel>()));
+                db.Whitelist.RemoveRange(existModel.Whitelist.Except(newModel.Whitelist, new IdEqualityComparer<WhitelistModel>()));
+
                 UpdateIgnoreList(db, newModel.IgnoreList, existModel.IgnoreList);
                 UpdateLabelsList(db, newModel.Blacklist, existModel.Blacklist);
                 UpdateLabelsList(db, newModel.Whitelist, existModel.Whitelist);
@@ -157,7 +162,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         }
 
         private void UpdateLabelsList<T>(DbContext dbContext, ICollection<T> newLabelListCollection,
-          ICollection<T> existLabelListCollection) where T: class, IUserSettingModelRelation, ILabelInfo, new()
+          ICollection<T> existLabelListCollection) where T: class, IUserSettingsModelRelation, ILabelInfo, new()
         {
             var tempCollection = existLabelListCollection.Select(i => i).ToList();
             foreach (var labelInfoModel in newLabelListCollection)

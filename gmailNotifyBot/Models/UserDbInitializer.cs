@@ -45,15 +45,15 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                  new IgnoreModel { Address = "testadr1@gmail.com"},
                  new IgnoreModel {Address = "testadr2@gmail.com" }
                 },
-                Blacklist = new List<LabelModel>
+                Blacklist = new List<BlacklistModel>
                 {
-                    new LabelModel {Name = "testName1", LabelId="testId1" },
-                    new LabelModel {Name = "testName2", LabelId="testId2" }
+                    new BlacklistModel {Name = "testName1", LabelId="testId1" },
+                    new BlacklistModel {Name = "testName2", LabelId="testId2" }
                 },
-                Whitelist = new List<LabelModel>
+                Whitelist = new List<WhitelistModel>
                 {
-                    new LabelModel {Name = "testName1", LabelId="testId1" },
-                    new LabelModel {Name = "testName2", LabelId="testId2" }
+                    new WhitelistModel {Name = "testName1", LabelId="testId1" },
+                    new WhitelistModel {Name = "testName2", LabelId="testId2" }
                 },
                 Expiration = 100,
                 HistoryId = 1
@@ -98,7 +98,7 @@ namespace CoffeeJelly.gmailNotifyBot.Models
             });
             db.TempData.Add(new TempDataModel
             {
-                EditableLabelId = "testId",
+                LabelId = "testId",
                 UserId = 0
             });
             base.Seed(db);

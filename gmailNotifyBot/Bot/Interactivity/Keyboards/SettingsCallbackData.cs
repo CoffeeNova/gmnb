@@ -47,12 +47,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards
             return $"{obj.Command}{SEPARATOR}" +
                 $"{obj.Option}{SEPARATOR}" +
                 $"{ obj.LabelId}{ SEPARATOR}" +
-                   $"{(int)obj.MessageKeyboardState}{SEPARATOR}";
+                   $"{(int)obj.MessageKeyboardState}{SEPARATOR}" +
+                   $"{(int)obj.Type}";
         }
 
         public SettingsKeyboardState MessageKeyboardState { get; set; } = SettingsKeyboardState.MainMenu;
         public SelectedOption Option { get; set; }
         public string LabelId { get; set; }
-        public override CallbackDataType Type { get; } = CallbackDataType.Settings;
+        public override CallbackDataType Type { get; } = CallbackDataType.SettingsCallbackData;
     }
 }

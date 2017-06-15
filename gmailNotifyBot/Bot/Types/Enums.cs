@@ -26,6 +26,6 @@
     {
         GetCallbackData,
         SendCallbackData,
-        Settings
+        SettingsCallbackData
     }
 }

@@ -49,6 +49,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 data = CallbackData.Create<GetCallbackData>(query.Data);
             else if (int.Parse(callbackDataType) == (int)CallbackDataType.SendCallbackData)
                 data = CallbackData.Create<SendCallbackData>(query.Data);
+            else if (int.Parse(callbackDataType) == (int)CallbackDataType.SettingsCallbackData)
+                data = CallbackData.Create<SettingsCallbackData>(query.Data);
             else
                 return;
 
@@ -128,6 +130,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             _rules.Add(new OpenPermissionsMenuRule());
             _rules.Add(new OpenIgnoreListMenuRule());
             _rules.Add(new ShowAboutRule());
+            _rules.Add(new CreateNewLabelRule());
             _rules.Add(new OpenEditLabelsMenuRule());
             _rules.Add(new OpenWhitelistMenuRule());
             _rules.Add(new OpenBlacklistMenuRule());
@@ -135,9 +138,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             _rules.Add(new OpenLabelActionsMenuRule());
             _rules.Add(new WhitelistLabelActionRule());
             _rules.Add(new BlacklistLabelActionRule());
+            _rules.Add(new EditLabelNameRule());
             _rules.Add(new RemoveLabelRule());
             _rules.Add(new BackToEditLabelsListMenuRule());
             _rules.Add(new DisplayIgnoredEmailRule());
+            _rules.Add(new AddToIgnoreRule());
+            _rules.Add(new RemoveFromIgnoreRule());
             _rules.Add(new SwapPermissionsRule());
             _rules.Add(new RevokePermissionsRule());
             _rules.Add(new RevokePermissionsViaWebRule());

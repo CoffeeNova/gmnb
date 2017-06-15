@@ -62,4 +62,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 
         public static string EditLabel => "Edit Label";
     }
+
+    internal static class LabelListButtonCaption
+    {
+        public static string UseBlacklist => "Use Blacklist Mode";
+
+        public static string UseWhitelist => "Use Whitelist Mode";
+    }
 }

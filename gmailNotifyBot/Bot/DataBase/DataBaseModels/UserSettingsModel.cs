@@ -22,9 +22,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public List<IgnoreModel> IgnoreList { get; set; } = new List<IgnoreModel>();
 
-        public List<LabelModel> Blacklist { get; set; } = new List<LabelModel>();
+        public List<BlacklistModel> Blacklist { get; set; } = new List<BlacklistModel>();
 
-        public List<LabelModel> Whitelist { get; set; } = new List<LabelModel>();
+        public List<WhitelistModel> Whitelist { get; set; } = new List<WhitelistModel>();
     }
 
 }

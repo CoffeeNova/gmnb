@@ -1,10 +1,10 @@
 ﻿
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
-    public interface IUserSettingModelRelation
+    public interface IUserSettingsModelRelation : ICommonModelKey
     {
-        int Id { get; set; }
         UserSettingsModel UserSettingsModel { get; set; }
         int UserSettingsModelId { get; set; }
     }
+
 }

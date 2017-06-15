@@ -5,7 +5,7 @@ using System.Web;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
-    public class IdEqualityComparer<T> : IEqualityComparer<T> where T: INmStoreModelRelation
+    public class IdEqualityComparer<T> : IEqualityComparer<T> where T: ICommonModelKey
     {
         public bool Equals(T x, T y)
         {

@@ -16,7 +16,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         protected override void ButtonsInitializer()
         {
             DisplayLabelsButton = InitButton(InlineKeyboardType.CallbackData, LabelsMenuButtonCaption.DisplayLabels, CallbackCommand.EDIT_LABELS_MENU_COMMAND, SelectedOption.Option1);
-            CreateLabelButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat, LabelsMenuButtonCaption.CreateNewLabel, ForceReplyCommand.NEW_LABEL_COMMAND, SelectedOption.Option2);
+            CreateLabelButton = InitButton(InlineKeyboardType.CallbackData, LabelsMenuButtonCaption.CreateNewLabel, CallbackCommand.NEW_LABEL_COMMAND, SelectedOption.Option2);
             WhitelistButton = InitButton(InlineKeyboardType.CallbackData, WhitelistButtonCaption, CallbackCommand.WHITELIST_MENU_COMMAND, SelectedOption.Option3);
             BlacklistButton = InitButton(InlineKeyboardType.CallbackData, BlacklistButtonCaption, CallbackCommand.BLACKLIST_MENU_COMMAND, SelectedOption.Option4);
             BackLabelsButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.LABELS_BACK_COMMAND, SelectedOption.Option10);
@@ -31,14 +31,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
             CreateLabelRow = new List<InlineKeyboardButton>();
             if (CreateLabelButton != null)
                 CreateLabelRow.Add(CreateLabelButton);
-
-            //RemoveLabelRow = new List<InlineKeyboardButton>();
-            //if (RemoveLabelButton != null)
-            //    RemoveLabelRow.Add(RemoveLabelButton);
-
-            //EditLabelRow = new List<InlineKeyboardButton>();
-            //if (EditLabelButton != null)
-            //    EditLabelRow.Add(EditLabelButton);
 
             WhitelistRow = new List<InlineKeyboardButton>();
             if (WhitelistButton != null)
@@ -63,16 +55,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 
         protected InlineKeyboardButton DisplayLabelsButton { get; set; }
         protected InlineKeyboardButton CreateLabelButton { get; set; }
-        //protected InlineKeyboardButton RemoveLabelButton { get; set; }
-        //protected InlineKeyboardButton EditLabelButton { get; set; }
         protected InlineKeyboardButton WhitelistButton { get; set; }
         protected InlineKeyboardButton BlacklistButton { get; set; }
         protected InlineKeyboardButton BackLabelsButton { get; set; }
 
         protected List<InlineKeyboardButton> DisplayLabelsRow;
         protected List<InlineKeyboardButton> CreateLabelRow;
-        //protected List<InlineKeyboardButton> RemoveLabelRow;
-        //protected List<InlineKeyboardButton> EditLabelRow;
         protected List<InlineKeyboardButton> WhitelistRow;
         protected List<InlineKeyboardButton> BlacklistRow;
         protected List<InlineKeyboardButton> BackLabelsRow;

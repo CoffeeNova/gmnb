@@ -9,12 +9,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 {
     internal interface ISettingsKeyboardFactory
     {
-        SettingsKeyboard CreateKeyboard(SettingsKeyboardState state, UserSettingsModel model, IEnumerable<ILabelInfo> labels);
+        SettingsKeyboard CreateKeyboard(SettingsKeyboardState state, UserSettingsModel model, IEnumerable<LabelInfo> labels);
     }
 
     internal class SettingsKeyboardFactory : ISettingsKeyboardFactory
     {
-        public SettingsKeyboard CreateKeyboard(SettingsKeyboardState state, UserSettingsModel model = null, IEnumerable<ILabelInfo> labels = null)
+        public SettingsKeyboard CreateKeyboard(SettingsKeyboardState state, UserSettingsModel model = null, IEnumerable<LabelInfo> labels = null)
         {
             SettingsKeyboard keyboard;
             switch (state)
@@ -26,10 +26,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
                     keyboard = new EditLabelsKeyboard(labels);
                     break;
                 case SettingsKeyboardState.BlackListMenu:
-                    keyboard = new BlackListKeyboard(labels, model?.Blacklist.Select(b => new LabelInfo { Name = b.Name, LabelId = b.LabelId } as ILabelInfo).ToList());
+                    keyboard = new BlackListKeyboard(labels, model?.Blacklist.Select(b => new LabelInfo { Name = b.Name, LabelId = b.LabelId }).ToList(), !model.UseWhitelist);
                     break;
                 case SettingsKeyboardState.WhiteListMenu:
-                    keyboard = new WhiteListKeyboard(labels, model?.Blacklist.Select(b => new LabelInfo { Name = b.Name, LabelId = b.LabelId } as ILabelInfo).ToList());
+                    keyboard = new WhiteListKeyboard(labels, model?.Blacklist.Select(b => new LabelInfo { Name = b.Name, LabelId = b.LabelId }).ToList(), model.UseWhitelist);
                     break;
                 case SettingsKeyboardState.LabelsMenu:
                     keyboard = new LabelsKeyboard(model.UseWhitelist);

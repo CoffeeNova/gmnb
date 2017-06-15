@@ -4,7 +4,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
-    public class LabelModel : ILabelInfo, IUserSettingModelRelation
+    public class WhitelistModel : ILabelInfo, IUserSettingsModelRelation
     {
         [Key, Column(Order = 1), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

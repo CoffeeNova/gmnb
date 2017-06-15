@@ -39,10 +39,10 @@
 
         #region Settings
 
-        public const string NEW_LABEL_COMMAND = "New label:";
-        public const string EDIT_LABEL_NAME_COMMAND = "Enter new name:";
-        public const string ADD_TO_IGNORE_COMMAND = "341";
-        public const string REMOVE_FROM_IGNORE_COMMAND = "342";
+        public const string NEW_LABEL_COMMAND = "Enter Label Name:";
+        public const string EDIT_LABEL_NAME_COMMAND = "New Label Name:";
+        public const string ADD_TO_IGNORE_COMMAND = "Add To Ignore:";
+        public const string REMOVE_FROM_IGNORE_COMMAND = "Remove From Ignore:";
 
         #endregion
     }
@@ -97,8 +97,9 @@
         #region Labels commands
 
         public const string EDIT_LABELS_MENU_COMMAND = "310";
-        public const string WHITELIST_MENU_COMMAND = "311";
-        public const string BLACKLIST_MENU_COMMAND = "312";
+        public const string NEW_LABEL_COMMAND = "311";
+        public const string WHITELIST_MENU_COMMAND = "312";
+        public const string BLACKLIST_MENU_COMMAND = "313";
         public const string LABELS_BACK_COMMAND = "319";
 
         #endregion
@@ -106,7 +107,9 @@
         #region Labels List commands
         public const string LABEL_ACTIONS_MENU_COMMAND = "320";
         public const string WHITELIST_ACTION_COMMAND = "321";
-        public const string BLACKLIST_ACTION_COMMAND = "321";
+        public const string BLACKLIST_ACTION_COMMAND = "322";
+        public const string USE_BLACKLIST_COMMAND = "323";
+        public const string USE_WHITELIST_COMMAND = "324";
         public const string LABELS_LIST_BACK_COMMAND = "329";
 
         #endregion
@@ -121,14 +124,17 @@
 
         #region Ignore commands
         public const string DISPLAY_IGNORE_COMMAND = "340";
+        public const string ADD_TO_IGNORE_COMMAND = "341";
+        public const string REMOVE_FROM_IGNORE_COMMAND = "342";
         public const string IGNORE_BACK_COMMAND = "349";
 
         #endregion
 
         #region Label actions
-
-        public const string REMOVE_LABEL_COMMAND = "350";
+        public const string EDIT_LABEL_NAME_COMMAND = "350";
+        public const string REMOVE_LABEL_COMMAND = "351";
         public const string LABEL_ACTIONS_BACK_COMMAND = "359";
+
         #endregion
         #endregion
     }

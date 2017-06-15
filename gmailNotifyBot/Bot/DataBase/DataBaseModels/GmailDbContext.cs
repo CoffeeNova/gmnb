@@ -27,6 +27,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public DbSet<IgnoreModel> Ignore { get; set; }
 
+        public DbSet<BlacklistModel> Blacklist { get; set; }
+
+        public DbSet<WhitelistModel> Whitelist { get; set; }
+
         public DbSet<LogEntryModel> LogEntry { get; set; }
 
         public DbSet<TempDataModel> TempData { get; set; }

@@ -215,7 +215,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         public static async Task<GmailLabel> CreateLabelAsync(string labelName, Service service)
         {
-            var label = new GmailLabel {Name = labelName};
+            var label = new GmailLabel { Name = labelName };
             var request = service.GmailService.Users.Labels.Create(label, "me");
             return await request.ExecuteAsync();
         }

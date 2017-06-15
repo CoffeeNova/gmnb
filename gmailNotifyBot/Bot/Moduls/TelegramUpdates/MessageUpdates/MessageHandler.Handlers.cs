@@ -401,14 +401,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         {
             var service = Methods.SearchServiceByUserId(message.From);
             var tempData = await _dbWorker.FindTempDataAsync(message.From);
-            var label = await Methods.GetLabelAsync(tempData.EditableLabelId, service);
+            var label = await Methods.GetLabelAsync(tempData.LabelId, service);
+            label.Name = message.Text;
             var editedLabel = await Methods.EditLabelAsync(label, service);
 
             var labels = await Methods.GetLabelsList(service);
-            var labelInfoList = labels.Select(l => new LabelInfo { Name = l.Name, LabelId = l.Id } as ILabelInfo);
+            var labelInfos = labels
+                .Where(l => l.Type != "system")
+                .Select(l => new LabelInfo { Name = l.Name, LabelId = l.Id });
 
             await
-                _botActions.ShowSettingsMenu(message.From, SettingsKeyboardState.EditLabelsMenu, SelectedOption.None, null, labelInfoList);
+                _botActions.ShowSettingsMenu(message.From, SettingsKeyboardState.EditLabelsMenu, SelectedOption.None, null, labelInfos);
         }
 
         public async Task HandleAddToIgnoreForceReply(TextMessage message)

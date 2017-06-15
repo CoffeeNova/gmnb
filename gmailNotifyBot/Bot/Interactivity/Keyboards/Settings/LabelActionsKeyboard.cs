@@ -11,10 +11,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
     {
         protected override void ButtonsInitializer()
         {
-            EditLabelActionsButton = InitButton(InlineKeyboardType.SwitchInlineQueryCurrentChat,
-                LabelActionsButtonCaption.EditLabel, ForceReplyCommand.EDIT_LABEL_NAME_COMMAND, SelectedOption.Option1);
+            EditLabelActionsButton = InitButton(InlineKeyboardType.CallbackData,
+                LabelActionsButtonCaption.EditLabel, CallbackCommand.EDIT_LABEL_NAME_COMMAND, SelectedOption.Option1);
             RemoveLabelActionsButton = InitButton(InlineKeyboardType.CallbackData,
-                LabelActionsButtonCaption.EditLabel, CallbackCommand.REMOVE_LABEL_COMMAND, SelectedOption.Option1);
+                LabelActionsButtonCaption.RemoveLabel, CallbackCommand.REMOVE_LABEL_COMMAND, SelectedOption.Option2);
             BackLabelActionsButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.LABEL_ACTIONS_BACK_COMMAND, SelectedOption.Option10);
         }
 

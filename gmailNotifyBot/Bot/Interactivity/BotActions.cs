@@ -393,7 +393,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         }
 
         public async Task ShowSettingsMenu(string chatId, SettingsKeyboardState state,
-             SelectedOption option = default(SelectedOption), UserSettingsModel model = null, IEnumerable<ILabelInfo> labels = null)
+             SelectedOption option = default(SelectedOption), UserSettingsModel model = null, IEnumerable<LabelInfo> labels = null)
         {
             var keyboard = _settingsKeyboardFactory.CreateKeyboard(state, model, labels);
             var message = SettingsMenuMessageBuilder(state, option, model);
@@ -401,10 +401,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         }
 
         public async Task UpdateSettingsMenu(string chatId, int messageId, SettingsKeyboardState state, SelectedOption option = default(SelectedOption),
-              UserSettingsModel model = null, TempDataModel tempData = null, IEnumerable<ILabelInfo> labels = null)
+              UserSettingsModel model = null, TempDataModel tempData = null, IEnumerable<LabelInfo> labels = null)
         {
             var keyboard = _settingsKeyboardFactory.CreateKeyboard(state, model, labels);
-            var message = SettingsMenuMessageBuilder(state, option, model, tempData?.EditableLabelId);
+            var message = SettingsMenuMessageBuilder(state, option, model, tempData?.LabelId);
             await
                 _telegramMethods.EditMessageTextAsync(message, chatId, messageId.ToString(), null, ParseMode.Html, null, keyboard);
         }
@@ -413,6 +413,30 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         {
             var reply = new ForceReply();
             var message = $"<b>{ForceReplyCommand.NEW_LABEL_COMMAND}</b>";
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
+        }
+
+        public async Task EditLabelNameForceReply(string chatId)
+        {
+            var reply = new ForceReply();
+            var message = $"<b>{ForceReplyCommand.EDIT_LABEL_NAME_COMMAND}</b>";
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
+        }
+
+        public async Task AddToIgnoreForceReply(string chatId)
+        {
+            var reply = new ForceReply();
+            var message = $"<b>{ForceReplyCommand.ADD_TO_IGNORE_COMMAND}</b>"+
+                "Type email address here.";
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
+        }
+
+        public async Task RemoveFromIgnoreForceReply(string chatId)
+        {
+            var reply = new ForceReply();
+            var message = $"<b>{ForceReplyCommand.REMOVE_FROM_IGNORE_COMMAND}</b>"+
+                $"\r\n{Emoji.INFO_SIGN}<i>You can enter here an email address or a sequence number in the ignore list."+
+                $"\r\nTo see all emails and their number - choose {IgnoreMenuButtonCaption.Show} option in the Ignore menu.</i>";
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
 
@@ -526,8 +550,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 SettingsKeyboardState.LabelsMenu,
                 SettingsKeyboardState.IgnoreMenu,
                 SettingsKeyboardState.WhiteListMenu,
-                SettingsKeyboardState.BlackListMenu,
-                SettingsKeyboardState.EditLabelsMenu))
+                SettingsKeyboardState.BlackListMenu))
                 throw new InvalidOperationException($"{nameof(userSettings)} must be not null if {nameof(state)} equals {state}.");
 
             StringBuilder message = new StringBuilder();

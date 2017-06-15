@@ -5,7 +5,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 {
     internal class EditLabelsKeyboard : LabelsListKeyboard
     {
-        public EditLabelsKeyboard(IEnumerable<ILabelInfo> labels) : base(labels)
+        public EditLabelsKeyboard(IEnumerable<LabelInfo> labels) : base(labels)
         {
         }
 

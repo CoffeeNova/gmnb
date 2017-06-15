@@ -9,7 +9,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 {
     internal abstract class LabelsListKeyboard : SettingsKeyboard
     {
-        protected LabelsListKeyboard(IEnumerable<ILabelInfo> labels)
+        protected LabelsListKeyboard(IEnumerable<LabelInfo> labels)
         {
             if (labels == null)
                 throw new ArgumentNullException(nameof(labels));
@@ -22,7 +22,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
             {
                 var button = InitButton(InlineKeyboardType.CallbackData, label.Name, LabelButtonCommand,
                     SelectedOption.None, label.LabelId);
-                LabelsListRow.Add(button);
+                LabelsListRowList.Add(new List<InlineKeyboardButton> { button });
             }
             BackLabelsListButton = InitButton(InlineKeyboardType.CallbackData, GeneralButtonCaption.Back, CallbackCommand.LABELS_LIST_BACK_COMMAND, SelectedOption.Option10);
         }
@@ -33,9 +33,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
             if (BackLabelsListButton != null)
                 BackLabelsListRow.Add(BackLabelsListButton);
 
-            var inlineKeyboard = new List<List<InlineKeyboardButton>>
+            var inlineKeyboard = new List<List<InlineKeyboardButton>>(LabelsListRowList)
             {
-                LabelsListRow, BackLabelsListRow 
+                BackLabelsListRow
             };
 
             return inlineKeyboard;
@@ -43,10 +43,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 
         protected abstract string LabelButtonCommand { get; set; }
 
-        protected IEnumerable<ILabelInfo> Labels;
+        protected IEnumerable<LabelInfo> Labels;
         protected InlineKeyboardButton BackLabelsListButton { get; set; }
 
-        protected List<InlineKeyboardButton> LabelsListRow = new List<InlineKeyboardButton>();
+        protected List<List<InlineKeyboardButton>> LabelsListRowList = new List<List<InlineKeyboardButton>>();
         protected List<InlineKeyboardButton> BackLabelsListRow = new List<InlineKeyboardButton>();
     }
 }

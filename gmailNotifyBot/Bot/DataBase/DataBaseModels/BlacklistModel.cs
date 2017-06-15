@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using CoffeeJelly.TelegramBotApiWrapper.Types.General;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 {
-    public class IgnoreModel : IUserSettingsModelRelation
+    public class BlacklistModel : ILabelInfo, IUserSettingsModelRelation
     {
-
         [Key, Column(Order = 1), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
@@ -16,6 +15,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
         [Key, Column(Order = 2)]
         public int UserSettingsModelId { get; set; }
 
-        public string Address { get; set; }
+        public string Name { get; set; }
+
+        public string LabelId { get; set; }
     }
 }
