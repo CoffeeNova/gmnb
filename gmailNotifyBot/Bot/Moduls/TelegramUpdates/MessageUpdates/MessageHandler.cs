@@ -27,10 +27,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 InitRules();
                 InitForceReplyRules();
                 BotInitializer.Instance.UpdatesHandler.TelegramTextMessageEvent += HandleTextMessage;
-                BotInitializer.Instance.UpdatesHandler.TelegramTextMessageEvent += HandleFileMessage;
-                BotInitializer.Instance.UpdatesHandler.TelegramDocumentMessageEvent += HandleFileMessage;
-                BotInitializer.Instance.UpdatesHandler.TelegramAudioMessageEvent += HandleFileMessage;
-                BotInitializer.Instance.UpdatesHandler.TelegramVideoMessageEvent += HandleFileMessage;
+                BotInitializer.Instance.UpdatesHandler.TelegramTextMessageEvent += HandleForceReplyMessage;
+                BotInitializer.Instance.UpdatesHandler.TelegramDocumentMessageEvent += HandleForceReplyMessage;
+                BotInitializer.Instance.UpdatesHandler.TelegramAudioMessageEvent += HandleForceReplyMessage;
+                BotInitializer.Instance.UpdatesHandler.TelegramVideoMessageEvent += HandleForceReplyMessage;
             }
             catch (Exception ex)
             {
@@ -38,7 +38,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             }
         }
 
-        private async void HandleFileMessage(Message message)
+        private async void HandleForceReplyMessage(Message message)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
@@ -46,7 +46,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (reply == null)
                 return;
 
-            foreach (var rule in _fileRules)
+            foreach (var rule in _forceReplyRules)
             {
                 var rate = rule.Handle(message, this);
                 if (rate == null) continue;
@@ -81,6 +81,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                     if (exception != null)
                         LogMaker.Log(Logger, exception,
                             $"An exception has been thrown in processing Message with ReplyToMessage.Text: {reply.Text}");
+                    try
+                    {
+                        await _botActions.RemoveKeyboard(message.From);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogMaker.Log(Logger, ex,
+                               $"An exception has been thrown in attempt to send a request to remove keyboard.");
+                    }
                 }
             }
         }
@@ -151,19 +160,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         private void InitForceReplyRules()
         {
-            _fileRules.Add(new MessageForceReplyRule());
-            _fileRules.Add(new SubjectForceReplyRule());
-            _fileRules.Add(new FileForceReplyRule());
+            _forceReplyRules.Add(new MessageForceReplyRule());
+            _forceReplyRules.Add(new SubjectForceReplyRule());
+            _forceReplyRules.Add(new FileForceReplyRule());
             #region Settings
-            _fileRules.Add(new CreateNewLabelForceReplyRule());
-            _fileRules.Add(new EditLabelNameForceReplyRule());
-            _fileRules.Add(new AddToIgnoreForceReplyRule());
-            _fileRules.Add(new RemoveFromIgnoreForceReplyRule());
+            _forceReplyRules.Add(new CreateNewLabelForceReplyRule());
+            _forceReplyRules.Add(new EditLabelNameForceReplyRule());
+            _forceReplyRules.Add(new AddToIgnoreForceReplyRule());
+            _forceReplyRules.Add(new RemoveFromIgnoreForceReplyRule());
             #endregion
         }
 
         private readonly List<IMessageHandlerRules> _rules = new List<IMessageHandlerRules>();
-        private readonly List<IMessageHandlerRules> _fileRules = new List<IMessageHandlerRules>();
+        private readonly List<IMessageHandlerRules> _forceReplyRules = new List<IMessageHandlerRules>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly GmailDbContextWorker _dbWorker;

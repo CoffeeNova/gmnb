@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
@@ -53,6 +54,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 
         private UserSettingsModel Settings { get;}
 
-        private string ChangePermissionsButtonCaption => PermissionsMenuButtonCaption.ChangePermissions + " " + Settings.Access;
+        private string ChangePermissionsButtonCaption
+        {
+            get
+            {
+                var access = Settings.Access == UserAccess.FULL
+                    ? UserAccess.NOTIFY
+                    : UserAccess.FULL;
+                var caption = PermissionsMenuButtonCaption.ChangePermissions + " " + access;
+                return caption;
+            }
+        }
     }
 }

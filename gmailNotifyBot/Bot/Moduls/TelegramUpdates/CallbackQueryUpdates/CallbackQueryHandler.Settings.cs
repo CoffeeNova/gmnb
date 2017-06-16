@@ -30,14 +30,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return;
 
             await
-                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.LabelsMenu, SelectedOption.None, userSettings);
+                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.PermissionsMenu, SelectedOption.None, userSettings);
         }
 
         public async Task HandleCallbackQIgnoreMenu(CallbackQuery query)
         {
             Methods.SearchServiceByUserId(query.From);
+            var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
+            if (userSettings == null)
+                return;
+
             await
-                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.IgnoreMenu);
+                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.IgnoreMenu, SelectedOption.None, userSettings);
         }
 
         public async Task HandleCallbackQAbout(CallbackQuery query, SettingsCallbackData callbackData)
@@ -170,6 +174,30 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             await HandleCallbackQBlacklistMenu(query);
             
         }
+
+        public async Task HandleCallbackQUseBlacklist(CallbackQuery query)
+        {
+            var service = Methods.SearchServiceByUserId(query.From);
+            var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
+            if (userSettings == null)
+                return;
+
+            userSettings.UseWhitelist = false;
+            await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
+            await HandleCallbackQBlacklistMenu(query);
+        }
+
+        public async Task HandleCallbackQUseWhitelist(CallbackQuery query)
+        {
+            var service = Methods.SearchServiceByUserId(query.From);
+            var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
+            if (userSettings == null)
+                return;
+
+            userSettings.UseWhitelist = true;
+            await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
+            await HandleCallbackQWhitelistMenu(query);
+        }
         #endregion
 
         #region Label actions menu
@@ -218,11 +246,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
         public async Task HandleCallbackQDisplayIgnoredEmails(CallbackQuery query, SettingsCallbackData callbackData)
         {
-            var settings = await _dbWorker.FindUserSettingsAsync(query.From);
+            var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
+            if (userSettings == null)
+                return;
 
             await
                 _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.IgnoreMenu,
-                    callbackData.Option);
+                    callbackData.Option, userSettings);
         }
 
         #endregion

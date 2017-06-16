@@ -138,6 +138,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             _rules.Add(new OpenLabelActionsMenuRule());
             _rules.Add(new WhitelistLabelActionRule());
             _rules.Add(new BlacklistLabelActionRule());
+            _rules.Add(new UseBlackListRule());
+            _rules.Add(new UseWhiteListRule());
             _rules.Add(new EditLabelNameRule());
             _rules.Add(new RemoveLabelRule());
             _rules.Add(new BackToEditLabelsListMenuRule());

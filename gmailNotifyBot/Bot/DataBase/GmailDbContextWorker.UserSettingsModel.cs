@@ -15,7 +15,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         {
             using (var db = new GmailBotDbContext())
             {
-                var userSettingsModel =  db.UserSettings.FirstOrDefault(u => u.UserId == userId);
+                var userSettingsModel = db.UserSettings.FirstOrDefault(u => u.UserId == userId);
                 if (userSettingsModel == null)
                     return null;
 
@@ -162,7 +162,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
         }
 
         private void UpdateLabelsList<T>(DbContext dbContext, ICollection<T> newLabelListCollection,
-          ICollection<T> existLabelListCollection) where T: class, IUserSettingsModelRelation, ILabelInfo, new()
+          ICollection<T> existLabelListCollection) where T : class, IUserSettingsModelRelation, ILabelInfo, new()
         {
             var tempCollection = existLabelListCollection.Select(i => i).ToList();
             foreach (var labelInfoModel in newLabelListCollection)
@@ -183,5 +183,73 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
                 }
             }
         }
+
+        #region ignore part
+
+        public void AddToIgnoreList(int userId, string address) //marked
+        {
+            address.NullInspect(nameof(address));
+
+            var userSettings = FindUserSettings(userId);
+            if (userSettings == null) return;
+
+            userSettings.IgnoreList.Add(new IgnoreModel { Address = address });
+            UpdateUserSettingsRecord(userSettings);
+        }
+
+        public async Task AddToIgnoreListAsync(int userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            var userSettings = await FindUserSettingsAsync(userId);
+            if (userSettings == null) return;
+
+            userSettings.IgnoreList.Add(new IgnoreModel { Address = address });
+            await UpdateUserSettingsRecordAsync(userSettings);
+        }
+
+        public Task AddToIgnoreListAsyncTest(int userId, string address)
+        {
+            return Task.Run(() => AddToIgnoreList(userId, address));
+        }
+
+        public void RemoveFromIgnoreList(int userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            var userSettings = FindUserSettings(userId);
+            if (userSettings == null) return;
+
+            userSettings.IgnoreList.RemoveAll(i => i.Address == address);
+            UpdateUserSettingsRecord(userSettings);
+        }
+
+        public async Task RemoveFromIgnoreListAsync(int userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            var userSettings = await FindUserSettingsAsync(userId);
+            if (userSettings == null) return;
+
+            userSettings.IgnoreList.RemoveAll(i => i.Address == address);
+            await UpdateUserSettingsRecordAsync(userSettings);
+        }
+
+        public bool IsPresentInIgnoreList(int userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            var userSettings = FindUserSettings(userId);
+            return userSettings != null && userSettings.IgnoreList.Any(a => a.Address == address);
+        }
+
+        public async Task<bool> IsPresentInIgnoreListAsync(int userId, string address)
+        {
+            address.NullInspect(nameof(address));
+
+            var userSettings = await FindUserSettingsAsync(userId);
+            return userSettings != null && userSettings.IgnoreList.Any(a => a.Address == address);
+        }
+        #endregion
     }
 }

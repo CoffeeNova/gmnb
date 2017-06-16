@@ -250,7 +250,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQGetAttachment(sender, data as GetCallbackData);
-            if (data.Command.StartsWith(CallbackCommand.GET_ATTACHMENT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(CallbackCommand.GET_ATTACHMENT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -264,7 +264,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAddTextMessage(sender, data as SendCallbackData);
-            if (data.Command.StartsWith(CallbackCommand.ADD_TEXT_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(CallbackCommand.ADD_TEXT_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -278,7 +278,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAddSubject(sender, data as SendCallbackData);
-            if (data.Command.StartsWith(CallbackCommand.ADD_SUBJECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(CallbackCommand.ADD_SUBJECT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -292,7 +292,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSaveAsDraft(sender, data as SendCallbackData);
-            if (data.Command.StartsWith(CallbackCommand.SAVE_AS_DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(CallbackCommand.SAVE_AS_DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -306,7 +306,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQNotSaveAsDraft(sender, data as SendCallbackData);
-            if (data.Command.StartsWith(CallbackCommand.NOT_SAVE_AS_DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(CallbackCommand.NOT_SAVE_AS_DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -320,7 +320,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQContinueWithOld(sender, data as SendCallbackData);
-            if (data.Command.StartsWith(CallbackCommand.CONTINUE_COMPOSE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(CallbackCommand.CONTINUE_COMPOSE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -334,7 +334,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQContinueFromDraft(sender, data as SendCallbackData);
-            if (data.Command.StartsWith(CallbackCommand.CONTINUE_FROM_DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(CallbackCommand.CONTINUE_FROM_DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -348,7 +348,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSendNewMessage(sender, data as SendCallbackData);
-            if (data.Command.StartsWith(CallbackCommand.SEND_NEW_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(CallbackCommand.SEND_NEW_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -362,7 +362,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRemoveItemNewMessage(sender, data as SendCallbackData);
-            if (data.Command.StartsWith(CallbackCommand.REMOVE_ITEM_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            if (data.Command.Equals(CallbackCommand.REMOVE_ITEM_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
         }
@@ -378,7 +378,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.LABELS_MENU_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.LABELS_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQLabelsMenu(sender);
@@ -393,7 +393,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.PERMISSIONS_MENU_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.PERMISSIONS_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQPermissionsMenu(sender);
@@ -408,7 +408,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.IGNORE_LIST_MENU_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.IGNORE_CONTROL_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQIgnoreMenu(sender);
@@ -423,7 +423,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.ABOUT_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.ABOUT_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAbout(sender, data as SettingsCallbackData);
@@ -441,7 +441,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.EDIT_LABELS_MENU_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.EDIT_LABELS_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQEditLabelsMenu(sender);
@@ -456,7 +456,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.NEW_LABEL_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.NEW_LABEL_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQCreateNewLabel(sender);
@@ -471,7 +471,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.WHITELIST_MENU_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.WHITELIST_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQWhitelistMenu(sender);
@@ -486,7 +486,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.BLACKLIST_MENU_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.BLACKLIST_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBlacklistMenu(sender);
@@ -504,7 +504,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.LABELS_LIST_BACK_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.LABELS_LIST_BACK_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBackToLabelsMenu(sender);
@@ -519,7 +519,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.LABEL_ACTIONS_MENU_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.LABEL_ACTIONS_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQLabelActionsMenu(sender, data as SettingsCallbackData);
@@ -534,7 +534,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.WHITELIST_ACTION_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.WHITELIST_ACTION_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQWhitelistLabelAction(sender, data as SettingsCallbackData);
@@ -549,10 +549,40 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.BLACKLIST_ACTION_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.BLACKLIST_ACTION_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBlacklistLabelAction(sender, data as SettingsCallbackData);
+            return del;
+        }
+    }
+
+    internal class UseBlackListRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.Equals(CallbackCommand.USE_BLACKLIST_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQUseBlacklist(sender);
+            return del;
+        }
+    }
+
+    internal class UseWhiteListRule : ICallbackQueryHandlerRules
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.Equals(CallbackCommand.USE_WHITELIST_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQUseWhitelist(sender);
             return del;
         }
     }
@@ -567,7 +597,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.EDIT_LABEL_NAME_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.EDIT_LABEL_NAME_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQEditLabelName(sender);
@@ -582,7 +612,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.REMOVE_LABEL_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.REMOVE_LABEL_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRemoveLabel(sender, data as SettingsCallbackData);
@@ -597,7 +627,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.LABEL_ACTIONS_BACK_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.LABEL_ACTIONS_BACK_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBackToEditLabelsListMenu(sender);
@@ -616,7 +646,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.DISPLAY_IGNORE_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.DISPLAY_IGNORE_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQDisplayIgnoredEmails(sender, data as SettingsCallbackData);
@@ -635,7 +665,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.ADD_TO_IGNORE_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.ADD_TO_IGNORE_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAddToIgnore(sender);
@@ -650,7 +680,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.REMOVE_FROM_IGNORE_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.REMOVE_FROM_IGNORE_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRemoveFromIgnore(sender);
@@ -665,7 +695,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.SWAP_PERMISSIONS_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.SWAP_PERMISSIONS_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSwapPermissions(sender);
@@ -680,7 +710,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.REVOKE_REPMISSIONS_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.REVOKE_REPMISSIONS_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRevokePermissions(sender);
@@ -695,7 +725,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWith(CallbackCommand.REVOKE_VIA_WEB_COMMAND,
+            if (!data.Command.Equals(CallbackCommand.REVOKE_VIA_WEB_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRevokePermissionsViaWeb(sender);
@@ -711,7 +741,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!(data is SettingsCallbackData))
                 return null;
 
-            if (!data.Command.StartsWithAny(StringComparison.CurrentCultureIgnoreCase, 
+            if (!data.Command.EqualsAny(StringComparison.CurrentCultureIgnoreCase, 
                 CallbackCommand.LABELS_BACK_COMMAND,
                 CallbackCommand.PERMISSIONS_BACK_COMMAND,
                 CallbackCommand.IGNORE_BACK_COMMAND

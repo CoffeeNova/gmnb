@@ -377,7 +377,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task RemoveKeyboard(string chatId)
         {
             var removeKeyboard = new ReplyKeyboardRemove();
-            await _telegramMethods.SendMessageAsync(chatId, "/delete", null, false, false, null, removeKeyboard);
+            await _telegramMethods.SendMessageAsync(chatId, TextCommand.DELETE_MSG_MARK, null, false, false, null, removeKeyboard);
         }
 
         public async Task DeleteMessage(string chatId, int messageId)
@@ -448,6 +448,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task AddToIgnoreListSuccessMessage(string chatId, string emailAddress)
         {
             await _telegramMethods.SendMessageAsync(chatId, $"{emailAddress} added to the ignore list.");
+        }
+
+        public async Task AlreadyInIgnoreListMessage(string chatId, string emailAddress)
+        {
+            await _telegramMethods.SendMessageAsync(chatId, $"{emailAddress} already exists in the ignore list.");
         }
 
         public async Task RemoveFromIgnoreListSuccessMessage(string chatId, string emailAddress)
@@ -563,7 +568,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                             message.AppendLine($"<b>{_settings.BotName}</b>");
                             message.AppendLine();
                             message.AppendLine();
-                            message.AppendLine($"Bot verison: {_settings.BotVersion}");
+                            message.AppendLine($"Bot version: {_settings.BotVersion}");
                             message.AppendLine("Developed by Igor 'CoffeeJelly' Salzhenitsin");
                             message.AppendLine("Contact emails:");
                             message.AppendLine("<code>dnm.nova@gmail.com</code>");

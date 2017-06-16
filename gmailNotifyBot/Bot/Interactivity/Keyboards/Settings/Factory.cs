@@ -29,7 +29,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
                     keyboard = new BlackListKeyboard(labels, model?.Blacklist.Select(b => new LabelInfo { Name = b.Name, LabelId = b.LabelId }).ToList(), !model.UseWhitelist);
                     break;
                 case SettingsKeyboardState.WhiteListMenu:
-                    keyboard = new WhiteListKeyboard(labels, model?.Blacklist.Select(b => new LabelInfo { Name = b.Name, LabelId = b.LabelId }).ToList(), model.UseWhitelist);
+                    keyboard = new WhiteListKeyboard(labels, model?.Whitelist.Select(b => new LabelInfo { Name = b.Name, LabelId = b.LabelId }).ToList(), model.UseWhitelist);
                     break;
                 case SettingsKeyboardState.LabelsMenu:
                     keyboard = new LabelsKeyboard(model.UseWhitelist);

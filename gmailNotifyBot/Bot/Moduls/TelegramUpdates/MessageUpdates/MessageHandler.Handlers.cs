@@ -270,50 +270,36 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         public async Task HandleMessageForceReply(TextMessage message)
         {
-            try
+            var model = await _dbWorker.FindNmStoreAsync(message.From);
+            if (model == null)
             {
-                var model = await _dbWorker.FindNmStoreAsync(message.From);
-                if (model == null)
-                {
-                    await _botActions.SendLostInfoMessage(message.From);
-                    return;
-                }
-                if (message.ReplyToMessage == null)
-                    return;
-                if (message.Text == null)
-                    return;
+                await _botActions.SendLostInfoMessage(message.From);
+                return;
+            }
+            if (message.ReplyToMessage == null)
+                return;
+            if (message.Text == null)
+                return;
 
-                model.Message = message.Text;
-                await _dbWorker.UpdateNmStoreRecordAsync(model);
-                await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
-            }
-            finally
-            {
-                await _botActions.RemoveKeyboard(message.From);
-            }
+            model.Message = message.Text;
+            await _dbWorker.UpdateNmStoreRecordAsync(model);
+            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
         }
 
         public async Task HandleSubjectForceReply(TextMessage message)
         {
-            try
+            var model = await _dbWorker.FindNmStoreAsync(message.From);
+            if (model == null)
             {
-                var model = await _dbWorker.FindNmStoreAsync(message.From);
-                if (model == null)
-                {
-                    await _botActions.SendLostInfoMessage(message.From);
-                    return;
-                }
-                if (message.Text == null)
-                    return;
+                await _botActions.SendLostInfoMessage(message.From);
+                return;
+            }
+            if (message.Text == null)
+                return;
 
-                model.Subject = message.Text;
-                await _dbWorker.UpdateNmStoreRecordAsync(model);
-                await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
-            }
-            finally
-            {
-                await _botActions.RemoveKeyboard(message.From);
-            }
+            model.Subject = message.Text;
+            await _dbWorker.UpdateNmStoreRecordAsync(model);
+            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
         }
 
         public async Task HandleFileForceReply(DocumentMessage message)
@@ -369,7 +355,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             finally
             {
                 FileForceReplyLockers.Remove(message.From);
-                await _botActions.RemoveKeyboard(message.From);
             }
 
         }
@@ -383,17 +368,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         public async Task HandleCreateNewLabelForceReply(TextMessage message)
         {
-            var service = Methods.SearchServiceByUserId(message.From);
             try
             {
+                var service = Methods.SearchServiceByUserId(message.From);
                 var label = await Methods.CreateLabelAsync(message.Text, service);
                 if (label == null)
                     throw new Exception();
                 await _botActions.CreateLabelSuccessful(message.From, label.Name);
             }
-            catch
+            catch (Exception ex)
             {
                 await _botActions.CreateLabelError(message.From, message.Text);
+                throw new Exception("CreateLabelError", ex);
             }
         }
 
@@ -411,7 +397,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 .Select(l => new LabelInfo { Name = l.Name, LabelId = l.Id });
 
             await
-                _botActions.ShowSettingsMenu(message.From, SettingsKeyboardState.EditLabelsMenu, SelectedOption.None, null, labelInfos);
+                _botActions.ShowSettingsMenu(message.From, SettingsKeyboardState.EditLabelsMenu, SelectedOption.None,
+                    null, labelInfos);
         }
 
         public async Task HandleAddToIgnoreForceReply(TextMessage message)
@@ -428,7 +415,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 return;
             }
             if (userSettings.IgnoreList.Exists(i => i.Address == message.Text))
+            {
+                await _botActions.AlreadyInIgnoreListMessage(message.From, message.Text);
                 return;
+            }
 
             await _dbWorker.AddToIgnoreListAsync(message.From, message.Text);
             await _botActions.AddToIgnoreListSuccessMessage(message.From, message.Text);
@@ -443,6 +433,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (userSettings.IgnoreList == null) return;
 
             int number;
+            IgnoreModel emailModel;
             if (int.TryParse(message.Text, out number))
             {
                 if (number < 1 || number > userSettings.IgnoreList.Count)
@@ -450,25 +441,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                     await _botActions.EmailAbsentInIgnoreMessage(message.From, number);
                     return;
                 }
-                var emailModel = userSettings.IgnoreList.ElementAt(number - 1);
-                userSettings.IgnoreList.Remove(emailModel);
-                await _botActions.RemoveFromIgnoreListSuccessMessage(message.From, emailModel.Address);
-                return;
+                emailModel = userSettings.IgnoreList.ElementAt(number - 1);
             }
-
-            if (!Methods.EmailAddressValidation(message.Text))
+            else
             {
-                await _botActions.NotRecognizedEmailMessage(message.From, message.Text);
-                return;
+                if (!Methods.EmailAddressValidation(message.Text))
+                {
+                    await _botActions.NotRecognizedEmailMessage(message.From, message.Text);
+                    return;
+                }
+                if (!userSettings.IgnoreList.Exists(i => i.Address == message.Text))
+                {
+                    await _botActions.EmailAbsentInIgnoreMessage(message.From, message.Text);
+                    return;
+                }
+                emailModel = userSettings.IgnoreList.Find(i => i.Address == message.Text);
             }
-            if (!userSettings.IgnoreList.Exists(i => i.Address == message.Text))
-            {
-                await _botActions.EmailAbsentInIgnoreMessage(message.From, message.Text);
-                return;
-            }
-
-            await _dbWorker.RemoveFromIgnoreListAsync(message.From, message.Text);
-            await _botActions.RemoveFromIgnoreListSuccessMessage(message.From, message.Text);
+            userSettings.IgnoreList.Remove(emailModel);
+            await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
+            await _botActions.RemoveFromIgnoreListSuccessMessage(message.From, emailModel.Address);
         }
 
         #endregion

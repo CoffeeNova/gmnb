@@ -17,6 +17,7 @@
         public const string STOP_NOTIFY_COMMAND = "/notifystop";
         public const string START_WATCH_COMMAND = "/watchstart";
         public const string STOP_WATCH_COMMAND = "/watchstop";
+        public const string DELETE_MSG_MARK = "/deletemark";
     }
 
     public static class InlineQueryCommand
@@ -89,7 +90,7 @@
 
         public const string LABELS_MENU_COMMAND = "300";
         public const string PERMISSIONS_MENU_COMMAND = "301";
-        public const string IGNORE_LIST_MENU_COMMAND = "302";
+        public const string IGNORE_CONTROL_MENU_COMMAND = "302";
         public const string ABOUT_COMMAND = "309";
 
         #endregion

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
@@ -290,7 +291,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             await _dbWorker.AddToIgnoreListAsync(query.From, formattedMessage.From.Email);
             await
                 _botActions.UpdateMessage(query.From, query.Message.MessageId, callbackData.MessageKeyboardState,
-                    formattedMessage, callbackData.Page, false);
+                    formattedMessage, callbackData.Page, true);
         }
 
         /// <summary>
@@ -455,7 +456,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             }
 
             await _botActions.ChangeSubjectForceReply(query.From).ConfigureAwait(false);
-            ;
         }
 
         public async Task HandleCallbackQContinueFromDraft(Query query, SendCallbackData callbackData)
