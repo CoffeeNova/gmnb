@@ -31,39 +31,45 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             if (result?.Query == null)
                 throw new ArgumentNullException(nameof(result));
 
-            foreach (var rule in _rules)
+            Exception exception = null;
+            try
             {
-                var del = rule.Handle(result, this);
-                if (del == null) continue;
+                Methods.SearchServiceByUserId(result.From);
+                var userSettings = await _dbWorker.FindUserSettingsAsync(result.From);
+                if (userSettings == null)
+                    throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {result.From} is absent in the database.");
 
-                Exception exception = null;
-                LogMaker.Log(Logger, $"{result.Query} command received from user with id {(string)result.From}, resultId={result.ResultId}", false);
-                if (result.ResultId == CallbackCommand.IGNORE_COMMAND)
-                    return;
-                try
+                foreach (var rule in _rules)
                 {
+                    var del = rule.Handle(result, this);
+                    if (del == null)
+                        continue;
+                    LogMaker.Log(Logger, $"{result.Query} command received from user with id {result.From}, resultId={result.ResultId}", false);
+                    if (result.ResultId == CallbackCommand.IGNORE_COMMAND)
+                        return;
                     await del.Invoke();
                 }
-                catch (ServiceNotFoundException ex)
-                {
-                    exception = ex;
-                    await _botActions.WrongCredentialsMessage(result.From);
-                }
-                catch (DbDataStoreException ex)
-                {
-                    exception = ex;
-                    await _botActions.WrongCredentialsMessage(result.From);
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                    Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
-                }
-                finally
-                {
-                    if (exception != null)
-                        LogMaker.Log(Logger, exception, $"An exception has been thrown in processing InlineQuery with query: {result.Query}");
-                }
+            }
+            catch (ServiceNotFoundException ex)
+            {
+                exception = ex;
+                await _botActions.WrongCredentialsMessage(result.From);
+            }
+            catch (DbDataStoreException ex)
+            {
+                exception = ex;
+                await _botActions.WrongCredentialsMessage(result.From);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
+            }
+            finally
+            {
+                if (exception != null)
+                    LogMaker.Log(Logger, exception, $"An exception has been thrown in processing InlineQuery with query: {result.Query}");
             }
         }
 

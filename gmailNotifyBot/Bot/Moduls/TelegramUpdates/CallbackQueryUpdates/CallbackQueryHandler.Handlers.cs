@@ -368,17 +368,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// Downloads from gmail server attachment defined in <paramref name="callbackData"/> to temp folder and send in to telegram recipient by 
         /// <see cref="BotActions.SendAttachmentToChat"/> method.
         /// </summary>
-        /// <param name="query"></param>
         /// <param name="callbackData"></param>
+        /// <param name="service"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQGetAttachment(ISender query, GetCallbackData callbackData)
+        public async Task HandleCallbackQGetAttachment(Service service, GetCallbackData callbackData)
         {
-            var formattedMessage = await Methods.GetMessage(query.From, callbackData.MessageId);
+            var formattedMessage = await Methods.GetMessage(service.From, callbackData.MessageId);
             var attachmentInfo = new List<AttachmentInfo>(formattedMessage.Attachments)[callbackData.AttachmentIndex];
-            var service = Methods.SearchServiceByUserId(query.From);
             var attachment = await Methods.GetAttachment(service, callbackData.MessageId, attachmentInfo.Id);
             if (attachment.Length > _botSettings.MaxAttachmentSize)
-                await _botActions.SendErrorAboutMaxAttachmentSizeToChat(query.From, attachmentInfo.FileName);
+                await _botActions.SendErrorAboutMaxAttachmentSizeToChat(service.From, attachmentInfo.FileName);
 
             string randomFolder = Tools.RandomString(8);
             var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);
@@ -387,7 +386,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             {
                 Methods.CreateDirectory(tempDirName);
                 await Methods.WriteAttachmentToTemp(attachFullName, attachment);
-                await _botActions.SendAttachmentToChat(query.From, attachFullName, attachmentInfo.FileName);
+                await _botActions.SendAttachmentToChat(service.From, attachFullName, attachmentInfo.FileName);
             }
             finally
             {
@@ -397,23 +396,22 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             }
         }
 
-        public async Task HandleCallbackQSaveAsDraft(Query query, SendCallbackData callbackData)
+        public async Task HandleCallbackQSaveAsDraft(Service service, SendCallbackData callbackData)
         {
-            var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            var nmModel = await _dbWorker.FindNmStoreAsync(service.From);
             if (nmModel == null)
                 return;
-            var draft = await SaveDraftMailServer(query.From, nmModel);
+            var draft = await SaveDraftMailServer(service, nmModel);
             //save draftId in database in case of exception
             nmModel.DraftId = draft.Id;
             await _dbWorker.UpdateNmStoreRecordAsync(nmModel);
-            await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.Drafted, nmModel, draft.Id);
-            await _botActions.DraftSavedMessage(query.From);
+            await _botActions.UpdateNewMailMessage(service.From, SendKeyboardState.Drafted, nmModel, draft.Id);
+            await _botActions.DraftSavedMessage(service.From);
             await _dbWorker.RemoveNmStoreAsync(nmModel);
         }
 
         public async Task HandleCallbackQNotSaveAsDraft(Query query, SendCallbackData callbackData)
         {
-            Methods.SearchServiceByUserId(query.From);
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             await _dbWorker.RemoveNmStoreAsync(nmModel);
             await _botActions.DraftSavedMessage(query.From, true);
@@ -424,7 +422,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
         public async Task HandleCallbackQContinueWithOld(Query query, SendCallbackData callbackData)
         {
-            Methods.SearchServiceByUserId(query.From);
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             //there is the place to delete old message from chat by query.Message.MessageId
             var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, nmModel);
@@ -434,7 +431,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
         public async Task HandleCallbackQAddTextMessage(Query query, SendCallbackData callbackData)
         {
-            Methods.SearchServiceByUserId(query.From);
             var model = await _dbWorker.FindNmStoreAsync(query.From);
             if (model == null)
             {
@@ -447,7 +443,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
         public async Task HandleCallbackQAddSubject(Query query, SendCallbackData callbackData)
         {
-            Methods.SearchServiceByUserId(query.From);
             var model = await _dbWorker.FindNmStoreAsync(query.From);
             if (model == null)
             {
@@ -460,7 +455,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
         public async Task HandleCallbackQContinueFromDraft(Query query, SendCallbackData callbackData)
         {
-            Methods.SearchServiceByUserId(query.From);
             var nmStore = await _dbWorker.FindNmStoreAsync(query.From);
             if (nmStore == null)
             {
@@ -480,9 +474,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 await _botActions.SaveAsDraftQuestionMessage(query.From, SendKeyboardState.Store);
         }
 
-        public async Task HandleCallbackQSendNewMessage(Query query, SendCallbackData callbackData)
+        public async Task HandleCallbackQSendNewMessage(Query query, SendCallbackData callbackData, Service service)
         {
-            var service = Methods.SearchServiceByUserId(query.From);
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             if (nmModel == null)
                 return;
@@ -490,7 +483,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var userInfoQuery = service.Oauth2Service.Userinfo.Get();
             var userinfoResponse = await userInfoQuery.ExecuteAsync();
             var userInfo = new UserInfo { Email = userinfoResponse.Email, Name = userinfoResponse.Name };
-            var draft = await SaveDraftMailServer(query.From, nmModel, new List<IUserInfo> { userInfo });
+            var draft = await SaveDraftMailServer(service, nmModel, new List<IUserInfo> { userInfo });
             nmModel.DraftId = draft.Id;
             await _dbWorker.UpdateNmStoreRecordAsync(nmModel); //save draftId in database in case of exception
             var request = service.GmailService.Users.Drafts.Send(draft, "me");
@@ -531,7 +524,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             await _botActions.UpdateNewMailMessage(query.From, SendKeyboardState.Continue, nmModel);
         }
 
-        private async Task<Draft> SaveDraftMailServer(string userId, NmStoreModel nmModel, List<IUserInfo> sender = null)
+        private async Task<Draft> SaveDraftMailServer(Service service, NmStoreModel nmModel, List<IUserInfo> sender = null)
         {
             nmModel.NullInspect(nameof(nmModel));
             List<FileStream> streams = new List<FileStream>();
@@ -546,7 +539,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                         teleramFiles.ForEach(f => streams.Add(File.OpenRead(f)));
                         if (messageId == null) return;
 
-                        var gmailFiles = await DownloadFilesFromGmailStore(userId, messageId, nmModel.File);
+                        var gmailFiles = await DownloadFilesFromGmailStore(service, messageId, nmModel.File);
                         gmailFiles.ForEach(f => streams.Add(File.OpenRead(f)));
                     }
                 });
@@ -559,18 +552,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                         nmModel.Cc.ToList<IUserInfo>(), 
                         nmModel.Bcc.ToList<IUserInfo>(), 
                         sender, streams);
-                    draft = await Methods.CreateDraft(body, userId);
+                    draft = await Methods.CreateDraft(body, service.From);
                 }
                 else
                 {
-                    draft = await Methods.GetDraft(userId, nmModel.DraftId);
+                    draft = await Methods.GetDraft(service.From, nmModel.DraftId);
                     await downloadAndOpenFiles(draft.Message.Id);
                     var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, 
                         nmModel.To.ToList<IUserInfo>(),
                         nmModel.Cc.ToList<IUserInfo>(), 
                         nmModel.Bcc.ToList<IUserInfo>(), 
                         sender, streams);
-                    draft = await Methods.UpdateDraft(body, userId, draft.Id);
+                    draft = await Methods.UpdateDraft(body, service.From, draft.Id);
                 }
                 if (draft == null)
                     throw new NotImplementedException("BotAction message: error to save message as draft");
@@ -612,12 +605,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             return fileNames;
         }
 
-        private async Task<List<string>> DownloadFilesFromGmailStore(string userId, string messageId, ICollection<FileModel> fileModelCollection, bool skipTelegramFiles = true)
+        private async Task<List<string>> DownloadFilesFromGmailStore(Service service, string messageId, ICollection<FileModel> fileModelCollection, bool skipTelegramFiles = true)
         {
             fileModelCollection.NullInspect(nameof(fileModelCollection));
-
-            var service = Methods.SearchServiceByUserId(userId);
-
+            
             var fileNames = new List<string>();
             foreach (var fileModel in fileModelCollection)
             {
@@ -627,7 +618,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
                 var attachment = await Methods.GetAttachment(service, messageId, fileModel.AttachId);
                 if (attachment.Length > _botSettings.MaxAttachmentSize)
-                    await _botActions.SendErrorAboutMaxAttachmentSizeToChat(userId, fileModel.OriginalName);
+                    await _botActions.SendErrorAboutMaxAttachmentSizeToChat(service.From, fileModel.OriginalName);
 
                 string randomFolder = Tools.RandomString(8);
                 var tempDirName = Path.Combine(_botSettings.AttachmentsTempFolder, randomFolder);

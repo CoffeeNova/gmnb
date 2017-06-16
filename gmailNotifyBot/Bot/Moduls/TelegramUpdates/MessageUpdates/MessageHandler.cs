@@ -5,6 +5,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
+using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using NLog;
 
@@ -24,8 +25,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 _dbWorker = new GmailDbContextWorker();
                 _botSettings = BotInitializer.Instance.BotSettings;
                 _botActions = new BotActions(_botSettings.Token);
-                InitRules();
-                InitForceReplyRules();
+                InitFullAccessRules();
+                InitNotifyAccessRules();
+                InitFullForceReplyRules();
+                InitNotifyForceReplyRules();
                 BotInitializer.Instance.UpdatesHandler.TelegramTextMessageEvent += HandleTextMessage;
                 BotInitializer.Instance.UpdatesHandler.TelegramTextMessageEvent += HandleForceReplyMessage;
                 BotInitializer.Instance.UpdatesHandler.TelegramDocumentMessageEvent += HandleForceReplyMessage;
@@ -46,50 +49,61 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (reply == null)
                 return;
 
-            foreach (var rule in _forceReplyRules)
+            Exception exception = null;
+            try
             {
-                var rate = rule.Handle(message, this);
-                if (rate == null) continue;
-                Exception exception = null;
-                LogMaker.Log(Logger, $"File received from user with id {(string)message.From}", false);
-                try
+                var service = Methods.SearchServiceByUserId(message.From);
+                var userSettings = await _dbWorker.FindUserSettingsAsync(message.From);
+                if (userSettings == null)
+                    throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {message.From} is absent in the database.");
+
+                var rules = userSettings.Access == UserAccess.FULL
+                    ? _fullForceReplyRules
+                    : _notifyForceReplyRules;
+
+                foreach (var rule in rules)
                 {
+                    var rate = rule.Handle(message, service, userSettings, this);
+                    if (rate == null) continue;
+
+                    LogMaker.Log(Logger, $"File received from user with id {(string)message.From}", false);
                     await rate.Invoke(message);
                 }
-                catch (ServiceNotFoundException ex)
+            }
+            catch (ServiceNotFoundException ex)
+            {
+                exception = ex;
+                await _botActions.WrongCredentialsMessage(message.From);
+            }
+            catch (DbDataStoreException ex)
+            {
+                exception = ex;
+                await _botActions.WrongCredentialsMessage(message.From);
+            }
+            catch (AuthorizeException ex)
+            {
+                exception = ex;
+                await _botActions.AuthorizationErrorMessage(message.From);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
+            }
+            finally
+            {
+                if (exception != null)
+                    LogMaker.Log(Logger, exception,
+                        $"An exception has been thrown in processing Message with ReplyToMessage.Text: {reply.Text}");
+                try
                 {
-                    exception = ex;
-                    await _botActions.WrongCredentialsMessage(message.From);
-                }
-                catch (DbDataStoreException ex)
-                {
-                    exception = ex;
-                    await _botActions.WrongCredentialsMessage(message.From);
-                }
-                catch (AuthorizeException ex)
-                {
-                    exception = ex;
-                    await _botActions.AuthorizationErrorMessage(message.From);
+                    await _botActions.RemoveKeyboard(message.From);
                 }
                 catch (Exception ex)
                 {
-                    exception = ex;
-                    Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
-                }
-                finally
-                {
-                    if (exception != null)
-                        LogMaker.Log(Logger, exception,
-                            $"An exception has been thrown in processing Message with ReplyToMessage.Text: {reply.Text}");
-                    try
-                    {
-                        await _botActions.RemoveKeyboard(message.From);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogMaker.Log(Logger, ex,
-                               $"An exception has been thrown in attempt to send a request to remove keyboard.");
-                    }
+                    LogMaker.Log(Logger, ex,
+                           $"An exception has been thrown in attempt to send a request to remove keyboard.");
                 }
             }
         }
@@ -98,81 +112,117 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         {
             if (message?.Text == null)
                 throw new ArgumentNullException(nameof(message));
-            if (message.ReplyToMessage != null) return;
+            if (message.ReplyToMessage != null)
+                return;
 
-            foreach (var rule in _rules)
+            Exception exception = null;
+            try
             {
-                var rate = rule.Handle(message, this);
-                if (rate == null) continue;
-                Exception exception = null;
-                LogMaker.Log(Logger, $"{message.Text} command received from user with id {(string)message.From}", false);
-                try
+                var service = Methods.SearchServiceByUserId(message.From);
+                var userSettings = await _dbWorker.FindUserSettingsAsync(message.From);
+                if (userSettings == null)
+                    throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {message.From} is absent in the database.");
+
+                var rules = userSettings.Access == UserAccess.FULL
+                    ? _fullAccessRules
+                    : _notifyAccessRules;
+                foreach (var rule in rules)
                 {
+                    var rate = rule.Handle(message, service, userSettings, this);
+                    if (rate == null)
+                        continue;
+                    LogMaker.Log(Logger, $"{message.Text} command received from user with id {(string)message.From}", false);
                     await rate.Invoke(message);
                 }
-                catch (ServiceNotFoundException ex)
-                {
-                    exception = ex;
-                    await _botActions.WrongCredentialsMessage(message.From);
-                }
-                catch (DbDataStoreException ex)
-                {
-                    exception = ex;
-                    await _botActions.WrongCredentialsMessage(message.From);
-                }
-                catch (AuthorizeException ex)
-                {
-                    exception = ex;
-                    await _botActions.AuthorizationErrorMessage(message.From);
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                    Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
-                }
-                finally
-                {
-                    if (exception != null)
-                        LogMaker.Log(Logger, exception,
-                            $"An exception has been thrown in processing TextMessage with text: {message.Text}");
-                }
+            }
+            catch (ServiceNotFoundException ex)
+            {
+                exception = ex;
+                await _botActions.WrongCredentialsMessage(message.From);
+            }
+            catch (DbDataStoreException ex)
+            {
+                exception = ex;
+                await _botActions.WrongCredentialsMessage(message.From);
+            }
+            catch (AuthorizeException ex)
+            {
+                exception = ex;
+                await _botActions.AuthorizationErrorMessage(message.From);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
+            }
+            finally
+            {
+                if (exception != null)
+                    LogMaker.Log(Logger, exception,
+                        $"An exception has been thrown in processing TextMessage with text: {message.Text}");
             }
         }
 
-        private void InitRules()
+        private void InitFullAccessRules()
         {
-            _rules.Add(new AuthorizeRule());
-            _rules.Add(new TestMessageRule());
-            _rules.Add(new TestNameRule());
-            _rules.Add(new TestThreadRule());
-            _rules.Add(new StartNotifyRule());
-            _rules.Add(new StopNotifyRule());
-            _rules.Add(new StartWatchRule());
-            _rules.Add(new StopWatchRule());
-            _rules.Add(new NewMessageRule());
-            _rules.Add(new GetInboxRule());
-            _rules.Add(new GetAllRule());
-            _rules.Add(new GetDraftRule());
-            _rules.Add(new TestDraftRule());
-            _rules.Add(new ShowSettingsRule());
+            _fullAccessRules.Add(new AuthorizeRule());
+            _fullAccessRules.Add(new TestMessageRule());
+            _fullAccessRules.Add(new TestNameRule());
+            _fullAccessRules.Add(new TestThreadRule());
+            _fullAccessRules.Add(new StartNotifyRule());
+            _fullAccessRules.Add(new StopNotifyRule());
+            _fullAccessRules.Add(new StartWatchRule());
+            _fullAccessRules.Add(new StopWatchRule());
+            _fullAccessRules.Add(new NewMessageRule());
+            _fullAccessRules.Add(new GetInboxRule());
+            _fullAccessRules.Add(new GetAllRule());
+            _fullAccessRules.Add(new GetDraftRule());
+            _fullAccessRules.Add(new TestDraftRule());
+            _fullAccessRules.Add(new ShowSettingsRule());
 
         }
 
-        private void InitForceReplyRules()
+        private void InitNotifyAccessRules()
         {
-            _forceReplyRules.Add(new MessageForceReplyRule());
-            _forceReplyRules.Add(new SubjectForceReplyRule());
-            _forceReplyRules.Add(new FileForceReplyRule());
+            _notifyAccessRules.Add(new AuthorizeRule());
+            _notifyAccessRules.Add(new TestMessageRule());
+            _notifyAccessRules.Add(new TestNameRule());
+            _notifyAccessRules.Add(new TestThreadRule());
+            _notifyAccessRules.Add(new StartNotifyRule());
+            _notifyAccessRules.Add(new StopNotifyRule());
+            _notifyAccessRules.Add(new StartWatchRule());
+            _notifyAccessRules.Add(new StopWatchRule());
+            _notifyAccessRules.Add(new GetInboxRule());
+            _notifyAccessRules.Add(new GetAllRule());
+            _notifyAccessRules.Add(new ShowSettingsRule());
+        }
+
+        private void InitFullForceReplyRules()
+        {
+            _fullForceReplyRules.Add(new MessageForceReplyRule());
+            _fullForceReplyRules.Add(new SubjectForceReplyRule());
+            _fullForceReplyRules.Add(new FileForceReplyRule());
             #region Settings
-            _forceReplyRules.Add(new CreateNewLabelForceReplyRule());
-            _forceReplyRules.Add(new EditLabelNameForceReplyRule());
-            _forceReplyRules.Add(new AddToIgnoreForceReplyRule());
-            _forceReplyRules.Add(new RemoveFromIgnoreForceReplyRule());
+            _fullForceReplyRules.Add(new CreateNewLabelForceReplyRule());
+            _fullForceReplyRules.Add(new EditLabelNameForceReplyRule());
+            _fullForceReplyRules.Add(new AddToIgnoreForceReplyRule());
+            _fullForceReplyRules.Add(new RemoveFromIgnoreForceReplyRule());
             #endregion
         }
 
-        private readonly List<IMessageHandlerRules> _rules = new List<IMessageHandlerRules>();
-        private readonly List<IMessageHandlerRules> _forceReplyRules = new List<IMessageHandlerRules>();
+        private void InitNotifyForceReplyRules()
+        {
+            #region settings
+            _notifyForceReplyRules.Add(new AddToIgnoreForceReplyRule());
+            _notifyForceReplyRules.Add(new RemoveFromIgnoreForceReplyRule());
+            #endregion
+        }
+
+        private readonly List<IMessageHandlerRules> _fullAccessRules = new List<IMessageHandlerRules>();
+        private readonly List<IMessageHandlerRules> _notifyAccessRules = new List<IMessageHandlerRules>();
+        private readonly List<IMessageHandlerRules> _fullForceReplyRules = new List<IMessageHandlerRules>();
+        private readonly List<IMessageHandlerRules> _notifyForceReplyRules = new List<IMessageHandlerRules>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly GmailDbContextWorker _dbWorker;

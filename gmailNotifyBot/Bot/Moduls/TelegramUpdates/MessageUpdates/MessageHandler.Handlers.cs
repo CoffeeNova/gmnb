@@ -32,7 +32,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             await _authorizer.SendAuthorizeLink(query);
         }
 
-        public async Task HandleTestMessageCommand(ISender sender)
+        public async Task HandleTestMessageCommand(ISender sender, Service service)
         {
             sender.NullInspect(nameof(sender));
 
@@ -44,7 +44,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 messageId = splittedtext.Length > 1 ? splittedtext[1] : "";
             }
 
-            var service = Methods.SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Messages.List("me");
             //query.LabelIds = "INBOX";
             var listMessagesResponse = await query.ExecuteAsync();
@@ -63,17 +62,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
         }
 
-        public async Task HandleTestNameCommand(ISender sender)
+        public async Task HandleTestNameCommand(Service service)
         {
-            var service = Methods.SearchServiceByUserId(sender.From);
             var query = service.Oauth2Service.Userinfo.Get();
             var userinfo = await query.ExecuteAsync();
-            await _botActions.EmailAddressMessage(sender.From, userinfo.Name);
+            await _botActions.EmailAddressMessage(service.From, userinfo.Name);
         }
 
-        public async Task HandleTestThreadCommand(ISender sender)
+        public async Task HandleTestThreadCommand(Service service)
         {
-            var service = Methods.SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Threads.List("me");
             query.LabelIds = "INBOX";
             var listThreadsResponse = await query.ExecuteAsync();
@@ -84,10 +81,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             var mailInfoResponse = await getMailRequest.ExecuteAsync();
             if (mailInfoResponse == null) return;
             var formattedMessage = new FormattedMessage(mailInfoResponse);
-            await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
+            await _botActions.ShowShortMessageAsync(service.From, formattedMessage);
         }
 
-        public async Task HandleTestDraftCommand(ISender sender)
+        public async Task HandleTestDraftCommand(ISender sender, Service service)
         {
             sender.NullInspect(nameof(sender));
 
@@ -110,7 +107,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 }
             }
 
-            var service = Methods.SearchServiceByUserId(sender.From);
             var query = service.GmailService.Users.Drafts.List("me");
             //query.LabelIds = "INBOX";
             var listDraftsResponse = await query.ExecuteAsync();
@@ -143,41 +139,35 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
         }
 
-        public async Task HandleStartNotifyCommand(ISender sender)
+        public async Task HandleStartNotifyCommand(Service service, UserSettingsModel userSettings)
         {
-            var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
-            if (userSettings == null)
-                throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
             userSettings.MailNotification = true;
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
-            await HandleStartWatchCommandAsync(sender);
+            await HandleStartWatchCommandAsync(service, userSettings);
             //message to chat about start notification
         }
 
-        public async Task HandleStopNotifyCommand(ISender sender)
+        public async Task HandleStopNotifyCommand(Service service, UserSettingsModel userSettings)
         {
-            var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
-            if (userSettings == null)
-                throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
-            await HandleStopWatchCommandAsync(sender);
+            await HandleStopWatchCommandAsync(service, userSettings);
             userSettings.MailNotification = false;
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
             //message to chat about stop notification
         }
 
-        public async Task HandleStartWatchCommandAsync(ISender sender)
+        public async Task HandleStartWatchCommandAsync(Service service, UserSettingsModel userSettings=null)
         {
             if (string.IsNullOrEmpty(BotInitializer.Instance?.BotSettings?.Topic))
                 throw new CommandHandlerException($"{nameof(BotInitializer.Instance.BotSettings.Token)} must be not null or empty.");
-
-            var service = Methods.SearchServiceByUserId(sender.From);
-            var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
             if (userSettings == null)
-                throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
-            if (!userSettings.MailNotification) return;
+            {
+                userSettings = await _dbWorker.FindUserSettingsAsync(service.From);
+                if (userSettings == null)
+                    throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {service.From} is absent in the database.");
+            }
+            if (!userSettings.MailNotification)
+                return;
 
             var watchRequest = new WatchRequest
             {
@@ -194,16 +184,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
         }
 
-        public void HandleStartWatchCommand(ISender sender)
+        public void HandleStartWatchCommand(Service service)
         {
             if (string.IsNullOrEmpty(BotInitializer.Instance?.BotSettings?.Topic))
                 throw new CommandHandlerException($"{nameof(BotInitializer.Instance.BotSettings.Token)} must be not null or empty.");
 
-            var service = Methods.SearchServiceByUserId(sender.From);
-            var userSettings = _dbWorker.FindUserSettings(sender.From);
+            var userSettings = _dbWorker.FindUserSettings(service.From);
             if (userSettings == null)
                 throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
+                    $"Can't find user settings data in database. User record with id {service.From} is absent in the database.");
             if (!userSettings.MailNotification) return;
 
             var watchRequest = new WatchRequest
@@ -222,22 +211,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
 
 
-        public async Task HandleStopWatchCommandAsync(ISender sender)
+        public async Task HandleStopWatchCommandAsync(Service service, UserSettingsModel userSettings)
         {
-            var service = Methods.SearchServiceByUserId(sender.From);
-            var userSettings = await _dbWorker.FindUserSettingsAsync(sender.From);
-            if (userSettings == null)
-                throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {sender.From} is absent in the database.");
-            if (!userSettings.MailNotification) return;
+            if (!userSettings.MailNotification)
+                return;
 
             var query = service.GmailService.Users.Stop("me");
-            var stopResponse = await query.ExecuteAsync();
+            await query.ExecuteAsync();
         }
 
         public async Task HandleNewMessageCommand(ISender sender)
         {
-            Methods.SearchServiceByUserId(sender.From);
             var nmStore = await _dbWorker.FindNmStoreAsync(sender.From);
             if (nmStore == null)
             {
@@ -252,19 +236,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         public async Task HandleGetInboxMessagesCommand(ISender sender)
         {
-            Methods.SearchServiceByUserId(sender.From);
             await _botActions.GmailInlineInboxCommandMessage(sender.From);
         }
 
         public async Task HandleGetAllMessagesCommand(ISender sender)
         {
-            Methods.SearchServiceByUserId(sender.From);
             await _botActions.GmailInlineAllCommandMessage(sender.From);
         }
 
         public async Task HandleGetDraftMessagesCommand(ISender sender)
         {
-            Methods.SearchServiceByUserId(sender.From);
             await _botActions.GmailInlineDraftCommandMessage(sender.From);
         }
 
@@ -366,11 +347,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             await _botActions.ShowSettingsMenu(sender.From);
         }
 
-        public async Task HandleCreateNewLabelForceReply(TextMessage message)
+        public async Task HandleCreateNewLabelForceReply(TextMessage message, Service service)
         {
             try
             {
-                var service = Methods.SearchServiceByUserId(message.From);
                 var label = await Methods.CreateLabelAsync(message.Text, service);
                 if (label == null)
                     throw new Exception();
@@ -383,9 +363,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             }
         }
 
-        public async Task HandleEditLabelNameForceReply(TextMessage message)
+        public async Task HandleEditLabelNameForceReply(TextMessage message, Service service)
         {
-            var service = Methods.SearchServiceByUserId(message.From);
             var tempData = await _dbWorker.FindTempDataAsync(message.From);
             var label = await Methods.GetLabelAsync(tempData.LabelId, service);
             label.Name = message.Text;
@@ -401,13 +380,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                     null, labelInfos);
         }
 
-        public async Task HandleAddToIgnoreForceReply(TextMessage message)
+        public async Task HandleAddToIgnoreForceReply(TextMessage message, UserSettingsModel userSettings)
         {
-            var userSettings = await _dbWorker.FindUserSettingsAsync(message.From);
-            if (userSettings == null)
-                throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {message.From} is absent in the database.");
-            if (userSettings.IgnoreList == null) return;
+            if (userSettings.IgnoreList == null)
+                return;
 
             if (!Methods.EmailAddressValidation(message.Text))
             {
@@ -424,13 +400,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             await _botActions.AddToIgnoreListSuccessMessage(message.From, message.Text);
         }
 
-        public async Task HandleRemoveFromIgnoreForceReply(TextMessage message)
+        public async Task HandleRemoveFromIgnoreForceReply(TextMessage message, UserSettingsModel userSettings)
         {
-            var userSettings = await _dbWorker.FindUserSettingsAsync(message.From);
-            if (userSettings == null)
-                throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {message.From} is absent in the database.");
-            if (userSettings.IgnoreList == null) return;
+            if (userSettings.IgnoreList == null)
+                return;
 
             int number;
             IgnoreModel emailModel;

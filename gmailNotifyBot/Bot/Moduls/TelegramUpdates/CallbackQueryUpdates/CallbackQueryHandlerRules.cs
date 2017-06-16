@@ -1,4 +1,5 @@
 ﻿using System;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
@@ -7,7 +8,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 {
     internal class SendAuthorizeLinkRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAuthorize(sender);
 
@@ -19,7 +20,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ExpandRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -33,7 +34,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class HideRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -47,7 +48,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ExpandActionsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -61,7 +62,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class HideActionsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -75,7 +76,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ToReadRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -89,7 +90,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ToUnReadRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -103,7 +104,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ToSpamRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -117,7 +118,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ToInboxRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -131,7 +132,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ToTrashRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -145,7 +146,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ArchiveRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -159,7 +160,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class UnignoreRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -173,7 +174,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class IgnoreRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -187,7 +188,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class NextPageRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -201,7 +202,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class PrevPageRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -215,7 +216,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ShowAttachmentsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -229,7 +230,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class HideAttachmentsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
@@ -244,12 +245,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class GetAttachmentRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is GetCallbackData))
                 return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQGetAttachment(sender, data as GetCallbackData);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQGetAttachment(service, data as GetCallbackData);
             if (data.Command.Equals(CallbackCommand.GET_ATTACHMENT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
@@ -258,7 +259,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class AddTextMessageRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SendCallbackData))
                 return null;
@@ -272,7 +273,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class AddSubjectRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SendCallbackData))
                 return null;
@@ -286,12 +287,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class SaveAsDraftRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SendCallbackData))
                 return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSaveAsDraft(sender, data as SendCallbackData);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSaveAsDraft(service, data as SendCallbackData);
             if (data.Command.Equals(CallbackCommand.SAVE_AS_DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
@@ -300,7 +301,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class NotSaveAsDraftRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SendCallbackData))
                 return null;
@@ -314,7 +315,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class CotinueWithOldRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SendCallbackData))
                 return null;
@@ -328,7 +329,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ContinueFromDraftRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SendCallbackData))
                 return null;
@@ -342,12 +343,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class SendMessageRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SendCallbackData))
                 return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSendNewMessage(sender, data as SendCallbackData);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQSendNewMessage(sender, data as SendCallbackData, service);
             if (data.Command.Equals(CallbackCommand.SEND_NEW_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
             return null;
@@ -356,7 +357,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class RemoveItemNewMessageRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SendCallbackData))
                 return null;
@@ -373,7 +374,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
     #region Main menu
     internal class OpenLabelsMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -388,7 +389,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class OpenPermissionsMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -403,7 +404,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class OpenIgnoreListMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -418,7 +419,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class ShowAboutRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -436,7 +437,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class OpenEditLabelsMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -444,14 +445,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.EDIT_LABELS_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQEditLabelsMenu(sender);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQEditLabelsMenu(sender, service);
             return del;
         }
     }
 
     internal class CreateNewLabelRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -466,7 +467,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class OpenWhitelistMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -474,14 +475,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.WHITELIST_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQWhitelistMenu(sender);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQWhitelistMenu(sender, service);
             return del;
         }
     }
 
     internal class OpenBlacklistMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -489,7 +490,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.BLACKLIST_MENU_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBlacklistMenu(sender);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBlacklistMenu(sender, service);
             return del;
         }
     }
@@ -499,7 +500,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class BackToLabelsMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -514,7 +515,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class OpenLabelActionsMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -529,7 +530,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class WhitelistLabelActionRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -537,14 +538,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.WHITELIST_ACTION_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQWhitelistLabelAction(sender, data as SettingsCallbackData);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQWhitelistLabelAction(sender, data as SettingsCallbackData, service);
             return del;
         }
     }
 
     internal class BlacklistLabelActionRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -552,14 +553,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.BLACKLIST_ACTION_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBlacklistLabelAction(sender, data as SettingsCallbackData);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBlacklistLabelAction(sender, data as SettingsCallbackData, service);
             return del;
         }
     }
 
     internal class UseBlackListRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -567,14 +568,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.USE_BLACKLIST_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQUseBlacklist(sender);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQUseBlacklist(sender, service);
             return del;
         }
     }
 
     internal class UseWhiteListRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -582,7 +583,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.USE_WHITELIST_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQUseWhitelist(sender);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQUseWhitelist(sender, service);
             return del;
         }
     }
@@ -592,7 +593,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class EditLabelNameRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -607,7 +608,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class RemoveLabelRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -615,14 +616,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.REMOVE_LABEL_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRemoveLabel(sender, data as SettingsCallbackData);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRemoveLabel(sender, data as SettingsCallbackData, service);
             return del;
         }
     }
 
     internal class BackToEditLabelsListMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -630,7 +631,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.LABEL_ACTIONS_BACK_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBackToEditLabelsListMenu(sender);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBackToEditLabelsListMenu(sender, service);
             return del;
         }
     }
@@ -641,7 +642,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class DisplayIgnoredEmailRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -660,7 +661,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class AddToIgnoreRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -675,7 +676,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class RemoveFromIgnoreRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -690,7 +691,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class SwapPermissionsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -705,7 +706,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class RevokePermissionsRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -713,14 +714,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.Equals(CallbackCommand.REVOKE_REPMISSIONS_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRevokePermissions(sender);
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQRevokePermissions(sender, service);
             return del;
         }
     }
 
     internal class RevokePermissionsViaWebRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;
@@ -736,7 +737,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal class BackToMainMenuRule : ICallbackQueryHandlerRules
     {
-        public HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryHandler handler)
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler)
         {
             if (!(data is SettingsCallbackData))
                 return null;

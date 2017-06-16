@@ -29,7 +29,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 _botSettings = BotInitializer.Instance.BotSettings;
                 _botActions = new BotActions(_botSettings.Token);
                 _dbWorker = new GmailDbContextWorker();
-                InitRules();
+                InitFullAccessRules();
+                InitNotifyAccessRules();
                 BotInitializer.Instance.UpdatesHandler.TelegramCallbackQueryEvent += Handle;
             }
             catch (Exception ex)
@@ -54,107 +55,151 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             else
                 return;
 
-            foreach (var rule in _rules)
+            Exception exception = null;
+            try
             {
-                var rate = rule.Handle(data, this);
-                if (rate == null) continue;
-                LogMaker.Log(Logger, $"{query.Data} command received from user with id {(string)query.From}", false);
-                Exception exception = null;
-                try
+                var service = Methods.SearchServiceByUserId(query.From);
+                var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
+                if (userSettings == null)
+                    throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {query.From} is absent in the database.");
+
+                var rules = userSettings.Access == UserAccess.FULL
+                    ? _fullAccessRules
+                    : _notifyAccessRules;
+                foreach (var rule in rules)
                 {
+                    var rate = rule.Handle(data, service, userSettings, this);
+                    if (rate == null)
+                        continue;
+                    LogMaker.Log(Logger, $"{query.Data} command received from user with id {(string)query.From}", false);
                     await rate.Invoke(query);
                 }
-                catch (ServiceNotFoundException ex)
-                {
-                    exception = ex;
-                    await _botActions.WrongCredentialsMessage(query.From);
-                }
-                catch (DbDataStoreException ex)
-                {
-                    exception = ex;
-                    await _botActions.WrongCredentialsMessage(query.From);
-                }
-                catch (AuthorizeException ex)
-                {
-                    exception = ex;
-                    await _botActions.AuthorizationErrorMessage(query.From);
-                }
-                catch (TelegramMethodsException ex)
-                {
-                    exception = ex;
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                    Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
-                }
-                finally
-                {
-                    if (exception != null)
-                        LogMaker.Log(Logger, exception,
-                            $"An exception has been thrown in processing CallbackQuery with data: {query.Data}");
-                }
+            }
+            catch (ServiceNotFoundException ex)
+            {
+                exception = ex;
+                await _botActions.WrongCredentialsMessage(query.From);
+            }
+            catch (DbDataStoreException ex)
+            {
+                exception = ex;
+                await _botActions.WrongCredentialsMessage(query.From);
+            }
+            catch (AuthorizeException ex)
+            {
+                exception = ex;
+                await _botActions.AuthorizationErrorMessage(query.From);
+            }
+            catch (TelegramMethodsException ex)
+            {
+                exception = ex;
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
+            }
+            finally
+            {
+                if (exception != null)
+                    LogMaker.Log(Logger, exception,
+                        $"An exception has been thrown in processing CallbackQuery with data: {query.Data}");
             }
         }
 
-        private void InitRules()
+        private void InitNotifyAccessRules()
         {
-            _rules.Add(new SendAuthorizeLinkRule());
-            _rules.Add(new ExpandRule());
-            _rules.Add(new HideRule());
-            _rules.Add(new ExpandActionsRule());
-            _rules.Add(new HideActionsRule());
-            _rules.Add(new ToReadRule());
-            _rules.Add(new ToUnReadRule());
-            _rules.Add(new ToSpamRule());
-            _rules.Add(new ToInboxRule());
-            _rules.Add(new ToTrashRule());
-            _rules.Add(new ArchiveRule());
-            _rules.Add(new UnignoreRule());
-            _rules.Add(new IgnoreRule());
-            _rules.Add(new NextPageRule());
-            _rules.Add(new PrevPageRule());
-            _rules.Add(new ShowAttachmentsRule());
-            _rules.Add(new HideAttachmentsRule());
-            _rules.Add(new GetAttachmentRule());
-            _rules.Add(new AddSubjectRule());
-            _rules.Add(new AddTextMessageRule());
-            _rules.Add(new SaveAsDraftRule());
-            _rules.Add(new NotSaveAsDraftRule());
-            _rules.Add(new CotinueWithOldRule());
-            _rules.Add(new ContinueFromDraftRule());
-            _rules.Add(new SendMessageRule());
-            _rules.Add(new RemoveItemNewMessageRule());
+            _notifyAccessRules.Add(new SendAuthorizeLinkRule());
+            _notifyAccessRules.Add(new UnignoreRule());
+            _notifyAccessRules.Add(new IgnoreRule());
+
+            #region settings
+
+            _notifyAccessRules.Add(new OpenLabelsMenuRule());
+            _notifyAccessRules.Add(new OpenPermissionsMenuRule());
+            _notifyAccessRules.Add(new OpenIgnoreListMenuRule());
+            _notifyAccessRules.Add(new ShowAboutRule());
+            _notifyAccessRules.Add(new OpenWhitelistMenuRule());
+            _notifyAccessRules.Add(new OpenBlacklistMenuRule());
+            _notifyAccessRules.Add(new BackToLabelsMenuRule());
+            _notifyAccessRules.Add(new WhitelistLabelActionRule());
+            _notifyAccessRules.Add(new BlacklistLabelActionRule());
+            _notifyAccessRules.Add(new UseBlackListRule());
+            _notifyAccessRules.Add(new UseWhiteListRule());
+            _notifyAccessRules.Add(new DisplayIgnoredEmailRule());
+            _notifyAccessRules.Add(new AddToIgnoreRule());
+            _notifyAccessRules.Add(new RemoveFromIgnoreRule());
+            _notifyAccessRules.Add(new SwapPermissionsRule());
+            _notifyAccessRules.Add(new RevokePermissionsRule());
+            _notifyAccessRules.Add(new RevokePermissionsViaWebRule());
+            _notifyAccessRules.Add(new BackToMainMenuRule());
+
+            #endregion
+        }
+
+        private void InitFullAccessRules()
+        {
+            _fullAccessRules.Add(new SendAuthorizeLinkRule());
+            _fullAccessRules.Add(new ExpandRule());
+            _fullAccessRules.Add(new HideRule());
+            _fullAccessRules.Add(new ExpandActionsRule());
+            _fullAccessRules.Add(new HideActionsRule());
+            _fullAccessRules.Add(new ToReadRule());
+            _fullAccessRules.Add(new ToUnReadRule());
+            _fullAccessRules.Add(new ToSpamRule());
+            _fullAccessRules.Add(new ToInboxRule());
+            _fullAccessRules.Add(new ToTrashRule());
+            _fullAccessRules.Add(new ArchiveRule());
+            _fullAccessRules.Add(new UnignoreRule());
+            _fullAccessRules.Add(new IgnoreRule());
+            _fullAccessRules.Add(new NextPageRule());
+            _fullAccessRules.Add(new PrevPageRule());
+            _fullAccessRules.Add(new ShowAttachmentsRule());
+            _fullAccessRules.Add(new HideAttachmentsRule());
+            _fullAccessRules.Add(new GetAttachmentRule());
+            _fullAccessRules.Add(new AddSubjectRule());
+            _fullAccessRules.Add(new AddTextMessageRule());
+            _fullAccessRules.Add(new SaveAsDraftRule());
+            _fullAccessRules.Add(new NotSaveAsDraftRule());
+            _fullAccessRules.Add(new CotinueWithOldRule());
+            _fullAccessRules.Add(new ContinueFromDraftRule());
+            _fullAccessRules.Add(new SendMessageRule());
+            _fullAccessRules.Add(new RemoveItemNewMessageRule());
+
             #region Settings
-            _rules.Add(new OpenLabelsMenuRule());
-            _rules.Add(new OpenPermissionsMenuRule());
-            _rules.Add(new OpenIgnoreListMenuRule());
-            _rules.Add(new ShowAboutRule());
-            _rules.Add(new CreateNewLabelRule());
-            _rules.Add(new OpenEditLabelsMenuRule());
-            _rules.Add(new OpenWhitelistMenuRule());
-            _rules.Add(new OpenBlacklistMenuRule());
-            _rules.Add(new BackToLabelsMenuRule());
-            _rules.Add(new OpenLabelActionsMenuRule());
-            _rules.Add(new WhitelistLabelActionRule());
-            _rules.Add(new BlacklistLabelActionRule());
-            _rules.Add(new UseBlackListRule());
-            _rules.Add(new UseWhiteListRule());
-            _rules.Add(new EditLabelNameRule());
-            _rules.Add(new RemoveLabelRule());
-            _rules.Add(new BackToEditLabelsListMenuRule());
-            _rules.Add(new DisplayIgnoredEmailRule());
-            _rules.Add(new AddToIgnoreRule());
-            _rules.Add(new RemoveFromIgnoreRule());
-            _rules.Add(new SwapPermissionsRule());
-            _rules.Add(new RevokePermissionsRule());
-            _rules.Add(new RevokePermissionsViaWebRule());
-            _rules.Add(new BackToMainMenuRule());
+
+            _fullAccessRules.Add(new OpenLabelsMenuRule());
+            _fullAccessRules.Add(new OpenPermissionsMenuRule());
+            _fullAccessRules.Add(new OpenIgnoreListMenuRule());
+            _fullAccessRules.Add(new ShowAboutRule());
+            _fullAccessRules.Add(new CreateNewLabelRule());
+            _fullAccessRules.Add(new OpenEditLabelsMenuRule());
+            _fullAccessRules.Add(new OpenWhitelistMenuRule());
+            _fullAccessRules.Add(new OpenBlacklistMenuRule());
+            _fullAccessRules.Add(new BackToLabelsMenuRule());
+            _fullAccessRules.Add(new OpenLabelActionsMenuRule());
+            _fullAccessRules.Add(new WhitelistLabelActionRule());
+            _fullAccessRules.Add(new BlacklistLabelActionRule());
+            _fullAccessRules.Add(new UseBlackListRule());
+            _fullAccessRules.Add(new UseWhiteListRule());
+            _fullAccessRules.Add(new EditLabelNameRule());
+            _fullAccessRules.Add(new RemoveLabelRule());
+            _fullAccessRules.Add(new BackToEditLabelsListMenuRule());
+            _fullAccessRules.Add(new DisplayIgnoredEmailRule());
+            _fullAccessRules.Add(new AddToIgnoreRule());
+            _fullAccessRules.Add(new RemoveFromIgnoreRule());
+            _fullAccessRules.Add(new SwapPermissionsRule());
+            _fullAccessRules.Add(new RevokePermissionsRule());
+            _fullAccessRules.Add(new RevokePermissionsViaWebRule());
+            _fullAccessRules.Add(new BackToMainMenuRule());
+
             #endregion
         }
 
 
-        private readonly List<ICallbackQueryHandlerRules> _rules = new List<ICallbackQueryHandlerRules>();
+        private readonly List<ICallbackQueryHandlerRules> _fullAccessRules = new List<ICallbackQueryHandlerRules>();
+        private readonly List<ICallbackQueryHandlerRules> _notifyAccessRules = new List<ICallbackQueryHandlerRules>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly GmailDbContextWorker _dbWorker;

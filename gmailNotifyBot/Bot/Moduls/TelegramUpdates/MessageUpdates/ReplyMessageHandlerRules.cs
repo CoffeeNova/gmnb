@@ -1,11 +1,12 @@
 ﻿using System;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 {
     internal class MessageForceReplyRule : IMessageHandlerRules
     {
-        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage?.Text == null)
@@ -24,7 +25,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
     internal class SubjectForceReplyRule : IMessageHandlerRules
     {
-        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage?.Text == null)
@@ -43,7 +44,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
     internal class FileForceReplyRule : IMessageHandlerRules
     {
-        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
         {
             var docMessage = message as DocumentMessage;
 
@@ -63,7 +64,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
     internal class CreateNewLabelForceReplyRule : IMessageHandlerRules
     {
-        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage?.Text == null)
@@ -75,14 +76,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (!reply.Text.StartsWith(ForceReplyCommand.NEW_LABEL_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleMessageCommand del = async sender => await handler.HandleCreateNewLabelForceReply(textMessage);
+            HandleMessageCommand del = async sender => await handler.HandleCreateNewLabelForceReply(textMessage, service);
             return del;
         }
     }
 
     internal class EditLabelNameForceReplyRule : IMessageHandlerRules
     {
-        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage?.Text == null)
@@ -94,14 +95,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (!reply.Text.StartsWith(ForceReplyCommand.EDIT_LABEL_NAME_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleMessageCommand del = async sender => await handler.HandleEditLabelNameForceReply(textMessage);
+            HandleMessageCommand del = async sender => await handler.HandleEditLabelNameForceReply(textMessage, service);
             return del;
         }
     }
 
     internal class AddToIgnoreForceReplyRule : IMessageHandlerRules
     {
-        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage?.Text == null)
@@ -113,14 +114,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (!reply.Text.StartsWith(ForceReplyCommand.ADD_TO_IGNORE_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleMessageCommand del = async sender => await handler.HandleAddToIgnoreForceReply(textMessage);
+            HandleMessageCommand del = async sender => await handler.HandleAddToIgnoreForceReply(textMessage, userSettings);
             return del;
         }
     }
 
     internal class RemoveFromIgnoreForceReplyRule : IMessageHandlerRules
     {
-        public HandleMessageCommand Handle(Message message, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage?.Text == null)
@@ -132,7 +133,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (!reply.Text.StartsWith(ForceReplyCommand.REMOVE_FROM_IGNORE_COMMAND,
                 StringComparison.CurrentCultureIgnoreCase)) return null;
 
-            HandleMessageCommand del = async sender => await handler.HandleRemoveFromIgnoreForceReply(textMessage);
+            HandleMessageCommand del = async sender => await handler.HandleRemoveFromIgnoreForceReply(textMessage, userSettings);
             return del;
         }
     }

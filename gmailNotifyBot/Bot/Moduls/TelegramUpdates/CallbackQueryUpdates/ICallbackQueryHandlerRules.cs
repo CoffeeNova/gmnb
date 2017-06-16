@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates
@@ -8,6 +9,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     internal interface ICallbackQueryHandlerRules
     {
-        HandleCallbackQueryCommand Handle(CallbackData data, CallbackQueryUpdates.CallbackQueryHandler handler);
+        HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler);
     }
 }
