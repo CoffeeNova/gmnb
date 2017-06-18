@@ -268,6 +268,18 @@ namespace CoffeeJelly.TelegramBotApiWrapper.JsonParsers.Tests
             AttachGeneralProperties3(_pinnedMessage);
 
             #endregion
+            #region _videoNote
+
+            _videoNote = new VideoNote
+            {
+                //Duration = 7,
+                //Length = 
+                //Thumb = _thumb,
+                //FileId = "BAADAgADFwADmHfoSinMsvYz1GJpAg",
+                //FileSize = 827579
+            };
+
+            #endregion
         }
 
         [TestInitialize]
@@ -763,6 +775,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.JsonParsers.Tests
         private static List<PhotoSize> _newChatPhoto;
         private static VoiceMessage _replyTo;
         private static Message _pinnedMessage;
+        private static VideoNote _videoNote;
 
         private static string _textMessageFileName = "SampleTextMessage.json";
         private static string _audioMessageFileName = "SampleAudioMessage.json";

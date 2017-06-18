@@ -86,7 +86,11 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types
         [Update("chosen_inline_result")]
         ChosenInlineResult,
         [Update("callback_query")]
-        CallbackQuery
+        CallbackQuery,
+        [Update("shipping_query")]
+        ShippingQuery,
+        [Update("pre_checkout_query")]
+        PreCheckoutQuery
     }
 
     public enum ChatAction

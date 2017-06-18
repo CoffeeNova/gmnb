@@ -8,79 +8,43 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
     public partial class TelegramMethodsTests
     {
         [TestMethod()]
-        public void SendAudio_AudioName_TextMessage()
+        public void SendAudio_AudioName_AudioMessage()
         {
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendAudio(_privateChat.Id.ToString(), _fullFileName).Result;
-
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(AudioMessage));
         }
 
         [TestMethod()]
-        public void SendAudio_AudioWithParameters_TextMessage()
+        public void SendAudio_AudioWithParameters_AudioMessage()
         {
             var caption = "mpthreetest.mp3";
             var duration = 12;
             var performer = "unknown";
             var title = "mpthreetest";
-
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendAudio(_privateChat.Id.ToString(), _fullFileName, caption, duration, performer, title).Result;
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(AudioMessage));
         }
 
         [TestMethod()]
-        public void SendAudioByUri_AudioUri_TextMessage()
+        public void SendAudioByUri_AudioUri_AudioMessage()
         {
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var uri = new Uri(_audioUri);
             var actual = _telegramMethods.SendAudioByUri(_privateChat.Id.ToString(), uri);
-
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(AudioMessage));
         }
 
         [TestMethod()]
-        public void SendAudioByUriAsync_AudioUriWithParams_TextMessage()
+        public void SendAudioByUriAsync_AudioUriWithParams_AudioMessage()
         {
             var caption = "mpthreetest.mp3";
             var duration = 12;
             var performer = "unknown";
             var title = "mpthreetest";
 
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var uri = new Uri(_audioUri);
             var actual = _telegramMethods.SendAudioByUriAsync(_privateChat.Id.ToString(), uri, caption, duration, performer, title).Result;
-
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(AudioMessage));
         }
 
         private static string _audioFileName = "mpthreetest.mp3";

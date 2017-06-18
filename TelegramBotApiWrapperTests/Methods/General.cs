@@ -123,7 +123,8 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 Id = 170181775,
                 FirstName = "Coffee",
                 LastName = "Jelly",
-                Username = "CoffeeJelly"
+                Username = "CoffeeJelly",
+                LanguageCode = "en"
             };
             _location = new Location
             {
@@ -216,28 +217,28 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         {
             switch (TestContext.TestName)
             {
-                case nameof(SendPhoto_PhotoName_TextMessage):
+                case nameof(SendPhoto_PhotoName_PhotoMessage):
                     _fullFileName = _testFilesPath + TelegramMethodsTests._photoFileName;
                     break;
-                case nameof(SendPhoto_PhotoAndInlineKeyboard_TextMessage):
+                case nameof(SendPhoto_PhotoAndInlineKeyboard_PhotoMessage):
                     _fullFileName = _testFilesPath + TelegramMethodsTests._photoFileName;
                     break;
-                case nameof(SendAudio_AudioName_TextMessage):
+                case nameof(SendAudio_AudioName_AudioMessage):
                     _fullFileName = _testFilesPath + TelegramMethodsTests._audioFileName;
                     break;
-                case nameof(SendAudio_AudioWithParameters_TextMessage):
+                case nameof(SendAudio_AudioWithParameters_AudioMessage):
                     _fullFileName = _testFilesPath + TelegramMethodsTests._audioFileName;
                     break;
-                case nameof(SendDocument_DocumentName_TextMessage):
+                case nameof(SendDocument_DocumentName_DocumentMessage):
                     _fullFileName = _testFilesPath + TelegramMethodsTests._documentFileName;
                     break;
-                case nameof(SendSticker_StickerName_TextMessage):
+                case nameof(ForwardMessageTest_ForwardStickerMessage):
                     _fullFileName = _testFilesPath + TelegramMethodsTests._stickerFileName;
                     break;
-                case nameof(SendVideo_VideoWithParameters_TextMessage):
+                case nameof(SendVideo_VideoWithParameters_VideoMessage):
                     _fullFileName = _testFilesPath + TelegramMethodsTests._videoFileName;
                     break;
-                case nameof(SendVoice_VoiceWithParameters_TextMessage):
+                case nameof(SendVoice_VoiceWithParameters_VoiceMessage):
                     _fullFileName = _testFilesPath + TelegramMethodsTests._voiceFileName;
                     break;
                 case nameof(GetFile_FileId_File):
@@ -266,7 +267,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                         _telegramMethods.EditMessageText(
                             $"Message Edited By {nameof(GetUpdates_EditedMessagesOnly_ListOfOneUpdate)}",
                             _privateChat.Id.ToString(), _textMessage.MessageId.ToString());
-                    //Thread.Sleep(2000);
+                    break;
+                case nameof(DeleteMessage_DeleteLastMessage_Message):
+                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test DeleteMessage");
                     break;
             }
         }

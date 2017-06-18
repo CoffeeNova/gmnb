@@ -8,52 +8,28 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
     public partial class TelegramMethodsTests
     {
         [TestMethod()]
-        public void SendSticker_StickerName_TextMessage()
+        public void SendSticker_StickerName_StickerMessage()
         {
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendSticker(_privateChat.Id.ToString(), _fullFileName).Result;
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(StickerMessage));
         }
 
         [TestMethod()]
-        public void SendSticker_FileId_TextMessage()
+        public void SendSticker_FileId_StickerMessage()
         {
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendSticker(_privateChat.Id.ToString(), _stickerId).Result;
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(StickerMessage));
         }
 
         [TestMethod()]
-        public void SendStickerByUri_StickerUri_TextMessage()
+        public void SendStickerByUri_StickerUri_StickerMessage()
         {
             var uri = new Uri(_stickerUri);
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendStickerByUri(_privateChat.Id.ToString(), uri);
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(StickerMessage));
         }
 
         private static string _stickerFileName = "sticker.webp";

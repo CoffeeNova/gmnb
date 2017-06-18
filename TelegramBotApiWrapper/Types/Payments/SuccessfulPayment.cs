@@ -52,6 +52,5 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.Payments
         /// </summary>
         [JsonProperty("provider_payment_charge_id", Required = Required.Always)]
         public string ProviderPaymentChargeId { get; set; }
-
     }
 }

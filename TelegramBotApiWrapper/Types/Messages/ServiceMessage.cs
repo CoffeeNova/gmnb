@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CoffeeJelly.TelegramBotApiWrapper.Types.Payments;
+using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramBotApiWrapper.Types.Messages
 {
@@ -40,5 +41,11 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.Messages
         /// </remarks>
         [JsonProperty("channel_chat_created")]
         public bool? ChannelChatCreated { get; set; }
+
+        /// <summary>
+        /// Message is a service message about a successful payment, information about the payment.
+        /// </summary>
+        ///<remarks> Optional.</remarks>
+        public SuccessfulPayment SuccessfulPayment { get; set; }
     }
 }

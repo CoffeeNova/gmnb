@@ -34,6 +34,12 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult
         public int? Mpeg4Height { get; set; }
 
         /// <summary>
+        /// Optional. Video duration.
+        /// </summary>
+        [JsonProperty("mpeg4_duration")]
+        public int? Mpeg4Duration { get; set; }
+
+        /// <summary>
         /// URL of the static thumbnail (jpeg or gif) for the result.
         /// </summary>
         [JsonProperty("thumb_url", Required = Required.Always)]

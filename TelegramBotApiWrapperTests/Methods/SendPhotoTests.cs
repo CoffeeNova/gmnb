@@ -1,4 +1,5 @@
 ﻿using System;
+using CoffeeJelly.TelegramBotApiWrapper.JsonParsers;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using KellermanSoftware.CompareNetObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,71 +9,39 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
     public partial class TelegramMethodsTests
     {
         [TestMethod()]
-        public void SendPhoto_PhotoName_TextMessage()
+        public void SendPhoto_PhotoName_PhotoMessage()
         {
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendPhoto(_privateChat.Id.ToString(), _fullFileName).Result;
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(PhotoMessage));
         }
 
         [TestMethod()]
-        public void SendPhoto_PhotoAndInlineKeyboard_TextMessage()
+        public void SendPhoto_PhotoAndInlineKeyboard_PhotoMessage()
         {
             var text = "gabba-gabba-hey";
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendPhoto(_privateChat.Id.ToString(), _fullFileName, text, true, null, _testInlineKeyboardMarkup).Result;
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(PhotoMessage));
         }
 
         [TestMethod()]
-        public void SendPhotoByUri_PhotoUri_TextMessage()
+        public void SendPhotoByUri_PhotoUri_PhotoMessage()
         {
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var uri = new Uri(_photoUri);
             var actual = _telegramMethods.SendPhotoByUri(_privateChat.Id.ToString(), uri);
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(PhotoMessage));
         }
 
         [TestMethod()]
-        public void SendPhotoByUriAsync_PhotoUriPlusInlineKeyboard_TextMessage()
+        public void SendPhotoByUriAsync_PhotoUriPlusInlineKeyboard_PhotoMessage()
         {
             var caption = "pict with keyboard";
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var uri = new Uri(_photoUri);
             var actual = _telegramMethods.SendPhotoByUriAsync(_privateChat.Id.ToString(), uri, caption, true, null, _testInlineKeyboardMarkup).Result;
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(PhotoMessage));
         }
 
         private static string _photoFileName = "gabba.jpg";

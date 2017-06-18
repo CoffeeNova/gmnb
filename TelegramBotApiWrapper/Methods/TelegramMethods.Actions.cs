@@ -93,6 +93,45 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             callbackQueryId.NullInspect(nameof(callbackQueryId));
             return Task.Run(() => AnswerCallbackQuery(callbackQueryId, text, showAlert, url, cacheTime));
         }
+
+        /// <summary>
+        /// Use this method to delete a message. A message can only be deleted if it was sent less than 48 hours ago. 
+        /// Any such recently sent outgoing message may be deleted. Additionally, if the bot is an administrator in a group chat, it can delete any message. 
+        /// If the bot is an administrator in a supergroup, it can delete messages from any other user and service messages about people joining 
+        /// or leaving the group (other types of service messages may only be removed by the group creator). In channels, bots can only remove their own messages.
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat or username of the target channel (in the format @channelusername).</param>
+        /// <param name="messageId">Identifier of the message to delete.</param>
+        /// <returns> Returns <see langword="true"/> on success.</returns>
+        [TelegramMethod("deleteMessage")]
+        public bool DeleteMessage(string chatId, int messageId)
+        {
+            chatId.NullInspect(nameof(chatId));
+            var parameters = new NameValueCollection
+            {
+                {"chat_id", chatId},
+                {"message_id", messageId.ToString()}
+            };
+
+            var json = UploadUrlQuery(parameters);
+            var result = (string)json["result"];
+            return result == null ? false : Convert.ToBoolean(result);
+        }
+
+        /// <summary>
+        /// Use this method to delete a message asynchronously. A message can only be deleted if it was sent less than 48 hours ago. 
+        /// Any such recently sent outgoing message may be deleted. Additionally, if the bot is an administrator in a group chat, it can delete any message. 
+        /// If the bot is an administrator in a supergroup, it can delete messages from any other user and service messages about people joining 
+        /// or leaving the group (other types of service messages may only be removed by the group creator). In channels, bots can only remove their own messages.
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat or username of the target channel (in the format @channelusername).</param>
+        /// <param name="messageId">Identifier of the message to delete.</param>
+        /// <returns> Returns <see langword="true"/> on success.</returns>
+        public Task<bool> DeleteMessageAsync(string chatId, int messageId)
+        {
+            chatId.NullInspect(nameof(chatId));
+            return Task.Run(() => DeleteMessage(chatId, messageId));
+        }
     }
 
 }

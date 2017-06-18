@@ -94,8 +94,11 @@ namespace CoffeeJelly.TelegramBotApiWrapper.JsonParsers
             else if (typeof(T) == typeof(ServiceMessage))
                 message = BuildServiceMessage(messageToken);
             #endregion
-            #region 20. as UnknownMessage
-
+            #region 20
+            else if (typeof(T) == typeof(VideoNoteMessage))
+                message = BuildVideoNoteMessage(messageToken);
+            #endregion
+            #region 21. as UnknownMessage
             else
                 message = BuildUnknownMessage(messageToken);
             #endregion
@@ -199,7 +202,14 @@ namespace CoffeeJelly.TelegramBotApiWrapper.JsonParsers
                 case "group_chat_created":
                 case "supergroup_chat_created":
                 case "channel_chat_created":
+                case "successful_payment":
                     message = BuildMessage<ServiceMessage>(messageToken);
+                    break;
+                case "video_note":
+                    message = BuildMessage<VideoNoteMessage>(messageToken);
+                    break;
+                case "invoice":
+                    message = BuildMessage<InvoiceMessage>(messageToken);
                     break;
                 default:
                     message = BuildMessage<UnknownMessage>(messageToken);
@@ -321,6 +331,11 @@ namespace CoffeeJelly.TelegramBotApiWrapper.JsonParsers
             return JsonConvert.DeserializeObject<ServiceMessage>(messageToken.ToString(), Settings);
         }
 
+        private static VideoNoteMessage BuildVideoNoteMessage(JToken messageToken)
+        {
+            return JsonConvert.DeserializeObject<VideoNoteMessage>(messageToken.ToString(), Settings);
+        }
+
         private static UnknownMessage BuildUnknownMessage(JToken messageToken)
         {
             var message = new UnknownMessage();
@@ -359,7 +374,10 @@ namespace CoffeeJelly.TelegramBotApiWrapper.JsonParsers
                     "delete_chat_photo",
                     "group_chat_created",
                     "supergroup_chat_created",
-                    "channel_chat_created"
+                    "channel_chat_created",
+                    "video_note",
+                    "successful_payment",
+                    "invoice"
                     #endregion
                 };
 

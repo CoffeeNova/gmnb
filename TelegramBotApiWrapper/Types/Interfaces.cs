@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
+using CoffeeJelly.TelegramBotApiWrapper.Types.Payments;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramBotApiWrapper.Types
@@ -511,5 +512,29 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types
         /// </remarks>
         [JsonProperty("total_amount")]
         int TotalAmount { get; set; }
+    }
+
+    /// <summary>
+    /// Interface for Telegram's video note message.
+    /// </summary>
+    public interface IVideoNoteMessage
+    {
+        /// <summary>
+        /// Information about the video message.
+        /// </summary>
+        [JsonProperty("video_note")]
+        VideoNote VideoNote { get; set; }
+    }
+
+    /// <summary>
+    /// Interface for Telegram's invoice message.
+    /// </summary>
+    public interface IInvoiceMessage
+    {
+        /// <summary>
+        /// Information about the invoice message.
+        /// </summary>
+        [JsonProperty("video_note")]
+        Invoice Invoice { get; set; }
     }
 }

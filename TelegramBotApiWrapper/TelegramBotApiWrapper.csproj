@@ -68,6 +68,7 @@
     <Compile Include="Methods\TelegramMethods.General.cs" />
     <Compile Include="Methods\TelegramMethods.GetMethods.cs" />
     <Compile Include="Methods\TelegramMethods.InlineMethods.cs" />
+    <Compile Include="Methods\TelegramMethods.Payments.cs" />
     <Compile Include="Methods\TelegramMethods.SendMethods.cs" />
     <Compile Include="Methods\TelegramMethods.UpdatingMessages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,6 +78,9 @@
     <Compile Include="Types\General\Animation.cs" />
     <Compile Include="Types\General\Audio.cs" />
     <Compile Include="Types\General\CallbackGame.cs" />
+    <Compile Include="Types\General\VideoNote.cs" />
+    <Compile Include="Types\Messages\VideoNoteMessage.cs" />
+    <Compile Include="Types\Messages\InvoiceMessage .cs" />
     <Compile Include="Types\Payments\Invoice.cs" />
     <Compile Include="Types\Payments\LabeledPrice.cs" />
     <Compile Include="Types\Payments\ShippingAddress.cs" />

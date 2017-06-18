@@ -62,6 +62,7 @@
     <Compile Include="Extensions\StringExtensionTests.cs" />
     <Compile Include="JsonParsers\MessageBuilderTests.cs" />
     <Compile Include="Methods\DownloadFileTests.cs" />
+    <Compile Include="Methods\DeleteMessageTests .cs" />
     <Compile Include="Methods\EditMessageTextTests.cs" />
     <Compile Include="Methods\ForwardMessageTests.cs" />
     <Compile Include="Methods\General.cs" />

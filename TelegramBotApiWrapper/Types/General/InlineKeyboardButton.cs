@@ -5,6 +5,10 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
     /// <summary>
     /// Represents one button of an inline keyboard. You must use exactly one of the optional fields.
     /// </summary>
+    /// <remarks>
+    /// After Bot API 3.0. release inline keyboards with <see cref="SwitchInlineQuery"/> and <see cref="SwitchInlineQueryCurrentChat"/> 
+    /// can no longer be sent to channels.
+    /// </remarks>
     public class InlineKeyboardButton
     {
         /// <summary>
@@ -47,5 +51,13 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.General
         /// </remarks>
         [JsonProperty("callback_game")]
         public CallbackGame CallbackGame { get; set; }
+
+        /// <summary>
+        /// Optional. Specify True, to send a Pay button.
+        /// </summary>
+        /// <remarks>
+        /// This type of button must always be the first button in the first row.
+        /// </remarks>
+        public bool? Pay { get; set; }
     }
 }

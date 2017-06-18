@@ -8,54 +8,29 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
     public partial class TelegramMethodsTests
     {
         [TestMethod()]
-        public void SendDocument_DocumentName_TextMessage()
+        public void SendDocument_DocumentName_DocumentMessage()
         {
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendDocument(_privateChat.Id.ToString(), _fullFileName).Result;
-
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(DocumentMessage));
         }
 
         [TestMethod()]
-        public void SendDocumentByUri_DocumentUri_TextMessage()
+        public void SendDocumentByUri_DocumentUri_DocumentMessage()
         {
             var uri = new Uri(_documentUri);
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendDocumentByUri(_privateChat.Id.ToString(), uri);
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(DocumentMessage));
         }
 
         [TestMethod()]
-        public void SendDocumentByUriAsync_DocumentUriPlusCaption_TextMessage()
+        public void SendDocumentByUriAsync_DocumentUriPlusCaption_DocumentMessage()
         {
             var uri = new Uri(_documentUri);
             var caption = "Test caption";
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                From = _botUser
-            };
             var actual = _telegramMethods.SendDocumentByUriAsync(_privateChat.Id.ToString(), uri, caption).Result;
 
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
+            Assert.IsInstanceOfType(actual, typeof(DocumentMessage));
         }
 
         private static string _documentFileName = "AutoUpdate.zip";

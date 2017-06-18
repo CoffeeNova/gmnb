@@ -35,6 +35,12 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult
         public int? GifHeight { get; set; }
 
         /// <summary>
+        /// Optional. Duration of the GIF.
+        /// </summary>
+        [JsonProperty("gif_duration")]
+        public int? GifDuration { get; set; }
+
+        /// <summary>
         /// URL of the static thumbnail for the result (jpeg or gif)
         /// </summary>
         [JsonProperty("thumb_url", Required = Required.Always)]

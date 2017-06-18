@@ -118,7 +118,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             }
         }
 
-        private async Task<TextMessage> UploadFormData(MultipartFormDataContent form, [CallerMemberName] string callerName = "")
+        private async Task<T> UploadFormData<T>(MultipartFormDataContent form, [CallerMemberName] string callerName = "") where T : Message
         {
             var telegramMethodName = TelegramMethodAttribute.GetMethodNameValue(this.GetType(), callerName);
             Debug.Assert(!string.IsNullOrEmpty(telegramMethodName),
@@ -131,7 +131,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                     var response = await httpClient.PostAsync(TelegramBotUrl + Token + "/" + telegramMethodName, form);
                     var strResult = await response.Content.ReadAsStringAsync();
                     var json = JsonConvert.DeserializeObject<JToken>(strResult);
-                    return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
+                    return MessageBuilder.BuildMessage<T>(json["result"]);
                 }
             }
             catch (HttpRequestException ex)
