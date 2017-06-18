@@ -44,8 +44,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
                     },
                 Date = DateTime.Parse(_date),
                 Snippet = _snippet,
-                Subject = _subject
-            };
+                Subject = _subject,
+        };
         }
 
         [TestInitialize]

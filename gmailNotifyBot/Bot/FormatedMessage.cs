@@ -235,7 +235,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public IReadOnlyList<string> DesirableBody => GetDesirableBody();
 
-        public IReadOnlyList<AttachmentInfo> Attachments { get; private set; }
+        public IReadOnlyList<AttachmentInfo> Attachments { get; private set; } = new List<AttachmentInfo>();
 
         public string Header => HtmlStyledMessageHeader();
 
