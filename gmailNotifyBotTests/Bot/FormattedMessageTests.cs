@@ -32,7 +32,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Tests
             };
             _formattedMessage = new FormattedMessage
             {
-                Id = _id,
+                MessageId = _id,
                 ThreadId = _threadId,
                 From = new UserInfo {Email = _senderEmail, Name = _senderName},
                 Body = new List<BodyForm>

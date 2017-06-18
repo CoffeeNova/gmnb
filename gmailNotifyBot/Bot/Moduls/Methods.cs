@@ -19,7 +19,8 @@ using GmailLabel = Google.Apis.Gmail.v1.Data.Label;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 {
-    using Format = UsersResource.DraftsResource.GetRequest.FormatEnum;
+    using DraftFormat = UsersResource.DraftsResource.GetRequest.FormatEnum;
+    using MessageFormat = UsersResource.MessagesResource.GetRequest.FormatEnum;
     internal static class Methods
     {
         public static Service SearchServiceByUserId(string userId)
@@ -34,17 +35,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return service;
         }
 
-        public static async Task<FormattedMessage> GetMessage(string userId, string messageId)
-        {
-            var service = SearchServiceByUserId(userId);
-            return await GetMessage(service, messageId);
-        }
+        //public static async Task<FormattedMessage> GetMessage(string userId, string messageId)
+        //{
+        //    var service = SearchServiceByUserId(userId);
+        //    return await GetMessage(service, messageId);
+        //}
 
         public static async Task<FormattedMessage> GetMessage(Service service, string messageId)
         {
             var getRequest = service.GmailService.Users.Messages.Get("me", messageId);
+            getRequest.Format = service.FullUserAccess
+                ? MessageFormat.Full
+                : MessageFormat.Metadata;
             var messageResponse = await getRequest.ExecuteAsync();
-            return new FormattedMessage(messageResponse);
+            return new FormattedMessage(messageResponse, service.FullUserAccess);
         }
 
         public static async Task<FormattedMessage> ModifyMessageLabels(ModifyLabelsAction action, string userId, string messageId, string eTag = null, params string[] labels)
@@ -132,7 +136,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             dirInfo.Create();
         }
 
-        public static async Task<Draft> GetDraft(string userId, string draftId, Format format = Format.Raw)
+        public static async Task<Draft> GetDraft(string userId, string draftId, DraftFormat format = DraftFormat.Raw)
         {
             var service = SearchServiceByUserId(userId);
             var getRequest = service.GmailService.Users.Drafts.Get("me", draftId);

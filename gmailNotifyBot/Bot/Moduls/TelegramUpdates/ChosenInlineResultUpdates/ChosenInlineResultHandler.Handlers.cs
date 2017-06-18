@@ -11,10 +11,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
 {
     public partial class ChosenInlineResultHandler
     {
-        public async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult sender)
+        public async Task HandleGetMesssagesChosenInlineResult(ChosenInlineResult sender, Service service)
         {
             var messageId = sender.ResultId;
-            var formattedMessage = await Methods.GetMessage(sender.From, messageId);
+            var formattedMessage = await Methods.GetMessage(service, messageId);
             await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
         }
 

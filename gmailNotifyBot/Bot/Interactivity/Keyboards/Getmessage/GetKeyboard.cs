@@ -20,7 +20,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
         {
             GeneralCallbackData = new GetCallbackData
             {
-                MessageId = Message.Id,
+                MessageId = Message.MessageId,
                 Page = Page,
                 MessageKeyboardState = State
             };

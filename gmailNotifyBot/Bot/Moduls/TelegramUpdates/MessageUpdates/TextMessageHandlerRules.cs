@@ -4,9 +4,9 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 {
-    internal class AuthorizeRule : IMessageHandlerRules
+    internal class AuthorizeRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage =  message as TextMessage;
             if (textMessage == null) return null;
@@ -19,9 +19,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
 
-    internal class TestMessageRule : IMessageHandlerRules
+    internal class TestMessageRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
@@ -34,9 +34,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
 
-    internal class TestNameRule : IMessageHandlerRules
+    internal class TestNameRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
@@ -49,9 +49,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
 
-    internal class TestThreadRule : IMessageHandlerRules
+    internal class TestThreadRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
@@ -64,9 +64,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
 
-    internal class TestDraftRule : IMessageHandlerRules
+    internal class TestDraftRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
@@ -79,14 +79,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
 
-    internal class StartNotifyRule : IMessageHandlerRules
+    internal class StartNotifyRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
 
-            HandleMessageCommand del = async sender => await handler.HandleStartNotifyCommand(service, userSettings);
+            HandleMessageCommand del = async sender => await handler.HandleStartNotifyCommand(service);
             if (textMessage.Text.StartsWith(TextCommand.START_NOTIFY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
@@ -94,14 +94,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
 
-    internal class StopNotifyRule : IMessageHandlerRules
+    internal class StopNotifyRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
 
-            HandleMessageCommand del = async sender => await handler.HandleStopNotifyCommand(service, userSettings);
+            HandleMessageCommand del = async sender => await handler.HandleStopNotifyCommand(service);
             if (textMessage.Text.StartsWith(TextCommand.STOP_NOTIFY_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
@@ -109,14 +109,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
 
-    internal class StartWatchRule : IMessageHandlerRules
+    internal class StartWatchRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
 
-            HandleMessageCommand del = async sender => await handler.HandleStartWatchCommandAsync(service, userSettings);
+            HandleMessageCommand del = async sender => await handler.HandleStartWatchCommandAsync(service);
             if (textMessage.Text.StartsWith(TextCommand.START_WATCH_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
@@ -124,14 +124,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
 
-    internal class StopWatchRule : IMessageHandlerRules
+    internal class StopWatchRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
 
-            HandleMessageCommand del = async sender => await handler.HandleStopWatchCommandAsync(service, userSettings);
+            HandleMessageCommand del = async sender => await handler.HandleStopWatchCommandAsync(service);
             if (textMessage.Text.StartsWith(TextCommand.STOP_WATCH_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
@@ -139,9 +139,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
     
-    internal class NewMessageRule : IMessageHandlerRules
+    internal class NewMessageRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
@@ -154,54 +154,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
     }
 
-    internal class GetInboxRule : IMessageHandlerRules
+    internal class HelpRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler messageHandler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler messageHandler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
 
-            HandleMessageCommand del = async sender => await messageHandler.HandleGetInboxMessagesCommand(sender);
-            if (textMessage.Text.StartsWith(TextCommand.INBOX_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            HandleMessageCommand del = async sender => await messageHandler.HandleHelpCommand(sender);
+            if (textMessage.Text.StartsWith(TextCommand.HELP_COMMAND, StringComparison.CurrentCultureIgnoreCase))
                 return del;
 
             return null;
         }
     }
 
-    internal class GetAllRule : IMessageHandlerRules
+    internal class ShowSettingsRule : IMessageHandlerRule
     {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler messageHandler)
-        {
-            var textMessage = message as TextMessage;
-            if (textMessage == null) return null;
-
-            HandleMessageCommand del = async sender => await messageHandler.HandleGetAllMessagesCommand(sender);
-            if (textMessage.Text.StartsWith(TextCommand.ALL_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                return del;
-
-            return null;
-        }
-    }
-
-    internal class GetDraftRule : IMessageHandlerRules
-    {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler messageHandler)
-        {
-            var textMessage = message as TextMessage;
-            if (textMessage == null) return null;
-
-            HandleMessageCommand del = async sender => await messageHandler.HandleGetDraftMessagesCommand(sender);
-            if (textMessage.Text.StartsWith(TextCommand.DRAFT_COMMAND, StringComparison.CurrentCultureIgnoreCase))
-                return del;
-
-            return null;
-        }
-    }
-
-    internal class ShowSettingsRule : IMessageHandlerRules
-    {
-        public HandleMessageCommand Handle(Message message, Service service, UserSettingsModel userSettings, MessageHandler handler)
+        public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
         {
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;

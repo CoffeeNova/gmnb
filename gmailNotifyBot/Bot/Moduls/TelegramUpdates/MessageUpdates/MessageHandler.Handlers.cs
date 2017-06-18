@@ -16,6 +16,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Message = CoffeeJelly.TelegramBotApiWrapper.Types.Messages.Message;
+using Format = Google.Apis.Gmail.v1.UsersResource.MessagesResource.GetRequest.FormatEnum;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 {
@@ -29,7 +30,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         /// <returns></returns>
         public async Task HandleAuthorizeCommand(ISender query)
         {
-            await _authorizer.SendAuthorizeLink(query);
+            await _authorizer.SendAuthorizeLink(query, Authorizer.AuthorizeLinks.Both);
         }
 
         public async Task HandleTestMessageCommand(ISender sender, Service service)
@@ -45,7 +46,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             }
 
             var query = service.GmailService.Users.Messages.List("me");
-            //query.LabelIds = "INBOX";
             var listMessagesResponse = await query.ExecuteAsync();
             if (listMessagesResponse?.Messages == null) return;
 
@@ -56,10 +56,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 return;
 
             var getMailRequest = service.GmailService.Users.Messages.Get("me", message.Id);
+            getMailRequest.Format = service.FullUserAccess ? Format.Full : Format.Metadata;
             var mailInfoResponse = await getMailRequest.ExecuteAsync();
             if (mailInfoResponse == null) return;
-            var formattedMessage = new FormattedMessage(mailInfoResponse);
-            await _botActions.ShowShortMessageAsync(sender.From, formattedMessage);
+
+            var formattedMessage = new FormattedMessage(mailInfoResponse, service.FullUserAccess);
+            await _botActions.ShowShortMessageAsync(sender.From, formattedMessage, service.FullUserAccess);
         }
 
         public async Task HandleTestNameCommand(Service service)
@@ -78,10 +80,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
             var thread = listThreadsResponse.Threads.First();
             var getMailRequest = service.GmailService.Users.Messages.Get("me", thread.Id);
+            getMailRequest.Format = service.FullUserAccess ? Format.Full : Format.Metadata;
             var mailInfoResponse = await getMailRequest.ExecuteAsync();
             if (mailInfoResponse == null) return;
-            var formattedMessage = new FormattedMessage(mailInfoResponse);
-            await _botActions.ShowShortMessageAsync(service.From, formattedMessage);
+
+            var formattedMessage = new FormattedMessage(mailInfoResponse, service.FullUserAccess);
+            await _botActions.ShowShortMessageAsync(service.From, formattedMessage, service.FullUserAccess);
         }
 
         public async Task HandleTestDraftCommand(ISender sender, Service service)
@@ -139,33 +143,30 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
         }
 
-        public async Task HandleStartNotifyCommand(Service service, UserSettingsModel userSettings)
+        public async Task HandleStartNotifyCommand(Service service)
         {
+            var userSettings = await UserSettings(service.From);
             userSettings.MailNotification = true;
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
-            await HandleStartWatchCommandAsync(service, userSettings);
+            await HandleStartWatchCommandAsync(service);
             //message to chat about start notification
         }
 
-        public async Task HandleStopNotifyCommand(Service service, UserSettingsModel userSettings)
+        public async Task HandleStopNotifyCommand(Service service)
         {
-            await HandleStopWatchCommandAsync(service, userSettings);
+            var userSettings = await UserSettings(service.From);
+            await HandleStopWatchCommandAsync(service);
             userSettings.MailNotification = false;
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
             //message to chat about stop notification
         }
 
-        public async Task HandleStartWatchCommandAsync(Service service, UserSettingsModel userSettings=null)
+        public async Task HandleStartWatchCommandAsync(Service service)
         {
             if (string.IsNullOrEmpty(BotInitializer.Instance?.BotSettings?.Topic))
                 throw new CommandHandlerException($"{nameof(BotInitializer.Instance.BotSettings.Token)} must be not null or empty.");
-            if (userSettings == null)
-            {
-                userSettings = await _dbWorker.FindUserSettingsAsync(service.From);
-                if (userSettings == null)
-                    throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {service.From} is absent in the database.");
-            }
+
+            var userSettings = await UserSettings(service.From);
             if (!userSettings.MailNotification)
                 return;
 
@@ -210,9 +211,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             _dbWorker.UpdateUserSettingsRecord(userSettings);
         }
 
-
-        public async Task HandleStopWatchCommandAsync(Service service, UserSettingsModel userSettings)
+        public async Task HandleStopWatchCommandAsync(Service service)
         {
+            var userSettings = await UserSettings(service.From);
             if (!userSettings.MailNotification)
                 return;
 
@@ -234,19 +235,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
         }
 
-        public async Task HandleGetInboxMessagesCommand(ISender sender)
+        public async Task HandleHelpCommand(ISender sender)
         {
-            await _botActions.GmailInlineInboxCommandMessage(sender.From);
-        }
-
-        public async Task HandleGetAllMessagesCommand(ISender sender)
-        {
-            await _botActions.GmailInlineAllCommandMessage(sender.From);
-        }
-
-        public async Task HandleGetDraftMessagesCommand(ISender sender)
-        {
-            await _botActions.GmailInlineDraftCommandMessage(sender.From);
+            await _botActions.HelpMessage(sender.From);
         }
 
         public async Task HandleMessageForceReply(TextMessage message)
@@ -380,8 +371,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                     null, labelInfos);
         }
 
-        public async Task HandleAddToIgnoreForceReply(TextMessage message, UserSettingsModel userSettings)
+        public async Task HandleAddToIgnoreForceReply(TextMessage message)
         {
+            var userSettings = await UserSettings(message.From);
             if (userSettings.IgnoreList == null)
                 return;
 
@@ -400,8 +392,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             await _botActions.AddToIgnoreListSuccessMessage(message.From, message.Text);
         }
 
-        public async Task HandleRemoveFromIgnoreForceReply(TextMessage message, UserSettingsModel userSettings)
+        public async Task HandleRemoveFromIgnoreForceReply(TextMessage message)
         {
+            var userSettings = await UserSettings(message.From);
             if (userSettings.IgnoreList == null)
                 return;
 
@@ -446,6 +439,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 model.Message = (message as DocumentMessage)?.Document.FileId;
             }
 
+        }
+
+        private async Task<UserSettingsModel> UserSettings(int userId)
+        {
+            var userSettings = await _dbWorker.FindUserSettingsAsync(userId);
+            if (userSettings == null)
+                throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {userId} is absent in the database.");
+            return userSettings;
         }
 
         private readonly SemaphoreSlim _fileForceReplySemaphore = new SemaphoreSlim(1);

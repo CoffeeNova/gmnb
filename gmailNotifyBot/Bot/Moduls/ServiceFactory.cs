@@ -87,6 +87,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         {
             _clientSecrets = new ClientSecrets { ClientId = secrets.ClientId, ClientSecret = secrets.Secret };
             Authorizer.Instance.AuthorizationRegistredEvent += Instance_AuthorizationRegistredEvent;
+            Authorizer.Instance.TokenRevorkedEvent += Instance_TokenRevorkedEvent;
         }
 
         private void Instance_AuthorizationRegistredEvent(UserModel userModel, UserSettingsModel userSettingsModel)
@@ -111,18 +112,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                     }),
                 userModel,
                 token);
-            var serviceInitializer = new Google.Apis.Services.BaseClientService.Initializer
+            var serviceInitializer = new BaseClientService.Initializer
             {
                 ApiKey = "AIzaSyCrVK6UQ4h45WH1DQX6BXNMEIikoT_HEwI",
                 ApplicationName = "gmnb", //this.GetType().ToString()
                 HttpClientInitializer = credentials
             };
-            ServiceCollection.Add(new Service(credentials, serviceInitializer));
+            ServiceCollection.Add(new Service(credentials, serviceInitializer, userSettingsModel.Access));
+        }
+
+        private void Instance_TokenRevorkedEvent(UserModel userModel)
+        {
+            if (ServiceExists(userModel.UserId.ToString()))
+                ServiceCollection.RemoveAll(s => s.From == userModel.UserId);
         }
 
         private bool ServiceExists(string userId)
         {
-            return ServiceCollection.Any(s => s.UserCredential.UserId == userId);
+            return ServiceCollection.Any(s => s.From == userId);
         }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -138,16 +145,20 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
     public class Service : ISender
     {
-        public Service(BotUserCredential userCredential, BaseClientService.Initializer initializer)
+        public Service(BotUserCredential userCredential, BaseClientService.Initializer initializer, string userAccess)
         {
             UserCredential = userCredential;
             GmailService = new GmailService(initializer);
             Oauth2Service = new Oauth2Service(initializer);
+            UserAccess = userAccess;
         }
         public GmailService GmailService { get; set; }
         public Oauth2Service Oauth2Service { get; set; }
         public BotUserCredential UserCredential { get; set; }
 
+        public string UserAccess { get; set; }
+
+        public bool FullUserAccess => UserAccess == Types.UserAccess.FULL;
 
         public User From
         {

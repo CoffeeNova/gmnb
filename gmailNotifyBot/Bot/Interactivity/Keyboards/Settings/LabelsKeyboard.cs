@@ -68,10 +68,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         protected bool WhitelistEnabled { get; set; }
         protected bool BlacklistEnabled { get; set; }
 
-        private string WhitelistButtonCaption => WhitelistEnabled
+        protected string WhitelistButtonCaption => WhitelistEnabled
             ? LabelsMenuButtonCaption.WhiteListEnabled
             : LabelsMenuButtonCaption.WhiteListDisabled;
-        private string BlacklistButtonCaption => BlacklistEnabled
+        protected string BlacklistButtonCaption => BlacklistEnabled
             ? LabelsMenuButtonCaption.BlackListEnabled
             : LabelsMenuButtonCaption.BlackListDisabled;
 

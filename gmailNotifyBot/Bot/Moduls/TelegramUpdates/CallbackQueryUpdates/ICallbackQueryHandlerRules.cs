@@ -7,8 +7,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
     using Query = TelegramBotApiWrapper.Types.General.CallbackQuery;
     internal delegate Task HandleCallbackQueryCommand(Query query);
 
-    internal interface ICallbackQueryHandlerRules
+    internal interface ICallbackQueryHandlerRule
     {
-        HandleCallbackQueryCommand Handle(CallbackData data, Service service, UserSettingsModel userSettings, CallbackQueryHandler handler);
+        HandleCallbackQueryCommand Handle(CallbackData data, Service service, CallbackQueryHandler handler);
     }
 }

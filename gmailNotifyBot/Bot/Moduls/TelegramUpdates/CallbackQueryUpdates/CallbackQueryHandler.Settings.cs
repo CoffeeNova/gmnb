@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings;
+using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
@@ -240,9 +241,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
         #region permissions menu
 
-        public async Task HandleCallbackQSwapPermissions(CallbackQuery query)
+        public async Task HandleCallbackQSwapPermissions(CallbackQuery query, Service service)
         {
-            await _authorizer.SendAuthorizeLink(query);
+            Authorizer.AuthorizeLinks links;
+            links = service.FullUserAccess ? Authorizer.AuthorizeLinks.Notify : Authorizer.AuthorizeLinks.Full;
+            await _authorizer.SendAuthorizeLink(query, links);
             await _botActions.DeleteMessage(query.From, query.Message.MessageId);
         }
 

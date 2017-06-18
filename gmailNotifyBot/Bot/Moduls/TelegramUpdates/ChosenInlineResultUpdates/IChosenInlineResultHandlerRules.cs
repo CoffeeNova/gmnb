@@ -7,6 +7,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
     internal delegate Task HandleChosenInlineResultCommand();
     internal interface IChosenInlineResultHandlerRules
     {
-        HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, ChosenInlineResultUpdates.ChosenInlineResultHandler handler);
+        HandleChosenInlineResultCommand Handle(QueryResult.ChosenInlineResult result, Service service, ChosenInlineResultHandler handler);
     }
 }

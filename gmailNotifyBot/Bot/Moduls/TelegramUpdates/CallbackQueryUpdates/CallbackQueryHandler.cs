@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
@@ -58,23 +60,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             Exception exception = null;
             try
             {
-                var service = Methods.SearchServiceByUserId(query.From);
-                var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
-                if (userSettings == null)
-                    throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {query.From} is absent in the database.");
+                var resultInvoke = await RuleInvokeAction(_authRule, data, query);
+                if (resultInvoke) return;
 
-                var rules = userSettings.Access == UserAccess.FULL
+                var service = Methods.SearchServiceByUserId(query.From);
+                var rules = service.FullUserAccess
                     ? _fullAccessRules
                     : _notifyAccessRules;
                 foreach (var rule in rules)
-                {
-                    var rate = rule.Handle(data, service, userSettings, this);
-                    if (rate == null)
-                        continue;
-                    LogMaker.Log(Logger, $"{query.Data} command received from user with id {(string)query.From}", false);
-                    await rate.Invoke(query);
-                }
+                    await RuleInvokeAction(rule, data, query, service);
             }
             catch (ServiceNotFoundException ex)
             {
@@ -108,9 +102,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             }
         }
 
+        private async Task<bool> RuleInvokeAction(ICallbackQueryHandlerRule rule, CallbackData data, Query query, Service service = null)
+        {
+            var rate = rule.Handle(data, service, this);
+            if (rate == null)
+                return false;
+            LogMaker.Log(Logger, $"{query.Data} command received from user with id {(string)query.From}", false);
+            await rate.Invoke(query);
+            return true;
+        }
+
         private void InitNotifyAccessRules()
         {
-            _notifyAccessRules.Add(new SendAuthorizeLinkRule());
             _notifyAccessRules.Add(new UnignoreRule());
             _notifyAccessRules.Add(new IgnoreRule());
 
@@ -140,7 +143,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
         private void InitFullAccessRules()
         {
-            _fullAccessRules.Add(new SendAuthorizeLinkRule());
             _fullAccessRules.Add(new ExpandRule());
             _fullAccessRules.Add(new HideRule());
             _fullAccessRules.Add(new ExpandActionsRule());
@@ -197,9 +199,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             #endregion
         }
 
-
-        private readonly List<ICallbackQueryHandlerRules> _fullAccessRules = new List<ICallbackQueryHandlerRules>();
-        private readonly List<ICallbackQueryHandlerRules> _notifyAccessRules = new List<ICallbackQueryHandlerRules>();
+        private readonly ICallbackQueryHandlerRule _authRule = new SendAuthorizeLinkRule();
+        private readonly List<ICallbackQueryHandlerRule> _fullAccessRules = new List<ICallbackQueryHandlerRule>();
+        private readonly List<ICallbackQueryHandlerRule> _notifyAccessRules = new List<ICallbackQueryHandlerRule>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly GmailDbContextWorker _dbWorker;

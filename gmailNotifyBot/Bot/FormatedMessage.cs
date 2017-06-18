@@ -28,20 +28,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             ParseMessage(draft.Message);
         }
 
-        public FormattedMessage(Message message)
+        public FormattedMessage(Message message, bool fullMessage = true)
         {
-            ParseMessage(message);
+            ParseMessage(message, fullMessage);
         }
 
-        private void ParseMessage(Message message)
+        private void ParseMessage(Message message, bool fullParse = true)
         {
             message.NullInspect(nameof(message));
             if (message.Payload == null)
                 throw new FormattedGmailMessageException($"{nameof(message.Payload)} must be not null.");
 
-            Id = message.Id;
+            ParseMetadata(message);
+            if (fullParse)
+                ParseInfoData(message);
+        }
+
+        private void ParseMetadata(Message message)
+        {
+            MessageId = message.Id;
             ThreadId = message.ThreadId;
-            Snippet = Helper.FormatTextToHtmlParseMode(message.Snippet);
             ETag = message.ETag;
             LabelIds = message.LabelIds == null ? null : new List<string>(message.LabelIds);
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
@@ -76,6 +82,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
                 Date = DateTime.Parse(Regex.Replace(messagePartHeader.Value, @"\s\(\D{3}\)", string.Empty));
+        }
+
+        private void ParseInfoData(Message message)
+        {
+            Snippet = Helper.FormatTextToHtmlParseMode(message.Snippet);
 
             var body = new List<BodyForm>();
             if (message.Payload.Parts != null)
@@ -169,9 +180,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         private string _senderEmail;
         private static readonly string[] Separator = { ", " };
 
-        public string Id { get; set; }
+        public string MessageId { get; set; }
 
         public string ThreadId { get; set; }
+
+        public string DraftId { get; }
 
         public string Snippet { get; set; }
 
@@ -258,8 +271,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public ReadOnlyCollection<string> MimeTypes { get; } = new ReadOnlyCollection<string>(_mimeTypes);
 
         public bool SnippetEqualsBody => IsSnippetEqualsBody();
-
-        public string DraftId { get; }
 
         public bool IsDraft => !string.IsNullOrEmpty(DraftId);
     }

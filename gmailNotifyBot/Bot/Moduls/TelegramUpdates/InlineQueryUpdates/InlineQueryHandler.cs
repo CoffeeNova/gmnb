@@ -38,13 +38,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
             Exception exception = null;
             try
             {
-                Methods.SearchServiceByUserId(query.From);
-                var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
-                if (userSettings == null)
-                    throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {query.From} is absent in the database.");
+                var service = Methods.SearchServiceByUserId(query.From);
 
-                var rules = userSettings.Access == UserAccess.FULL
+                var rules = service.FullUserAccess
                     ? _fullAccessRules
                     : _notifyAccessRules;
                 foreach (var rule in rules)
@@ -91,8 +87,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
 
         private void InitNotifyAccessRules()
         {
-            _notifyAccessRules.Add(new ShowInboxMessagesRule());
-            _notifyAccessRules.Add(new ShowAllMessagesRule());
         }
 
         private readonly List<IInlineQueryHandlerRules> _fullAccessRules = new List<IInlineQueryHandlerRules>();

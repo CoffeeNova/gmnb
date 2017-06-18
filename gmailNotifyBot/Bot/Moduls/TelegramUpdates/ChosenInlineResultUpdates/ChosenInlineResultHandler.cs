@@ -34,15 +34,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             Exception exception = null;
             try
             {
-                Methods.SearchServiceByUserId(result.From);
-                var userSettings = await _dbWorker.FindUserSettingsAsync(result.From);
-                if (userSettings == null)
-                    throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {result.From} is absent in the database.");
-
+                var service = Methods.SearchServiceByUserId(result.From);
+                if (!service.FullUserAccess)
+                    return;
                 foreach (var rule in _rules)
                 {
-                    var del = rule.Handle(result, this);
+                    var del = rule.Handle(result, service, this);
                     if (del == null)
                         continue;
                     LogMaker.Log(Logger, $"{result.Query} command received from user with id {result.From}, resultId={result.ResultId}", false);

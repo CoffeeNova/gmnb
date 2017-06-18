@@ -17,10 +17,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                 ? InitButton(ActionButtonCaption.Unignore, CallbackCommand.UNIGNORE_COMMAND)
                 : InitButton(ActionButtonCaption.Ignore, CallbackCommand.IGNORE_COMMAND);
 
-            OpenWebButton = InitButton(ActionButtonCaption.OpenWeb, CallbackCommand.OPEN_WEB_COMMAND);
+            OpenWebButton = new InlineKeyboardButton
+            {
+                Url = GmailInboxUrl + Message.MessageId,
+                Text = ActionButtonCaption.OpenWeb
+            };
         }
-
-        protected override GetKeyboardState State => GetKeyboardState.Minimized;
 
         protected override IEnumerable<IEnumerable<InlineKeyboardButton>> DefineInlineKeyboard()
         {
@@ -33,11 +35,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             return inlineKeyboard;
         }
 
+        protected override GetKeyboardState State => GetKeyboardState.Notify;
+
         protected List<InlineKeyboardButton> MainRow;
 
         protected virtual InlineKeyboardButton NotifyButton { get; set; }
 
         protected virtual InlineKeyboardButton OpenWebButton { get; set; }
+
+        private readonly string GmailInboxUrl = @"https://mail.google.com/mail/u/0/#inbox/";
 
     }
 

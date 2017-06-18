@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
@@ -64,7 +66,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
                 foreach (var rule in rules)
                 {
-                    var rate = rule.Handle(message, service, userSettings, this);
+                    var rate = rule.Handle(message, service, this);
                     if (rate == null) continue;
 
                     LogMaker.Log(Logger, $"File received from user with id {(string)message.From}", false);
@@ -118,23 +120,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             Exception exception = null;
             try
             {
-                var service = Methods.SearchServiceByUserId(message.From);
-                var userSettings = await _dbWorker.FindUserSettingsAsync(message.From);
-                if (userSettings == null)
-                    throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {message.From} is absent in the database.");
+                var resultInvoke = await RuleInvokeAction(_authRule, message);
+                if (resultInvoke) return;
 
-                var rules = userSettings.Access == UserAccess.FULL
-                    ? _fullAccessRules
-                    : _notifyAccessRules;
+                var service = Methods.SearchServiceByUserId(message.From);
+                var rules = service.FullUserAccess
+                     ? _fullAccessRules
+                     : _notifyAccessRules;
                 foreach (var rule in rules)
-                {
-                    var rate = rule.Handle(message, service, userSettings, this);
-                    if (rate == null)
-                        continue;
-                    LogMaker.Log(Logger, $"{message.Text} command received from user with id {(string)message.From}", false);
-                    await rate.Invoke(message);
-                }
+                    await RuleInvokeAction(rule, message, service);
             }
             catch (ServiceNotFoundException ex)
             {
@@ -164,9 +158,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             }
         }
 
+        private async Task<bool> RuleInvokeAction(IMessageHandlerRule rule, TextMessage message,
+            Service service = null)
+        {
+            var rate = rule.Handle(message, service, this);
+            if (rate == null)
+                return false;
+            LogMaker.Log(Logger, $"{message.Text} command received from user with id {(string)message.From}", false);
+            await rate.Invoke(message);
+            return true;
+        }
+
         private void InitFullAccessRules()
         {
-            _fullAccessRules.Add(new AuthorizeRule());
             _fullAccessRules.Add(new TestMessageRule());
             _fullAccessRules.Add(new TestNameRule());
             _fullAccessRules.Add(new TestThreadRule());
@@ -175,9 +179,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             _fullAccessRules.Add(new StartWatchRule());
             _fullAccessRules.Add(new StopWatchRule());
             _fullAccessRules.Add(new NewMessageRule());
-            _fullAccessRules.Add(new GetInboxRule());
-            _fullAccessRules.Add(new GetAllRule());
-            _fullAccessRules.Add(new GetDraftRule());
+            _fullAccessRules.Add(new HelpRule());
             _fullAccessRules.Add(new TestDraftRule());
             _fullAccessRules.Add(new ShowSettingsRule());
 
@@ -185,7 +187,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         private void InitNotifyAccessRules()
         {
-            _notifyAccessRules.Add(new AuthorizeRule());
             _notifyAccessRules.Add(new TestMessageRule());
             _notifyAccessRules.Add(new TestNameRule());
             _notifyAccessRules.Add(new TestThreadRule());
@@ -193,8 +194,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             _notifyAccessRules.Add(new StopNotifyRule());
             _notifyAccessRules.Add(new StartWatchRule());
             _notifyAccessRules.Add(new StopWatchRule());
-            _notifyAccessRules.Add(new GetInboxRule());
-            _notifyAccessRules.Add(new GetAllRule());
+            _notifyAccessRules.Add(new HelpRule());
             _notifyAccessRules.Add(new ShowSettingsRule());
         }
 
@@ -219,10 +219,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             #endregion
         }
 
-        private readonly List<IMessageHandlerRules> _fullAccessRules = new List<IMessageHandlerRules>();
-        private readonly List<IMessageHandlerRules> _notifyAccessRules = new List<IMessageHandlerRules>();
-        private readonly List<IMessageHandlerRules> _fullForceReplyRules = new List<IMessageHandlerRules>();
-        private readonly List<IMessageHandlerRules> _notifyForceReplyRules = new List<IMessageHandlerRules>();
+        private readonly IMessageHandlerRule _authRule = new AuthorizeRule();
+        private readonly List<IMessageHandlerRule> _fullAccessRules = new List<IMessageHandlerRule>();
+        private readonly List<IMessageHandlerRule> _notifyAccessRules = new List<IMessageHandlerRule>();
+        private readonly List<IMessageHandlerRule> _fullForceReplyRules = new List<IMessageHandlerRule>();
+        private readonly List<IMessageHandlerRule> _notifyForceReplyRules = new List<IMessageHandlerRule>();
         private readonly BotActions _botActions;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly GmailDbContextWorker _dbWorker;

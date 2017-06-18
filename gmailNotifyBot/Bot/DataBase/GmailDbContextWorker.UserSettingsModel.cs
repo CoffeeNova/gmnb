@@ -37,23 +37,19 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             return Task.Run(() => FindUserSettings(userId));
         }
 
-        public UserSettingsModel AddNewUserSettings(int userId, string access)
+        public UserSettingsModel AddNewUserSettings(int userId)
         {
-            access.NullInspect(nameof(access));
-
             using (var db = new GmailBotDbContext())
             {
-                var userSettings = db.UserSettings.Add(new UserSettingsModel { UserId = userId, Access = access });
+                var userSettings = db.UserSettings.Add(new UserSettingsModel { UserId = userId});
                 db.SaveChanges();
                 return userSettings;
             }
         }
 
-        public Task<UserSettingsModel> AddNewUserSettingsAsync(int userId, string access)
+        public Task<UserSettingsModel> AddNewUserSettingsAsync(int userId)
         {
-            access.NullInspect(nameof(access));
-
-            return Task.Run(() => AddNewUserSettings(userId, access));
+            return Task.Run(() => AddNewUserSettings(userId));
         }
 
         public void RemoveUserSettingsRecord(UserSettingsModel model)

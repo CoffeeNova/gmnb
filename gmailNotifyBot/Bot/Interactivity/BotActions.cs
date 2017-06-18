@@ -56,28 +56,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(userId, @"I am lost your credentials. Please reauthorize me using /connect command or click a button below.", null, false, false, null, keyboard);
         }
 
-        public async Task AuthorizeMessage(string userId, Uri notifyAccessUri, Uri fullAccessUri)
+        public async Task AuthorizeMessage(string userId, Uri notifyAccessUri = null, Uri fullAccessUri = null)
         {
             var notifyAccessButton = new InlineKeyboardButton
             {
                 Text = "Mail Notify",
-                Url = notifyAccessUri.OriginalString
+                Url = notifyAccessUri?.OriginalString
             };
             var fullAccessButton = new InlineKeyboardButton
             {
                 Text = "Full Access",
-                Url = fullAccessUri.OriginalString
+                Url = fullAccessUri?.OriginalString
             };
+            var row = new List<InlineKeyboardButton>();
+            if (notifyAccessUri != null)
+                row.Add(notifyAccessButton);
+            if (fullAccessUri != null)
+                row.Add(fullAccessButton);
+
             var keyboard = new InlineKeyboardMarkup
             {
-                InlineKeyboard = new List<List<InlineKeyboardButton>>
-                {
-                    new List<InlineKeyboardButton>
-                    {
-                        notifyAccessButton,
-                        fullAccessButton
-                    }
-                }
+                InlineKeyboard = new List<List<InlineKeyboardButton>> { row }
             };
             await _telegramMethods.SendMessageAsync(userId,
                 $"Open one of this link to authorize the bot to get: ", null, false, false, null, keyboard);
@@ -123,19 +122,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(userId, $"{Emoji.DENIED}  You do not have any messages left.");
         }
 
-        public async Task GmailInlineInboxCommandMessage(string userId)
+        public async Task HelpMessage(string userId)
         {
-            await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Inbox:");
-        }
-
-        public async Task GmailInlineDraftCommandMessage(string userId)
-        {
-            await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Draft:");
-        }
-
-        public async Task GmailInlineAllCommandMessage(string userId)
-        {
-            await _telegramMethods.SendMessageAsync(userId, $"@{_settings.BotName} Inbox:");
+            var message = "";
+            await _telegramMethods.SendMessageAsync(userId, message);
         }
 
         public async Task ShowShortMessageAnswerInlineQuery(string inlineQueryId, List<FormattedMessage> messages, int? offset = null)
@@ -148,7 +138,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     : message.Date.ToString("dd.MM.yy");
                 inlineQueryResults.Add(new InlineQueryResultArticle
                 {
-                    Id = message.IsDraft ? message.DraftId : message.Id,
+                    Id = message.IsDraft ? message.DraftId : message.MessageId,
                     Title = ShortMessageTitleFormatter(message.From.Name, message.From.Email, date),
                     Description = message.Subject,
                     InputMessageContent = new InputTextMessageContent
@@ -186,13 +176,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.EditMessageTextAsync("Success", chatId, messageId);
         }
 
-        public async Task ShowShortMessageAsync(string chatId, FormattedMessage formattedMessage, string access = UserAccess.FULL)
+        public async Task ShowShortMessageAsync(string chatId, FormattedMessage formattedMessage, bool fullAccess = true)
         {
             formattedMessage.NullInspect(nameof(formattedMessage));
 
             var header = formattedMessage.Header;
             var message = Emoji.CLOSED_EMAIL_ENVELOP + header + $"{Environment.NewLine}{Environment.NewLine} {formattedMessage.Snippet}";
-            var keyboard = access == UserAccess.FULL
+            var keyboard = fullAccess
                 ? _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage)
                 : _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Notify, formattedMessage);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
@@ -426,7 +416,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task AddToIgnoreForceReply(string chatId)
         {
             var reply = new ForceReply();
-            var message = $"<b>{ForceReplyCommand.ADD_TO_IGNORE_COMMAND}</b>"+
+            var message = $"<b>{ForceReplyCommand.ADD_TO_IGNORE_COMMAND}</b>" +
                 "Type email address here.";
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
@@ -434,8 +424,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task RemoveFromIgnoreForceReply(string chatId)
         {
             var reply = new ForceReply();
-            var message = $"<b>{ForceReplyCommand.REMOVE_FROM_IGNORE_COMMAND}</b>"+
-                $"\r\n{Emoji.INFO_SIGN}<i>You can enter here an email address or a sequence number in the ignore list."+
+            var message = $"<b>{ForceReplyCommand.REMOVE_FROM_IGNORE_COMMAND}</b>" +
+                $"\r\n{Emoji.INFO_SIGN}<i>You can enter here an email address or a sequence number in the ignore list." +
                 $"\r\nTo see all emails and their number - choose {IgnoreMenuButtonCaption.Show} option in the Ignore menu.</i>";
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, reply);
         }
@@ -482,6 +472,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var message =
                 $"To revoke permissions via web browser <a href=\"{AccountPermissionsUrl}\">open this link</a>";
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html);
+        }
+
+        public async Task OpenMessageInWebBrowser(string chatId)
+        {
+
         }
 
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
@@ -548,7 +543,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             return message.ToString();
         }
 
-        private string SettingsMenuMessageBuilder(SettingsKeyboardState state, SelectedOption option = default(SelectedOption), 
+        private string SettingsMenuMessageBuilder(SettingsKeyboardState state, SelectedOption option = default(SelectedOption),
             UserSettingsModel userSettings = null, string editableLableId = null)
         {
             if (userSettings == null && state.EqualsAny(
