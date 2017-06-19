@@ -417,6 +417,36 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
     }
 
+    internal class StartNotifyRule : ICallbackQueryHandlerRule
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.Equals(CallbackCommand.NOTIFY_START_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQStartNotify(sender, service);
+            return del;
+        }
+    }
+
+    internal class StopNotifyRule : ICallbackQueryHandlerRule
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.Equals(CallbackCommand.NOTIFY_STOP_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQStopNotify(sender, service);
+            return del;
+        }
+    }
+
     internal class ShowAboutRule : ICallbackQueryHandlerRule
     {
         public HandleCallbackQueryCommand Handle(CallbackData data, Service service, CallbackQueryHandler handler)

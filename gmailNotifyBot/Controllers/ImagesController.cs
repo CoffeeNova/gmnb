@@ -18,9 +18,27 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
         }
 
         [OutputCache(Duration = int.MaxValue, Location = OutputCacheLocation.Any)]
-        public FileResult Silhouette48()
+        public FileResult Silhouette49()
         {
             var filePath = Server.MapPath("~/Content/Images/silhouette48.jpg");
+            string fileType = "image/jpeg";
+            string fileName = "silhouette49.jpg";
+            return File(filePath, fileType, fileName);
+        }
+
+        [OutputCache(Duration = int.MaxValue, Location = OutputCacheLocation.Any)]
+        public FileResult OpenedEnvelope()
+        {
+            var filePath = Server.MapPath("~/Content/Images/OpenedEnvelope3.jpg");
+            string fileType = "image/jpeg";
+            string fileName = "silhouette49.jpg";
+            return File(filePath, fileType, fileName);
+        }
+
+        [OutputCache(Duration = int.MaxValue, Location = OutputCacheLocation.Any)]
+        public FileResult ClosedEnvelope()
+        {
+            var filePath = Server.MapPath("~/Content/Images/ClosedEnvelope3.jpg");
             string fileType = "image/jpeg";
             string fileName = "silhouette48.jpg";
             return File(filePath, fileType, fileName);

@@ -20,7 +20,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
             switch (state)
             {
                 case SettingsKeyboardState.MainMenu:
-                    keyboard = new MainMenuKeyboard();
+                    keyboard = new MainMenuKeyboard(model.MailNotification);
                     break;
                 case SettingsKeyboardState.EditLabelsMenu:
                     keyboard = new EditLabelsKeyboard(labels);

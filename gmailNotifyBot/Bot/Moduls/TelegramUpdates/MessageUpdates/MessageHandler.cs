@@ -176,13 +176,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             _fullAccessRules.Add(new TestThreadRule());
             _fullAccessRules.Add(new StartNotifyRule());
             _fullAccessRules.Add(new StopNotifyRule());
+#if DEBUG
             _fullAccessRules.Add(new StartWatchRule());
             _fullAccessRules.Add(new StopWatchRule());
+#endif
             _fullAccessRules.Add(new NewMessageRule());
             _fullAccessRules.Add(new HelpRule());
             _fullAccessRules.Add(new TestDraftRule());
             _fullAccessRules.Add(new ShowSettingsRule());
-
         }
 
         private void InitNotifyAccessRules()
@@ -192,8 +193,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             _notifyAccessRules.Add(new TestThreadRule());
             _notifyAccessRules.Add(new StartNotifyRule());
             _notifyAccessRules.Add(new StopNotifyRule());
+#if DEBUG
             _notifyAccessRules.Add(new StartWatchRule());
             _notifyAccessRules.Add(new StopWatchRule());
+#endif
             _notifyAccessRules.Add(new HelpRule());
             _notifyAccessRules.Add(new ShowSettingsRule());
         }

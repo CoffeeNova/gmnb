@@ -49,7 +49,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             MessageId = message.Id;
             ThreadId = message.ThreadId;
             ETag = message.ETag;
-            LabelIds = message.LabelIds == null ? null : new List<string>(message.LabelIds);
+            Labels = message.LabelIds == null ? null : new List<string>(message.LabelIds);
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
             if (!string.IsNullOrEmpty(messagePartHeader?.Value))
                 From = Helper.ParseUserInfo(messagePartHeader.Value);
@@ -134,7 +134,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             var date = Date.Date == DateTime.Now.Date ? Date.ToString("hh:mm tt") : Date.ToString("M.dd.yyyy hh:mm tt");
                 
             var header = string.IsNullOrEmpty(From.Name) 
-                ? $"*lt;b*gt;{From.Email}*lt;/b*gt;    *lt;code*gt;{date}*lt;/code*gt; {Environment.NewLine}{Environment.NewLine}*lt;b*gt{Subject}*lt;/b*gt;" 
+                ? $"*lt;b*gt;{From.Email}*lt;/b*gt;    *lt;code*gt;{date}*lt;/code*gt; {Environment.NewLine}{Environment.NewLine}*lt;b*gt;{Subject}*lt;/b*gt;" 
                 : $"*lt;b*gt;{From.Name}*lt;/b*gt;    *lt;code*gt;{date}*lt;/code*gt; *lt;pre*gt;{From.Email}*lt;/pre*gt;{Environment.NewLine}{Environment.NewLine}*lt;b*gt;{Subject}*lt;/b*gt;";
             return Helper.FormatTextToHtmlParseMode(header);
         }
@@ -207,7 +207,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public int MaxLinePerPage { get; set; } = 35;
         public int MinLinePerPage { get; set; } = 25;
 
-        public List<string> LabelIds;
+        public List<string> Labels;
 
         private IReadOnlyList<BodyForm> _body;
         public IReadOnlyList<BodyForm> Body 

@@ -14,6 +14,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
 
         public static string Ignore => "Ignore Control";
 
+        public static string StartNotify => "Resume Notifications";
+
+        public static string StopNotify => "Stop Notifications";
+
         public static string About => "About";
     }
 

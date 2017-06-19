@@ -16,16 +16,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
             base.ButtonsInitializer();
             ExpandButton = InitButton(ExpandButtonCaption, ExpandButtonCommand);
             ActionsButton = InitButton(ActionsButtonCaption, ActionsButtonCommand);
-            UnreadButton = Message.LabelIds.Exists(l => l == Label.Unread) 
+            UnreadButton = Message.Labels.Exists(l => l == Label.Unread) 
                 ? InitButton(ActionButtonCaption.ToRead, CallbackCommand.TO_READ_COMMAND) 
                 : InitButton(ActionButtonCaption.ToUnread, CallbackCommand.TO_UNREAD_COMMAND);
-            SpamButton = Message.LabelIds.Exists(l => l == Label.Spam)
+            SpamButton = Message.Labels.Exists(l => l == Label.Spam)
                 ? InitButton(ActionButtonCaption.NotSpam, CallbackCommand.TO_INBOX_COMMAND)
                 : InitButton(ActionButtonCaption.Spam, CallbackCommand.TO_SPAM_COMMAND);
-            TrashButton = Message.LabelIds.Exists(l => l == Label.Trash)
+            TrashButton = Message.Labels.Exists(l => l == Label.Trash)
                 ? InitButton(ActionButtonCaption.Restore, CallbackCommand.TO_INBOX_COMMAND)
                 : InitButton(ActionButtonCaption.Delete, CallbackCommand.TO_TRASH_COMMAND);
-            ArchiveButton = Message.LabelIds.Exists(l => l == Label.Inbox)
+            ArchiveButton = Message.Labels.Exists(l => l == Label.Inbox)
                 ? InitButton(ActionButtonCaption.ToArchive, CallbackCommand.ARCHIVE_COMMAND)
                 : InitButton(ActionButtonCaption.ToInbox, CallbackCommand.TO_INBOX_COMMAND);
             NotifyButton = IsIgnored

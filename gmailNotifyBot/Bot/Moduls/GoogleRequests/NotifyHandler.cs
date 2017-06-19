@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
@@ -32,7 +33,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                 throw new TypeInitializationException(nameof(NotifyHandler), ex);
             }
 
-            
+
         }
         public bool HandleGoogleNotifyMessage(GoogleNotifyMessage message)
         {
@@ -61,6 +62,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                         if (userSettings == null)
                             throw new DbDataStoreException(
                                 $"Can't find user settings data in database. User record with id {userModel.UserId} is absent in the database.");
+
+                        if (userSettings.IgnoreList.Any(ignoreModel => ignoreModel.Address == decodedData.Email))
+                            return true;
+
                         var service = Methods.SearchServiceByUserId(userModel.UserId.ToString());
                         var query = service.GmailService.Users.History.List("me");
                         query.HistoryTypes = UsersResource.HistoryResource.ListRequest.HistoryTypesEnum.MessageAdded;
@@ -80,6 +85,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                                 var getRequest = service.GmailService.Users.Messages.Get("me", addedMessage.Message.Id);
                                 var messageResponse = getRequest.Execute();
                                 var formattedMessage = new FormattedMessage(messageResponse);
+                                if (userSettings.UseWhitelist)
+                                    if (!userSettings.Whitelist.Any(label => formattedMessage.Labels.Contains(label.Name)))
+                                        continue;
+
+                                if (userSettings.Blacklist.Any(label => formattedMessage.Labels.Contains(label.Name)))
+                                    continue;
+
                                 _botActions.ShowShortMessage(userModel.UserId.ToString(), formattedMessage);
                             }
                         }
@@ -120,7 +132,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
         }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly  GmailDbContextWorker _dbWorker;
+        private readonly GmailDbContextWorker _dbWorker;
         private readonly BotActions _botActions;
         private readonly MessageHandler _messageHandler;
         private readonly BotSettings _botSettings;

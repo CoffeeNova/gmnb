@@ -32,10 +32,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             token.NullInspect(nameof(token));
             _telegramMethods = new TelegramMethods(token);
 #if DEBUG
-            _contactsThumbUrl = @"https://pbs.twimg.com/media/DAf2gvDXcAAxk0w.jpg";
+            _contactsThumbUrl = @"https://i.imgur.com/0shhQ5U.jpg";
+            _closedEnvelopeThumbUrl = @"https://i.imgur.com/ljODIM2.jpg";
+            _openEnvelopeThumbUrl = @"https://i.imgur.com/OFYvQO4.jpg";
+            //_closedEnvelopeThumbUrl = @"https://static.wixstatic.com/media/60593c_b482c73f21cc4b8fa6616ee46a908f0b~mv2.jpg";
+            //_openEnvelopeThumbUrl =
+            //@"https://image.freepik.com/free-icon/open-e-mail-message-envelope-symbol-of-ios-7-interface_318-35260.jpg";
 #else
-            //_contactsThumbUrl = $@"https://{Settings.DomainName}/{Settings.ImagesPath}silhouette48.jpg";
             _contactsThumbUrl = $@"https://{Settings.DomainName}/Images/Silhouette48";
+            _closedEnvelopeThumbUrl = $@"https://{Settings.DomainName}/Images/ClosedEnvelope";
+            _openEnvelopeThumbUrl = $@"https://{Settings.DomainName}/Images/OpenedEnvelope";
 #endif
         }
 
@@ -144,7 +150,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     InputMessageContent = new InputTextMessageContent
                     {
                         MessageText = message.IsDraft ? "Draft:" : "Message:"
-                    }
+                    },
+                    ThumbUrl = message.Labels.Any(l => l == Label.Unread)
+                                ? _closedEnvelopeThumbUrl
+                                : _openEnvelopeThumbUrl
                 });
             }
             if (!offset.HasValue)
@@ -367,12 +376,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task RemoveKeyboard(string chatId)
         {
             var removeKeyboard = new ReplyKeyboardRemove();
-            await _telegramMethods.SendMessageAsync(chatId, TextCommand.DELETE_MSG_MARK, null, false, false, null, removeKeyboard);
+            var message = await _telegramMethods.SendMessageAsync(chatId, TextCommand.DELETE_MSG_MARK, null, false, false, null, removeKeyboard);
+            await _telegramMethods.DeleteMessageAsync(chatId, message.MessageId);
         }
 
         public async Task DeleteMessage(string chatId, int messageId)
         {
-
+            await _telegramMethods.DeleteMessageAsync(chatId, messageId);
         }
 
         public async Task ShowSettingsMenu(string chatId)
@@ -474,9 +484,30 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html);
         }
 
-        public async Task OpenMessageInWebBrowser(string chatId)
+        public async Task NotificationStartedMessage(string chatId)
         {
+            var message = $"{Emoji.GRAY_CHECKED_BOX} Notifications about new emails is active now!";
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html);
+        }
 
+        public async Task NotificationStopedMessage(string chatId)
+        {
+            var message = "You will no longer receive notifications about new emails.";
+            var keyboard = new InlineKeyboardMarkup
+            {
+                InlineKeyboard = new List<List<InlineKeyboardButton>>
+                {
+                    new List<InlineKeyboardButton>
+                    {
+                        new InlineKeyboardButton
+                        {
+                            Text = "Resume Notifications",
+                            CallbackData = TextCommand.START_NOTIFY_COMMAND
+                        }
+                    }
+                }
+            };
+            await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
@@ -670,6 +701,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         private readonly BotSettings _settings = BotInitializer.Instance.BotSettings;
         private readonly string _contactsThumbUrl;
+        private readonly string _closedEnvelopeThumbUrl;
+        private readonly string _openEnvelopeThumbUrl;
         private readonly GetKeyboardFactory _getKeyboardFactory = new GetKeyboardFactory();
         private readonly SendKeyboardFactory _sendKeyboardFactory = new SendKeyboardFactory();
         private readonly SettingsKeyboardFactory _settingsKeyboardFactory = new SettingsKeyboardFactory();

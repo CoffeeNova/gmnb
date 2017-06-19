@@ -122,6 +122,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             _notifyAccessRules.Add(new OpenLabelsMenuRule());
             _notifyAccessRules.Add(new OpenPermissionsMenuRule());
             _notifyAccessRules.Add(new OpenIgnoreListMenuRule());
+            _notifyAccessRules.Add(new StartNotifyRule());
+            _notifyAccessRules.Add(new StopNotifyRule());
             _notifyAccessRules.Add(new ShowAboutRule());
             _notifyAccessRules.Add(new OpenWhitelistMenuRule());
             _notifyAccessRules.Add(new OpenBlacklistMenuRule());
@@ -174,6 +176,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             _fullAccessRules.Add(new OpenLabelsMenuRule());
             _fullAccessRules.Add(new OpenPermissionsMenuRule());
             _fullAccessRules.Add(new OpenIgnoreListMenuRule());
+            _fullAccessRules.Add(new StartNotifyRule());
+            _fullAccessRules.Add(new StopNotifyRule());
             _fullAccessRules.Add(new ShowAboutRule());
             _fullAccessRules.Add(new CreateNewLabelRule());
             _fullAccessRules.Add(new OpenEditLabelsMenuRule());

@@ -423,18 +423,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
             await _dbWorker.RemoveNmStoreAsync(nmModel);
             await _botActions.DraftSavedMessage(query.From, true);
-            //there is the place to delete old message from chat by query.Message.MessageId
-            //var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Init);
-            //await _dbWorker.AddNewNmStoreAsync(new NmStoreModel { UserId = query.From, MessageId = textMessage.MessageId });
+            await _botActions.DeleteMessage(query.From, query.Message.MessageId);
         }
 
         public async Task HandleCallbackQContinueWithOld(Query query, SendCallbackData callbackData)
         {
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
-            //there is the place to delete old message from chat by query.Message.MessageId
+            await _botActions.DeleteMessage(query.From, query.Message.MessageId);
             var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, nmModel);
             nmModel.MessageId = textMessage.MessageId;
             await _dbWorker.UpdateNmStoreRecordAsync(nmModel);
+
         }
 
         public async Task HandleCallbackQAddTextMessage(Query query, SendCallbackData callbackData)
@@ -477,9 +476,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 nmStore.MessageId = textMessage.MessageId;
                 nmStore.DraftId = draft.Id;
                 await _dbWorker.UpdateNmStoreRecordAsync(nmStore);
+                await _botActions.DeleteMessage(query.From, query.Message.MessageId);
             }
             else
+            {
                 await _botActions.SaveAsDraftQuestionMessage(query.From, SendKeyboardState.Store);
+                await _botActions.DeleteMessage(query.From, nmStore.MessageId);
+            }
         }
 
         public async Task HandleCallbackQSendNewMessage(Query query, SendCallbackData callbackData, Service service)

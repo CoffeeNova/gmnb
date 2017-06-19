@@ -13,8 +13,8 @@
         public const string ALL_COMMAND = "/all";
         public const string DRAFT_COMMAND = "/draft";
         public const string EDIT_COMMAND = "/edit";
-        public const string START_NOTIFY_COMMAND = "/notifystart";
-        public const string STOP_NOTIFY_COMMAND = "/notifystop";
+        public const string START_NOTIFY_COMMAND = "/resume";
+        public const string STOP_NOTIFY_COMMAND = "/stop";
         public const string START_WATCH_COMMAND = "/watchstart";
         public const string STOP_WATCH_COMMAND = "/watchstop";
         public const string DELETE_MSG_MARK = "/deletemark";
@@ -92,6 +92,8 @@
         public const string LABELS_MENU_COMMAND = "300";
         public const string PERMISSIONS_MENU_COMMAND = "301";
         public const string IGNORE_CONTROL_MENU_COMMAND = "302";
+        public const string NOTIFY_START_COMMAND = "303";
+        public const string NOTIFY_STOP_COMMAND = "304";
         public const string ABOUT_COMMAND = "309";
 
         #endregion

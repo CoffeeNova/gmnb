@@ -146,9 +146,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage
         private static string SendButtonCaption => SendKeyboardButtonCapton.Send;
         private static string ToDraftButtonCaption => SendKeyboardButtonCapton.ToDraft;
 
-        private static string ToButtonCommand => InlineQueryCommand.TO_RECIPIENTS_COMMAND;
-        private static string CcButtonCommand => InlineQueryCommand.CC_RECIPIENTS_COMMAND;
-        private static string BccButtonCommand => InlineQueryCommand.BCC_RECIPIENTS_COMMAND;
+        private static string ToButtonCommand => InlineQueryCommand.TO_RECIPIENTS_COMMAND + " ";
+        private static string CcButtonCommand => InlineQueryCommand.CC_RECIPIENTS_COMMAND + " ";
+        private static string BccButtonCommand => InlineQueryCommand.BCC_RECIPIENTS_COMMAND + " ";
         private static string SubjectButtonCommand => CallbackCommand.ADD_SUBJECT_COMMAND;
         private static string MessageButtonCommand => CallbackCommand.ADD_TEXT_MESSAGE_COMMAND;
         private static string RemoveItemCommand => CallbackCommand.REMOVE_ITEM_COMMAND;

@@ -130,35 +130,43 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (nmStore == null)
             {
                 var draft = await Methods.GetDraft(sender.From, draftInfo.Id,
-                                    UsersResource.DraftsResource.GetRequest.FormatEnum.Full);
+                    UsersResource.DraftsResource.GetRequest.FormatEnum.Full);
                 nmStore = await _dbWorker.AddNewNmStoreAsync(sender.From);
                 var formattedMessage = new FormattedMessage(draft.Message);
                 Methods.ComposeNmStateModel(nmStore, formattedMessage);
-                var textMessage = await _botActions.SpecifyNewMailMessage(sender.From, SendKeyboardState.Continue, nmStore);
+                var textMessage =
+                    await _botActions.SpecifyNewMailMessage(sender.From, SendKeyboardState.Continue, nmStore);
                 nmStore.MessageId = textMessage.MessageId;
                 nmStore.DraftId = draft.Id;
                 await _dbWorker.UpdateNmStoreRecordAsync(nmStore);
             }
             else
+            {
                 await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
+                await _botActions.DeleteMessage(sender.From, nmStore.MessageId);
+            }
         }
 
         public async Task HandleStartNotifyCommand(Service service)
         {
             var userSettings = await UserSettings(service.From);
+            if (userSettings.MailNotification)
+                return;
             userSettings.MailNotification = true;
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
             await HandleStartWatchCommandAsync(service);
-            //message to chat about start notification
+            await _botActions.NotificationStartedMessage(service.From);
         }
 
         public async Task HandleStopNotifyCommand(Service service)
         {
             var userSettings = await UserSettings(service.From);
+            if (!userSettings.MailNotification)
+                return;
             await HandleStopWatchCommandAsync(service);
             userSettings.MailNotification = false;
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
-            //message to chat about stop notification
+            await _botActions.NotificationStopedMessage(service.From);
         }
 
         public async Task HandleStartWatchCommandAsync(Service service)
@@ -232,7 +240,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 await _dbWorker.UpdateNmStoreRecordAsync(nmStore);
             }
             else
+            {
                 await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
+                await _botActions.DeleteMessage(sender.From, nmStore.MessageId);
+            }
         }
 
         public async Task HandleHelpCommand(ISender sender)
@@ -253,9 +264,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (message.Text == null)
                 return;
 
-            model.Message = message.Text;
-            await _dbWorker.UpdateNmStoreRecordAsync(model);
-            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+            if (model.Message != message.Text)
+            {
+                model.Message = message.Text;
+                await _dbWorker.UpdateNmStoreRecordAsync(model);
+                await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+            }
+            await _botActions.DeleteMessage(message.ReplyToMessage.Chat, message.ReplyToMessage.MessageId);
         }
 
         public async Task HandleSubjectForceReply(TextMessage message)
@@ -269,9 +284,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             if (message.Text == null)
                 return;
 
-            model.Subject = message.Text;
-            await _dbWorker.UpdateNmStoreRecordAsync(model);
-            await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+            if (model.Subject != message.Text)
+            {
+                model.Subject = message.Text;
+                await _dbWorker.UpdateNmStoreRecordAsync(model);
+                await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+            }
+            await _botActions.DeleteMessage(message.ReplyToMessage.Chat, message.ReplyToMessage.MessageId);
         }
 
         public async Task HandleFileForceReply(DocumentMessage message)
@@ -305,6 +324,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                     });
                     await _dbWorker.UpdateNmStoreRecordAsync(model);
                     await _botActions.UpdateNewMailMessage(message.From, SendKeyboardState.Continue, model);
+                    await _botActions.DeleteMessage(message.ReplyToMessage.Chat, message.ReplyToMessage.MessageId);
                 });
 
                 #endregion
@@ -331,6 +351,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         }
 
+        public async Task HandleDeleteMark(TextMessage message)
+        {
+            await _botActions.DeleteMessage(message.From, message.MessageId);
+        }
+
         #region Settings
 
         public async Task HandleSettingsCommand(ISender sender)
@@ -346,6 +371,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 if (label == null)
                     throw new Exception();
                 await _botActions.CreateLabelSuccessful(message.From, label.Name);
+                await _botActions.DeleteMessage(message.ReplyToMessage.Chat, message.ReplyToMessage.MessageId);
             }
             catch (Exception ex)
             {
@@ -369,6 +395,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             await
                 _botActions.ShowSettingsMenu(message.From, SettingsKeyboardState.EditLabelsMenu, SelectedOption.None,
                     null, labelInfos);
+            await _botActions.DeleteMessage(message.ReplyToMessage.Chat, message.ReplyToMessage.MessageId);
         }
 
         public async Task HandleAddToIgnoreForceReply(TextMessage message)
@@ -390,6 +417,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
             await _dbWorker.AddToIgnoreListAsync(message.From, message.Text);
             await _botActions.AddToIgnoreListSuccessMessage(message.From, message.Text);
+            await _botActions.DeleteMessage(message.ReplyToMessage.Chat, message.ReplyToMessage.MessageId);
         }
 
         public async Task HandleRemoveFromIgnoreForceReply(TextMessage message)
@@ -426,9 +454,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             userSettings.IgnoreList.Remove(emailModel);
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
             await _botActions.RemoveFromIgnoreListSuccessMessage(message.From, emailModel.Address);
+            await _botActions.DeleteMessage(message.ReplyToMessage.Chat, message.ReplyToMessage.MessageId);
         }
 
         #endregion
+
         private void UpdateNmStoreModel(NmStoreModel model, Message message)
         {
             if (message.GetType() == typeof(TextMessage))

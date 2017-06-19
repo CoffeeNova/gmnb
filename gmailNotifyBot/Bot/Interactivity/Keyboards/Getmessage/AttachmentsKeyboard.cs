@@ -29,7 +29,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage
                     Text = $"{i + 1}. {a.FileName}",
                     CallbackData = new GetCallbackData(GeneralCallbackData)
                     {
-                        Command = CallbackCommand.GET_ATTACHMENT_COMMAND + $"{i}"
+                        Command = CallbackCommand.GET_ATTACHMENT_COMMAND,
+                        AttachmentIndex = i
                     }
                 });
             });

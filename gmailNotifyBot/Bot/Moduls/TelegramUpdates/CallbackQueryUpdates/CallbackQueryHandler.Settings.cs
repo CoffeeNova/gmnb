@@ -1,11 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
+using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
+using Google.Apis.Gmail.v1.Data;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates
 {
@@ -40,6 +44,46 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
             await
                 _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.IgnoreMenu, SelectedOption.None, userSettings);
+        }
+
+        public async Task HandleCallbackQStartNotify(CallbackQuery query, Service service)
+        {
+            var userSettings = await UserSettings(query.From);
+            if (userSettings.MailNotification)
+                return;
+            userSettings.MailNotification = true;
+            await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
+            if (string.IsNullOrEmpty(BotInitializer.Instance?.BotSettings?.Topic))
+                throw new CommandHandlerException($"{nameof(BotInitializer.Instance.BotSettings.Token)} must be not null or empty.");
+
+            var watchRequest = new WatchRequest
+            {
+                LabelIds = new List<string> { "INBOX" },
+                TopicName = BotInitializer.Instance.BotSettings.Topic
+            };
+            var request = service.GmailService.Users.Watch(watchRequest, "me");
+            var watchResponse = await request.ExecuteAsync();
+            if (watchResponse.Expiration != null)
+                userSettings.Expiration = watchResponse.Expiration.Value;
+            if (watchResponse.HistoryId != null)
+                userSettings.HistoryId = Convert.ToInt64(watchResponse.HistoryId.Value);
+
+            await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
+            await _botActions.NotificationStartedMessage(service.From);
+        }
+
+        public async Task HandleCallbackQStopNotify(CallbackQuery query, Service service)
+        {
+            var userSettings = await UserSettings(query.From);
+            if (!userSettings.MailNotification)
+                return;
+
+            var request = service.GmailService.Users.Stop("me");
+            await request.ExecuteAsync();
+
+            userSettings.MailNotification = false;
+            await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
+            await _botActions.NotificationStopedMessage(service.From);
         }
 
         public async Task HandleCallbackQAbout(CallbackQuery query, SettingsCallbackData callbackData)
@@ -273,6 +317,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
             await
                 _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.MainMenu, SelectedOption.None, userSettings);
+        }
+
+        private async Task<UserSettingsModel> UserSettings(int userId)
+        {
+            var userSettings = await _dbWorker.FindUserSettingsAsync(userId);
+            if (userSettings == null)
+                throw new DbDataStoreException(
+                    $"Can't find user settings data in database. User record with id {userId} is absent in the database.");
+            return userSettings;
         }
     }
 }
