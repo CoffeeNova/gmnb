@@ -2,32 +2,23 @@
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
-using NLog;
+using System;
 
-namespace CoffeeJelly.gmailNotifyBot.Bot
+namespace CoffeeJelly.TelegramBotApiWrapper
 {
     /// <summary>
-    /// This class acts as a subscriber <see cref="Updates.UpdatesArrivedEvent"/>.
+    /// This class acts as a subscriber <see cref="IUpdate.UpdatesArrivedEvent"/>.
     /// Recognizes Telegram's messages and forms them as <see cref="Message"/> objects.
     /// Triggers self events depending on the message type received.
     /// </summary>
     public class UpdatesHandler
     {
-        public UpdatesHandler()
+        private void RequestsArrivedEvent(IUpdate update)
         {
-            //if (!_testMode)
-            ResumeHandleUpdates();
-        }
-
-        private void RequestsArrivedEvent(IUpdates updates)
-        {
-            foreach (var update in updates.UpdatesList)
-            {
-                TryRaiseNewMessageEvent(update.Message);
-                TryRaiseNewCallbackQueryEvent(update.CallbackQuery);
-                TryRaiseNewInlineQueryEvent(update.InlineQuery);
-                TryRaiseNewChosenInlineResult(update.ChosenInlineResult);
-            }
+            TryRaiseNewMessageEvent(update.Update.Message);
+            TryRaiseNewCallbackQueryEvent(update.Update.CallbackQuery);
+            TryRaiseNewInlineQueryEvent(update.Update.InlineQuery);
+            TryRaiseNewChosenInlineResult(update.Update.ChosenInlineResult);
         }
 
         private void TryRaiseNewMessageEvent(Message sender)
@@ -116,15 +107,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
 
         public void StopHandleUpdates()
         {
+            if (Updates == null)
+                throw new InvalidOperationException($"{nameof(Updates)} must be specified.");
+
             if (UpdatesHandlerStopped) return;
-            Updates.Instance.UpdatesArrivedEvent -= RequestsArrivedEvent;
+            Updates.UpdatesArrivedEvent -= RequestsArrivedEvent;
             UpdatesHandlerStopped = true;
         }
 
-        public void ResumeHandleUpdates()
+        public void StartHandleUpdates()
         {
+            if (Updates == null)
+                throw new InvalidOperationException($"{nameof(Updates)} must be specified.");
+
             if (!UpdatesHandlerStopped) return;
-            Updates.Instance.UpdatesArrivedEvent += RequestsArrivedEvent;
+            Updates.UpdatesArrivedEvent += RequestsArrivedEvent;
             UpdatesHandlerStopped = false;
         }
 
@@ -155,23 +152,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public event TelegramSenderEventHandler<ChosenInlineResult> TelegramChosenInlineEvent;
         #endregion
 
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        public IUpdate Updates { get; set; }
 
         public bool UpdatesHandlerStopped { get; private set; } = true;
-
-
-
-    }
-
-    public enum RequestsType
-    {
-        Text,
-        Sticker,
-        Photo,
-        Video,
-        Document,
-        Location,
-        Contact,
-        Voice
     }
 }

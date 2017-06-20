@@ -85,7 +85,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             {
                 SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
                 AddFileDataContent(form, photo);
-                return await UploadFormData<PhotoMessage>(form);
+                return await UploadFormMessageData<PhotoMessage>(form);
             }
         }
 
@@ -133,7 +133,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                     form.Add(new StringContent(title, Encoding.UTF8), "title");
 
                 AddFileDataContent(form, audio);
-                return await UploadFormData<AudioMessage>(form);
+                return await UploadFormMessageData<AudioMessage>(form);
             }
         }
 
@@ -182,7 +182,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                 SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup, caption);
 
                 AddFileDataContent(form, document);
-                return await UploadFormData<DocumentMessage>(form);
+                return await UploadFormMessageData<DocumentMessage>(form);
             }
         }
 
@@ -223,7 +223,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             {
                 SendMethodsDefaultContent(form, chatId, disableNotification, replyToMessageId, replyMarkup);
                 AddFileDataContent(form, sticker);
-                return await UploadFormData<StickerMessage>(form);
+                return await UploadFormMessageData<StickerMessage>(form);
             }
         }
 
@@ -271,7 +271,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                     form.Add(new StringContent(height.ToString(), Encoding.UTF8), "height");
 
                 AddFileDataContent(form, video);
-                return await UploadFormData<VideoMessage>(form);
+                return await UploadFormMessageData<VideoMessage>(form);
             }
         }
 
@@ -321,7 +321,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                     form.Add(new StringContent(duration.ToString(), Encoding.UTF8), "duration");
 
                 AddFileDataContent(form, voice);
-                return await UploadFormData<VoiceMessage>(form);
+                return await UploadFormMessageData<VoiceMessage>(form);
             }
         }
 
@@ -469,7 +469,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
 	                form.Add(new StringContent(length.ToString(), Encoding.UTF8), "length");
 
                 AddFileDataContent(form, videoNote);
-	            return await UploadFormData<VideoNoteMessage>(form);
+	            return await UploadFormMessageData<VideoNoteMessage>(form);
 	        }
 	    }
 

@@ -118,7 +118,19 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             }
         }
 
-        private async Task<T> UploadFormData<T>(MultipartFormDataContent form, [CallerMemberName] string callerName = "") where T : Message
+        private async Task<T> UploadFormMessageData<T>(MultipartFormDataContent form, [CallerMemberName] string callerName = "")
+        {
+            var response = await UploadMultipartFormDataContent(form, callerName);
+            var responseObject = JsonConvert.DeserializeObject<Response<T>>(response);
+            if (responseObject == null)
+                throw new TelegramMethodsException("No response recieved");
+            if (!responseObject.Ok)
+                throw TelegramMethodsException.CreateException(responseObject);
+
+            return responseObject.Result;
+        }
+
+        private async Task<string> UploadMultipartFormDataContent(MultipartFormDataContent form, [CallerMemberName] string callerName = "")
         {
             var telegramMethodName = TelegramMethodAttribute.GetMethodNameValue(this.GetType(), callerName);
             Debug.Assert(!string.IsNullOrEmpty(telegramMethodName),
@@ -129,9 +141,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                 using (var httpClient = new HttpClient())
                 {
                     var response = await httpClient.PostAsync(TelegramBotUrl + Token + "/" + telegramMethodName, form);
-                    var strResult = await response.Content.ReadAsStringAsync();
-                    var json = JsonConvert.DeserializeObject<JToken>(strResult);
-                    return MessageBuilder.BuildMessage<T>(json["result"]);
+                    return await response.Content.ReadAsStringAsync();
                 }
             }
             catch (HttpRequestException ex)
@@ -163,7 +173,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
         private string Token { get; }
 
         private const string TelegramBotUrl = "https://api.telegram.org/bot";
-        private const string  TelegramFileUrl = "https://api.telegram.org/file/bot";
+        private const string TelegramFileUrl = "https://api.telegram.org/file/bot";
 
         private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
