@@ -14,6 +14,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using CoffeeJelly.TelegramBotApiWrapper;
 using CoffeeJelly.TelegramBotApiWrapper.JsonParsers;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;

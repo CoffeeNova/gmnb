@@ -9,6 +9,8 @@ using CoffeeJelly.gmailNotifyBot.Bot;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.gmailNotifyBot.Models;
+using CoffeeJelly.TelegramBotApiWrapper;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.gmailNotifyBot.Controllers
@@ -18,18 +20,40 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
         [HttpPost]
         public ActionResult Index()
         {
-            Request.InputStream.Seek(0, SeekOrigin.Begin);
-            var json = new StreamReader(Request.InputStream).ReadToEnd();
-            var message = JsonConvert.DeserializeObject<GoogleNotifyMessage>(json);
-            var notifyHandler = BotInitializer.Instance?.NotifyHandler;
+            try
+            {
+                Request.InputStream.Seek(0, SeekOrigin.Begin);
+                var json = new StreamReader(Request.InputStream).ReadToEnd();
+                var message = JsonConvert.DeserializeObject<GoogleNotifyMessage>(json);
+                var notifyHandler = BotInitializer.Instance?.NotifyHandler;
 
-            if (notifyHandler == null) return new HttpStatusCodeResult(HttpStatusCode.OK);
+                if (notifyHandler == null) return new HttpStatusCodeResult(HttpStatusCode.OK);
 
-            notifyHandler.HandleGoogleNotifyMessage(message);
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-            //return commandHandler.HandleGoogleNotifyMessage(message)
-            //    ? new HttpStatusCodeResult(HttpStatusCode.OK)
-            //    : new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                notifyHandler.HandleGoogleNotifyMessage(message);
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult TelegramPath()
+        {
+            try
+            {
+                Request.InputStream.Seek(0, SeekOrigin.Begin);
+                var json = new StreamReader(Request.InputStream).ReadToEnd();
+                var updates = BotInitializer.Instance?.Updates;
+                if (updates == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                (updates as WebhookUpdates).HandleTelegramRequest(json);
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
     }
 }

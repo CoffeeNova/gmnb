@@ -345,9 +345,6 @@
     <Compile Include="Bot\Types\Emoji.cs" />
     <Compile Include="Bot\Types\UserAccess.cs" />
     <Compile Include="Bot\Types\UserInfo.cs" />
-    <Compile Include="Bot\Updates.cs" />
-    <Compile Include="Bot\UpdatesHandler.cs" />
-    <Compile Include="Bot\IUpdates.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImagesController.cs" />

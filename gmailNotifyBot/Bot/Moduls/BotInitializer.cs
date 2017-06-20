@@ -9,6 +9,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using CoffeeJelly.TelegramBotApiWrapper;
 using Google.Apis.Auth.OAuth2;
 using NLog;
 using CallbackQueryHandler = CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates.CallbackQueryHandler;
@@ -38,17 +39,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return Instance;
         }
 
-        public void InitializeUpdates()
+        public void InitializeUpdates(bool webhook = false)
         {
             if (string.IsNullOrEmpty(BotSettings.Token))
                 throw new InvalidOperationException($"{nameof(BotSettings.Token)} property must be specified");
-            Updates = Updates.GetInstance(BotSettings.Token);
-            Updates.UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
+            if (webhook)
+            {
+                Updates = new WebhookUpdates(BotSettings.Token);
+                return;
+            }
+
+            Updates = new LongPollingUpdates(BotSettings.Token);
+            ((LongPollingUpdates)Updates).UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
+            ((LongPollingUpdates)Updates).Start();
         }
 
         public void InitializeUpdatesHandler()
         {
-            UpdatesHandler = new UpdatesHandler();
+            if (Updates == null)
+                throw new InvalidOperationException($"{nameof(Updates)} property must be specified");
+            UpdatesHandler = new UpdatesHandler {Updates = Updates};
+            UpdatesHandler.StartHandleUpdates();
         }
 
         public void InitializeAuthotizer()
@@ -164,7 +175,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
         private async void Updates_UpdatesTracingStoppedEvent(object sender, BotRequestErrorEventArgs e)
         {
             await CoffeeJTools.Delay(5000);
-            Updates.Restart();
+            ((LongPollingUpdates)Updates).Start();
         }
 
 
@@ -173,7 +184,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
 
         public BotSettings BotSettings { get; set; }
 
-        public Updates Updates { get; private set; }
+        public IUpdate Updates { get; private set; }
 
         public UpdatesHandler UpdatesHandler { get; private set; }
 
