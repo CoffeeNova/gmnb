@@ -363,7 +363,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 
         public async Task SendErrorAboutMaxAttachmentSizeToChat(string chatId, string fileName)
         {
-            throw new NotImplementedException("error");
+            var message = $"{Emoji.CROSS_MARK} {fileName} is too big. The maximum attachment size is {_settings.MaxAttachmentSize}";
+            await _telegramMethods.SendMessageAsync(chatId, message);
         }
 
         public async Task DraftSavedMessage(string chatId, bool notSaved = false)
@@ -508,6 +509,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                 }
             };
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
+        }
+
+        public async Task SendSaveMessageAsDraftError(string chatId)
+        {
+            var message = $"{Emoji.CROSS_MARK} Error to save message as draft.";
+            await _telegramMethods.SendMessageAsync(chatId, message);
         }
 
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)

@@ -312,7 +312,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                         await _botActions.SendLostInfoMessage(message.From);
                         return;
                     }
-                    if (message.Document.FileSize > _botSettings.MaxAttachmentSize)
+                    if (message.Document.FileSize > _botSettings.MaxAttachmentSizeBytes)
                     {
                         await _botActions.SendErrorAboutMaxAttachmentSizeToChat(message.From, message.Document.FileName);
                         return;

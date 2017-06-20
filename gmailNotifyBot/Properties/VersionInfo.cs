@@ -9,10 +9,6 @@
 //------------------------------------------------------------------------------
 
 [assembly: System.Reflection.AssemblyVersion("1.0")]
-<<<<<<< Updated upstream
-[assembly: System.Reflection.AssemblyFileVersion("1.0.112.26")]
-=======
-[assembly: System.Reflection.AssemblyFileVersion("1.0.113.7")]
->>>>>>> Stashed changes
+[assembly: System.Reflection.AssemblyFileVersion("1.0.113.8")]
 
 

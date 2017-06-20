@@ -384,7 +384,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var formattedMessage = await Methods.GetMessage(service, callbackData.MessageId);
             var attachmentInfo = new List<AttachmentInfo>(formattedMessage.Attachments)[callbackData.AttachmentIndex];
             var attachment = await Methods.GetAttachment(service, callbackData.MessageId, attachmentInfo.Id);
-            if (attachment.Length > _botSettings.MaxAttachmentSize)
+            if (attachment.Length > _botSettings.MaxAttachmentSizeBytes)
                 await _botActions.SendErrorAboutMaxAttachmentSizeToChat(service.From, attachmentInfo.FileName);
 
             string randomFolder = Tools.RandomString(8);
@@ -577,7 +577,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                     draft = await Methods.UpdateDraft(body, service.From, draft.Id);
                 }
                 if (draft == null)
-                    throw new NotImplementedException("BotAction message: error to save message as draft");
+                   await _botActions.SendSaveMessageAsDraftError(service.From);
             }
             finally
             {
