@@ -784,4 +784,23 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
     }
 
     #endregion
+
+#region general rules
+
+    internal class ResumeNotifyRule : ICallbackQueryHandlerRule
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, CallbackQueryHandler handler)
+        {
+            if (!(data is GeneralCallbackData))
+                return null;
+
+            if (!data.Command.Equals(CallbackCommand.RESUME_NOTIFICATION_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQStartNotify(sender, service);
+            return del;
+        }
+    }
+
+#endregion
 }

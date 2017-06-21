@@ -141,5 +141,11 @@
 
         #endregion
         #endregion
+
+        #region General commands
+
+        public const string RESUME_NOTIFICATION_COMMAND = "1000";
+
+        #endregion
     }
 }

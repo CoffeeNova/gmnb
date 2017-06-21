@@ -114,8 +114,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 token);
             var serviceInitializer = new BaseClientService.Initializer
             {
-                ApiKey = "AIzaSyCrVK6UQ4h45WH1DQX6BXNMEIikoT_HEwI",
-                ApplicationName = "gmnb", //this.GetType().ToString()
+                ApiKey = BotInitializer.Instance.BotSettings.GmnbApiKey,
+                ApplicationName = BotInitializer.Instance.BotSettings.ApplicationName,
                 HttpClientInitializer = credentials
             };
             ServiceCollection.Add(new Service(credentials, serviceInitializer, userSettingsModel.Access));

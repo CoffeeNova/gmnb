@@ -235,6 +235,12 @@
     <Compile Include="Bot\DataBase\DataBaseModels\BlacklistModel.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\TempDataModel.cs" />
     <Compile Include="Bot\DataBase\GmailDbContextWorker.TempData.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\GeneralCallbackData.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\General\ButtonCaption.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\General\Factory.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\General\GeneralKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\General\GeneralKeyboardState.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\General\ResumeNotificationsKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\NotifyLabelsKeyboard.cs" />
     <Compile Include="Bot\Types\ILabelInfo.cs" />
     <Compile Include="Bot\Types\IUserInfo.cs" />
@@ -377,9 +383,9 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\Images\silhouette48.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\Images\ClosedEnvelope3.jpg" />
+    <Content Include="Content\Images\OpenedEnvelope3.jpg" />
+    <Content Include="Content\Images\silhouette49.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -400,6 +406,7 @@
     <EmbeddedResource Include="App_LocalResources\client_secret.json" />
     <EmbeddedResource Include="App_LocalResources\client_secret_debug.json" />
     <Compile Include="Bot\Moduls\TelegramUpdates\InlineQueryUpdates\InlineQueryHandler.Handlers.cs" />
+    <None Include="Properties\PublishProfiles\gearhost.pubxml" />
     <None Include="Properties\PublishProfiles\gmailcontrolbot - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\gmailcontrolbot - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />

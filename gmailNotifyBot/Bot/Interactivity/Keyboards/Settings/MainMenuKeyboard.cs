@@ -38,7 +38,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
             AboutRow = new List<InlineKeyboardButton>();
             if (AboutButton != null)
                 AboutRow.Add(AboutButton);
-            var inlineKeyboard = new List<List<InlineKeyboardButton>> { LabelsRow, PermissionsRow, IgnoreRow, AboutRow };
+            var inlineKeyboard = new List<List<InlineKeyboardButton>> { LabelsRow, PermissionsRow, IgnoreRow, NotifyRow, AboutRow };
             return inlineKeyboard;
         }
 

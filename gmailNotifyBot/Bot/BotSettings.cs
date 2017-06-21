@@ -33,5 +33,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public int MaxAttachmentSizeBytes => MaxAttachmentSize * 1024 * 1024;
 
         public string BotVersion { get; set; }
+
+        public string GmnbApiKey { get; set; }
+
+        public string ApplicationName { get; set; }
     }
 }

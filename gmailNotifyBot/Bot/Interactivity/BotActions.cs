@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
+using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.General;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Getmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Sendmessage;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings;
@@ -39,9 +40,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             //_openEnvelopeThumbUrl =
             //@"https://image.freepik.com/free-icon/open-e-mail-message-envelope-symbol-of-ios-7-interface_318-35260.jpg";
 #else
-            _contactsThumbUrl = $@"https://{Settings.DomainName}/Images/Silhouette48";
-            _closedEnvelopeThumbUrl = $@"https://{Settings.DomainName}/Images/ClosedEnvelope";
-            _openEnvelopeThumbUrl = $@"https://{Settings.DomainName}/Images/OpenedEnvelope";
+            _contactsThumbUrl = $@"https://{_settings.DomainName}/{_settings.ImagesPath}Silhouette49.jpg";
+            _closedEnvelopeThumbUrl = $@"https://{_settings.DomainName}/{_settings.ImagesPath}ClosedEnvelope3.jpg";
+            _openEnvelopeThumbUrl = $@"https://{_settings.DomainName}/{_settings.ImagesPath}OpenedEnvelope3";
 #endif
         }
 
@@ -386,9 +387,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.DeleteMessageAsync(chatId, messageId);
         }
 
-        public async Task ShowSettingsMenu(string chatId)
+        public async Task ShowSettingsMenu(string chatId, UserSettingsModel settings)
         {
-            var keyboard = _settingsKeyboardFactory.CreateKeyboard(SettingsKeyboardState.MainMenu);
+            var keyboard = _settingsKeyboardFactory.CreateKeyboard(SettingsKeyboardState.MainMenu, settings);
             var message = SettingsMenuMessageBuilder(SettingsKeyboardState.MainMenu);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
@@ -494,20 +495,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task NotificationStopedMessage(string chatId)
         {
             var message = "You will no longer receive notifications about new emails.";
-            var keyboard = new InlineKeyboardMarkup
-            {
-                InlineKeyboard = new List<List<InlineKeyboardButton>>
-                {
-                    new List<InlineKeyboardButton>
-                    {
-                        new InlineKeyboardButton
-                        {
-                            Text = "Resume Notifications",
-                            CallbackData = TextCommand.START_NOTIFY_COMMAND
-                        }
-                    }
-                }
-            };
+            var keyboard = _generalKeyboardFactory.CreateKeyboard(GeneralKeyboardState.ResumeNotifications);
             await _telegramMethods.SendMessageAsync(chatId, message, ParseMode.Html, false, false, null, keyboard);
         }
 
@@ -713,5 +701,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         private readonly GetKeyboardFactory _getKeyboardFactory = new GetKeyboardFactory();
         private readonly SendKeyboardFactory _sendKeyboardFactory = new SendKeyboardFactory();
         private readonly SettingsKeyboardFactory _settingsKeyboardFactory = new SettingsKeyboardFactory();
+        private readonly GeneralKeyboardFactory _generalKeyboardFactory = new GeneralKeyboardFactory();
     }
 }

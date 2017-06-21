@@ -360,7 +360,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
         public async Task HandleSettingsCommand(ISender sender)
         {
-            await _botActions.ShowSettingsMenu(sender.From);
+            var settings = await UserSettings(sender.From);
+            await _botActions.ShowSettingsMenu(sender.From, settings);
         }
 
         public async Task HandleCreateNewLabelForceReply(TextMessage message, Service service)

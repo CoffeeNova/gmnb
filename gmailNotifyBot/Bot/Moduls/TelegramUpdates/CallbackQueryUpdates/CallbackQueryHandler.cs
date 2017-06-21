@@ -54,6 +54,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 data = CallbackData.Create<SendCallbackData>(query.Data);
             else if (int.Parse(callbackDataType) == (int)CallbackDataType.SettingsCallbackData)
                 data = CallbackData.Create<SettingsCallbackData>(query.Data);
+            else if (int.Parse(callbackDataType) == (int)CallbackDataType.GeneralCallbackData)
+                data = CallbackData.Create<GeneralCallbackData>(query.Data);
             else
                 return;
 
@@ -141,6 +143,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             _notifyAccessRules.Add(new BackToMainMenuRule());
 
             #endregion
+
+            #region general
+
+            _notifyAccessRules.Add(new ResumeNotifyRule());
+
+            #endregion
         }
 
         private void InitFullAccessRules()
@@ -199,6 +207,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             _fullAccessRules.Add(new RevokePermissionsRule());
             _fullAccessRules.Add(new RevokePermissionsViaWebRule());
             _fullAccessRules.Add(new BackToMainMenuRule());
+
+            #endregion
+
+            #region general
+
+            _fullAccessRules.Add(new ResumeNotifyRule());
 
             #endregion
         }

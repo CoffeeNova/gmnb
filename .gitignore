@@ -252,3 +252,4 @@ ModelManifest.xml
 /gmailNotifyBot/App_LocalResources/client_secret_debug.json
 /TelegramApiWrapperTests/Token.resx
 /TelegramApiWrapperTests/Token.Designer.cs
+/gmailNotifyBot/Web.Release.config
