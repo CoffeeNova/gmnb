@@ -52,11 +52,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             this.Created = DateTime.Now;
         }
 
-        public async void RefreshAccessTokenAsync()
-        {
-            
-        }
-
         public static GoogleAuth Exchange(string authCode, string clientid, string secret, string redirectURI)
         {
 

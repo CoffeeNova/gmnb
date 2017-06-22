@@ -70,7 +70,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                         var query = service.GmailService.Users.History.List("me");
                         query.HistoryTypes = UsersResource.HistoryResource.ListRequest.HistoryTypesEnum.MessageAdded;
                         query.LabelId = "INBOX";
-                        query.StartHistoryId = 1; //Convert.ToUInt64(userSettings.HistoryId);
+                        query.StartHistoryId = Convert.ToUInt64(userSettings.HistoryId);
                         var listRequest = query.Execute();
                         var historyList = listRequest.History?.ToList();
                         if (historyList != null)

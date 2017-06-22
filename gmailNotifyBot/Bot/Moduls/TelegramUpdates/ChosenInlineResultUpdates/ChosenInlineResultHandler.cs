@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
@@ -26,7 +27,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             }
         }
 
-        public async void HandleChosenInlineResult(QueryResult.ChosenInlineResult result)
+        public async Task HandleChosenInlineResult(QueryResult.ChosenInlineResult result)
         {
             if (result?.Query == null)
                 throw new ArgumentNullException(nameof(result));

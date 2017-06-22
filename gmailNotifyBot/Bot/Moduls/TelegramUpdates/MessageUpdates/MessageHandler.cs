@@ -43,7 +43,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             }
         }
 
-        private async void HandleForceReplyMessage(Message message)
+        private async Task HandleForceReplyMessage(Message message)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
@@ -110,7 +110,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             }
         }
 
-        private async void HandleTextMessage(TextMessage message)
+        private async Task HandleTextMessage(TextMessage message)
         {
             if (message?.Text == null)
                 throw new ArgumentNullException(nameof(message));

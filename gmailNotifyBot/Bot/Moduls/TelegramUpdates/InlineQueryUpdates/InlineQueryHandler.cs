@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
@@ -30,7 +31,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
             }
         }
 
-        public async void HandleInlineQuery(Query query)
+        public async Task HandleInlineQuery(Query query)
         {
             if (query?.Query == null)
                 throw new ArgumentNullException(nameof(query));

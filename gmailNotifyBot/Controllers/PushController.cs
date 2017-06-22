@@ -26,7 +26,7 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
                 var json = new StreamReader(Request.InputStream).ReadToEnd();
                 var message = JsonConvert.DeserializeObject<GoogleNotifyMessage>(json);
                 var notifyHandler = BotInitializer.Instance?.NotifyHandler;
-
+                TestModel.WritePushedMessageToTestFile(message);
                 if (notifyHandler == null) return new HttpStatusCodeResult(HttpStatusCode.OK);
 
                 notifyHandler.HandleGoogleNotifyMessage(message);
@@ -47,11 +47,13 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
                 var json = new StreamReader(Request.InputStream).ReadToEnd();
                 var updates = BotInitializer.Instance?.Updates;
                 if (updates == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
                 (updates as WebhookUpdates).HandleTelegramRequest(json);
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }
-            catch
+            catch(Exception ex)
             {
+                TestModel.WriteLogToFile(ex.Message + Environment.NewLine + ex.StackTrace);
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }

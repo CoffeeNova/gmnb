@@ -41,7 +41,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             }
         }
 
-        public async void Handle(Query query)
+        public async Task Handle(Query query)
         {
             if (query?.Data == null)
                 throw new ArgumentNullException(nameof(query));

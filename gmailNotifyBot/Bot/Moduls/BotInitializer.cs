@@ -46,6 +46,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (webhook)
             {
                 Updates = new WebhookUpdates(BotSettings.Token);
+                var upd = Updates as WebhookUpdates;
+                upd.Url = $@"https://{BotSettings.DomainName}/Push/TelegramPath";
+                upd.AllowedUpdates = new List<TelegramBotApiWrapper.Types.UpdateType>
+                {
+                    TelegramBotApiWrapper.Types.UpdateType.AllUpdates
+                };
+                upd.SetWebhook();
                 return;
             }
 
@@ -172,7 +179,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             }, null, updatePeriod, updatePeriod);
         }
 
-        private async void Updates_UpdatesTracingStoppedEvent(object sender, BotRequestErrorEventArgs e)
+        private async Task Updates_UpdatesTracingStoppedEvent(object sender, BotRequestErrorEventArgs e)
         {
             await CoffeeJTools.Delay(5000);
             ((LongPollingUpdates)Updates).Start();
