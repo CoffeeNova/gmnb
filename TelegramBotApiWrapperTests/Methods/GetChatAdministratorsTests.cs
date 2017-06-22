@@ -15,7 +15,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
               _botChatMember,
               _userChatMember
             };
-            var actual = _telegramMethods.GetChatAdministrators(_testChannel.Id.ToString());
+            var actual = _telegramMethods.GetChatAdministrators(_testChannel.Id.ToString()).Result;
 
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);

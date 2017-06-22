@@ -32,7 +32,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         public void SendVideoByUri_VideoUri_VideoMessage()
         {
             var uri = new Uri(_videoUri);
-            var actual = _telegramMethods.SendVideoByUri(_privateChat.Id.ToString(), uri);
+            var actual = _telegramMethods.SendVideoUri(_privateChat.Id.ToString(), uri).Result;
 
             Assert.IsInstanceOfType(actual, typeof(VideoMessage));
         }

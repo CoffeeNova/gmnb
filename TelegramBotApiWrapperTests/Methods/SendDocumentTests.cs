@@ -18,17 +18,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         public void SendDocumentByUri_DocumentUri_DocumentMessage()
         {
             var uri = new Uri(_documentUri);
-            var actual = _telegramMethods.SendDocumentByUri(_privateChat.Id.ToString(), uri);
-
-            Assert.IsInstanceOfType(actual, typeof(DocumentMessage));
-        }
-
-        [TestMethod()]
-        public void SendDocumentByUriAsync_DocumentUriPlusCaption_DocumentMessage()
-        {
-            var uri = new Uri(_documentUri);
-            var caption = "Test caption";
-            var actual = _telegramMethods.SendDocumentByUriAsync(_privateChat.Id.ToString(), uri, caption).Result;
+            var actual = _telegramMethods.SendDocumentUri(_privateChat.Id.ToString(), uri).Result;
 
             Assert.IsInstanceOfType(actual, typeof(DocumentMessage));
         }

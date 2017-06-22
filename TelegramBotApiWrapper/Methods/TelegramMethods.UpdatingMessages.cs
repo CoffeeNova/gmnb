@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CoffeeJelly.TelegramBotApiWrapper.Attributes;
 using CoffeeJelly.TelegramBotApiWrapper.Extensions;
+using CoffeeJelly.TelegramBotApiWrapper.Helpers;
 using CoffeeJelly.TelegramBotApiWrapper.JsonParsers;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
@@ -15,7 +18,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
     public partial class TelegramMethods
     {
         [TelegramMethod("editMessageText")]
-        public TextMessage EditMessageText(string newText, string chatId = null, string messageId = null, string inlineMessageId = null,
+        public async Task<TextMessage> EditMessageText(string newText, string chatId = null, string messageId = null, string inlineMessageId = null,
                                                     ParseMode? parseMode = null, bool? disableWebPagePreview = null, IMarkup replyMarkup = null)
         {
             newText.NullInspect(nameof(newText));
@@ -40,48 +43,32 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                     throw new ArgumentException(
                         $"If {nameof(inlineMessageId)} is specified {nameof(messageId)} must be a null value.");
             }
-               
-            var parameters = new NameValueCollection { { "text", newText } };
 
-            UpdateMethodsDefaultContent(parameters, chatId, messageId, inlineMessageId, replyMarkup);
+            var content = new Content { Json = true };
+            content.Add("text", newText);
+            UpdateMethodsDefaultContent(content, chatId, messageId, inlineMessageId, replyMarkup);
 
             if (parseMode.HasValue)
             {
                 var parse = JsonConvert.SerializeObject(parseMode, Formatting.None, Settings);
-                parameters.Add("parse_mode", parse.Trim('"'));
+                content.Add("parse_mode", parse.Trim('"'));
             }
             if (disableWebPagePreview.HasValue)
-                parameters.Add("disable_web_page_preview", disableWebPagePreview.ToString());
+                content.Add("disable_web_page_preview", disableWebPagePreview.ToString());
 
-            var json = UploadUrlQuery(parameters);
-            try
+            var json = JsonConvert.SerializeObject(content.JsonData);
+            using (var httpContent = new StringContent(json, Encoding.UTF8, "application/json"))
             {
-                return MessageBuilder.BuildMessage<TextMessage>(json["result"]);
-            }
-            catch (JsonException)
-            {
-                return null;
+                return await UploadFormData<TextMessage>(httpContent).ConfigureAwait(false);
             }
         }
 
-        [TelegramMethod("editMessageText")]
-        public Task<TextMessage> EditMessageTextAsync(string newText, string chatId = null, string messageId = null,
-                        string inlineMessageId = null, ParseMode? parseMode = null, bool? disableWebPagePreview = null,
-                        IMarkup replyMarkup = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return
-                Task.Run(
-                    () =>
-                        EditMessageText(newText, chatId, messageId, inlineMessageId, parseMode,
-                            disableWebPagePreview, replyMarkup), cancellationToken);
-        }
-
-        public TextMessage EditMessageCaption()
+        public async Task<TextMessage> EditMessageCaption()
         {
             throw new NotImplementedException();
         }
 
-        public TextMessage EditMessageReplyMarkup()
+        public async Task<TextMessage> EditMessageReplyMarkup()
         {
             throw new NotImplementedException();
         }

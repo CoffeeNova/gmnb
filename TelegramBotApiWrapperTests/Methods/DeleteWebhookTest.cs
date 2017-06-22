@@ -1,4 +1,8 @@
-﻿using KellermanSoftware.CompareNetObjects;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
@@ -6,13 +10,10 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
     public partial class TelegramMethodsTests
     {
         [TestMethod()]
-        public void DeleteMessage_DeleteLastMessage_Message()
+        public void DeleteWebhookTest()
         {
-            var actual =
-                _telegramMethods.DeleteMessage(_textMessage.Chat, _textMessage.MessageId).Result;
-
+            var actual = _telegramMethods.DeleteWebhook().Result;
             Assert.IsTrue(actual);
         }
-
     }
 }

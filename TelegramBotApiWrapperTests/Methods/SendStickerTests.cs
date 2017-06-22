@@ -27,7 +27,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         public void SendStickerByUri_StickerUri_StickerMessage()
         {
             var uri = new Uri(_stickerUri);
-            var actual = _telegramMethods.SendStickerByUri(_privateChat.Id.ToString(), uri);
+            var actual = _telegramMethods.SendStickerUri(_privateChat.Id.ToString(), uri).Result;
 
             Assert.IsInstanceOfType(actual, typeof(StickerMessage));
         }

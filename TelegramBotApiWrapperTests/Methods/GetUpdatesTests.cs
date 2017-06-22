@@ -12,7 +12,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         public void GetUpdatesTest()
         {
             var expected = new List<Update>();
-            var actual = _telegramMethods.GetUpdates();
+            var actual = _telegramMethods.GetUpdates().Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected.GetType(), actual.GetType());
 

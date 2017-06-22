@@ -8,7 +8,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         [TestMethod()]
         public void DownloadFile_FileId_FileExists()
         {
-            _file = _telegramMethods.GetFile(_file.FileId);
+            _file = _telegramMethods.GetFile(_file.FileId).Result;
 
             _telegramMethods.DownloadFileAsync(_file, _fullFileName).Wait();
             var fileName = Path.GetFileName(_file.FilePath);

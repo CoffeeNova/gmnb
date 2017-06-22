@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoffeeJelly.TelegramBotApiWrapper.Exceptions;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
@@ -24,7 +25,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 ForwardFrom = _user
             };
 
-            var actual = _telegramMethods.ForwardMessage<TextMessage>(chatId.ToString(), fromChatId.ToString(), messageId);
+            var actual = _telegramMethods.ForwardMessage<TextMessage>(chatId.ToString(), fromChatId.ToString(), messageId).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -33,9 +34,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
 
         [ExpectedException(typeof(TelegramMethodsException))]
         [TestMethod()]
-        public void ForwardMessage_TelegramMethodsException()
+        public async Task ForwardMessage_TelegramMethodsException()
         {
-            _telegramMethods.ForwardMessage<TextMessage>(_privateChat.Id.ToString(), _privateChat.Id.ToString(), int.MaxValue);
+            var test = await _telegramMethods.ForwardMessage<TextMessage>(_privateChat.Id.ToString(), _privateChat.Id.ToString(), int.MaxValue);
         }
 
         [TestMethod()]
@@ -66,7 +67,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 MessageId = messageId,
                 ForwardFrom = _user
             };
-            var actual = _telegramMethods.ForwardMessage<StickerMessage>(chatId.ToString(), fromChatId.ToString(), messageId);
+            var actual = _telegramMethods.ForwardMessage<StickerMessage>(chatId.ToString(), fromChatId.ToString(), messageId).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 

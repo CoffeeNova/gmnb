@@ -9,7 +9,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         public void GetChatMembersCount_ChatId_CountMembers()
         {
             var expected = 3;
-            var actual = _telegramMethods.GetChatMembersCount(_testChannel.Id.ToString());
+            var actual = _telegramMethods.GetChatMembersCount(_testChannel.Id.ToString()).Result;
 
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);

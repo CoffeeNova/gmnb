@@ -36,7 +36,8 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
 
             var rm = new ResourceManager("CoffeeJelly.TelegramBotApiWrapperTests.Token", Assembly.GetExecutingAssembly());
             var token = rm.GetString("testToken");
-             _telegramMethods = new TelegramMethods(token, true);
+            _telegramMethods = new TelegramMethods(token, true);
+            var t = _telegramMethods.DeleteWebhook().Result;
 
             _privateChat = new Chat
             {
@@ -250,26 +251,26 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                     _fullFileName = _testStorageFilesPath;
                     break;
                 case nameof(EditMessageText_EditLastMessage_Message):
-                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test EditTextMessage");
+                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test EditTextMessage").Result;
                     _editedTextMessage = _textMessage;
                     _editedTextMessage.Text = $"Message Edited By {nameof(EditMessageText_EditLastMessage_Message)}";
                     break;
                 case nameof(EditMessageText_EditLastMessage_ParsedMessage):
-                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test EditTextMessage");
+                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test EditTextMessage").Result;
                     _editedTextMessage = _textMessage;
                     _editedTextMessage.Text = $"Message Edited By {nameof(EditMessageText_EditLastMessage_Message)}";
                     _config.MembersToIgnore.Add("Entities");
                     break;
                 case nameof(GetUpdates_EditedMessagesOnly_ListOfOneUpdate):
-                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test GetUpdates Message 1");
-                    _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test GetUpdates Message 2");
+                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test GetUpdates Message 1").Result;
+                    var t = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test GetUpdates Message 2").Result;
                     _editedTextMessage =
                         _telegramMethods.EditMessageText(
                             $"Message Edited By {nameof(GetUpdates_EditedMessagesOnly_ListOfOneUpdate)}",
-                            _privateChat.Id.ToString(), _textMessage.MessageId.ToString());
+                            _privateChat.Id.ToString(), _textMessage.MessageId.ToString()).Result;
                     break;
                 case nameof(DeleteMessage_DeleteLastMessage_Message):
-                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test DeleteMessage");
+                    _textMessage = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "Test DeleteMessage").Result;
                     break;
             }
         }
@@ -277,7 +278,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         [TestCleanup]
         public void TestCleanUp()
         {
-            if (!TestContext.TestName.EqualsAny(nameof(GetMeTest), nameof(GetMe_TelegramMethodsGetMeException), nameof(GetMeAsyncTest)))
+            if (!TestContext.TestName.EqualsAny(nameof(GetMeTest), nameof(GetMe_TelegramMethodsGetMeException)))
                 _telegramMessagesCount++;
 
             switch (TestContext.TestName)

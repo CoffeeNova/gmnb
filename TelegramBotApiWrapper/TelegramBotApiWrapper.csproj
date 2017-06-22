@@ -61,6 +61,7 @@
     <Compile Include="Extensions\GeneralExtensions.cs" />
     <Compile Include="Extensions\IntExtension.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
+    <Compile Include="Helpers\Content.cs" />
     <Compile Include="IUpdates.cs" />
     <Compile Include="JsonParsers\GeneralBuilder.cs" />
     <Compile Include="JsonParsers\MessageBuilder.cs" />

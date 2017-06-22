@@ -11,6 +11,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Attributes;
 using CoffeeJelly.TelegramBotApiWrapper.Converters;
 using CoffeeJelly.TelegramBotApiWrapper.Exceptions;
 using CoffeeJelly.TelegramBotApiWrapper.Extensions;
+using CoffeeJelly.TelegramBotApiWrapper.Helpers;
 using CoffeeJelly.TelegramBotApiWrapper.JsonParsers;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
@@ -39,19 +40,19 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
 
 
         #region private methods
-        private void SendMethodsDefaultContent(NameValueCollection collection, string chatId, bool disableNotification,
+        private void SendMethodsDefaultContent(Content content, string chatId, bool disableNotification,
             int? replyToMessageId, IMarkup replyMarkup, string caption = null)
         {
-            collection.Add("disable_notification", disableNotification.ToString());
+            content.Add("disable_notification", disableNotification.ToString());
 
             if (chatId != null)
-                collection.Add("chat_id", chatId);
+                content.Add("chat_id", chatId);
             if (caption != null)
-                collection.Add("caption", caption);
+                content.Add("caption", caption);
             if (replyToMessageId != null)
-                collection.Add("reply_to_message_id", replyToMessageId.ToString());
+                content.Add("reply_to_message_id", replyToMessageId.ToString());
             if (replyMarkup != null)
-                collection.Add("reply_markup",
+                content.Add("reply_markup",
                     JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings));
         }
 
@@ -66,7 +67,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                 form.Add(new StringContent(replyToMessageId.ToString(), Encoding.UTF8), "reply_to_message_id");
             if (replyMarkup != null)
                 form.Add(new StringContent(
-                        JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings), Encoding.UTF8),
+                        JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings), Encoding.UTF8, "application/json"),
                     "reply_markup");
         }
 
@@ -96,31 +97,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
 
         }
 
-        private JToken UploadUrlQuery(NameValueCollection collection, [CallerMemberName] string callerName = "")
+        private async Task<T> UploadFormData<T>(HttpContent content, [CallerMemberName] string callerName = "")
         {
-            var telegramMethodName = TelegramMethodAttribute.GetMethodNameValue(this.GetType(), callerName);
-            Debug.Assert(!string.IsNullOrEmpty(telegramMethodName),
-                $"Use {nameof(TelegramMethodAttribute)} to avoid error.");
-
-            using (var webClient = new WebClient())
-            {
-                try
-                {
-                    var byteResult = webClient.UploadValues(TelegramBotUrl + Token + "/" + telegramMethodName, "POST", collection);
-                    var strResult = webClient.Encoding.GetString(byteResult);
-
-                    return JsonConvert.DeserializeObject<JToken>(strResult);
-                }
-                catch (WebException ex)
-                {
-                    throw new TelegramMethodsException("Bad request or error occurs while accessing remote server.", ex);
-                }
-            }
-        }
-
-        private async Task<T> UploadFormMessageData<T>(MultipartFormDataContent form, [CallerMemberName] string callerName = "")
-        {
-            var response = await UploadMultipartFormDataContent(form, callerName);
+            var response = await UploadMultipartFormDataContent(content, callerName).ConfigureAwait(false);
             var responseObject = JsonConvert.DeserializeObject<Response<T>>(response);
             if (responseObject == null)
                 throw new TelegramMethodsException("No response recieved");
@@ -130,7 +109,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             return responseObject.Result;
         }
 
-        private async Task<string> UploadMultipartFormDataContent(MultipartFormDataContent form, [CallerMemberName] string callerName = "")
+        private async Task<string> UploadMultipartFormDataContent(HttpContent content, [CallerMemberName] string callerName = "")
         {
             var telegramMethodName = TelegramMethodAttribute.GetMethodNameValue(this.GetType(), callerName);
             Debug.Assert(!string.IsNullOrEmpty(telegramMethodName),
@@ -140,8 +119,9 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.PostAsync(TelegramBotUrl + Token + "/" + telegramMethodName, form);
-                    return await response.Content.ReadAsStringAsync();
+                    var response =
+                        await httpClient.PostAsync(TelegramBotUrl + Token + "/" + telegramMethodName, content).ConfigureAwait(false);
+                    return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
             }
             catch (HttpRequestException ex)
@@ -151,19 +131,20 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             }
         }
 
-        private void UpdateMethodsDefaultContent(NameValueCollection collection, string chatId = null, string messageId = null,
-                                                 string inlineMessageId = null, IMarkup replyMarkup = null)
+        private void UpdateMethodsDefaultContent(Content content, string chatId = null, string messageId = null,
+            string inlineMessageId = null, IMarkup replyMarkup = null)
         {
             if (chatId != null)
-                collection.Add("chat_id", chatId);
+                content.Add("chat_id", chatId);
             if (messageId != null)
-                collection.Add("message_id", messageId);
+                content.Add("message_id", messageId);
             if (inlineMessageId != null)
-                collection.Add("inline_message_id", inlineMessageId);
+                content.Add("inline_message_id", inlineMessageId);
             if (replyMarkup != null)
-                collection.Add("reply_markup",
+                content.Add("reply_markup",
                     JsonConvert.SerializeObject(replyMarkup, Formatting.None, Settings));
         }
+
         #endregion
 
 

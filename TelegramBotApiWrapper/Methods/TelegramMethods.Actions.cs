@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Net.Http;
 using System.Threading.Tasks;
 using CoffeeJelly.TelegramBotApiWrapper.Attributes;
 using CoffeeJelly.TelegramBotApiWrapper.Extensions;
+using CoffeeJelly.TelegramBotApiWrapper.Helpers;
+using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using Newtonsoft.Json;
 
 namespace CoffeeJelly.TelegramBotApiWrapper.Methods
@@ -10,88 +13,65 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
     public partial class TelegramMethods
     {
         [TelegramMethod("kickChatMember")]
-        public bool KickChatMember(string chatId, int userId)
+        public async Task<bool> KickChatMember(string chatId, int userId)
         {
             chatId.NullInspect(nameof(chatId));
-            var parameters = new NameValueCollection
+            var content = new Content();
+            content.Add("chat_id", chatId);
+            content.Add("userId", userId.ToString());
+
+            using (var form = new FormUrlEncodedContent(content.Data))
             {
-                {"chat_id", chatId},
-                {"user_id", userId.ToString()}
-            };
-
-            var json = UploadUrlQuery(parameters);
-            var result = (string) json["result"];
-            return result == null ? false : Convert.ToBoolean(result);
-        }
-
-        public Task<bool> KickChatMemberAsync(string chatId, int userId)
-        {
-            chatId.NullInspect(nameof(chatId));
-            return Task.Run(() => KickChatMember(chatId, userId));
+                return await UploadFormData<bool>(form).ConfigureAwait(false);
+            }
         }
 
         [TelegramMethod("leaveChat")]
-        public bool LeaveChat(string chatId)
+        public async Task<bool> LeaveChat(string chatId)
         {
             chatId.NullInspect(nameof(chatId));
-            var parameters = new NameValueCollection {{"chat_id", chatId}};
+            var content = new Content();
+            content.Add("chat_id", chatId);
 
-            var json = UploadUrlQuery(parameters);
-            var result = (string)json["result"];
-            return result == null ? false : Convert.ToBoolean(result);
-        }
-
-        public Task<bool> LeaveChatAsync(string chatId)
-        {
-            chatId.NullInspect(nameof(chatId));
-            return Task.Run(() => LeaveChat(chatId));
+            using (var form = new FormUrlEncodedContent(content.Data))
+            {
+                return await UploadFormData<bool>(form).ConfigureAwait(false);
+            }
         }
 
         [TelegramMethod("unbanChatMember")]
-        public bool UnbanChatMember(string chatId, int userId)
+        public async Task<bool> UnbanChatMember(string chatId, int userId)
         {
             chatId.NullInspect(nameof(chatId));
-            var parameters = new NameValueCollection
+            var content = new Content();
+            content.Add("chat_id", chatId);
+            content.Add("userId", userId.ToString());
+
+            using (var form = new FormUrlEncodedContent(content.Data))
             {
-                {"chat_id", chatId},
-                {"user_id", userId.ToString()}
-            };
-
-            var json = UploadUrlQuery(parameters);
-            var result = (string)json["result"];
-            return result == null ? false : Convert.ToBoolean(result);
+                return await UploadFormData<bool>(form).ConfigureAwait(false);
+            }
         }
-
-        public Task<bool> UnbanChatMemberAsync(string chatId, int userId)
-        {
-            chatId.NullInspect(nameof(chatId));
-            return Task.Run(() => UnbanChatMember(chatId, userId));
-        }
-
 
         [TelegramMethod("answerCallbackQuery")]
-        public bool AnswerCallbackQuery(string callbackQueryId, string text = null, bool? showAlert = null, string url = null, int? cacheTime = null)
+        public async Task<bool> AnswerCallbackQuery(string callbackQueryId, string text = null, bool? showAlert = null, string url = null, int? cacheTime = null)
         {
             callbackQueryId.NullInspect(nameof(callbackQueryId));
-            var parameters = new NameValueCollection {{"callback_query_id", callbackQueryId}};
+            var content = new Content();
+            content.Add("callback_query_id", callbackQueryId);
             if(text!=null)
-                parameters.Add("text", text);
+                content.Add("text", text);
             if (showAlert != null)
-                parameters.Add("show_alert", showAlert.ToString());
+                content.Add("show_alert", showAlert.ToString());
             if (url != null)
-                parameters.Add("url", url);
+                content.Add("url", url);
             if (cacheTime != null)
-                parameters.Add("cache_time", cacheTime.ToString());
+                content.Add("cache_time", cacheTime.ToString());
 
-            var json = UploadUrlQuery(parameters);
-            var result = (string)json["result"];
-            return JsonConvert.DeserializeObject<bool>(result);
-        }
-
-        public Task<bool> AnswerCallbackQueryAsync(string callbackQueryId, string text = null, bool? showAlert = null, string url = null, int? cacheTime = null)
-        {
-            callbackQueryId.NullInspect(nameof(callbackQueryId));
-            return Task.Run(() => AnswerCallbackQuery(callbackQueryId, text, showAlert, url, cacheTime));
+            using (var form = new FormUrlEncodedContent(content.Data))
+            {
+                return await UploadFormData<bool>(form).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -104,33 +84,17 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
         /// <param name="messageId">Identifier of the message to delete.</param>
         /// <returns> Returns <see langword="true"/> on success.</returns>
         [TelegramMethod("deleteMessage")]
-        public bool DeleteMessage(string chatId, int messageId)
+        public async Task<bool> DeleteMessage(string chatId, int messageId)
         {
             chatId.NullInspect(nameof(chatId));
-            var parameters = new NameValueCollection
+            var content = new Content();
+            content.Add("chat_id", chatId);
+            content.Add("message_id", messageId.ToString());
+
+            using (var form = new FormUrlEncodedContent(content.Data))
             {
-                {"chat_id", chatId},
-                {"message_id", messageId.ToString()}
-            };
-
-            var json = UploadUrlQuery(parameters);
-            var result = (string)json["result"];
-            return result == null ? false : Convert.ToBoolean(result);
-        }
-
-        /// <summary>
-        /// Use this method to delete a message asynchronously. A message can only be deleted if it was sent less than 48 hours ago. 
-        /// Any such recently sent outgoing message may be deleted. Additionally, if the bot is an administrator in a group chat, it can delete any message. 
-        /// If the bot is an administrator in a supergroup, it can delete messages from any other user and service messages about people joining 
-        /// or leaving the group (other types of service messages may only be removed by the group creator). In channels, bots can only remove their own messages.
-        /// </summary>
-        /// <param name="chatId">Unique identifier for the target chat or username of the target channel (in the format @channelusername).</param>
-        /// <param name="messageId">Identifier of the message to delete.</param>
-        /// <returns> Returns <see langword="true"/> on success.</returns>
-        public Task<bool> DeleteMessageAsync(string chatId, int messageId)
-        {
-            chatId.NullInspect(nameof(chatId));
-            return Task.Run(() => DeleteMessage(chatId, messageId));
+                return await UploadFormData<bool>(form).ConfigureAwait(false);
+            }
         }
     }
 

@@ -42,7 +42,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             url.NullInspect(nameof(url));
             if (maxConnections < 1 || maxConnections > 100)
                 throw new ArgumentOutOfRangeException(nameof(maxConnections), "Must be in range of 1 to 100");
-            if(certificate != null)
+            if (certificate != null)
                 if (!new FileInfo(certificate).Exists)
                     throw new ArgumentException("The file does not exists", certificate);
 
@@ -58,7 +58,22 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                 if (certificate != null)
                     AddFileDataContent(form, certificate);
 
-                return await UploadFormMessageData<bool>(form);
+                return await UploadFormData<bool>(form);
+            }
+        }
+
+        /// <summary>
+        /// Use this method to remove webhook integration if you decide to switch back to <see cref="GetUpdates"/>. 
+        /// </summary>
+        /// <returns><see langword="true"/> on success.</returns>
+        [TelegramMethod("deleteWebhook")]
+        public async Task<bool> DeleteWebhook()
+        {
+            var content = new Helpers.Content();
+            
+            using (var form = new FormUrlEncodedContent(content.Data))
+            {
+                return await UploadFormData<bool>(form).ConfigureAwait(false);
             }
         }
     }

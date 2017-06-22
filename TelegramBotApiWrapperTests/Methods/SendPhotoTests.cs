@@ -29,17 +29,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         public void SendPhotoByUri_PhotoUri_PhotoMessage()
         {
             var uri = new Uri(_photoUri);
-            var actual = _telegramMethods.SendPhotoByUri(_privateChat.Id.ToString(), uri);
-
-            Assert.IsInstanceOfType(actual, typeof(PhotoMessage));
-        }
-
-        [TestMethod()]
-        public void SendPhotoByUriAsync_PhotoUriPlusInlineKeyboard_PhotoMessage()
-        {
-            var caption = "pict with keyboard";
-            var uri = new Uri(_photoUri);
-            var actual = _telegramMethods.SendPhotoByUriAsync(_privateChat.Id.ToString(), uri, caption, true, null, _testInlineKeyboardMarkup).Result;
+            var actual = _telegramMethods.SendPhotoUri(_privateChat.Id.ToString(), uri).Result;
 
             Assert.IsInstanceOfType(actual, typeof(PhotoMessage));
         }

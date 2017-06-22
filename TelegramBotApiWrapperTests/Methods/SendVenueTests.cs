@@ -11,17 +11,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         {
             var title = "test venue";
             var address = "test address";
-            var actual = _telegramMethods.SendVenue(_privateChat.Id.ToString(), _location.Latitude, _location.Longitude, title, address);
-
-            Assert.IsInstanceOfType(actual, typeof(VenueMessage));
-        }
-
-        [TestMethod()]
-        public void SendVenueAsync_LatAndLongitude_VenueMessage()
-        {
-            var title = "test venue";
-            var address = "test address";
-            var actual = _telegramMethods.SendVenueAsync(_privateChat.Id.ToString(), _location.Latitude, _location.Longitude, title, address).Result;
+            var actual = _telegramMethods.SendVenue(_privateChat.Id.ToString(), _location.Latitude, _location.Longitude, title, address).Result;
 
             Assert.IsInstanceOfType(actual, typeof(VenueMessage));
         }

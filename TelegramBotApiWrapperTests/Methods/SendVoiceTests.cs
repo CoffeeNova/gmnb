@@ -29,7 +29,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         public void SendVoiceByUri_VoiceUri_VoiceMessage()
         {
             var uri = new Uri(_voiceUri);
-            var actual = _telegramMethods.SendVoiceByUri(_privateChat.Id.ToString(), uri);
+            var actual = _telegramMethods.SendVoiceUri(_privateChat.Id.ToString(), uri).Result;
 
             Assert.IsInstanceOfType(actual, typeof(VoiceMessage));
         }

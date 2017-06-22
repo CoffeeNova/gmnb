@@ -10,7 +10,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         public void GetFile_FileId_File()
         {
             var expected = _file;
-            File actual = _telegramMethods.GetFile(_file.FileId);
+            File actual = _telegramMethods.GetFile(_file.FileId).Result;
 
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);

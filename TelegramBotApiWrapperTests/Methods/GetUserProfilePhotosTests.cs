@@ -10,7 +10,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         {
             var expected = _userProfilePhotos;
 
-            var actual = _telegramMethods.GetUserProfilePhotos(_user.Id);
+            var actual = _telegramMethods.GetUserProfilePhotos(_user.Id).Result;
 
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);

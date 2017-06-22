@@ -30,20 +30,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         public void SendAudioByUri_AudioUri_AudioMessage()
         {
             var uri = new Uri(_audioUri);
-            var actual = _telegramMethods.SendAudioByUri(_privateChat.Id.ToString(), uri);
-            Assert.IsInstanceOfType(actual, typeof(AudioMessage));
-        }
-
-        [TestMethod()]
-        public void SendAudioByUriAsync_AudioUriWithParams_AudioMessage()
-        {
-            var caption = "mpthreetest.mp3";
-            var duration = 12;
-            var performer = "unknown";
-            var title = "mpthreetest";
-
-            var uri = new Uri(_audioUri);
-            var actual = _telegramMethods.SendAudioByUriAsync(_privateChat.Id.ToString(), uri, caption, duration, performer, title).Result;
+            var actual = _telegramMethods.SendAudioUri(_privateChat.Id.ToString(), uri).Result;
             Assert.IsInstanceOfType(actual, typeof(AudioMessage));
         }
 

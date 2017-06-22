@@ -20,25 +20,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 From = _botUser
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message);
-            var compareLogic = new CompareLogic(_config);
-            var comparationResult = compareLogic.Compare(expected, actual);
-
-            Assert.IsTrue(comparationResult.AreEqual, comparationResult.DifferencesString);
-        }
-
-        [TestMethod()]
-        public void SendMessageAsync_TextMessageOnlyString_TextMessage()
-        {
-            var message = "test sendMessage";
-            var expected = new TextMessage
-            {
-                Chat = _privateChat,
-                Text = message,
-                From = _botUser
-            };
-
-            var actual = _telegramMethods.SendMessageAsync(_privateChat.Id.ToString(), message).Result;
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -57,7 +39,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 Entities = new List<MessageEntity> { _italicTextEntity }
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "_" + message + "_", ParseMode.Markdown);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), "_" + message + "_", ParseMode.Markdown).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -75,7 +57,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 From = _botUser
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, true);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, true).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -94,7 +76,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 Entities = new List<MessageEntity> { _urlEntity }
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testInlineKeyboardMarkup);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testInlineKeyboardMarkup).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -112,7 +94,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 From = _botUser,
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testReplyKeyboardMarkup);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testReplyKeyboardMarkup).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -130,7 +112,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 From = _botUser,
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testReplyKeyboardRemove);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testReplyKeyboardRemove).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 
@@ -148,7 +130,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
                 From = _botUser,
             };
 
-            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testForceReply);
+            var actual = _telegramMethods.SendMessage(_privateChat.Id.ToString(), message, null, false, false, null, _testForceReply).Result;
             var compareLogic = new CompareLogic(_config);
             var comparationResult = compareLogic.Compare(expected, actual);
 

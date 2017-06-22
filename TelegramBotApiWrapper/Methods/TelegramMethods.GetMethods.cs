@@ -2,11 +2,13 @@
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using CoffeeJelly.TelegramBotApiWrapper.Attributes;
 using CoffeeJelly.TelegramBotApiWrapper.Converters;
 using CoffeeJelly.TelegramBotApiWrapper.Exceptions;
 using CoffeeJelly.TelegramBotApiWrapper.Extensions;
+using CoffeeJelly.TelegramBotApiWrapper.Helpers;
 using CoffeeJelly.TelegramBotApiWrapper.JsonParsers;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
@@ -21,13 +23,13 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
         /// A simple method for testing your bot's auth token. Requires no parameters. Returns basic information about the bot in form of a User object.
         /// </summary>
         /// <returns></returns>
-        public User GetMe()
+        public async Task<User> GetMe()
         {
-            using (var webClient = new WebClient())
+            using (var client = new HttpClient())
             {
                 try
                 {
-                    var content = webClient.DownloadString(TelegramBotUrl + Token + "/getMe");
+                    var content = await client.GetStringAsync(TelegramBotUrl + Token + "/getMe").ConfigureAwait(false);
                     var newRequests = JsonConvert.DeserializeObject<JObject>(content);
                     return GeneralBuilder.BuildUser(newRequests["result"]);
                 }
@@ -38,145 +40,106 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
             }
         }
 
-        public Task<User> GetMeAsync()
-        {
-            return Task.Run(() => GetMe());
-        }
-
         [TelegramMethod("getUpdates")]
-        public List<Update> GetUpdates(long? offset = null, int? limit = null, int? timeout = null, List<UpdateType> allowedUpdates = null)
+        public async Task<List<Update>> GetUpdates(long? offset = null, int? limit = null, int? timeout = null, List<UpdateType> allowedUpdates = null)
         {
-            var parameters = new NameValueCollection();
-
+            var content = new Content();
             if (offset != null)
-                parameters.Add("offset", offset.ToString());
+                content.Add("offset", offset.ToString());
             if (limit != null)
-                parameters.Add("limit", limit.ToString());
+                content.Add("limit", limit.ToString());
             if (timeout != null)
-                parameters.Add("timeout", timeout.ToString());
+                content.Add("timeout", timeout.ToString());
             if (allowedUpdates != null)
             {
                 var allowedUpdatesString = string.Join(",", allowedUpdates.Select(i => $"\"{UpdateAttribute.GetUpdateType(i)}\""));
-                parameters.Add("allowed_updates", $"[{allowedUpdatesString}]");
+                content.Add("allowed_updates", $"[{allowedUpdatesString}]");
             }
-            var json = UploadUrlQuery(parameters);
-            var result = json["result"];
-
-            return JsonConvert.DeserializeObject<List<Update>>(result.ToString());
-        }
-
-        public Task<List<Update>> GetUpdatesAsync(int? offset = null, int? limit = null, int? timeout = null, List<UpdateType> allowedUpdates = null)
-        {
-            return Task.Run(() => GetUpdates(offset, limit, timeout, allowedUpdates));
+            using (var form = new FormUrlEncodedContent(content.Data))
+            {
+                return await UploadFormData<List<Update>>(form).ConfigureAwait(false);
+            }
         }
 
         [TelegramMethod("getUserProfilePhotos")]
-        public UserProfilePhotos GetUserProfilePhotos(int userId, int? offset = null, int? limit = null)
+        public async  Task<UserProfilePhotos> GetUserProfilePhotos(int userId, int? offset = null, int? limit = null)
         {
-            var parameters = new NameValueCollection { { "user_id", userId.ToString() } };
+            var content = new Content();
+            content.Add("user_id", userId.ToString());
             if (offset != null)
-                parameters.Add("offset", offset.ToString());
+                content.Add("offset", offset.ToString());
             if (limit != null)
-                parameters.Add("limit", limit.ToString());
+                content.Add("limit", limit.ToString());
 
-            var json = UploadUrlQuery(parameters);
-            var result = json["result"];
-
-            return JsonConvert.DeserializeObject<UserProfilePhotos>(result.ToString());
-
-        }
-
-        public Task<UserProfilePhotos> GetUserProfilePhotosAsync(int userId, int? offset = null, int? limit = null)
-        {
-            return Task.Run(() => GetUserProfilePhotos(userId, offset, limit));
+            using (var form = new FormUrlEncodedContent(content.Data))
+            {
+                return await UploadFormData<UserProfilePhotos>(form).ConfigureAwait(false);
+            }
         }
 
         [TelegramMethod("getFile")]
-        public File GetFile(string fileId)
+        public async Task<File> GetFile(string fileId)
         {
-            var parameters = new NameValueCollection { { "file_id", fileId } };
+            var content = new Content();
+            content.Add("file_id", fileId);
 
-            var json = UploadUrlQuery(parameters);
-            var result = json["result"];
-
-            return JsonConvert.DeserializeObject<File>(result.ToString());
-        }
-
-        public Task<File> GetFileAsync(string fileId)
-        {
-            return Task.Run(() => GetFile(fileId));
+            using (var form = new FormUrlEncodedContent(content.Data))
+            {
+                return await UploadFormData<File>(form).ConfigureAwait(false);
+            }
         }
 
         [TelegramMethod("getChat")]
-        public Chat GetChat(string chatId)
+        public async Task<Chat> GetChat(string chatId)
         {
             chatId.NullInspect(nameof(chatId));
-            var parameters = new NameValueCollection { { "chat_id", chatId } };
+            var content = new Content();
+            content.Add("chat_id", chatId);
 
-            var json = UploadUrlQuery(parameters);
-            var result = json["result"].ToString();
-            return JsonConvert.DeserializeObject<Chat>(result);
-        }
-
-        public Task<Chat> GetChatAsync(string chatId)
-        {
-            chatId.NullInspect(nameof(chatId));
-            return Task.Run(() => GetChat(chatId));
+            using (var form = new FormUrlEncodedContent(content.Data))
+            {
+                return await UploadFormData<Chat>(form).ConfigureAwait(false);
+            }
         }
 
         [TelegramMethod("getChatAdministrators")]
-        public List<ChatMember> GetChatAdministrators(string chatId)
+        public async Task<List<ChatMember>> GetChatAdministrators(string chatId)
         {
             chatId.NullInspect(nameof(chatId));
-            var parameters = new NameValueCollection { { "chat_id", chatId } };
+            var content = new Content();
+            content.Add("chat_id", chatId);
 
-            var json = UploadUrlQuery(parameters);
-            var result = json["result"].ToString();
-            return JsonConvert.DeserializeObject<List<ChatMember>>(result);
-        }
-
-        public Task<List<ChatMember>> GetChatAdministratorsAsync(string chatId)
-        {
-            chatId.NullInspect(nameof(chatId));
-            return Task.Run(() => GetChatAdministrators(chatId));
+            using (var form = new FormUrlEncodedContent(content.Data))
+            {
+                return await UploadFormData<List<ChatMember>>(form).ConfigureAwait(false);
+            }
         }
 
         [TelegramMethod("getChatMembersCount")]
-        public int GetChatMembersCount(string chatId)
+        public async Task<int> GetChatMembersCount(string chatId)
         {
             chatId.NullInspect(nameof(chatId));
-            var parameters = new NameValueCollection { { "chat_id", chatId } };
+            var content = new Content();
+            content.Add("chat_id", chatId);
 
-            var json = UploadUrlQuery(parameters);
-            var result = json["result"].ToString();
-            return JsonConvert.DeserializeObject<int>(result);
-        }
-
-        public Task<int> GetChatMembersCountAsync(string chatId)
-        {
-            chatId.NullInspect(nameof(chatId));
-            return Task.Run(() => GetChatMembersCount(chatId));
+            using (var form = new FormUrlEncodedContent(content.Data))
+            {
+                return await UploadFormData<int>(form).ConfigureAwait(false);
+            }
         }
 
         [TelegramMethod("getChatMember")]
-        public ChatMember GetChatMember(string chatId, int userId)
+        public async Task<ChatMember> GetChatMember(string chatId, int userId)
         {
             chatId.NullInspect(nameof(chatId));
-            var parameters = new NameValueCollection
+            var content = new Content();
+            content.Add("chat_id", chatId);
+            content.Add("user_id", userId.ToString());
+
+            using (var form = new FormUrlEncodedContent(content.Data))
             {
-                {"chat_id", chatId},
-                {"user_id", userId.ToString()}
-            };
-
-            var json = UploadUrlQuery(parameters);
-            var result = json["result"].ToString();
-            return JsonConvert.DeserializeObject<ChatMember>(result);
-        }
-
-        public Task<ChatMember> GetChatMemberAsync(string chatId, int userId)
-        {
-            chatId.NullInspect(nameof(chatId));
-            return Task.Run(() => GetChatMember(chatId, userId));
+                return await UploadFormData<ChatMember>(form).ConfigureAwait(false);
+            }
         }
     }
 }

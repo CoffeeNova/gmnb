@@ -9,15 +9,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         [TestMethod()]
         public void SendLocation_LatAndLongitude_LocationMessage()
         {
-            var actual = _telegramMethods.SendLocation(_privateChat.Id.ToString(), _location.Latitude, _location.Longitude);
-
-            Assert.IsInstanceOfType(actual, typeof(LocationMessage));
-        }
-
-        [TestMethod()]
-        public void SendLocationAsync_LatAndLongitude_LocationMessage()
-        {
-            var actual = _telegramMethods.SendLocationAsync(_privateChat.Id.ToString(), _location.Latitude, _location.Longitude).Result;
+            var actual = _telegramMethods.SendLocation(_privateChat.Id.ToString(), _location.Latitude, _location.Longitude).Result;
 
             Assert.IsInstanceOfType(actual, typeof(LocationMessage));
         }

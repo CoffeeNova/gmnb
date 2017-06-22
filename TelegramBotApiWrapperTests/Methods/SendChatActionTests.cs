@@ -11,7 +11,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         {
             var expected = true;
 
-            var actual = _telegramMethods.SendChatAction(_privateChat.Id.ToString(), ChatAction.UploadDocument);
+            var actual = _telegramMethods.SendChatAction(_privateChat.Id.ToString(), ChatAction.UploadDocument).Result;
 
             Assert.AreEqual(expected, actual);
         }

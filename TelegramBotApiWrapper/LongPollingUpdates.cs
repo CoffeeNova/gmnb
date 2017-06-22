@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using CoffeeJelly.TelegramBotApiWrapper.Exceptions;
 using CoffeeJelly.TelegramBotApiWrapper.Extensions;
 using CoffeeJelly.TelegramBotApiWrapper.Methods;
@@ -64,7 +65,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper
         {
             try
             {
-                var updates = _telegramMethods.GetUpdates(LastUpdateId + 1, null, null, AllowedUpdates);
+                var updates = _telegramMethods.GetUpdates(LastUpdateId + 1, null, null, AllowedUpdates).Result;
                 if (updates.Count == 0)
                     return;
                 updates.ForEach(update =>
@@ -130,7 +131,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper
         {
             get
             {
-               return _maxDelayServerResponse; 
+                return _maxDelayServerResponse;
             }
             set
             {
