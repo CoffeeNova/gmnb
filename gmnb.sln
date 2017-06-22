@@ -18,8 +18,8 @@ Global
 		webhook|Any CPU = webhook|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0D123FFE-FB4A-45F0-A4C2-F8FA21B38E67}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{0D123FFE-FB4A-45F0-A4C2-F8FA21B38E67}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{0D123FFE-FB4A-45F0-A4C2-F8FA21B38E67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D123FFE-FB4A-45F0-A4C2-F8FA21B38E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D123FFE-FB4A-45F0-A4C2-F8FA21B38E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D123FFE-FB4A-45F0-A4C2-F8FA21B38E67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0D123FFE-FB4A-45F0-A4C2-F8FA21B38E67}.webhook|Any CPU.ActiveCfg = webhook|Any CPU
