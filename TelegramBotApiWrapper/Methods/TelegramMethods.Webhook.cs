@@ -48,6 +48,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
 
             using (var form = new MultipartFormDataContent())
             {
+                form.Add(new StringContent(url, Encoding.UTF8), "url");
                 form.Add(new StringContent(maxConnections.ToString(), Encoding.UTF8), "max_connections");
                 if (allowedUpdates != null)
                 {

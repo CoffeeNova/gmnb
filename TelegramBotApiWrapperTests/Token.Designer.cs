@@ -68,5 +68,14 @@ namespace CoffeeJelly.TelegramBotApiWrapperTests {
                 return ResourceManager.GetString("testToken", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://lazymail.tk/Push/TelegramPath.
+        /// </summary>
+        public static string webhookUrl {
+            get {
+                return ResourceManager.GetString("webhookUrl", resourceCulture);
+            }
+        }
     }
 }

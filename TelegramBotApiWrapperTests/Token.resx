@@ -120,4 +120,7 @@
   <data name="testToken" xml:space="preserve">
     <value>252886092:AAHxtq8ZINX6WJXcT-MuQFoarH9-8Ppntl8</value>
   </data>
+  <data name="webhookUrl" xml:space="preserve">
+    <value>https://lazymail.tk/Push/TelegramPath</value>
+  </data>
 </root>

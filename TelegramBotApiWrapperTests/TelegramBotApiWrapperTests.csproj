@@ -94,6 +94,7 @@
       <DependentUpon>Token.resx</DependentUpon>
     </Compile>
     <Compile Include="ToolsTests.cs" />
+    <Compile Include="WebhookUpdatesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TelegramBotApiWrapper\TelegramBotApiWrapper.csproj">

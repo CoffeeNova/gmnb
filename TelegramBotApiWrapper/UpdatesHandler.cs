@@ -3,6 +3,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 using System;
+using System.Threading.Tasks;
 
 namespace CoffeeJelly.TelegramBotApiWrapper
 {
@@ -126,7 +127,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper
         }
 
         #region events
-        public delegate void TelegramSenderEventHandler<in T>(T sender) where T : ISender;
+        public delegate Task TelegramSenderEventHandler<in T>(T sender) where T : ISender;
 
         public event TelegramSenderEventHandler<TextMessage> TelegramTextMessageEvent;
         public event TelegramSenderEventHandler<AudioMessage> TelegramAudioMessageEvent;

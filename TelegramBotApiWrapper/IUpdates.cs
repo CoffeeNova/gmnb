@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
@@ -33,6 +34,6 @@ namespace CoffeeJelly.TelegramBotApiWrapper
         List<UpdateType> AllowedUpdates { get; set; }
     }
 
-    public delegate void BotUpdatesErrorEventHandler(object sender, BotRequestErrorEventArgs e);
+    public delegate Task BotUpdatesErrorEventHandler(object sender, BotRequestErrorEventArgs e);
     public delegate void BotUpdatesEventHandler(IUpdate updates);
 }
