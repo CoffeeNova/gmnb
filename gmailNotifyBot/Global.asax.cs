@@ -67,7 +67,11 @@ namespace CoffeeJelly.gmailNotifyBot
                 ApplicationName = App_LocalResources.Tokens.ApplicationName
             };
             _botInitializer = BotInitializer.GetInstance(botSettings);
+#if DEBUG
+            _botInitializer.InitializeUpdates();
+#else
             _botInitializer.InitializeUpdates(true);
+#endif
             _botInitializer.InitializeUpdatesHandler();
             _botInitializer.InitializeAuthotizer();
             _botInitializer.InitializeServiceFactory();
@@ -75,7 +79,7 @@ namespace CoffeeJelly.gmailNotifyBot
             _botInitializer.InitializeCallbackQueryHandler();
             _botInitializer.InitializeInlineQueryHandler();
             _botInitializer.InitializeChosenInlineResultHandler();
-#if !DEBUG
+#if !DEBUG && !WEBHOOK
             _botInitializer.InitializeNotifyHandler();
             _botInitializer.InitializePushNotificationWatchesAsync(initializeDelay);
             _botInitializer.InitializePushNotificationWatchTimer(_updatePeriod);
