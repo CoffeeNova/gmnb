@@ -49,8 +49,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         public async Task HandleCallbackQStartNotify(CallbackQuery query, Service service)
         {
             var userSettings = await UserSettings(query.From);
+            if (userSettings == null)
+                return;
             if (userSettings.MailNotification)
                 return;
+
             userSettings.MailNotification = true;
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
             if (string.IsNullOrEmpty(BotInitializer.Instance?.BotSettings?.Topic))
@@ -75,6 +78,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         public async Task HandleCallbackQStopNotify(CallbackQuery query, Service service)
         {
             var userSettings = await UserSettings(query.From);
+            if (userSettings == null)
+                return;
             if (!userSettings.MailNotification)
                 return;
 
@@ -89,7 +94,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         public async Task HandleCallbackQAbout(CallbackQuery query, SettingsCallbackData callbackData)
         {
             var userSettings = await UserSettings(query.From);
-            if (!userSettings.MailNotification)
+            if (userSettings == null)
                 return;
             await
                 _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.MainMenu, callbackData.Option, userSettings);

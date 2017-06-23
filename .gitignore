@@ -12,7 +12,6 @@
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-/gmailNotifyBot/Web.Release.config
 
 # Build results
 [Dd]ebug/
@@ -253,5 +252,6 @@ ModelManifest.xml
 /gmailNotifyBot/App_LocalResources/client_secret_debug.json
 /TelegramApiWrapperTests/Token.resx
 /TelegramApiWrapperTests/Token.Designer.cs
-/gmailNotifyBot/*.txt
-
+gmailNotifyBot/*.txt
+gmailNotifyBot/Web.Release.config
+gmailNotifyBot/Properties/*.pubxml
