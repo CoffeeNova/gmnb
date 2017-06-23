@@ -95,7 +95,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             catch (Exception ex)
             {
                 exception = ex;
-                Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
+                try
+                {
+                    await _botActions.ErrorOperation(query.Id);
+                }
+                catch { }
             }
             finally
             {
@@ -110,8 +114,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var rate = rule.Handle(data, service, this);
             if (rate == null)
                 return false;
+ 
             LogMaker.Log(Logger, $"{query.Data} command received from user with id {(string)query.From}", false);
             await rate.Invoke(query);
+            await _botActions.StopProgressBar(query.Id);
             return true;
         }
 

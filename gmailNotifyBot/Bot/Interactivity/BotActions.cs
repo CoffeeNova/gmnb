@@ -507,6 +507,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessage(chatId, message);
         }
 
+        public async Task<bool> StopProgressBar(string chatId)
+        {
+            return await _telegramMethods.AnswerCallbackQuery(chatId);
+        }
+
+        public async Task<bool> ErrorOperation(string chatId)
+        {
+            var message = $"{Emoji.FROWNING_FACE} Error..";
+            return await _telegramMethods.AnswerCallbackQuery(chatId, message, null, null, int.MaxValue);
+        }
+
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
         {
             const int maxLine = 44;

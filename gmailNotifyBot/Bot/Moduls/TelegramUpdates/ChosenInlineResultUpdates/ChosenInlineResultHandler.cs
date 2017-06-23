@@ -62,7 +62,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
             catch (Exception ex)
             {
                 exception = ex;
-                Debug.Assert(false, "operation error show to telegram chat as answerCallbackQuery");
             }
             finally
             {
