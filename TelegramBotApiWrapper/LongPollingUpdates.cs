@@ -61,6 +61,15 @@ namespace CoffeeJelly.TelegramBotApiWrapper
             UpdatesTracingStoppedEvent?.Invoke(this, new BotRequestErrorEventArgs(message));
         }
 
+        /// <summary>
+        /// Use this method to stop incoming updates via an outgoing webhook and return to getUpdates.  
+        /// </summary>
+        public async void DeleteWebhook()
+        {
+            await _telegramMethods.DeleteWebhook()
+                .ConfigureAwait(false);
+        }
+
         private void DownloadUpdates()
         {
             try
