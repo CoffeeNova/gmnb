@@ -457,7 +457,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return;
             }
 
-            await _botActions.ChangeSubjectForceReply(query.From).ConfigureAwait(false);
+            await _botActions.ChangeSubjectForceReply(query.From);
         }
 
         public async Task HandleCallbackQContinueFromDraft(Query query, SendCallbackData callbackData)

@@ -33,9 +33,27 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<NmStoreModel> FindNmStoreAsync(int userId)
+        public async Task<NmStoreModel> FindNmStoreAsync(int userId)
         {
-            return Task.Run(() => FindNmStore(userId));
+            using (var db = new GmailBotDbContext())
+            {
+                var nmStoreModel = await db.NmStore.FirstOrDefaultAsync(u => u.UserId == userId);
+                if (nmStoreModel == null)
+                    return null;
+                await db.Entry(nmStoreModel)
+                    .Collection(c => c.To)
+                    .LoadAsync();
+                await db.Entry(nmStoreModel)
+                    .Collection(c => c.Cc)
+                    .LoadAsync();
+                await db.Entry(nmStoreModel)
+                    .Collection(c => c.Bcc)
+                    .LoadAsync();
+                await db.Entry(nmStoreModel)
+                    .Collection(c => c.File)
+                    .LoadAsync();
+                return nmStoreModel;
+            }
         }
 
         public void RemoveNmStore(NmStoreModel model)
@@ -59,24 +77,45 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task RemoveNmStoreAsync(NmStoreModel model)
+        public async Task RemoveNmStoreAsync(NmStoreModel model)
         {
-            return Task.Run(() => RemoveNmStore(model));
+            model.NullInspect(nameof(model));
+
+            using (var dbContext = new GmailBotDbContext())
+            {
+                var existModel = await dbContext.NmStore
+                    .Where(nmStore => nmStore.Id == model.Id)
+                    .Include(nmStore => nmStore.To)
+                    .Include(nmStore => nmStore.Cc)
+                    .Include(nmStore => nmStore.Bcc)
+                    .Include(nmStore => nmStore.File)
+                    .SingleOrDefaultAsync();
+                if (existModel == null)
+                    return;
+
+                dbContext.NmStore.Remove(existModel);
+                await dbContext.SaveChangesAsync();
+            }
         }
 
         public NmStoreModel AddNewNmStore(int userId)
-        { 
+        {
             using (var db = new GmailBotDbContext())
             {
-                var newModel = db.NmStore.Add(new NmStoreModel {UserId = userId});
+                var newModel = db.NmStore.Add(new NmStoreModel { UserId = userId });
                 db.SaveChanges();
                 return newModel;
             }
         }
 
-        public Task<NmStoreModel> AddNewNmStoreAsync(int userId)
+        public async Task<NmStoreModel> AddNewNmStoreAsync(int userId)
         {
-            return Task.Run(() => AddNewNmStore(userId));
+            using (var db = new GmailBotDbContext())
+            {
+                var newModel = db.NmStore.Add(new NmStoreModel { UserId = userId });
+                await db.SaveChangesAsync();
+                return newModel;
+            }
         }
 
         public void UpdateNmStoreRecord(NmStoreModel newModel)
@@ -109,9 +148,34 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task UpdateNmStoreRecordAsync(NmStoreModel model)
+        public async Task UpdateNmStoreRecordAsync(NmStoreModel newModel)
         {
-            return Task.Run(() => UpdateNmStoreRecord(model));
+            using (var dbContext = new GmailBotDbContext())
+            {
+                var existModel = await dbContext.NmStore
+                                    .Where(nmStore => nmStore.Id == newModel.Id)
+                                    .Include(nmStore => nmStore.To)
+                                    .Include(nmStore => nmStore.Cc)
+                                    .Include(nmStore => nmStore.Bcc)
+                                    .Include(nmStore => nmStore.File)
+                                    .SingleOrDefaultAsync();
+
+                if (existModel == null)
+                    return;
+                // Update 
+                dbContext.Entry(existModel).CurrentValues.SetValues(newModel);
+                // Delete
+                dbContext.To.RemoveRange(existModel.To.Except(newModel.To, new IdEqualityComparer<ToModel>()));
+                dbContext.Cc.RemoveRange(existModel.Cc.Except(newModel.Cc, new IdEqualityComparer<CcModel>()));
+                dbContext.Bcc.RemoveRange(existModel.Bcc.Except(newModel.Bcc, new IdEqualityComparer<BccModel>()));
+                dbContext.File.RemoveRange(existModel.File.Except(newModel.File, new IdEqualityComparer<FileModel>()));
+
+                UpdateAdress(dbContext, newModel.To, existModel.To);
+                UpdateAdress(dbContext, newModel.Cc, existModel.Cc);
+                UpdateAdress(dbContext, newModel.Bcc, existModel.Bcc);
+                UpdateFile(dbContext, newModel.File, existModel.File);
+                await dbContext.SaveChangesAsync();
+            }
         }
 
         private void UpdateAdress<T>(DbContext dbContext, ICollection<T> newAddressCollection,

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,15 +14,14 @@ using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper;
-using CoffeeJelly.TelegramBotApiWrapper.JsonParsers;
 using CoffeeJelly.TelegramBotApiWrapper.Types;
-using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
+using Fody;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
 {
+    [ConfigureAwait(false)]
     public sealed class Authorizer
     {
         private Authorizer(string token, UpdatesHandler updatesHandler, Secrets clientSecret)

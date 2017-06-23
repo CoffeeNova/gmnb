@@ -3,6 +3,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
+using Fody;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates
 {

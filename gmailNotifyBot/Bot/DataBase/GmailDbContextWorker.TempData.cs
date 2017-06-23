@@ -16,9 +16,12 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<TempDataModel> FindTempDataAsync(int userId)
+        public async Task<TempDataModel> FindTempDataAsync(int userId)
         {
-            return Task.Run(() => FindTempData(userId));
+            using (var db = new GmailBotDbContext())
+            {
+                return await db.TempData.FirstOrDefaultAsync(t => t.UserId == userId);
+            }
         }
 
         public TempDataModel AddNewTempData(TempDataModel tempData)
@@ -33,11 +36,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<TempDataModel> AddNewTempDataAsync(TempDataModel tempData)
+        public async Task<TempDataModel> AddNewTempDataAsync(TempDataModel tempData)
         {
             tempData.NullInspect(nameof(tempData));
 
-            return Task.Run(() => AddNewTempData(tempData));
+            using (var db = new GmailBotDbContext())
+            {
+                var newModel = db.TempData.Add(tempData);
+                await db.SaveChangesAsync();
+                return newModel;
+            }
         }
 
         public void UpdateTempDataRecord(TempDataModel tempDataModel)
@@ -50,9 +58,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task UpdateTempDataRecordAsync(TempDataModel tempDataModel)
+        public async Task UpdateTempDataRecordAsync(TempDataModel tempDataModel)
         {
-            return Task.Run(() => UpdateTempDataRecord(tempDataModel));
+            using (var db = new GmailBotDbContext())
+            {
+                db.TempData.Attach(tempDataModel);
+                db.Entry(tempDataModel).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+            }
         }
 
         public void RemoveTempData(TempDataModel model)
@@ -69,10 +82,18 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task RemoveTempDataAsync(TempDataModel model)
+        public async Task RemoveTempDataAsync(TempDataModel model)
         {
             model.NullInspect(nameof(model));
-            return Task.Run(() => RemoveTempData(model));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var entry = db.Entry(model);
+                if (entry.State == EntityState.Detached)
+                    db.TempData.Attach(model);
+                db.TempData.Remove(model);
+                await db.SaveChangesAsync();
+            }
         }
     }
 }

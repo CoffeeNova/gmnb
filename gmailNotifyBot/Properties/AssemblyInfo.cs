@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Fody;
 
 // Управление общими сведениями о сборке осуществляется следующим образом
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
@@ -17,10 +18,12 @@ using System.Runtime.InteropServices;
 // Установка значения False в параметре ComVisible делает типы в этой сборке невидимыми
 // для компонентов COM.  Если требуется обратиться к типу в этой сборке через
 // COM, задайте атрибуту ComVisible значение true для требуемого типа.
-[assembly: ComVisible(false)]
+//[assembly: ComVisible(false)]
 
 // Следующий GUID служит для ID библиотеки типов typelib, если этот проект видим для COM
 [assembly: Guid("5b53d63b-763e-4dd4-97f1-facca0fe5d12")]
+
+[assembly: ConfigureAwait(false)]
 
 // Сведения о версии сборки состоят из указанных ниже четырех значений:
 //

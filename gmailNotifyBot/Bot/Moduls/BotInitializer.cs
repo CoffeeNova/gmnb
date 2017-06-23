@@ -46,19 +46,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             if (webhook)
             {
                 Updates = new WebhookUpdates(BotSettings.Token);
-                var upd = Updates as WebhookUpdates;
-                upd.Url = $@"https://{BotSettings.DomainName}/Push/TelegramPath";
-                upd.AllowedUpdates = new List<TelegramBotApiWrapper.Types.UpdateType>
+                var whook = (WebhookUpdates) Updates;
+                whook.Url = $@"https://{BotSettings.DomainName}/Push/TelegramPath";
+                whook.AllowedUpdates = new List<TelegramBotApiWrapper.Types.UpdateType>
                 {
                     TelegramBotApiWrapper.Types.UpdateType.AllUpdates
                 };
-                upd.SetWebhook();
+                whook.SetWebhook();
                 return;
             }
 
             Updates = new LongPollingUpdates(BotSettings.Token);
-            ((LongPollingUpdates)Updates).UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
-            ((LongPollingUpdates)Updates).Start();
+            var lPoll = (LongPollingUpdates) Updates;
+            lPoll.DeleteWebhook();
+            lPoll.UpdatesTracingStoppedEvent += Updates_UpdatesTracingStoppedEvent;
+            lPoll.Start();
         }
 
         public void InitializeUpdatesHandler()
@@ -149,7 +151,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
                 Task.Delay(delay).Wait();
                 ServiceFactory?.ServiceCollection.ForEach(async s =>
                 {
-                    await MessageHandler.HandleStartWatchCommandAsync(s);
+                    await MessageHandler.HandleStartWatchCommandAsync(s)
+                    ;
                     //probably i need to do a delay here to avoid response ddos to my server
                 });
             });

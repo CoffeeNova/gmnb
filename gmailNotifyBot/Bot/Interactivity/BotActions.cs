@@ -19,6 +19,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InlineQueryResult;
 using CoffeeJelly.TelegramBotApiWrapper.Types.InputMessageContent;
 using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
+using Fody;
 using File = CoffeeJelly.TelegramBotApiWrapper.Types.General.File;
 using TelegramMethods = CoffeeJelly.TelegramBotApiWrapper.Methods.TelegramMethods;
 using GmailLabel = Google.Apis.Gmail.v1.Data.Label;
@@ -26,6 +27,7 @@ using GmailLabel = Google.Apis.Gmail.v1.Data.Label;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 {
+    [ConfigureAwait(false)]
     internal class BotActions
     {
         public BotActions(string token)
@@ -207,7 +209,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             var keyboard = access == UserAccess.FULL
                 ? _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Minimized, formattedMessage)
                 : _getKeyboardFactory.CreateKeyboard(GetKeyboardState.Notify, formattedMessage);
-            _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard);
+            var temp = _telegramMethods.SendMessage(chatId, message, ParseMode.Html, false, false, null, keyboard).Result;
         }
 
         public async Task UpdateMessage(string chatId, int messageId, GetKeyboardState state, FormattedMessage formattedMessage, int page = 0, bool isIgnored = false)

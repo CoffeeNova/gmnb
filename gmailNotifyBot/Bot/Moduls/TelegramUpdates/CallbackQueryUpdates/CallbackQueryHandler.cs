@@ -11,6 +11,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Exceptions;
+using Fody;
 using NLog;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates

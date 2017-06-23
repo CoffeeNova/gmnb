@@ -32,24 +32,45 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<UserSettingsModel> FindUserSettingsAsync(int userId)
+        public async Task<UserSettingsModel> FindUserSettingsAsync(int userId)
         {
-            return Task.Run(() => FindUserSettings(userId));
+            using (var db = new GmailBotDbContext())
+            {
+                var userSettingsModel = db.UserSettings.FirstOrDefault(u => u.UserId == userId);
+                if (userSettingsModel == null)
+                    return null;
+
+                await db.Entry(userSettingsModel)
+                    .Collection(c => c.IgnoreList)
+                    .LoadAsync();
+                await db.Entry(userSettingsModel)
+                    .Collection(c => c.Blacklist)
+                    .LoadAsync();
+                await db.Entry(userSettingsModel)
+                    .Collection(c => c.Whitelist)
+                    .LoadAsync();
+                return userSettingsModel;
+            }
         }
 
         public UserSettingsModel AddNewUserSettings(int userId)
         {
             using (var db = new GmailBotDbContext())
             {
-                var userSettings = db.UserSettings.Add(new UserSettingsModel { UserId = userId});
+                var userSettings = db.UserSettings.Add(new UserSettingsModel { UserId = userId });
                 db.SaveChanges();
                 return userSettings;
             }
         }
 
-        public Task<UserSettingsModel> AddNewUserSettingsAsync(int userId)
+        public async Task<UserSettingsModel> AddNewUserSettingsAsync(int userId)
         {
-            return Task.Run(() => AddNewUserSettings(userId));
+            using (var db = new GmailBotDbContext())
+            {
+                var userSettings = db.UserSettings.Add(new UserSettingsModel { UserId = userId });
+                await db.SaveChangesAsync();
+                return userSettings;
+            }
         }
 
         public void RemoveUserSettingsRecord(UserSettingsModel model)
@@ -72,10 +93,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task RemoveUserSettingsRecordAsync(UserSettingsModel model)
+        public async Task RemoveUserSettingsRecordAsync(UserSettingsModel model)
         {
             model.NullInspect(nameof(model));
-            return Task.Run(() => RemoveUserSettingsRecord(model));
+
+            using (var db = new GmailBotDbContext())
+            {
+                var existModel = await db.UserSettings
+                    .Where(userSettings => userSettings.Id == model.Id)
+                    .Include(userSettings => userSettings.IgnoreList)
+                    .Include(userSettings => userSettings.Blacklist)
+                    .Include(userSettings => userSettings.Whitelist)
+                    .SingleOrDefaultAsync();
+                if (existModel == null)
+                    return;
+
+                db.UserSettings.Remove(existModel);
+                await db.SaveChangesAsync();
+            }
         }
 
         public List<UserSettingsModel> GetAllUsersSettings()
@@ -98,9 +133,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task<List<UserSettingsModel>> GetAllUsersSettingsAsync()
+        public async Task<List<UserSettingsModel>> GetAllUsersSettingsAsync()
         {
-            return Task.Run(() => GetAllUsersSettings());
+            using (var db = new GmailBotDbContext())
+            {
+                foreach (var us in db.UserSettings)
+                {
+                    await db.Entry(us)
+                        .Collection(c => c.IgnoreList)
+                        .LoadAsync();
+                    await db.Entry(us)
+                        .Collection(c => c.Blacklist)
+                        .LoadAsync();
+                    await db.Entry(us)
+                        .Collection(c => c.Whitelist)
+                        .LoadAsync();
+                }
+                return db.UserSettings.ToList();
+            }
         }
 
         public void UpdateUserSettingsRecord(UserSettingsModel newModel)
@@ -129,9 +179,30 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
             }
         }
 
-        public Task UpdateUserSettingsRecordAsync(UserSettingsModel userSettingsModel)
+        public async Task UpdateUserSettingsRecordAsync(UserSettingsModel newModel)
         {
-            return Task.Run(() => UpdateUserSettingsRecord(userSettingsModel));
+            using (var db = new GmailBotDbContext())
+            {
+                var existModel = await db.UserSettings
+                    .Where(userSettings => userSettings.Id == newModel.Id)
+                    .Include(userSettings => userSettings.IgnoreList)
+                    .Include(userSettings => userSettings.Blacklist)
+                    .Include(userSettings => userSettings.Whitelist)
+                    .SingleOrDefaultAsync();
+                if (existModel == null)
+                    return;
+                // Update 
+                db.Entry(existModel).CurrentValues.SetValues(newModel);
+                //Delete
+                db.Ignore.RemoveRange(existModel.IgnoreList.Except(newModel.IgnoreList, new IdEqualityComparer<IgnoreModel>()));
+                db.Blacklist.RemoveRange(existModel.Blacklist.Except(newModel.Blacklist, new IdEqualityComparer<BlacklistModel>()));
+                db.Whitelist.RemoveRange(existModel.Whitelist.Except(newModel.Whitelist, new IdEqualityComparer<WhitelistModel>()));
+
+                UpdateIgnoreList(db, newModel.IgnoreList, existModel.IgnoreList);
+                UpdateLabelsList(db, newModel.Blacklist, existModel.Blacklist);
+                UpdateLabelsList(db, newModel.Whitelist, existModel.Whitelist);
+                await db.SaveChangesAsync();
+            }
         }
 
         private void UpdateIgnoreList(DbContext dbContext, ICollection<IgnoreModel> newIgnoreListCollection,
@@ -202,11 +273,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase
 
             userSettings.IgnoreList.Add(new IgnoreModel { Address = address });
             await UpdateUserSettingsRecordAsync(userSettings);
-        }
-
-        public Task AddToIgnoreListAsyncTest(int userId, string address)
-        {
-            return Task.Run(() => AddToIgnoreList(userId, address));
         }
 
         public void RemoveFromIgnoreList(int userId, string address)
