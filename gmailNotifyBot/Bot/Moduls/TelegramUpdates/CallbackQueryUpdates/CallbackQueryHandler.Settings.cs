@@ -88,8 +88,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
         public async Task HandleCallbackQAbout(CallbackQuery query, SettingsCallbackData callbackData)
         {
+            var userSettings = await UserSettings(query.From);
+            if (!userSettings.MailNotification)
+                return;
             await
-                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.MainMenu, callbackData.Option);
+                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.MainMenu, callbackData.Option, userSettings);
         }
 
         #endregion
