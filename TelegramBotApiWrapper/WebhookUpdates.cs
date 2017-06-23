@@ -29,7 +29,8 @@ namespace CoffeeJelly.TelegramBotApiWrapper
             if (Url == null)
                 throw new InvalidOperationException($"Must specify {nameof(Url)} property.");
 
-            await _telegramMethods.SetWebhook(Url, CertificatePath, MaxConnections, AllowedUpdates);
+            await _telegramMethods.SetWebhook(Url, CertificatePath, MaxConnections, AllowedUpdates)
+                .ConfigureAwait(false);
         }
 
         public void HandleTelegramRequest(string update)

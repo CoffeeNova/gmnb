@@ -52,13 +52,14 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                 form.Add(new StringContent(maxConnections.ToString(), Encoding.UTF8), "max_connections");
                 if (allowedUpdates != null)
                 {
-                    var allowedUpdatesString = string.Join(",", allowedUpdates.Select(i => $"\"{UpdateAttribute.GetUpdateType(i)}\""));
+                    var allowedUpdatesString = string.Join(",",
+                        allowedUpdates.Select(i => $"\"{UpdateAttribute.GetUpdateType(i)}\""));
                     form.Add(new StringContent($"[{allowedUpdatesString}]", Encoding.UTF8), "allowed_updates");
                 }
                 if (certificate != null)
                     AddFileDataContent(form, certificate);
 
-                return await UploadFormData<bool>(form);
+                return await UploadFormData<bool>(form).ConfigureAwait(false);
             }
         }
 

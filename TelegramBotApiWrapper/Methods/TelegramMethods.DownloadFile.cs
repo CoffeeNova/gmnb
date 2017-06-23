@@ -27,7 +27,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods
                 {
                     var fullFileName = Path.Combine(path, file.FilePath.Split('/').Last());
                     await _downloadFile.Download(webClient, new Uri(TelegramFileUrl + Token + "/" + file.FilePath),
-                        fullFileName);
+                        fullFileName).ConfigureAwait(false);
                 }
                 catch (WebException ex)
                 {
