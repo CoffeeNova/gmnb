@@ -58,7 +58,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 var userSettings = await _dbWorker.FindUserSettingsAsync(message.From);
                 if (userSettings == null)
                     throw new DbDataStoreException(
-                    $"Can't find user settings data in database. User record with id {message.From} is absent in the database.");
+                    $"Can't find user settings data in database. User record with id {message.From.Id} is absent in the database.");
 
                 var rules = userSettings.Access == UserAccess.FULL
                     ? _fullForceReplyRules
@@ -69,7 +69,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                     var rate = rule.Handle(message, service, this);
                     if (rate == null) continue;
 
-                    LogMaker.Log(Logger, $"File received from user with id {(string)message.From}", false);
+                    LogMaker.Log(Logger, $"File received from user with id {message.From.Id}", false);
                     await rate.Invoke(message);
                 }
             }
@@ -119,7 +119,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             Exception exception = null;
             try
             {
-                var resultInvoke = await RuleInvokeAction(_authRule, message);
+                var resultInvoke = await RuleInvokeAction(_startRule, message);
+                if (resultInvoke) return;
+                resultInvoke = await RuleInvokeAction(_authRule, message);
                 if (resultInvoke) return;
 
                 var service = Methods.SearchServiceByUserId(message.From);
@@ -162,7 +164,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             var rate = rule.Handle(message, service, this);
             if (rate == null)
                 return false;
-            LogMaker.Log(Logger, $"{message.Text} command received from user with id {(string)message.From}", false);
+            LogMaker.Log(Logger, $"{message.Text} command received from user with id {message.From.Id}", false);
             await rate.Invoke(message);
             return true;
         }
@@ -221,6 +223,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
         }
 
         private readonly IMessageHandlerRule _authRule = new AuthorizeRule();
+        private readonly IMessageHandlerRule _startRule = new StartRule();
         private readonly List<IMessageHandlerRule> _fullAccessRules = new List<IMessageHandlerRule>();
         private readonly List<IMessageHandlerRule> _notifyAccessRules = new List<IMessageHandlerRule>();
         private readonly List<IMessageHandlerRule> _fullForceReplyRules = new List<IMessageHandlerRule>();

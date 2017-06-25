@@ -421,6 +421,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         public async Task HandleCallbackQNotSaveAsDraft(Query query, SendCallbackData callbackData)
         {
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            await _botActions.DeleteMessage(query.From, nmModel.MessageId);
             await _dbWorker.RemoveNmStoreAsync(nmModel);
             await _botActions.DraftSavedMessage(query.From, true);
             await _botActions.DeleteMessage(query.From, query.Message.MessageId);
@@ -429,6 +430,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         public async Task HandleCallbackQContinueWithOld(Query query, SendCallbackData callbackData)
         {
             var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            await _botActions.DeleteMessage(query.From, nmModel.MessageId);
             await _botActions.DeleteMessage(query.From, query.Message.MessageId);
             var textMessage = await _botActions.SpecifyNewMailMessage(query.From, SendKeyboardState.Continue, nmModel);
             nmModel.MessageId = textMessage.MessageId;

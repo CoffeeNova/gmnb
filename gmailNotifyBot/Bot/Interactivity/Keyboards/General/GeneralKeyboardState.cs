@@ -9,6 +9,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.General
     public enum GeneralKeyboardState
     {
         [EnumMember(Value = "resumeNotifications")]
-        ResumeNotifications
+        ResumeNotifications,
+        [EnumMember(Value = "reauthorize")]
+        Reauthorize
     }
 }

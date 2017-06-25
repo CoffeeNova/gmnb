@@ -49,7 +49,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
                     var del = rule.Handle(query, this);
                     if (del == null)
                         continue;
-                    LogMaker.Log(Logger, $"{query.Query} command received from user with id {query.From}", false);
+                    LogMaker.Log(Logger, $"{query.Query} command received from user with id {query.From.Id}", false);
                     await del.Invoke();
                 }
             }

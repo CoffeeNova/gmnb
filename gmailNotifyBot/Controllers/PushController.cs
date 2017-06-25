@@ -47,7 +47,6 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
                 var json = new StreamReader(Request.InputStream).ReadToEnd();
                 var updates = BotInitializer.Instance?.Updates;
                 if (updates == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
                 (updates as WebhookUpdates).HandleTelegramRequest(json);
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }

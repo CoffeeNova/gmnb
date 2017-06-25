@@ -115,7 +115,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (rate == null)
                 return false;
  
-            LogMaker.Log(Logger, $"{query.Data} command received from user with id {(string)query.From}", false);
+            LogMaker.Log(Logger, $"{query.Data} command received from user with id {query.From.Id}", false);
             await rate.Invoke(query);
             await _botActions.StopProgressBar(query.Id);
             return true;

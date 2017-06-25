@@ -19,6 +19,7 @@
         public const string STOP_WATCH_COMMAND = "/watchstop";
         public const string DELETE_MSG_MARK = "/deletemark";
         public const string HELP_COMMAND = "/help";
+        public const string START_COMMAND = "/start";
     }
 
     public static class InlineQueryCommand

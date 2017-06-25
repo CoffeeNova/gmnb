@@ -44,7 +44,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
 #else
             _contactsThumbUrl = $@"https://{_settings.DomainName}/{_settings.ImagesPath}Silhouette49.jpg";
             _closedEnvelopeThumbUrl = $@"https://{_settings.DomainName}/{_settings.ImagesPath}ClosedEnvelope3.jpg";
-            _openEnvelopeThumbUrl = $@"https://{_settings.DomainName}/{_settings.ImagesPath}OpenedEnvelope3";
+            _openEnvelopeThumbUrl = $@"https://{_settings.DomainName}/{_settings.ImagesPath}OpenedEnvelope3.jpg";
 #endif
         }
 
@@ -131,10 +131,58 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             await _telegramMethods.SendMessage(userId, $"{Emoji.DENIED}  You do not have any messages left.");
         }
 
+        public async Task StartMessage(string userId)
+        {
+            var message = new StringBuilder();
+            message.AppendLine("Hi! I am a LazyMailBot. I can notify you about incoming emails in your Gmail. " +
+                          "In \"full mode\" i also can be something like an email client and manage your mailbox right from the chat.");
+            message.AppendLine();
+            message.AppendLine(@"Start with /connect command to Authorize bot with your Gmail account via OAuth 2.0");
+            message.AppendLine(@"To get full list of available commands type /help");
+            await _telegramMethods.SendMessage(userId, message.ToString());
+        }
+
+        public async Task StartMessage(string userId, string emailAddress)
+        {
+            var message = $"You are already autorized as {emailAddress}";
+            var button = new InlineKeyboardButton
+            {
+                Text = "Authorize another account",
+                CallbackData = new GetCallbackData
+                {
+                    Command = TextCommand.AUTHORIZE_COMMAND
+                }
+            };
+            var keyboard = new InlineKeyboardMarkup
+            {
+                InlineKeyboard = new List<List<InlineKeyboardButton>> { new List<InlineKeyboardButton> { button } }
+            };
+            await _telegramMethods.SendMessage(userId, message, null, false, false, null, keyboard);
+        }
+
         public async Task HelpMessage(string userId)
         {
-            var message = "";
-            await _telegramMethods.SendMessage(userId, message);
+            var message = new StringBuilder();
+            message.AppendLine("Available commands:");
+            message.AppendLine(@"/connect - Authorize bot with Gmail via OAuth 2.0");
+            message.AppendLine(@"/new - Compose new email (active in full mode)");
+            message.AppendLine(@"/stop - Stop notifications");
+            message.AppendLine(@"/resume - Resume notifications");
+            message.AppendLine(@"/settings - Open settings menu");
+            message.AppendLine(@"/help - show help");
+            message.AppendLine();
+            message.AppendLine("You can also use inline queries in full mode, just type the name of the bot and one " +
+                               "of the commands below, as in the example:");
+            message.AppendLine("<i>@lazymailbot inbox</i> - This query displays a list of your inbox emails");
+            message.AppendLine("After command u can specify a search expression or use a special argument \"s:\" " +
+                               "to skip the number of results in the issuance:");
+            message.AppendLine("<i>@lazymailbot all s:100</i> - This query displays a list of all emails, skipping the first 100.");
+            message.AppendLine("Available inline commands:");
+            message.AppendLine("all - Get all emails list");
+            message.AppendLine("inbox - Get inbox emails list");
+            message.AppendLine("draft - Get list of drafts");
+            message.AppendLine("all - Get all emails list");
+            await _telegramMethods.SendMessage(userId, message.ToString(), ParseMode.Html);
         }
 
         public async Task ShowShortMessageAnswerInlineQuery(string inlineQueryId, List<FormattedMessage> messages, int? offset = null)
@@ -527,7 +575,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             builder.Append(' ');
             builder.Append(senderName);
             if (maxLine - builder.Length > senderEmail.Length + 2)
-                builder.Append($" /{senderEmail}/");
+                builder.Append($" {senderEmail}");
             return builder.ToString();
         }
 

@@ -36,6 +36,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
         //label should be "SEND" to get user's contacts
         public async Task HandleShowContactsInlineQueryCommand(InlineQuery query, string labelId = null, string userContact = null)
         {
+            var nmModel = await _dbWorker.FindNmStoreAsync(query.From);
+            if (nmModel == null)
+                return;
+
             if (!string.IsNullOrEmpty(userContact))
             {
                 var userInfo = new UserInfo { Email = userContact };

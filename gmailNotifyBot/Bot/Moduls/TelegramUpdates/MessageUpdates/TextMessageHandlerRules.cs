@@ -4,6 +4,21 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.Messages;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 {
+    internal class StartRule : IMessageHandlerRule
+    {
+        public HandleMessageCommand Handle(Message message, Service service, MessageHandler handler)
+        {
+            var textMessage = message as TextMessage;
+            if (textMessage == null) return null;
+
+            HandleMessageCommand del = async sender => await handler.HandleStartCommand(sender);
+            if (textMessage.Text.StartsWith(TextCommand.START_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+                return del;
+
+            return null;
+        }
+    }
+
     internal class AuthorizeRule : IMessageHandlerRule
     {
         public HandleMessageCommand Handle(Message message, Service service,  MessageHandler handler)
@@ -185,21 +200,4 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             return null;
         }
     }
-
-    //internal class DeleteMarkRule : IMessageHandlerRule
-    //{
-    //    public HandleMessageCommand Handle(Message message, Service service, MessageHandler handler)
-    //    {
-    //        var textMessage = message as TextMessage;
-    //        if (textMessage == null) return null;
-
-    //        if (textMessage.Text.StartsWith(TextCommand.DELETE_MSG_MARK, StringComparison.CurrentCultureIgnoreCase))
-    //        {
-    //            HandleMessageCommand del = async sender => await handler.HandleDeleteMark(textMessage);
-    //            return del;
-    //        }
-
-    //        return null;
-    //    }
-    //}
 }

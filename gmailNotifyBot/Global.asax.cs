@@ -27,7 +27,7 @@ namespace CoffeeJelly.gmailNotifyBot
     {
         public void Session_Start(Object source, EventArgs e)
         {
-            
+
         }
 
 
@@ -41,31 +41,48 @@ namespace CoffeeJelly.gmailNotifyBot
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             LogMaker.NewMessage += LogMaker_NewMessage;
-
 #pragma warning disable 618
-#if DEBUG
-            string clientSecretsStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret_debug);
-#else
+#if !DEBUG && !WEBHOOK
             string clientSecretsStr = Encoding.UTF8.GetString(App_LocalResources.Tokens.client_secret);
+#else
+            string clientSecretsStr = Encoding.UTF8.GetString(App_LocalResources.TokensTest.client_secret_debug);
 #endif
- 
+            var botSettings = new BotSettings();
             var clienSecretsJtoken = JsonConvert.DeserializeObject<JToken>(clientSecretsStr);
             var clientSecrets = JsonConvert.DeserializeObject<Secrets>(clienSecretsJtoken["web"].ToString());
-            var botSettings = new BotSettings
-            {
-                BotName = System.Configuration.ConfigurationSettings.AppSettings["Botname"],
-                Token = App_LocalResources.Tokens.GmailControlBotToken,
-                Topic = App_LocalResources.Tokens.TopicName,
-                ClientSecrets = clientSecrets,
-                Subscription = App_LocalResources.Tokens.Subscription,
-                ImagesPath = System.Configuration.ConfigurationSettings.AppSettings["ImagesPath"],
-                DomainName = App_LocalResources.Tokens.DomainName,
-                AttachmentsTempFolder = Path.Combine(HttpRuntime.AppDomainAppPath, System.Configuration.ConfigurationSettings.AppSettings["AttachmentsTemp"]),
-                MaxAttachmentSize = int.Parse(System.Configuration.ConfigurationSettings.AppSettings["MaxAttachmentSize"]),
-                BotVersion = ReturnBotVersion(),
-                GmnbApiKey = App_LocalResources.Tokens.gmnbAPIKey,
-                ApplicationName = App_LocalResources.Tokens.ApplicationName
-            };
+
+#if !DEBUG && !WEBHOOK
+            botSettings.BotName = System.Configuration.ConfigurationSettings.AppSettings["Botname"];
+            botSettings.Token = App_LocalResources.Tokens.BotToken;
+            botSettings.Topic = App_LocalResources.Tokens.TopicName;
+            botSettings.ClientSecrets = clientSecrets;
+            botSettings.Subscription = App_LocalResources.Tokens.Subscription;
+            botSettings.ImagesPath = System.Configuration.ConfigurationSettings.AppSettings["ImagesPath"];
+            botSettings.DomainName = App_LocalResources.Tokens.DomainName;
+            botSettings.AttachmentsTempFolder = Path.Combine(HttpRuntime.AppDomainAppPath,
+                System.Configuration.ConfigurationSettings.AppSettings["AttachmentsTemp"]);
+            botSettings.MaxAttachmentSize =
+                int.Parse(System.Configuration.ConfigurationSettings.AppSettings["MaxAttachmentSize"]);
+            botSettings.BotVersion = ReturnBotVersion();
+            botSettings.GmnbApiKey = App_LocalResources.Tokens.gmnbAPIKey;
+            botSettings.ApplicationName = App_LocalResources.Tokens.ApplicationName;
+#else
+            botSettings.BotName = System.Configuration.ConfigurationSettings.AppSettings["Botname"];
+            botSettings.Token = App_LocalResources.TokensTest.BotToken;
+            botSettings.Topic = App_LocalResources.TokensTest.TopicName;
+            botSettings.ClientSecrets = clientSecrets;
+            botSettings.Subscription = App_LocalResources.TokensTest.Subscription;
+            botSettings.ImagesPath = System.Configuration.ConfigurationSettings.AppSettings["ImagesPath"];
+            botSettings.DomainName = App_LocalResources.TokensTest.DomainName;
+            botSettings.AttachmentsTempFolder = Path.Combine(HttpRuntime.AppDomainAppPath,
+                System.Configuration.ConfigurationSettings.AppSettings["AttachmentsTemp"]);
+            botSettings.MaxAttachmentSize =
+                int.Parse(System.Configuration.ConfigurationSettings.AppSettings["MaxAttachmentSize"]);
+            botSettings.BotVersion = ReturnBotVersion();
+            botSettings.GmnbApiKey = App_LocalResources.TokensTest.gmnbAPIKey;
+            botSettings.ApplicationName = App_LocalResources.TokensTest.ApplicationName;
+#endif
+
             _botInitializer = BotInitializer.GetInstance(botSettings);
 #if DEBUG
             _botInitializer.InitializeUpdates();

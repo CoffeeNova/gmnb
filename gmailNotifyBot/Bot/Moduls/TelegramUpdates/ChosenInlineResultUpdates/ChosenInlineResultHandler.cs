@@ -43,7 +43,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.ChosenInlineResu
                     var del = rule.Handle(result, service, this);
                     if (del == null)
                         continue;
-                    LogMaker.Log(Logger, $"{result.Query} command received from user with id {result.From}, resultId={result.ResultId}", false);
+                    LogMaker.Log(Logger, $"{result.Query} command received from user with id {result.From.Id}, resultId={result.ResultId}", false);
                     if (result.ResultId == CallbackCommand.IGNORE_COMMAND)
                         return;
                     await del.Invoke();

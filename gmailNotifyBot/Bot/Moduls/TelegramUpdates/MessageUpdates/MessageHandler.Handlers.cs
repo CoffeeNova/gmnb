@@ -22,6 +22,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 {
     public partial class MessageHandler
     {
+        public async Task HandleStartCommand(ISender sender)
+        {
+            try
+            {
+                var service = Methods.SearchServiceByUserId(sender.From);
+                var email = await _dbWorker.FindUserAsync(sender.From);
+                await _botActions.StartMessage(sender.From, email.Email);
+            }
+            catch (ServiceNotFoundException ex)
+            {
+                await _botActions.StartMessage(sender.From);
+
+            }
+        }
+
         /// <summary>
         /// Handles <see cref="TextCommand.AUTHORIZE_COMMAND"/>.
         /// This method calls <see cref="Authorizer.SendAuthorizeLink"/> that forms URL link and provides it to the chat as a message.
@@ -242,7 +257,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             else
             {
                 await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
-                await _botActions.DeleteMessage(sender.From, nmStore.MessageId);
+                //await _botActions.DeleteMessage(sender.From, nmStore.MessageId);
             }
         }
 
