@@ -256,3 +256,4 @@ gmailNotifyBot/*.txt
 gmailNotifyBot/Web.Release.config
 gmailNotifyBot/Properties/*.pubxml
 /gmailNotifyBot/App_LocalResources/TokensTest.resx
+/gmailNotifyBot/App_LocalResources/TokensTest.Designer.cs

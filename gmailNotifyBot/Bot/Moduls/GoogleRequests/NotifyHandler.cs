@@ -63,9 +63,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                             throw new DbDataStoreException(
                                 $"Can't find user settings data in database. User record with id {userModel.UserId} is absent in the database.");
 
-                        if (userSettings.IgnoreList.Any(ignoreModel => ignoreModel.Address == decodedData.Email))
-                            return true;
-
                         var service = Methods.SearchServiceByUserId(userModel.UserId.ToString());
                         var query = service.GmailService.Users.History.List("me");
                         query.HistoryTypes = UsersResource.HistoryResource.ListRequest.HistoryTypesEnum.MessageAdded;
@@ -85,11 +82,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                                 var getRequest = service.GmailService.Users.Messages.Get("me", addedMessage.Message.Id);
                                 var messageResponse = getRequest.Execute();
                                 var formattedMessage = new FormattedMessage(messageResponse);
+
+                                if (userSettings.IgnoreList.Any(ignoreModel => ignoreModel.Address == formattedMessage.From.Email))
+                                    continue;
+
                                 if (userSettings.UseWhitelist)
-                                    if (!userSettings.Whitelist.Any(label => formattedMessage.Labels.Contains(label.Name)))
+                                    if (!userSettings.Whitelist.Any(label => formattedMessage.LabelIds.Contains(label.LabelId)))
                                         continue;
 
-                                if (userSettings.Blacklist.Any(label => formattedMessage.Labels.Contains(label.Name)))
+                                if (userSettings.Blacklist.Any(label => formattedMessage.LabelIds.Contains(label.LabelId)))
                                     continue;
 
                                 _botActions.ShowShortMessage(userModel.UserId.ToString(), formattedMessage);

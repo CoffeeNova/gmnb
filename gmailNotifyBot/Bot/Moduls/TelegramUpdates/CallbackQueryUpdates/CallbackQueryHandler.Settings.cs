@@ -109,7 +109,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             var labels = await Methods.GetLabelsList(service);
             var labelInfos = labels
                 .Where(l => l.Type != "system")
-                .Select(l => new LabelInfo {Name = l.Name, LabelId = l.Id});
+                .Select(l => new LabelInfo { Name = l.Name, LabelId = l.Id });
             await
                 _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.EditLabelsMenu, SelectedOption.None, null, null, labelInfos);
         }
@@ -126,8 +126,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return;
             var labels = await Methods.GetLabelsList(service);
             var labelInfos = labels
-                .Where(l => l.Type != "system")
-                .Select(l => new LabelInfo {Name = l.Name, LabelId = l.Id});
+                .Where(l => (l.Type != "system") || CatergoriesLabels.List.Any(cl => cl.LabelId == l.Id))
+                .Select(l => new LabelInfo { Name = CatergoriesLabels.ReturnLabelName(l.Id) ?? l.Name, LabelId = l.Id });
             await
                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.WhiteListMenu, SelectedOption.None, userSettings, null, labelInfos);
         }
@@ -139,8 +139,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return;
             var labels = await Methods.GetLabelsList(service);
             var labelInfos = labels
-                .Where(l => l.Type != "system")
-                .Select(l => new LabelInfo { Name = l.Name, LabelId = l.Id });
+                .Where(l => (l.Type != "system") || CatergoriesLabels.List.Any(cl => cl.LabelId == l.Id))
+                .Select(l => new LabelInfo { Name = CatergoriesLabels.ReturnLabelName(l.Id) ?? l.Name, LabelId = l.Id });
 
             await
                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.BlackListMenu, SelectedOption.None, userSettings, null, labelInfos);
@@ -190,7 +190,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return;
 
             var label = await Methods.GetLabelAsync(callbackData.LabelId, service);
-            var labelModel = userSettings.Whitelist.SingleOrDefault(w => w.Name == label.Name);
+            var labelModel = userSettings.Whitelist.SingleOrDefault(w => w.LabelId == label.Id);
             if (labelModel == null)
                 userSettings.Whitelist.Add(new WhitelistModel { Name = label.Name, LabelId = label.Id });
             else
@@ -206,14 +206,14 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 return;
 
             var label = await Methods.GetLabelAsync(callbackData.LabelId, service);
-            var labelModel = userSettings.Blacklist.SingleOrDefault(b => b.Name == label.Name);
+            var labelModel = userSettings.Blacklist.SingleOrDefault(b => b.LabelId == label.Id);
             if (labelModel == null)
                 userSettings.Blacklist.Add(new BlacklistModel { Name = label.Name, LabelId = label.Id });
             else
                 userSettings.Blacklist.Remove(labelModel);
             await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
             await HandleCallbackQBlacklistMenu(query, service);
-            
+
         }
 
         public async Task HandleCallbackQUseBlacklist(CallbackQuery query, Service service)

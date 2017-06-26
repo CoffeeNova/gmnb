@@ -49,7 +49,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             MessageId = message.Id;
             ThreadId = message.ThreadId;
             ETag = message.ETag;
-            Labels = message.LabelIds == null ? null : new List<string>(message.LabelIds);
+            LabelIds = message.LabelIds == null ? null : new List<string>(message.LabelIds);
             var messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "From");
             if (!string.IsNullOrEmpty(messagePartHeader?.Value))
                 From = Helper.ParseUserInfo(messagePartHeader.Value);
@@ -207,7 +207,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
         public int MaxLinePerPage { get; set; } = 35;
         public int MinLinePerPage { get; set; } = 25;
 
-        public List<string> Labels;
+        public List<string> LabelIds;
 
         private IReadOnlyList<BodyForm> _body;
         public IReadOnlyList<BodyForm> Body 

@@ -96,8 +96,11 @@ namespace CoffeeJelly.gmailNotifyBot
             _botInitializer.InitializeCallbackQueryHandler();
             _botInitializer.InitializeInlineQueryHandler();
             _botInitializer.InitializeChosenInlineResultHandler();
-#if !DEBUG && !WEBHOOK
+#if (!WEBHOOK)
             _botInitializer.InitializeNotifyHandler();
+#endif
+#if !DEBUG && !WEBHOOK
+            
             _botInitializer.InitializePushNotificationWatchesAsync(initializeDelay);
             _botInitializer.InitializePushNotificationWatchTimer(_updatePeriod);
 #endif

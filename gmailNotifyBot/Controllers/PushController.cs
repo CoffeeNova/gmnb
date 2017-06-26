@@ -26,14 +26,14 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
                 var json = new StreamReader(Request.InputStream).ReadToEnd();
                 var message = JsonConvert.DeserializeObject<GoogleNotifyMessage>(json);
                 var notifyHandler = BotInitializer.Instance?.NotifyHandler;
-                TestModel.WritePushedMessageToTestFile(message);
                 if (notifyHandler == null) return new HttpStatusCodeResult(HttpStatusCode.OK);
 
                 notifyHandler.HandleGoogleNotifyMessage(message);
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }
-            catch
+            catch(Exception ex)
             {
+                TestModel.WriteLogToFile(ex.Message + Environment.NewLine + ex.StackTrace);
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }

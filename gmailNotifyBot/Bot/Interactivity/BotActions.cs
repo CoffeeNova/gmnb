@@ -202,7 +202,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     {
                         MessageText = message.IsDraft ? "Draft:" : "Message:"
                     },
-                    ThumbUrl = message.Labels.Any(l => l == Label.Unread)
+                    ThumbUrl = message.LabelIds.Any(l => l == Label.Unread)
                                 ? _closedEnvelopeThumbUrl
                                 : _openEnvelopeThumbUrl
                 });
@@ -679,7 +679,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     }
                     break;
                 case SettingsKeyboardState.EditLabelsMenu:
-                    message.AppendLine("<b>Labels</b>");
+                    message.AppendLine("<b>User Defined Editable Labels:</b>");
                     message.AppendLine();
                     break;
                 case SettingsKeyboardState.WhiteListMenu:
@@ -694,7 +694,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                     message.AppendLine();
                     message.AppendLine(userSettings.UseWhitelist
                         ? "If you want to use blacklist click \"Use blacklist mode\" button."
-                        : "Click the button to add it to (or remove from) the whitelist.");
+                        : "Click the button to add it to (or remove from) the blacklist.");
                     break;
                 case SettingsKeyboardState.IgnoreMenu:
                     switch (option)
