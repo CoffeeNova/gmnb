@@ -20,6 +20,7 @@ using System.Net;
 using System.Reflection;
 using CoffeeJelly.gmailNotifyBot.Bot.Moduls;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
+using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 
 namespace CoffeeJelly.gmailNotifyBot
 {
@@ -33,7 +34,8 @@ namespace CoffeeJelly.gmailNotifyBot
 
         protected void Application_Start()
         {
-            Database.SetInitializer(new UserDbInitializer());
+            Database.SetInitializer(new DbInitializer());
+            new GmailBotDbContext().Database.Initialize(true);
 
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

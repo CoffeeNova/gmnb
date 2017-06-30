@@ -9,7 +9,7 @@ using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 
 namespace CoffeeJelly.gmailNotifyBot.Models
 {
-    public class UserDbInitializer : CreateDatabaseIfNotExists<GmailBotDbContext>
+    public class DbInitializer : CreateDatabaseIfNotExists<GmailBotDbContext>
     {
         protected override void Seed(GmailBotDbContext db)
         {
