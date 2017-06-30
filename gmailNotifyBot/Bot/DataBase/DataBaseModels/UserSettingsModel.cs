@@ -20,6 +20,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels
 
         public bool UseWhitelist { get; set; }
 
+        public bool ReadAfterReceiving { get; set; } = true;
+
         public List<IgnoreModel> IgnoreList { get; set; } = new List<IgnoreModel>();
 
         public List<BlacklistModel> Blacklist { get; set; } = new List<BlacklistModel>();

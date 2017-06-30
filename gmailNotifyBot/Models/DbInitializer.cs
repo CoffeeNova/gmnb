@@ -56,7 +56,8 @@ namespace CoffeeJelly.gmailNotifyBot.Models
                     new WhitelistModel {Name = "testName2", LabelId="testId2" }
                 },
                 Expiration = 100,
-                HistoryId = 1
+                HistoryId = 1,
+                ReadAfterReceiving = true
             });
             db.NmStore.Add(new NmStoreModel
             {
