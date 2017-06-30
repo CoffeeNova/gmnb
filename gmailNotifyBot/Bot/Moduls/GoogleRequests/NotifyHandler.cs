@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
 using CoffeeJelly.gmailNotifyBot.Bot.Exceptions;
-using CoffeeJelly.gmailNotifyBot.Bot.Extensions;
 using CoffeeJelly.gmailNotifyBot.Bot.Interactivity;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using Google.Apis.Gmail.v1;
@@ -32,9 +30,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
             {
                 throw new TypeInitializationException(nameof(NotifyHandler), ex);
             }
-
-
         }
+
         public bool HandleGoogleNotifyMessage(GoogleNotifyMessage message)
         {
             bool result = true;

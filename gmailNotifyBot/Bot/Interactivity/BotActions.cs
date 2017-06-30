@@ -181,7 +181,6 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             message.AppendLine("all - Get all emails list");
             message.AppendLine("inbox - Get inbox emails list");
             message.AppendLine("draft - Get list of drafts");
-            message.AppendLine("all - Get all emails list");
             await _telegramMethods.SendMessage(userId, message.ToString(), ParseMode.Html);
         }
 

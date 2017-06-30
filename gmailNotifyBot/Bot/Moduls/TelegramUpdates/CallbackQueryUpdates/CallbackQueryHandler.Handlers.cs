@@ -51,7 +51,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 throw new ArgumentException("Must be a Minimized or MinimizedAction state.",
                     nameof(callbackData.MessageKeyboardState));
 
-            var formattedMessage = await Methods.GetMessage(service, callbackData.MessageId);
+            var formattedMessage =
+                await
+                    Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
+                        "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
             var newState = callbackData.MessageKeyboardState == GetKeyboardState.Minimized
                 ? GetKeyboardState.Maximized
