@@ -91,10 +91,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                                 if (userSettings.Blacklist.Any(label => formattedMessage.LabelIds.Contains(label.LabelId)))
                                     continue;
 
-                                if (userSettings.ReadAfterReceiving)
-                                    formattedMessage = Methods.ModifyMessageLabels(service, formattedMessage.MessageId, new List<string> { "UNREAD" });
-
                                 _botActions.ShowShortMessage(userModel.UserId.ToString(), formattedMessage);
+
+                                if (userSettings.ReadAfterReceiving)
+                                    Methods.ModifyMessageLabels(service, formattedMessage.MessageId, null, new List<string> { "UNREAD" });
                             }
                         }
                     }
