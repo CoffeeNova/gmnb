@@ -19,7 +19,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         [EnumMember(Value = "permissionsMenu")]
         PermissionsMenu,
         [EnumMember(Value = "labelActionsMenu")]
-        LabelActionsMenu
+        LabelActionsMenu,
+        [EnumMember(Value = "additionalMenu")]
+        AdditionalMenu
     }
 
     public enum SelectedOption

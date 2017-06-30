@@ -119,16 +119,26 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
             return Regex.Matches(str, @"-?\d+\.\d+").OfType<Match‌>().Select(m => m.Value).ToArray();
         }
 
-        public static IEnumerable GetBetween(this string text, char left, string right)
+        public static IEnumerable<string> GetBetween(this string text, char left, string right)
         {
             var values = Regex.Matches(text, $"(?s)(?<={left}).*?(?={right})");
             return values.Cast<string>();
         }
 
-        public static IEnumerable GetBetween(this string text, char left, char right)
+        public static List<string> GetBetween(this string text, char left, char right)
         {
             var values = Regex.Matches(text, $"(?s)(?<={left}).*?(?={right})");
-            return values.Cast<string>();
+            return values.Cast<Match>()
+                    .Select(m => m.Value)
+                    .ToList();
+        }
+
+        public static List<string> GetBetween(this string text, char twoIdentical)
+        {
+            var values = Regex.Matches(text, $"(?s)(?<={twoIdentical}).*?(?={twoIdentical})");
+            var list = values.Cast<Match>()
+                .Select(m => m.Value);
+            return list.Where((item, index) => index % 2 == 0).ToList();
         }
 
         public static string GetBetweenFirst(this string text, char left, string right)

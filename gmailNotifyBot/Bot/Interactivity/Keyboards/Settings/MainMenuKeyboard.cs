@@ -18,6 +18,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
             PermissionsButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.Permissions, CallbackCommand.PERMISSIONS_MENU_COMMAND, SelectedOption.Option2);
             IgnoreButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.Ignore, CallbackCommand.IGNORE_CONTROL_MENU_COMMAND, SelectedOption.Option3);
             NotifyButton = InitButton(InlineKeyboardType.CallbackData, NotifyButtonCaption, NotifyButtonCommand, SelectedOption.Option4);
+            AdditionalButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.Additional, CallbackCommand.ADDITIONAL_MENU_COMMAND, SelectedOption.Option5);
             AboutButton = InitButton(InlineKeyboardType.CallbackData, MainMenuButtonCaption.About, CallbackCommand.ABOUT_COMMAND, SelectedOption.Option9);
         }
 
@@ -32,25 +33,30 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
             IgnoreRow = new List<InlineKeyboardButton>();
             if (IgnoreButton != null)
                 IgnoreRow.Add(IgnoreButton);
+            AdditionalRow = new List<InlineKeyboardButton>();
+            if (AdditionalButton != null)
+                AdditionalRow.Add(AdditionalButton);
             NotifyRow = new List<InlineKeyboardButton>();
             if (NotifyButton != null)
                 NotifyRow.Add(NotifyButton);
             AboutRow = new List<InlineKeyboardButton>();
             if (AboutButton != null)
                 AboutRow.Add(AboutButton);
-            var inlineKeyboard = new List<List<InlineKeyboardButton>> { LabelsRow, PermissionsRow, IgnoreRow, NotifyRow, AboutRow };
+            var inlineKeyboard = new List<List<InlineKeyboardButton>> { LabelsRow, PermissionsRow, IgnoreRow, AdditionalRow, NotifyRow, AboutRow };
             return inlineKeyboard;
         }
 
         protected InlineKeyboardButton LabelsButton { get; set; }
         protected InlineKeyboardButton PermissionsButton { get; set; }
         protected InlineKeyboardButton IgnoreButton { get; set; }
+        protected InlineKeyboardButton AdditionalButton { get; set; }
         protected InlineKeyboardButton NotifyButton { get; set; }
         protected InlineKeyboardButton AboutButton { get; set; }
 
         protected List<InlineKeyboardButton> LabelsRow;
         protected List<InlineKeyboardButton> PermissionsRow;
         protected List<InlineKeyboardButton> IgnoreRow;
+        protected List<InlineKeyboardButton> AdditionalRow;
         protected List<InlineKeyboardButton> NotifyRow;
         protected List<InlineKeyboardButton> AboutRow;
 

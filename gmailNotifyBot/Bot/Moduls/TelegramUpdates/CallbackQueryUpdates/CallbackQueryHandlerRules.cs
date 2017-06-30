@@ -418,6 +418,21 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
     }
 
+    internal class OpenAdditionalMenuRule : ICallbackQueryHandlerRule
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.Equals(CallbackCommand.ADDITIONAL_MENU_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQAdditionalMenu(sender);
+            return del;
+        }
+    }
+
     internal class StartNotifyRule : ICallbackQueryHandlerRule
     {
         public HandleCallbackQueryCommand Handle(CallbackData data, Service service, CallbackQueryHandler handler)
@@ -688,6 +703,25 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     #endregion
 
+    #region Additional menu
+
+    internal class ReadAfterReceivingRule : ICallbackQueryHandlerRule
+    {
+        public HandleCallbackQueryCommand Handle(CallbackData data, Service service, CallbackQueryHandler handler)
+        {
+            if (!(data is SettingsCallbackData))
+                return null;
+
+            if (!data.Command.Equals(CallbackCommand.READ_AFTER_RECEIVING_COMMAND,
+                StringComparison.CurrentCultureIgnoreCase)) return null;
+
+            HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQReadAfterReceiving(sender, data as SettingsCallbackData);
+            return del;
+        }
+    }
+
+    #endregion
+
     #region Permissions menu
 
     internal class AddToIgnoreRule : ICallbackQueryHandlerRule
@@ -776,7 +810,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
             if (!data.Command.EqualsAny(StringComparison.CurrentCultureIgnoreCase,
                 CallbackCommand.LABELS_BACK_COMMAND,
                 CallbackCommand.PERMISSIONS_BACK_COMMAND,
-                CallbackCommand.IGNORE_BACK_COMMAND
+                CallbackCommand.IGNORE_BACK_COMMAND,
+                CallbackCommand.ADDITIONAL_BACK_COMMAND
                 )) return null;
 
             HandleCallbackQueryCommand del = async sender => await handler.HandleCallbackQBackToMainMenu(sender);
@@ -786,7 +821,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
     #endregion
 
-#region general rules
+    #region general rules
 
     internal class ResumeNotifyRule : ICallbackQueryHandlerRule
     {
@@ -803,5 +838,5 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         }
     }
 
-#endregion
+    #endregion
 }

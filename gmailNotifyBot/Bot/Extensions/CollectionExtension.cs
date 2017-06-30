@@ -58,6 +58,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Extensions
             var i = 0;
             foreach (var e in ie) action(e, i++);
         }
+
     }
 
     public class SemiNumericComparer : IComparer<string>

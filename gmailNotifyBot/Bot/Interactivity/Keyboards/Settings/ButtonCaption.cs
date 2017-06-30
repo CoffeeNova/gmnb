@@ -19,6 +19,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         public static string StopNotify => "Stop Notifications";
 
         public static string About => "About";
+
+        public static string Additional => "Additional";
     }
 
     internal static class LabelsMenuButtonCaption
@@ -72,5 +74,11 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
         public static string UseBlacklist => "Use Blacklist Mode";
 
         public static string UseWhitelist => "Use Whitelist Mode";
+    }
+
+    internal static class AdditionalMenuButtonCaption
+    {
+        public static string ReadAfterReceivingNeg => "Mark Notifications as Read";
+        public static string ReadAfterReceivingPos => $"{Emoji.GRAY_CHECKED_BOX} Mark Notifications as Read";
     }
 }

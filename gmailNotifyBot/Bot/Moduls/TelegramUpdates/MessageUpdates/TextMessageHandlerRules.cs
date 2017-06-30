@@ -161,9 +161,17 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
             var textMessage = message as TextMessage;
             if (textMessage == null) return null;
 
-            HandleMessageCommand del = async sender => await handler.HandleNewMessageCommand(sender);
+            
             if (textMessage.Text.StartsWith(TextCommand.NEW_MESSAGE_COMMAND, StringComparison.CurrentCultureIgnoreCase))
+            {
+                HandleMessageCommand del;
+                var arguments = Methods.CutArguments(textMessage.Text);
+                if (string.IsNullOrEmpty(arguments))
+                    del = async sender => await handler.HandleNewMessageCommand(sender);
+                else
+                    del = async sender => await handler.HandleNewMessageCommand(service, arguments);
                 return del;
+            }
 
             return null;
         }

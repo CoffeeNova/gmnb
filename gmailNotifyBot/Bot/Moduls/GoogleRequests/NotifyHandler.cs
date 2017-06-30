@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase;
 using CoffeeJelly.gmailNotifyBot.Bot.DataBase.DataBaseModels;
@@ -89,6 +90,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
 
                                 if (userSettings.Blacklist.Any(label => formattedMessage.LabelIds.Contains(label.LabelId)))
                                     continue;
+
+                                if (userSettings.ReadAfterReceiving)
+                                    formattedMessage = Methods.ModifyMessageLabels(service, formattedMessage.MessageId, new List<string> { "UNREAD" });
 
                                 _botActions.ShowShortMessage(userModel.UserId.ToString(), formattedMessage);
                             }

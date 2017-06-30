@@ -565,6 +565,49 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
             return await _telegramMethods.AnswerCallbackQuery(chatId, message, null, null, int.MaxValue);
         }
 
+        public async Task NewMessageSentSuccessfull(string chatId)
+        {
+            var message = "Message sent successfully!";
+            await _telegramMethods.SendMessage(chatId, message);
+        }
+
+        public async Task NewMessageArgumentsError(string chatId)
+        {
+            var message = new StringBuilder();
+            message.AppendLine("Your query is wrong!");
+            message.AppendLine("Please specify all arguments as in the example below(recipients, subject and text):");
+            message.AppendLine();
+            message.AppendLine(
+                "<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>");
+            message.AppendLine();
+            message.AppendLine("Also arguments must be in double quotes");
+            await _telegramMethods.SendMessage(chatId, message.ToString(), ParseMode.Html);
+        }
+
+        public async Task NewMessageRecipientsArgumentError(string chatId)
+        {
+            var message = new StringBuilder();
+            message.AppendLine("Your recipients argument is wrong!");
+            message.AppendLine("Recipients must be a comma-separated enumeration and must be a valid email addresses.");
+            await _telegramMethods.SendMessage(chatId, message.ToString());
+        }
+
+        public async Task NewMessageSubjectArgumentError(string chatId)
+        {
+            var message = new StringBuilder();
+            message.AppendLine("Your subject argument is wrong!");
+            message.AppendLine("Subject must be not empty and contain something other than empty characters.");
+            await _telegramMethods.SendMessage(chatId, message.ToString());
+        }
+
+        public async Task NewMessageTextArgumentError(string chatId)
+        {
+            var message = new StringBuilder();
+            message.AppendLine("Your subject argument is wrong!");
+            message.AppendLine("Text must be not empty and contain something other than empty characters.");
+            await _telegramMethods.SendMessage(chatId, message.ToString());
+        }
+
         private string ShortMessageTitleFormatter(string senderName, string senderEmail, string date)
         {
             const int maxLine = 44;
@@ -719,6 +762,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
                             break;
                     }
                     break;
+                case SettingsKeyboardState.AdditionalMenu:
+                    message.Append("<b>Main Settings Menu</b>");
+                    break;
                 case SettingsKeyboardState.PermissionsMenu:
                     message.AppendLine("<b>Permissions Menu</b>");
                     message.AppendLine();
@@ -741,7 +787,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         private readonly string _newMessageSuccessfulSentText = $"{Emoji.OK} Message sent successfully!";
 
         private readonly string _newMessageTipText = $"{Emoji.INFO_SIGN} You can use quick command, just type in the chat:" +
+                        $"{Environment.NewLine}" +
                         $"{Environment.NewLine}<i>/new \"recipient1@gmail.com, recipient2@gmail.com,...\" \"subject\" \"email text\"</i>" +
+                        $"{Environment.NewLine}" +
                         $"{Environment.NewLine}and press Enter to quick send the email." +
                         $"{Environment.NewLine}{Emoji.INFO_SIGN} For multiple recipients use comma separator.";
 

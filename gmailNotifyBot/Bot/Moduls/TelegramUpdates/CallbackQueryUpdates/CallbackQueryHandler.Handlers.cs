@@ -53,7 +53,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
             var formattedMessage =
                 await
-                    Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
+                    Methods.ModifyMessageLabelsAsync(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
                         "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
             var newState = callbackData.MessageKeyboardState == GetKeyboardState.Minimized
@@ -112,7 +112,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
             var formattedMessage =
                 await
-                    Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
+                    Methods.ModifyMessageLabelsAsync(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
                         "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
             var newState = callbackData.MessageKeyboardState == GetKeyboardState.Minimized
@@ -160,7 +160,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             var formattedMessage =
                 await
-                    Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
+                    Methods.ModifyMessageLabelsAsync(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
                         "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
@@ -180,7 +180,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             var formattedMessage =
                 await
-                    Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null,
+                    Methods.ModifyMessageLabelsAsync(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null,
                         "UNREAD");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
@@ -200,7 +200,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             var formattedMessage =
                 await
-                    Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "SPAM");
+                    Methods.ModifyMessageLabelsAsync(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null, "SPAM");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
             await
@@ -219,7 +219,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             var formattedMessage =
                 await
-                    Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null,
+                    Methods.ModifyMessageLabelsAsync(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null,
                         "INBOX");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
@@ -239,7 +239,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             var formattedMessage =
                 await
-                    Methods.ModifyMessageLabels(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null,
+                    Methods.ModifyMessageLabelsAsync(ModifyLabelsAction.Add, query.From, callbackData.MessageId, null,
                         "TRASH");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
@@ -259,7 +259,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         {
             var formattedMessage =
                 await
-                    Methods.ModifyMessageLabels(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
+                    Methods.ModifyMessageLabelsAsync(ModifyLabelsAction.Remove, query.From, callbackData.MessageId, null,
                         "INBOX");
             var isIgnored = await _dbWorker.IsPresentInIgnoreListAsync(query.From, formattedMessage.From.Email);
 
@@ -293,7 +293,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <param name="service"></param>
         /// <param name="callbackData"></param>
         /// <returns></returns>
-        public async Task HandleCallbackQIgnore(Query query,  Service service, GetCallbackData callbackData)
+        public async Task HandleCallbackQIgnore(Query query, Service service, GetCallbackData callbackData)
         {
             var formattedMessage = await Methods.GetMessage(service, callbackData.MessageId);
             await _dbWorker.AddToIgnoreListAsync(query.From, formattedMessage.From.Email);
@@ -353,7 +353,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         /// <returns></returns>
         public async Task HandleCallbackQShowAttachments(Query query, Service service, GetCallbackData callbackData)
         {
-            var message = await Methods.GetMessage(service, callbackData.MessageId);            
+            var message = await Methods.GetMessage(service, callbackData.MessageId);
             var newState = GetKeyboardState.Attachments;
             await _botActions.SendAttachmentsListMessage(query.From, query.Message.MessageId, message, newState);
         }
@@ -563,10 +563,10 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 if (string.IsNullOrEmpty(nmModel.DraftId))
                 {
                     await downloadAndOpenFiles(null);
-                    var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message, 
+                    var body = Methods.CreateNewDraftBody(nmModel.Subject, nmModel.Message,
                         nmModel.To.ToList<IUserInfo>(),
-                        nmModel.Cc.ToList<IUserInfo>(), 
-                        nmModel.Bcc.ToList<IUserInfo>(), 
+                        nmModel.Cc.ToList<IUserInfo>(),
+                        nmModel.Bcc.ToList<IUserInfo>(),
                         sender, streams);
                     draft = await Methods.CreateDraft(body, service.From);
                 }
@@ -574,15 +574,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 {
                     draft = await Methods.GetDraft(service.From, nmModel.DraftId);
                     await downloadAndOpenFiles(draft.Message.Id);
-                    var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message, 
+                    var body = Methods.AddToDraftBody(draft, nmModel.Subject, nmModel.Message,
                         nmModel.To.ToList<IUserInfo>(),
-                        nmModel.Cc.ToList<IUserInfo>(), 
-                        nmModel.Bcc.ToList<IUserInfo>(), 
+                        nmModel.Cc.ToList<IUserInfo>(),
+                        nmModel.Bcc.ToList<IUserInfo>(),
                         sender, streams);
                     draft = await Methods.UpdateDraft(body, service.From, draft.Id);
                 }
                 if (draft == null)
-                   await _botActions.SendSaveMessageAsDraftError(service.From);
+                    await _botActions.SendSaveMessageAsDraftError(service.From);
             }
             finally
             {
@@ -624,7 +624,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         private async Task<List<string>> DownloadFilesFromGmailStore(Service service, string messageId, ICollection<FileModel> fileModelCollection, bool skipTelegramFiles = true)
         {
             fileModelCollection.NullInspect(nameof(fileModelCollection));
-            
+
             var fileNames = new List<string>();
             foreach (var fileModel in fileModelCollection)
             {

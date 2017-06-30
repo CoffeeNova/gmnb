@@ -95,6 +95,7 @@
         public const string IGNORE_CONTROL_MENU_COMMAND = "302";
         public const string NOTIFY_START_COMMAND = "303";
         public const string NOTIFY_STOP_COMMAND = "304";
+        public const string ADDITIONAL_MENU_COMMAND = "305";
         public const string ABOUT_COMMAND = "309";
 
         #endregion
@@ -141,6 +142,14 @@
         public const string LABEL_ACTIONS_BACK_COMMAND = "359";
 
         #endregion
+
+        #region AdditionalMenu commands
+
+        public const string READ_AFTER_RECEIVING_COMMAND = "360";
+        public const string ADDITIONAL_BACK_COMMAND = "369";
+
+        #endregion
+
         #endregion
 
         #region General commands

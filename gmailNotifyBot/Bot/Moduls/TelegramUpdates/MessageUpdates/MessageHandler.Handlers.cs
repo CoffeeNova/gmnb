@@ -255,10 +255,43 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
                 await _dbWorker.UpdateNmStoreRecordAsync(nmStore);
             }
             else
-            {
                 await _botActions.SaveAsDraftQuestionMessage(sender.From, SendKeyboardState.Store);
-                //await _botActions.DeleteMessage(sender.From, nmStore.MessageId);
+        }
+
+        public async Task HandleNewMessageCommand(Service service, string arguments)
+        {
+            var argTypes = arguments.GetBetween('\"').ToList();
+            
+            if (argTypes.Count != 3)
+            {
+                await _botActions.NewMessageArgumentsError(service.From);
+                return;
             }
+            var recipients = argTypes[0].Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (!recipients.Any() || !recipients.All(Methods.EmailAddressValidation))
+            {
+                await _botActions.NewMessageRecipientsArgumentError(service.From);
+                return;
+            }
+            var subject = argTypes[1];
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                await _botActions.NewMessageSubjectArgumentError(service.From);
+                return;
+            }
+            var text = argTypes[2];
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                await _botActions.NewMessageTextArgumentError(service.From);
+                return;
+            }
+            var to = recipients.Select(r => new UserInfo { Email = r })
+                .ToList<IUserInfo>();
+            var messageBody = Methods.CreateNewMessageBody(subject, text, to);
+            var request = service.GmailService.Users.Messages.Send(messageBody, "me");
+            await request.ExecuteAsync();
+            await _botActions.NewMessageSentSuccessfull(service.From);
+
         }
 
         public async Task HandleHelpCommand(ISender sender)

@@ -46,6 +46,16 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
                 _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.IgnoreMenu, SelectedOption.None, userSettings);
         }
 
+        public async Task HandleCallbackQAdditionalMenu(CallbackQuery query)
+        {
+            var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
+            if (userSettings == null)
+                return;
+
+            await
+                _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.AdditionalMenu, SelectedOption.None, userSettings);
+        }
+
         public async Task HandleCallbackQStartNotify(CallbackQuery query, Service service)
         {
             var userSettings = await UserSettings(query.From);
@@ -313,6 +323,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
         public async Task HandleCallbackQRevokePermissionsViaWeb(CallbackQuery query)
         {
             await _botActions.SendAccountPermissinsUrl(query.From);
+        }
+
+        #endregion
+
+        #region additional menu
+
+        public async Task HandleCallbackQReadAfterReceiving(CallbackQuery query, SettingsCallbackData callbackData)
+        {
+            var userSettings = await _dbWorker.FindUserSettingsAsync(query.From);
+            if (userSettings == null)
+                return;
+
+            userSettings.ReadAfterReceiving = !userSettings.ReadAfterReceiving;
+            await _dbWorker.UpdateUserSettingsRecordAsync(userSettings);
+
+            await
+               _botActions.UpdateSettingsMenu(query.From, query.Message.MessageId, SettingsKeyboardState.AdditionalMenu,
+                   callbackData.Option, userSettings);
         }
 
         #endregion

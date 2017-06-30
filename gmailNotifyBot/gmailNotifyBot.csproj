@@ -250,6 +250,7 @@
     <Compile Include="Bot\Interactivity\Keyboards\General\GeneralKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\General\GeneralKeyboardState.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\General\ResumeNotificationsKeyboard.cs" />
+    <Compile Include="Bot\Interactivity\Keyboards\Settings\AdditionalMenuKeyboard.cs" />
     <Compile Include="Bot\Interactivity\Keyboards\Settings\NotifyLabelsKeyboard.cs" />
     <Compile Include="Bot\Types\CatergoriesLabels.cs" />
     <Compile Include="Bot\Types\ILabelInfo.cs" />
@@ -379,6 +380,10 @@
     <Compile Include="Migrations\201706211020551_InitialCreate.Designer.cs">
       <DependentUpon>201706211020551_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706300652241_AddReadAfterReceivingCategory.cs" />
+    <Compile Include="Migrations\201706300652241_AddReadAfterReceivingCategory.Designer.cs">
+      <DependentUpon>201706300652241_AddReadAfterReceivingCategory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Bot\Types\GoogleNotifyMessage.cs" />
@@ -402,6 +407,9 @@
     <Content Include="favicon.ico" />
     <EmbeddedResource Include="Migrations\201706211020551_InitialCreate.resx">
       <DependentUpon>201706211020551_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706300652241_AddReadAfterReceivingCategory.resx">
+      <DependentUpon>201706300652241_AddReadAfterReceivingCategory.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="FodyWeavers.xml" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />

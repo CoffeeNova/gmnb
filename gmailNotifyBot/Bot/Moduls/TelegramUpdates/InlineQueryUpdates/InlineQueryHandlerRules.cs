@@ -11,7 +11,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
         {
             HandleInlineQueryCommand del = async () =>
             {
-                var arguments = Methods.CutArguments(query);
+                var arguments = Methods.CutArguments(query.Query);
                 var skip = Methods.ArgumentAssigment(ref arguments);
                 await handler.HandleShowMessagesInlineQueryCommand(query, Label.Inbox, skip, arguments);
             };
@@ -28,7 +28,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
         {
             HandleInlineQueryCommand del = async () =>
             {
-                var arguments = Methods.CutArguments(query);
+                var arguments = Methods.CutArguments(query.Query);
                 var skip = Methods.ArgumentAssigment(ref arguments);
                 await handler.HandleShowMessagesInlineQueryCommand(query, null, skip, arguments);
             };
@@ -45,7 +45,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
         {
             HandleInlineQueryCommand del = async () =>
             {
-                var arguments = Methods.CutArguments(query);
+                var arguments = Methods.CutArguments(query.Query);
                 var skip = Methods.ArgumentAssigment(ref arguments);
                 await handler.HandleShowMessagesInlineQueryCommand(query, Label.Draft, skip, arguments);
             };
@@ -62,7 +62,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
         {
             HandleInlineQueryCommand del = async () =>
             {
-                var contact = Methods.CutArguments(query);
+                var contact = Methods.CutArguments(query.Query);
                 await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent, contact);
             };
 
@@ -78,7 +78,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
         {
             HandleInlineQueryCommand del = async () =>
             {
-                var contact = Methods.CutArguments(query);
+                var contact = Methods.CutArguments(query.Query);
                 await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent, contact);
             };
 
@@ -94,7 +94,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
         {
             HandleInlineQueryCommand del = async () =>
             {
-                var contact = Methods.CutArguments(query);
+                var contact = Methods.CutArguments(query.Query);
                 await handler.HandleShowContactsInlineQueryCommand(query, Label.Sent, contact);
             };
 
@@ -110,7 +110,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.InlineQueryUpdat
         {
             HandleInlineQueryCommand del = async () =>
             {
-                var arguments = Methods.CutArguments(query);
+                var arguments = Methods.CutArguments(query.Query);
                 var skip = Methods.ArgumentAssigment(ref arguments);
                 await handler.HandleShowEditDraftsInlineQueryCommand(query, skip, arguments);
             };

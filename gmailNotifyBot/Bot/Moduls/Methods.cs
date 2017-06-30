@@ -51,15 +51,15 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return new FormattedMessage(messageResponse, service.FullUserAccess);
         }
 
-        public static async Task<FormattedMessage> ModifyMessageLabels(ModifyLabelsAction action, string userId, string messageId, string eTag = null, params string[] labels)
+        public static async Task<FormattedMessage> ModifyMessageLabelsAsync(ModifyLabelsAction action, string userId, string messageId, string eTag = null, params string[] labels)
         {
             var labelsList = labels.ToList();
             if (action == ModifyLabelsAction.Add)
-                return await ModifyMessageLabels(userId, messageId, labelsList, null, eTag);
-            return await ModifyMessageLabels(userId, messageId, null, labelsList, eTag);
+                return await ModifyMessageLabelsAsync(userId, messageId, labelsList, null, eTag);
+            return await ModifyMessageLabelsAsync(userId, messageId, null, labelsList, eTag);
         }
 
-        public static async Task<FormattedMessage> ModifyMessageLabels(string userId, string messageId, List<string> addedLabels = null, List<string> removedLabels = null, string eTag = null)
+        public static async Task<FormattedMessage> ModifyMessageLabelsAsync(string userId, string messageId, List<string> addedLabels = null, List<string> removedLabels = null, string eTag = null)
         {
             var service = SearchServiceByUserId(userId);
             var modifyMessageRequest = new ModifyMessageRequest
@@ -72,6 +72,37 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             var messageResponse = await modifyRequest.ExecuteAsync();
             var getRequest = service.GmailService.Users.Messages.Get("me", messageResponse.Id);
             messageResponse = await getRequest.ExecuteAsync();
+            return new FormattedMessage(messageResponse);
+        }
+
+        public static FormattedMessage ModifyMessageLabels(string userId, string messageId, List<string> addedLabels = null, List<string> removedLabels = null, string eTag = null)
+        {
+            var service = SearchServiceByUserId(userId);
+            var modifyMessageRequest = new ModifyMessageRequest
+            {
+                ETag = eTag,
+                AddLabelIds = addedLabels,
+                RemoveLabelIds = removedLabels
+            };
+            var modifyRequest = service.GmailService.Users.Messages.Modify(modifyMessageRequest, "me", messageId);
+            var messageResponse = modifyRequest.Execute();
+            var getRequest = service.GmailService.Users.Messages.Get("me", messageResponse.Id);
+            messageResponse = getRequest.Execute();
+            return new FormattedMessage(messageResponse);
+        }
+
+        public static FormattedMessage ModifyMessageLabels(Service service, string messageId, List<string> addedLabels = null, List<string> removedLabels = null, string eTag = null)
+        {
+            var modifyMessageRequest = new ModifyMessageRequest
+            {
+                ETag = eTag,
+                AddLabelIds = addedLabels,
+                RemoveLabelIds = removedLabels
+            };
+            var modifyRequest = service.GmailService.Users.Messages.Modify(modifyMessageRequest, "me", messageId);
+            var messageResponse = modifyRequest.Execute();
+            var getRequest = service.GmailService.Users.Messages.Get("me", messageResponse.Id);
+            messageResponse = getRequest.Execute();
             return new FormattedMessage(messageResponse);
         }
 
@@ -89,9 +120,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             return recipients.Unique(r => r.Email).ToList();
         }
 
-        public static string CutArguments(InlineQuery query)
+        public static string CutArguments(string query)
         {
-            var splittedQuery = query.Query.Split(" ".ToCharArray(), 2);
+            var splittedQuery = query.Split(" ".ToCharArray(), 2);
             var queryArguments = splittedQuery.Length > 1 ? splittedQuery[1] : "";
             return queryArguments;
         }
@@ -169,6 +200,13 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             FillMimeMessage(mimeMessage, subject, text, to, cc, bcc, from, fileStream);
             var message = TransformMimeMessageToMessage(mimeMessage);
             return new Draft { Message = message };
+        }
+
+        public static Message CreateNewMessageBody(string subject, string text, List<IUserInfo> to)
+        {
+            var mimeMessage = new MimeMessage();
+            FillMimeMessage(mimeMessage, subject, text, to);
+            return TransformMimeMessageToMessage(mimeMessage);
         }
 
         public static Draft AddToDraftBody(Draft draft, string subject = null, string text = null, List<IUserInfo> to = null,
@@ -288,8 +326,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls
             };
         }
 
-        private static void FillMimeMessage(MimeMessage mimeMessage, string subject,
-            string text, List<IUserInfo> to, List<IUserInfo> cc, List<IUserInfo> bcc, List<IUserInfo> from, List<FileStream> contentList = null)
+        private static void FillMimeMessage(MimeMessage mimeMessage, string subject = null,
+            string text = null, List<IUserInfo> to = null, List<IUserInfo> cc = null, List<IUserInfo> bcc = null, List<IUserInfo> from = null, List<FileStream> contentList = null)
         {
             to?.ForEach(recipient => mimeMessage.To.Add(new MailboxAddress(recipient.Name, recipient.Email)));
             cc?.ForEach(recipient => mimeMessage.Cc.Add(new MailboxAddress(recipient.Name, recipient.Email)));

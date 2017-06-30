@@ -39,6 +39,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity.Keyboards.Settings
                 case SettingsKeyboardState.IgnoreMenu:
                     keyboard = new IgnoreKeyboard();
                     break;
+                case SettingsKeyboardState.AdditionalMenu:
+                    keyboard = new AdditionalMenuKeyboard(model);
+                    break;
                 case SettingsKeyboardState.PermissionsMenu:
                     keyboard = new PermissionsKeyboard(model);
                     break;
