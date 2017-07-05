@@ -81,7 +81,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 Subject = messagePartHeader.Value;
             messagePartHeader = message.Payload.Headers.FirstOrDefault(h => h.Name == "Date");
             if (messagePartHeader != null)
-                Date = DateTime.Parse(Regex.Replace(messagePartHeader.Value, @"\s\(\D{3}\)", string.Empty));
+                Date = DateTime.Parse(Regex.Replace(messagePartHeader.Value, @"\s\(\D{3,4}\)", string.Empty));
         }
 
         private void ParseInfoData(Message message)
