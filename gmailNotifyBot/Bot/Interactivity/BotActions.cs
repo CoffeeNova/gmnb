@@ -562,7 +562,7 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Interactivity
         public async Task<bool> ErrorOperation(string chatId)
         {
             var message = $"{Emoji.FROWNING_FACE} Error..";
-            return await _telegramMethods.AnswerCallbackQuery(chatId, message, null, null, int.MaxValue);
+            return await _telegramMethods.AnswerCallbackQuery(chatId, message);
         }
 
         public async Task NewMessageSentSuccessfull(string chatId)

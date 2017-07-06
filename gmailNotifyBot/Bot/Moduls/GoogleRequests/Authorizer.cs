@@ -217,6 +217,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
                     return;
                 }
                 userModel = gmailDbContextWorker.FindUser(id);
+                if (userModel == null)
+                    return;
                 RevokeToken(userModel);
                 userModel.RefreshToken = null;
                 ExchangeCodeForToken(code, userModel);
@@ -240,7 +242,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
             {
                 if (pendingUserModel != null)
                     gmailDbContextWorker.RemoveFromQueue(pendingUserModel);
-                gmailDbContextWorker.UpdateUserRecord(userModel);
+                if (userModel != null)
+                    gmailDbContextWorker.UpdateUserRecord(userModel);
             }
         }
 #pragma warning enable 4014

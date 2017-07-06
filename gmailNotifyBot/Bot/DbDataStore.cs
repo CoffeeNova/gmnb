@@ -49,6 +49,24 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
             if (!int.TryParse(key, out userId))
                 throw new ArgumentException("Wrong key, it must be an User Id number.", key);
 
+            var service = ServiceFactory.Instance?.ServiceCollection.Find(s => s.From == userId);
+            if (service == null)
+                return;
+
+            var messageHandler = BotInitializer.Instance?.MessageHandler;
+            if (messageHandler != null)
+            {
+                try
+                {
+                    await messageHandler.HandleStopWatchCommandAsync(service);
+                    LogMaker.Log(Logger, $"Push notifications receiving has stopped for user with userId={userId}.", false);
+                }
+                catch(Exception ex)
+                {
+                    LogMaker.Log(Logger, ex, $"exception throwed in attempt to stop push notifications. userId={userId}.");
+                }
+            }
+
             var userModel = await dbWorker.FindUserAsync(userId);
             if (userModel == null)
                 LogMaker.Log(Logger,
@@ -83,10 +101,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot
                 await dbWorker.RemoveTempDataAsync(tempData);
                 LogMaker.Log(Logger, $"{nameof(TempDataModel)} record with userId={userId} deleted.", false);
             }
-
-            var i = ServiceFactory.Instance?.ServiceCollection.RemoveAll(s => s.From == userId);
-            if (i > 0)
-                LogMaker.Log(Logger, $"Removed service from {nameof(ServiceFactory.ServiceCollection)} with userId={userId}.", false);
+            ServiceFactory.Instance?.ServiceCollection.Remove(service);
+            LogMaker.Log(Logger, $"Removed service from {nameof(ServiceFactory.ServiceCollection)} with userId={userId}.", false);
         }
 
         public Task<T> GetAsync<T>(string key)
