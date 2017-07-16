@@ -10,6 +10,7 @@ using CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests;
 using CoffeeJelly.gmailNotifyBot.Bot.Types;
 using CoffeeJelly.TelegramBotApiWrapper.Types.General;
 using Google.Apis.Gmail.v1.Data;
+using Label = CoffeeJelly.gmailNotifyBot.Bot.Types.Label;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpdates
 {
@@ -71,8 +72,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.CallbackQueryUpd
 
             var watchRequest = new WatchRequest
             {
-                LabelIds = new List<string> { "INBOX" },
-                TopicName = BotInitializer.Instance.BotSettings.Topic
+                LabelIds = new List<string> { Label.Unread },
+                TopicName = BotInitializer.Instance.BotSettings.Topic,
+                LabelFilterAction = "include"
             };
             var request = service.GmailService.Users.Watch(watchRequest, "me");
             var watchResponse = await request.ExecuteAsync();

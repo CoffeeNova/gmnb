@@ -17,6 +17,7 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Message = CoffeeJelly.TelegramBotApiWrapper.Types.Messages.Message;
 using Format = Google.Apis.Gmail.v1.UsersResource.MessagesResource.GetRequest.FormatEnum;
+using Label = CoffeeJelly.gmailNotifyBot.Bot.Types.Label;
 
 namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 {
@@ -195,8 +196,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
             var watchRequest = new WatchRequest
             {
-                LabelIds = new List<string> { "INBOX" },
-                TopicName = BotInitializer.Instance.BotSettings.Topic
+                LabelIds = new List<string> { Label.Unread },
+                TopicName = BotInitializer.Instance.BotSettings.Topic,
+                LabelFilterAction = "include"
             };
             var query = service.GmailService.Users.Watch(watchRequest, "me");
             var watchResponse = await query.ExecuteAsync();
@@ -221,8 +223,9 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.TelegramUpdates.MessageUpdates
 
             var watchRequest = new WatchRequest
             {
-                LabelIds = new List<string> { "INBOX" },
-                TopicName = BotInitializer.Instance.BotSettings.Topic
+                LabelIds = new List<string> { Label.Unread },
+                TopicName = BotInitializer.Instance.BotSettings.Topic,
+                LabelFilterAction = "include"
             };
             var query = service.GmailService.Users.Watch(watchRequest, "me");
             var watchResponse = query.Execute();
