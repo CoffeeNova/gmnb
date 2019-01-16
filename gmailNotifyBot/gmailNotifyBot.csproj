@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -370,6 +371,7 @@
     <Compile Include="Bot\Extensions\StringExtension.cs" />
     <Compile Include="Bot\FormatedMessage.cs" />
     <Compile Include="Bot\FormattedMessageHelper.cs" />
+    <Compile Include="Controllers\PrivacyController.cs" />
     <Compile Include="Controllers\PushController.cs" />
     <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="Global.asax.cs">
@@ -477,6 +479,7 @@
     <Folder Include="Extensions\" />
     <Folder Include="Resources\" />
     <Folder Include="Views\Images\" />
+    <Folder Include="Views\Privacy\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
