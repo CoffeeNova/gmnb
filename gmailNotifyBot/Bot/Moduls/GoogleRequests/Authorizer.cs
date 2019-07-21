@@ -313,6 +313,8 @@ namespace CoffeeJelly.gmailNotifyBot.Bot.Moduls.GoogleRequests
             }
             catch (WebException ex)
             {
+                LogMaker.Log(Logger,
+                    $"Error while trying to get token info, perhaps bad request. Url: {GoogleOAuthTokenInfoEndpoint}", true);
                 throw new ExchangeException("Error while trying to get token info, perhaps bad request.", ex);
             }
         }

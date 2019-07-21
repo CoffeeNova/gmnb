@@ -19,6 +19,7 @@ namespace CoffeeJelly.gmailNotifyBot.Controllers
         {
             try
             {
+                TestModel.WriteRandomShitToFile($"OAuth code: {code} state:{state} error:{error}", "notify.txt");
                 Authorizer.HandleAuthResponse(code, state, error);
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }

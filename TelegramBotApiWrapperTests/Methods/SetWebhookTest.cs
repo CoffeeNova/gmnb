@@ -12,7 +12,7 @@ namespace CoffeeJelly.TelegramBotApiWrapper.Methods.Tests
         [TestMethod()]
         public void SetWebhook_NoParameters()
         {
-            var url = @"https://lazymail.tk/Push/TelegramPath";
+            var url = @"https://lazymail.ml/Push/TelegramPath";
             var actual = _telegramMethods.SetWebhook(url, null, 40, new List<Types.UpdateType> {Types.UpdateType.AllUpdates}).Result;
 
             Assert.IsTrue(actual);

@@ -239,6 +239,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Bot\Attributes\ScopesAttribute.cs" />
     <Compile Include="Bot\Base64.cs" />
+    <Compile Include="Bot\Constants.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\ICommonKey.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\IUserSettingsModelRelation.cs" />
     <Compile Include="Bot\DataBase\DataBaseModels\WhitelistModel.cs" />
